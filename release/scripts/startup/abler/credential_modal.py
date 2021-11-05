@@ -248,6 +248,9 @@ class Acon3dModalOperator(bpy.types.Operator):
 
             return {"FINISHED"}
 
+        if event.type == "RET":
+            bpy.ops.acon3d.login()
+
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
             bpy.ops.wm.splash("INVOKE_DEFAULT")
 
