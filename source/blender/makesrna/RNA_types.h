@@ -148,6 +148,7 @@ typedef enum PropertySubType {
   /* 5 was used by "PROP_TRANSLATE" sub-type, which is now a flag. */
   /** A string which should not be displayed in UI. */
   PROP_PASSWORD = 6,
+  PROP_USERNAME = 7,
 
   /* numbers */
   /** A dimension in pixel units, possibly before DPI scaling (so value may not be the final pixel

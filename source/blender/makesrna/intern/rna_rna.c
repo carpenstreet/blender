@@ -74,6 +74,7 @@ const EnumPropertyItem rna_enum_property_subtype_items[] = {
     {PROP_FILENAME, "FILENAME", 0, "File Name", ""},
     {PROP_BYTESTRING, "BYTESTRING", 0, "Byte String", ""},
     {PROP_PASSWORD, "PASSWORD", 0, "Password", "A string that is displayed hidden ('********')"},
+    {PROP_USERNAME, "USERNAME", 0, "Username", "Username", ""},
 
     /* numbers */
     {PROP_PIXEL, "PIXEL", 0, "Pixel", ""},

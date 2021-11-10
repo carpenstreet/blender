@@ -446,7 +446,10 @@ class AconMeshProperty(bpy.types.PropertyGroup):
             self.password = self.password_shown
 
     username: bpy.props.StringProperty(
-        name="Username", description="Username", options={"TEXTEDIT_UPDATE"}
+        name="Username",
+        description="Username",
+        subtype="USERNAME",
+        options={"TEXTEDIT_UPDATE"},
     )
 
     password: bpy.props.StringProperty(
@@ -459,7 +462,7 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     password_shown: bpy.props.StringProperty(
         name="Password",
         description="Password",
-        subtype="NONE",
+        subtype="USERNAME",
         options={"TEXTEDIT_UPDATE"},
     )
 

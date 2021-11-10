@@ -3666,8 +3666,8 @@ static void ui_do_but_textedit(
   int retval = WM_UI_HANDLER_CONTINUE;
   bool changed = false, inbox = false, update = false, skip_undo_push = false;
 
+  wmWindow *win = CTX_wm_window(C); /* wm을 이후에 받기 위해 ifdef에서 뺐습니다. */
 #ifdef WITH_INPUT_IME
-  wmWindow *win = CTX_wm_window(C);
   wmIMEData *ime_data = win->ime_data;
   const bool is_ime_composing = ime_data && ime_data->is_ime_composing;
 #else
@@ -3849,6 +3849,14 @@ static void ui_do_but_textedit(
       case EVT_RETKEY:
         button_activate_state(C, but, BUTTON_STATE_EXIT);
         retval = WM_UI_HANDLER_BREAK;
+        /* PROP_USERNAME과 PROP_PASSWORD에서 RET키를 눌렀을때 키가 두번 실행됨으로써
+         * credential_modal에서 evet.type=="RET"일때 login이 실행되도록 구상했습니다. */
+        // if (but->rnaprop) {
+        //   if (RNA_property_subtype(but->rnaprop) == PROP_PASSWORD ||
+        //       RNA_property_subtype(but->rnaprop) == PROP_USERNAME) {
+        //     WM_operator_name_call(C, "Acon3dLoginOperator", WM_OP_EXEC_DEFAULT, NULL);
+        //   }
+        // }
         break;
       case EVT_DELKEY:
         changed = ui_textedit_delete(

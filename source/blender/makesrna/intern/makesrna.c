@@ -3258,6 +3258,8 @@ static const char *rna_property_subtypename(PropertySubType type)
       return "PROP_POWER";
     case PROP_TEMPERATURE:
       return "PROP_TEMPERATURE";
+    case PROP_USERNAME:
+      return "PROP_USERNAME";
     default: {
       /* in case we don't have a type preset that includes the subtype */
       if (RNA_SUBTYPE_UNIT(type)) {
