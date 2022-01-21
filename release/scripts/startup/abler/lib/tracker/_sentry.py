@@ -22,7 +22,7 @@ class SentryTracker(Tracker):
             category="event", message=event_name, timestamp=time.time()
         )
 
-    def _enqueue_email_update(self, email: str, ip: str):
+    def _enqueue_profile_update(self, email: str, ip: str):
         sentry_sdk.set_user({"email": email})
 
 
