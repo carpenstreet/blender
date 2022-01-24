@@ -1,7 +1,8 @@
+from typing import Optional
 from requests import get
 
 
-def get_ip() -> str:
+def get_ip() -> Optional[str]:
     try:
         return get("https://api.ipify.org").text
     except ConnectionError:
