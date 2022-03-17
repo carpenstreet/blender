@@ -6270,6 +6270,11 @@ static void def_sh_ambient_occlusion(StructRNA *srna)
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 }
 
+static void def_sh_outline(StructRNA *srna)
+{
+  // PropertyRNA *prop;
+}
+
 static void def_sh_subsurface(StructRNA *srna)
 {
   PropertyRNA *prop;

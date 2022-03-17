@@ -122,6 +122,7 @@ typedef enum ShaderNodeType {
   NODE_AOV_COLOR,
   NODE_AOV_VALUE,
   NODE_FLOAT_CURVE,
+  NODE_OUTLINE,
   /* NOTE: for best OpenCL performance, item definition in the enum must
    * match the switch case order in svm.h. */
 } ShaderNodeType;

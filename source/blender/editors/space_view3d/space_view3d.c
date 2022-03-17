@@ -1931,7 +1931,7 @@ void ED_spacetype_view3d(void)
   art->draw = ED_region_panels_draw;
   BLI_addhead(&st->regiontypes, art);
 
-  view3d_buttons_register(art);
+  // view3d_buttons_register(art);
 
   /* regions: tool(bar) */
   art = MEM_callocN(sizeof(ARegionType), "spacetype view3d tools region");

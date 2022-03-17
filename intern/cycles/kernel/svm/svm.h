@@ -212,6 +212,7 @@ CCL_NAMESPACE_END
 #ifdef __SHADER_RAYTRACE__
 #  include "kernel/svm/ao.h"
 #  include "kernel/svm/bevel.h"
+#  include "kernel/svm/outline.h"
 #endif
 
 CCL_NAMESPACE_BEGIN
@@ -571,6 +572,9 @@ ccl_device void svm_eval_nodes(KernelGlobals kg,
         break;
       case NODE_AMBIENT_OCCLUSION:
         svm_node_ao<node_feature_mask>(kg, state, sd, stack, node);
+        break;
+      case NODE_OUTLINE:
+        svm_node_outline<node_feature_mask>(kg, state, sd, stack, node);
         break;
 #endif
 

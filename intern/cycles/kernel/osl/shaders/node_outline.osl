@@ -1,0 +1,103 @@
+/*
+ * Copyright 2011-2018 Blender Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "stdosl.h"
+
+shader node_outline
+(
+    normal Normal = normal(1,0,0), float Width = 1.0,
+    output float Depth = 0.0, output vector DepthHitPosition = vector(0,0,0),
+    output float NegativeDepth = 0.0, output vector NegativeDepthHitPosition = vector(0,0,0),
+    output float Object = 0.0,
+    output float WidthWorldSpaceSize = 0
+)
+{
+    string object_name = "";
+    getattribute("geom:name", object_name);
+    string projection = "";
+    getattribute("camera:projection", projection);
+
+    point offsets[4] = {
+        point(-1,0,0),point(1, 0,0),
+        point( 0,1,0),point(0,-1,0)
+    };
+
+    float max_depth = 0.0;
+    float min_depth = 0.0;
+
+    float ray_length = 0;
+    getattribute("path:ray_length", ray_length);
+
+    point trace_start = P + I * ray_length;
+    point raster_P = transform("common","raster",P);
+
+    for (int i = 0; i < 4; i++)
+    {
+        point trace_target_raster = raster_P + (offsets[i] * Width);
+        point trace_target = transform("raster", "common", trace_target_raster);
+
+        if (projection == "orthographic")
+        {
+            trace_start = trace_target + I * ray_length;
+        }
+
+        WidthWorldSpaceSize = length(trace_target - P);
+
+        vector trace_direction = normalize(trace_target - trace_start);
+
+        if(trace(trace_start, trace_direction))
+        {
+            float hit_distance = 0;
+            getmessage("trace", "hitdist", hit_distance);
+
+            string hit_name = "";
+            getmessage("trace", "geom:name", hit_name);
+
+            normal hit_normal;
+            getmessage("trace", "N", hit_normal);
+
+            // ray-plane intersection
+            float expected_distance = (dot(Normal, P) - dot(trace_start, Normal)) / dot(trace_direction, Normal);
+
+            float delta_depth = hit_distance - expected_distance;
+
+            max_depth = max(max_depth, delta_depth);
+            if (max_depth == delta_depth)
+            {
+                DepthHitPosition = (trace_start + (trace_direction * hit_distance)) - P;
+            }
+
+            min_depth = min(min_depth, delta_depth);
+            if (min_depth == delta_depth)
+            {
+                NegativeDepthHitPosition = (trace_start + (trace_direction * hit_distance)) - P;
+            }
+
+            if(hit_name != object_name)
+            {
+                Object = 1.0;
+            }
+        }
+        else
+        {
+            max_depth = 1000000000000.0;
+            Object = 1.0;
+        }
+    }
+
+    Depth = max_depth;
+    NegativeDepth = -min_depth;
+}

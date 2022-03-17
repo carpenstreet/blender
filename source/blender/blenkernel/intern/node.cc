@@ -5650,6 +5650,7 @@ static void registerShaderNodes()
 
   register_node_type_sh_attribute();
   register_node_type_sh_bevel();
+  register_node_type_sh_outline();
   register_node_type_sh_displacement();
   register_node_type_sh_vector_displacement();
   register_node_type_sh_geometry();

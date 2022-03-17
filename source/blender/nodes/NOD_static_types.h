@@ -71,6 +71,7 @@ DefNode(ShaderNode,     SH_NODE_MIX_SHADER,         0,                      "MIX
 DefNode(ShaderNode,     SH_NODE_ADD_SHADER,         0,                      "ADD_SHADER",         AddShader,        "Add Shader",        ""       )
 DefNode(ShaderNode,     SH_NODE_ATTRIBUTE,          def_sh_attribute,       "ATTRIBUTE",          Attribute,        "Attribute",         ""       )
 DefNode(ShaderNode,     SH_NODE_AMBIENT_OCCLUSION,  def_sh_ambient_occlusion,"AMBIENT_OCCLUSION", AmbientOcclusion, "Ambient Occlusion", ""       )
+DefNode(ShaderNode,     SH_NODE_OUTLINE,            def_sh_outline,         "OUTLINE",            Outline,          "Outline",           ""       )
 DefNode(ShaderNode,     SH_NODE_BACKGROUND,         0,                      "BACKGROUND",         Background,       "Background",        ""       )
 DefNode(ShaderNode,     SH_NODE_HOLDOUT,            0,                      "HOLDOUT",            Holdout,          "Holdout",           ""       )
 DefNode(ShaderNode,     SH_NODE_BSDF_ANISOTROPIC,   def_anisotropic,        "BSDF_ANISOTROPIC",   BsdfAnisotropic,  "Anisotropic BSDF",  ""       )

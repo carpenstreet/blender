@@ -47,6 +47,7 @@ if NOT EXIST %BUILD_VS_LIBDIR% (
 			"%SVN%" update %BUILD_VS_LIBDIR%
 		)
 	)
+	%PYTHON% -m pip install -r %BLENDER_DIR%\abler_requirements.txt
 )
 
 if NOT EXIST %BUILD_VS_LIBDIR% (

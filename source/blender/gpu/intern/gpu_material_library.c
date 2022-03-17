@@ -87,6 +87,7 @@ extern char datatoc_gpu_shader_material_noise_glsl[];
 extern char datatoc_gpu_shader_material_normal_glsl[];
 extern char datatoc_gpu_shader_material_normal_map_glsl[];
 extern char datatoc_gpu_shader_material_object_info_glsl[];
+extern char datatoc_gpu_shader_material_outline_glsl[];
 extern char datatoc_gpu_shader_material_output_aov_glsl[];
 extern char datatoc_gpu_shader_material_output_material_glsl[];
 extern char datatoc_gpu_shader_material_output_world_glsl[];
@@ -373,6 +374,11 @@ static GPUMaterialLibrary gpu_shader_material_output_aov_library = {
     .dependencies = {NULL},
 };
 
+static GPUMaterialLibrary gpu_shader_material_outline_library = {
+    .code = datatoc_gpu_shader_material_outline_glsl,
+    .dependencies = {NULL},
+};
+
 static GPUMaterialLibrary gpu_shader_material_output_material_library = {
     .code = datatoc_gpu_shader_material_output_material_glsl,
     .dependencies = {NULL},
@@ -640,6 +646,7 @@ static GPUMaterialLibrary *gpu_material_libraries[] = {
     &gpu_shader_material_normal_library,
     &gpu_shader_material_normal_map_library,
     &gpu_shader_material_object_info_library,
+    &gpu_shader_material_outline_library,
     &gpu_shader_material_output_aov_library,
     &gpu_shader_material_output_material_library,
     &gpu_shader_material_output_world_library,

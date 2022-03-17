@@ -31,7 +31,7 @@ extern "C" {
  */
 
 /* Blender major and minor version. */
-#define BLENDER_VERSION 300
+#define BLENDER_VERSION 296
 /* Blender patch version for bugfix releases. */
 #define BLENDER_VERSION_PATCH 1
 /** Blender release cycle stage: alpha/beta/rc/release. */
@@ -44,7 +44,7 @@ extern "C" {
 /* Minimum Blender version that supports reading file written with the current
  * version. Older Blender versions will test this and show a warning if the file
  * was written with too new a version. */
-#define BLENDER_FILE_MIN_VERSION 300
+#define BLENDER_FILE_MIN_VERSION 296
 #define BLENDER_FILE_MIN_SUBVERSION 42
 
 /** User readable version string. */

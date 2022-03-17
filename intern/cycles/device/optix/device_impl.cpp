@@ -372,6 +372,10 @@ bool OptiXDevice::load_kernels(const uint kernel_features)
     group_descs[PG_CALL_SVM_AO].kind = OPTIX_PROGRAM_GROUP_KIND_CALLABLES;
     group_descs[PG_CALL_SVM_AO].callables.moduleDC = optix_module;
     group_descs[PG_CALL_SVM_AO].callables.entryFunctionNameDC = "__direct_callable__svm_node_ao";
+    group_descs[PG_CALL_SVM_OUTLINE].kind = OPTIX_PROGRAM_GROUP_KIND_CALLABLES;
+    group_descs[PG_CALL_SVM_OUTLINE].callables.moduleDC = optix_module;
+    group_descs[PG_CALL_SVM_OUTLINE].callables.entryFunctionNameDC =
+        "__direct_callable__svm_node_outline";
     group_descs[PG_CALL_SVM_BEVEL].kind = OPTIX_PROGRAM_GROUP_KIND_CALLABLES;
     group_descs[PG_CALL_SVM_BEVEL].callables.moduleDC = optix_module;
     group_descs[PG_CALL_SVM_BEVEL].callables.entryFunctionNameDC =
@@ -429,6 +433,7 @@ bool OptiXDevice::load_kernels(const uint kernel_features)
       pipeline_groups.push_back(groups[PG_HITS_MOTION]);
     }
     pipeline_groups.push_back(groups[PG_CALL_SVM_AO]);
+    pipeline_groups.push_back(groups[PG_CALL_SVM_OUTLINE]);
     pipeline_groups.push_back(groups[PG_CALL_SVM_BEVEL]);
 
     optix_assert(optixPipelineCreate(context,
@@ -444,6 +449,7 @@ bool OptiXDevice::load_kernels(const uint kernel_features)
     const unsigned int css = stack_size[PG_RGEN_SHADE_SURFACE_RAYTRACE].cssRG +
                              link_options.maxTraceDepth * trace_css;
     const unsigned int dss = std::max(stack_size[PG_CALL_SVM_AO].dssDC,
+                                      stack_size[PG_CALL_SVM_OUTLINE].dssDC,
                                       stack_size[PG_CALL_SVM_BEVEL].dssDC);
 
     /* Set stack size depending on pipeline options. */

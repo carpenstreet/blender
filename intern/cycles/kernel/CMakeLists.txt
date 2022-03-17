@@ -144,6 +144,7 @@ set(SRC_KERNEL_SVM_HEADERS
   svm/noise.h
   svm/noisetex.h
   svm/normal.h
+  svm/outline.h
   svm/ramp.h
   svm/ramp_util.h
   svm/sepcomb_hsv.h

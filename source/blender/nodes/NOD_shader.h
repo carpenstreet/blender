@@ -94,6 +94,7 @@ void register_node_type_sh_vect_transform(void);
 void register_node_type_sh_vertex_color(void);
 
 void register_node_type_sh_ambient_occlusion(void);
+void register_node_type_sh_outline(void);
 void register_node_type_sh_background(void);
 void register_node_type_sh_bsdf_diffuse(void);
 void register_node_type_sh_bsdf_glossy(void);
