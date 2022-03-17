@@ -194,15 +194,12 @@ class LoginTask(AsyncTask):
 
         self.prop = bpy.data.meshes.get("ACON_userInfo").ACON_prop
         self.username = self.prop.username
-        self.password = self.prop.password
+        self.password = (
+            self.prop.password_shown if self.prop.show_password else self.prop.password
+        )
 
     def request_login(self):
         prop = self.prop
-
-        if prop.show_password:
-            prop.password = prop.password_shown
-        else:
-            prop.password_shown = prop.password
 
         prop.login_status = "LOADING"
         self.start()
