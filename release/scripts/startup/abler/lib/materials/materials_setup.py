@@ -495,7 +495,7 @@ def applyAconToonStyle():
                     default_value[2],
                     default_value[3],
                 )
-                nega_alpha = 1 - node.inputs[19].default_value
+                nega_alpha = 1 - node.inputs[21].default_value
 
         if node_combinedToon:
 

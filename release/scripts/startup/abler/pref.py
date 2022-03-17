@@ -33,7 +33,7 @@ def init_setting(dummy):
             print("Failed to find screen 'ACON3D'")
 
     prefs_sys.use_region_overlap = False
-    prefs_view.show_layout_ui = True
+    prefs_view.show_column_layout = True
     prefs_view.show_navigate_ui = False
     prefs_view.show_developer_ui = False
     prefs_view.show_tooltips_python = False
