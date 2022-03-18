@@ -481,8 +481,16 @@ def applyAconToonStyle():
         for node in nodes:
 
             if node.name == "ACON_nodeGroup_combinedToon":
+                default_value = node.inputs[0].default_value
+                baseColor = (
+                    default_value[0],
+                    default_value[1],
+                    default_value[2],
+                    default_value[3],
+                )
                 node.node_tree = node_group_data_combined
                 node_combinedToon = node
+                node_combinedToon.inputs[0].default_value = baseColor
 
             elif node.type == "TEX_IMAGE":
                 node_texImage = node
@@ -497,6 +505,9 @@ def applyAconToonStyle():
                 )
                 nega_alpha = 1 - node.inputs[21].default_value
 
+            elif node.type == "OUTPUT_MATERIAL":
+                out_node = node
+
         if node_combinedToon:
 
             if node_texImage:
@@ -506,6 +517,7 @@ def applyAconToonStyle():
                 mat.node_tree.links.new(
                     node_texImage.outputs[1], node_combinedToon.inputs[8]
                 )
+            mat.node_tree.links.new(node_combinedToon.outputs[0], out_node.inputs[0])
 
             materials_handler.setMaterialParametersByType(mat)
             override = SimpleNamespace()
