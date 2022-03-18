@@ -299,8 +299,6 @@ else()
       target_compile_definitions (blender-launcher PRIVATE -D_UNICODE -DUNICODE)
       target_link_libraries(blender-launcher Pathcch.lib)
   endif()
-  target_link_options(blender PRIVATE "-Wl,-U,_BrotliDecoderDecompress")
-
 endif()
 
 if(WITH_BUILDINFO)
