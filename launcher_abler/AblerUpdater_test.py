@@ -28,7 +28,10 @@ installedversion = ""
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 
 logging.basicConfig(
-    filename=cwdpath + "\\BlenderUpdater.log", format=LOG_FORMAT, level=logging.DEBUG, filemode="w"
+    filename=cwdpath + "\\BlenderUpdater.log",
+    format=LOG_FORMAT,
+    level=logging.DEBUG,
+    filemode="w",
 )
 
 logger = logging.getLogger()
@@ -43,7 +46,7 @@ if os.path.isfile(cwdpath + "\\config.ini"):
     installedversion = config.get("main", "installed")
     flavor = config.get("main", "flavor")
 
-url = "https://api.github.com/repos/acon3d/ABLER/releases/latest"
+url = "https://api.github.com/repos/acon3d/blender/releases/latest"
 # Do path settings save here, in case user has manually edited it
 config.read(cwdpath + "\\config.ini")
 config.set("main", "path", dir_)
@@ -60,15 +63,17 @@ except Exception:
     logger.error("No connection to Blender nightly builds server")
 info = {}
 if req is not None:
-    main_tag = req.json()['name'][1:]
-    for asset in req.json()['assets']:
-        if "Windows" in asset['browser_download_url'] and "zip" in asset['browser_download_url']:
-            info["url"] = asset['browser_download_url']
+    main_tag = req.json()["name"][1:]
+    for asset in req.json()["assets"]:
+        if (
+            "Windows" in asset["browser_download_url"]
+            and "zip" in asset["browser_download_url"]
+        ):
+            info["url"] = asset["browser_download_url"]
             info["os"] = "Windows"
-            info["filename"] = asset['browser_download_url'].split("/")[-1]
+            info["filename"] = asset["browser_download_url"].split("/")[-1]
             info["version"] = main_tag
             info["arch"] = "x64"
-
 
     """Download routines."""
 
@@ -96,7 +101,7 @@ if req is not None:
         config.set("main", "path", dir_)
         config.set("main", "flavor", variation)
         config.set("main", "installed", info_version)
-        
+
         dir_ = os.path.join(dir_, "")
         filename = cwdpath + "\\blendertemp\\" + info["filename"]
 

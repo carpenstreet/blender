@@ -305,9 +305,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global dir_
         global lastversion
         global installedversion
-        url = "https://api.github.com/repos/acon3d/ABLER/releases/latest"
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
         if test_arg:
-            url = "https://api.github.com/repos/acon3d/ABLER/releases"
+            url = "https://api.github.com/repos/acon3d/blender/releases"
         # Do path settings save here, in case user has manually edited it
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
@@ -409,9 +409,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global installedversion
         global launcher_installed
         global launcherdir_
-        url = "https://api.github.com/repos/acon3d/ABLER/releases/latest"
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
         if test_arg:
-            url = "https://api.github.com/repos/acon3d/ABLER/releases"
+            url = "https://api.github.com/repos/acon3d/blender/releases"
         # Do path settings save here, in case user has manually edited it
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")

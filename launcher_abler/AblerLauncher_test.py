@@ -48,7 +48,7 @@ app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 appversion = "1.9.8"
 dir_ = "C:/Program Files (x86)/ABLER"
-launcherdir_ = os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater"
+launcherdir_ = os.getenv("APPDATA") + "\\Blender Foundation\\Blender\\2.93\\updater"
 config = configparser.ConfigParser()
 btn = {}
 lastversion = ""
@@ -56,11 +56,15 @@ installedversion = ""
 launcher_installed = ""
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
 test_arg = False
-if len(sys.argv) > 1 and sys.argv[1] == '--test':
+if len(sys.argv) > 1 and sys.argv[1] == "--test":
     test_arg = True
 
 logging.basicConfig(
-    filename=os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.log", format=LOG_FORMAT, level=logging.DEBUG, filemode="w"
+    filename=os.getenv("APPDATA")
+    + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.log",
+    format=LOG_FORMAT,
+    level=logging.DEBUG,
+    filemode="w",
 )
 
 logger = logging.getLogger()
@@ -125,16 +129,23 @@ class WorkerThread(QtCore.QThread):
 
     def run(self):
         try:
-            urllib.request.urlretrieve(self.url, self.filename, reporthook=self.progress)
+            urllib.request.urlretrieve(
+                self.url, self.filename, reporthook=self.progress
+            )
             self.finishedDL.emit()
             shutil.unpack_archive(self.filename, self.temp_path)
             os.remove(self.filename)
             self.finishedEX.emit()
             source = next(os.walk(self.temp_path))
             if os.path.isfile(self.path + "\\AblerLauncher.exe"):
-                os.rename(self.path + "\\AblerLauncher.exe", self.path + "\\AblerLauncher.bak")
+                os.rename(
+                    self.path + "\\AblerLauncher.exe", self.path + "\\AblerLauncher.bak"
+                )
                 time.sleep(1)
-                shutil.copyfile(self.temp_path + "\\AblerLauncher.exe", self.path + "\\AblerLauncher.exe")
+                shutil.copyfile(
+                    self.temp_path + "\\AblerLauncher.exe",
+                    self.path + "\\AblerLauncher.exe",
+                )
                 # os.remove(self.path + "\\config.ini")
                 # shutil.copyfile(self.temp_path + "\\config.ini", self.path + "\\config.ini")
             else:
@@ -144,7 +155,6 @@ class WorkerThread(QtCore.QThread):
             self.finishedCL.emit()
         except Exception as e:
             logger.error(e)
-
 
 
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
@@ -165,12 +175,24 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global config
         global installedversion
         global launcher_installed
-        if os.path.isfile(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.bak"):
-            os.remove(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.bak")
-        if os.path.isfile(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"):
+        if os.path.isfile(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.bak"
+        ):
+            os.remove(
+                os.getenv("APPDATA")
+                + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.bak"
+            )
+        if os.path.isfile(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+        ):
             config_exist = True
             logger.info("Reading existing configuration file")
-            config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+            config.read(
+                os.getenv("APPDATA")
+                + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+            )
             lastcheck = config.get("main", "lastcheck")
             lastversion = config.get("main", "lastdl")
             installedversion = config.get("main", "installed")
@@ -185,7 +207,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.debug("No previous config found")
             self.btn_oneclick.hide()
             config_exist = False
-            config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+            config.read(
+                os.getenv("APPDATA")
+                + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+            )
             config.add_section("main")
             config.set("main", "path", "")
             lastcheck = "Never"
@@ -194,7 +219,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.set("main", "installed", "")
             config.set("main", "launcher", "")
             config.set("main", "flavor", "")
-            with open(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini", "w") as f:
+            with open(
+                os.getenv("APPDATA")
+                + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini",
+                "w",
+            ) as f:
                 config.write(f)
         self.btn_cancel.hide()
         self.frm_progress.hide()
@@ -209,10 +238,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
 
-        if not(self.check_launcher()):
+        if not (self.check_launcher()):
             self.check_once()
-
-
 
     def open_acon3d(self):
         url = QtCore.QUrl("https://www.acon3d.com/")
@@ -236,7 +263,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
-
     def hbytes(self, num):
         """Translate to human readable file size."""
         for x in [" bytes", " KB", " MB", " GB"]:
@@ -245,19 +271,25 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             num /= 1024.0
         return "%3.1f%s" % (num, " TB")
 
-
     def check_once(self):
         global dir_
         global lastversion
         global installedversion
-        url = "https://api.github.com/repos/acon3d/ABLER/releases/latest"
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
         if test_arg:
-            url = "https://api.github.com/repos/acon3d/ABLER/releases"
+            url = "https://api.github.com/repos/acon3d/blender/releases"
         # Do path settings save here, in case user has manually edited it
         global config
-        config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+        config.read(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+        )
         config.set("main", "path", dir_)
-        with open(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini", "w") as f:
+        with open(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini",
+            "w",
+        ) as f:
             config.write(f)
         f.close()
         try:
@@ -271,16 +303,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         results = []
         if test_arg:
             req = req[0]
-        version_tag = req['name'][1:]
-        for asset in req['assets']:
+        version_tag = req["name"][1:]
+        for asset in req["assets"]:
             opsys = platform.system()
             if opsys == "Windows":
-                target =  asset['browser_download_url']
+                target = asset["browser_download_url"]
                 if "Windows" in target and "zip" in target and "Release" in target:
                     info = {}
-                    info["url"] = asset['browser_download_url']
+                    info["url"] = asset["browser_download_url"]
                     info["os"] = "Windows"
-                    info["filename"] = asset['browser_download_url'].split("/")[-1]
+                    info["filename"] = asset["browser_download_url"].split("/")[-1]
                     info["version"] = version_tag
                     info["arch"] = "x64"
                     results.append(info)
@@ -327,15 +359,22 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global installedversion
         global launcher_installed
         global launcherdir_
-        url = "https://api.github.com/repos/acon3d/ABLER/releases/latest"
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
         if test_arg:
-            url = "https://api.github.com/repos/acon3d/ABLER/releases"
+            url = "https://api.github.com/repos/acon3d/blender/releases"
         # Do path settings save here, in case user has manually edited it
         global config
-        config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+        config.read(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+        )
         launcher_installed = config.get("main", "launcher")
         config.set("main", "path", dir_)
-        with open(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini", "w") as f:
+        with open(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini",
+            "w",
+        ) as f:
             config.write(f)
         f.close()
         try:
@@ -350,17 +389,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if test_arg:
             req = req[0]
 
-        for asset in req['assets']:
+        for asset in req["assets"]:
             opsys = platform.system()
             if opsys == "Windows":
-                target = asset['browser_download_url']
+                target = asset["browser_download_url"]
                 if "Windows" in target and "Launcher" in target and "zip" in target:
                     info = {}
-                    info["url"] = asset['browser_download_url']
+                    info["url"] = asset["browser_download_url"]
                     info["os"] = "Windows"
-                    info["filename"] = asset['browser_download_url'].split("/")[-1]
-                    #file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
-                    info["version"] = info["filename"].split('_')[-1][1:-4]
+                    info["filename"] = asset["browser_download_url"].split("/")[-1]
+                    # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
+                    info["version"] = info["filename"].split("_")[-1][1:-4]
                     info["arch"] = "x64"
                     results.append(info)
             if opsys.lower == "darwin":
@@ -369,18 +408,21 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.btn_execute.clicked.connect(self.exec_linux)
         finallist = results
         if len(finallist) != 0:
-            if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
+            if StrictVersion(finallist[0]["version"]) > StrictVersion(
+                launcher_installed
+            ):
                 self.btn_execute.hide()
                 self.btn_update.hide()
                 self.btn_update_launcher.show()
                 self.btn_update_launcher.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download_launcher(entry)
+                    lambda throwaway=0, entry=finallist[0]: self.download_launcher(
+                        entry
+                    )
                 )
                 launcher_need_install = True
         else:
             self.btn_update_launcher.hide()
         return launcher_need_install
-
 
     def download(self, entry):
         """Download routines."""
@@ -399,12 +441,19 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         size_readable = self.hbytes(float(totalsize))
 
         global config
-        config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+        config.read(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+        )
         config.set("main", "path", dir_)
         config.set("main", "flavor", variation)
         config.set("main", "installed", version)
 
-        with open(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini", "w") as f:
+        with open(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini",
+            "w",
+        ) as f:
             config.write(f)
         f.close()
 
@@ -440,7 +489,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         thread.finishedCL.connect(self.done)
         thread.start()
 
-
     def download_launcher(self, entry):
         """Download routines."""
         global launcherdir_
@@ -458,11 +506,18 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         size_readable = self.hbytes(float(totalsize))
 
         global config
-        config.read(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini")
+        config.read(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini"
+        )
         config.set("main", "launcher", version)
         logger.info(f"1 {config.get('main', 'installed')}")
 
-        with open(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini", "w") as f:
+        with open(
+            os.getenv("APPDATA")
+            + "\\Blender Foundation\\Blender\\2.93\\updater\\config.ini",
+            "w",
+        ) as f:
             config.write(f)
         f.close()
 
@@ -565,7 +620,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if opsys == "Linux":
             self.btn_execute.clicked.connect(self.exec_linux)
 
-
     def done_launcher(self):
         logger.info("Finished")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
@@ -577,19 +631,28 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Finished")
         self.btn_Quit.setEnabled(True)
         QtWidgets.QMessageBox.information(
-            self, "Launcher updated", "ABLER launcher has been updated. Please re-run the launcher."
+            self,
+            "Launcher updated",
+            "ABLER launcher has been updated. Please re-run the launcher.",
         )
         try:
             if test_arg:
-                _ = subprocess.Popen([os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.exe", "--test"])
+                _ = subprocess.Popen(
+                    [
+                        os.getenv("APPDATA")
+                        + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.exe",
+                        "--test",
+                    ]
+                )
             else:
-                _ = subprocess.Popen(os.getenv('APPDATA') + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.exe")
+                _ = subprocess.Popen(
+                    os.getenv("APPDATA")
+                    + "\\Blender Foundation\\Blender\\2.93\\updater\\AblerLauncher.exe"
+                )
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
             logger.error(e)
             QtCore.QCoreApplication.instance().quit()
-
-
 
     def exec_windows(self):
         _ = subprocess.Popen(os.path.join('"' + dir_ + "\\blender.exe" + '"'))
