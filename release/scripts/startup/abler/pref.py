@@ -56,6 +56,7 @@ def load_handler(dummy):
 
         scenes.refresh_look_at_me()
         change_and_reset_value()
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = bpy.context.scene.name
     finally:
         tracker.turn_on()
 
