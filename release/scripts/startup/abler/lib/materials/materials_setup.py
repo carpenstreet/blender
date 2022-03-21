@@ -484,8 +484,8 @@ def applyAconToonStyle():
 
             if node.name == "ACON_nodeGroup_combinedToon":
                 # get_value
-                for i in range(0, 10):
-                    default_value_list[i] = node.inputs[i].default_value
+                for index in range(len(node.inputs)):
+                    default_value_list[index] = node.inputs[index].default_value
                 baseColor = (
                     default_value_list[0][0],
                     default_value_list[0][1],
@@ -497,9 +497,13 @@ def applyAconToonStyle():
                 node_combinedToon = node
 
                 # set_value
-                node_combinedToon.inputs[0].default_value = baseColor
-                for i in range(1, 10):
-                    node_combinedToon.inputs[i].default_value = default_value_list[i]
+                for index in range(len(node.inputs)):
+                    if index == 0:
+                        node_combinedToon.inputs[index].default_value = baseColor
+                    else:
+                        node_combinedToon.inputs[
+                            index
+                        ].default_value = default_value_list[index]
 
             elif node.type == "TEX_IMAGE":
                 node_texImage = node
