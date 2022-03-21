@@ -2,6 +2,7 @@
 #
 # Utility functions for make update and make tests.
 
+import os
 import re
 import shutil
 import subprocess
@@ -69,7 +70,19 @@ def git_tag(git_command):
     return tag.strip().decode('utf8')
 
 
-def git_branch_release_version(branch, tag):
+def get_lib_version_override(git_command):
+    blender_git_root = check_output([git_command, "rev-parse", "--show-toplevel"])
+    lib_string_path = os.path.join(blender_git_root, ".lib-version")
+    try:
+        with open(lib_string_path, "r") as f:
+            return f.read().strip()
+    except:
+        return None
+
+
+def git_branch_release_version(branch, tag, git_command):
+    if override := get_lib_version_override(git_command):
+        return override
     release_version = re.search("^blender-v(.*)-release$", branch)
     if release_version:
         release_version = release_version.group(1)
