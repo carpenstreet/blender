@@ -477,7 +477,7 @@ void GHOST_WindowCocoa::setTitle(const char *title)
   NSString *windowTitle = [[NSString alloc] initWithCString:title encoding:NSUTF8StringEncoding];
 
   // Set associated file if applicable
-  if (windowTitle && [windowTitle hasPrefix:@"Blender"]) {
+  if (windowTitle && [windowTitle hasPrefix:@"ABLER"]) {
     NSRange fileStrRange;
     NSString *associatedFileName;
     int len;
@@ -891,7 +891,7 @@ GHOST_TSuccess GHOST_WindowCocoa::setProgressBar(float progress)
 static void postNotification()
 {
   NSUserNotification *notification = [[NSUserNotification alloc] init];
-  notification.title = @"Blender Progress Notification";
+  notification.title = @"ABLER Progress Notification";
   notification.informativeText = @"Calculation is finished.";
   notification.soundName = NSUserNotificationDefaultSoundName;
   [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
