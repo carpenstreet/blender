@@ -28,3 +28,8 @@ def change_and_reset_value() -> None:
         # string을 뺀 이유 : EnumProperty에 없는 값을 넣어주면 error가 뜸.
         # float = 0, bool = False 처럼 공통으로 들어갈 값이 없음.
         # type 없이 일괄적으로 처리하려고 했으나, EnumProperty에서 error가 나고 에이블러가 멈춰버림
+
+
+def update_scene() -> None:
+    # 파일 맨 처음 열었을때 scene패널명을 현재 씬과 맞춰주기 위한 함수
+    bpy.data.window_managers["WinMan"].ACON_prop.scene = bpy.context.scene.name

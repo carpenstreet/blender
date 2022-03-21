@@ -1,9 +1,8 @@
 import bpy
 import sys
 from bpy.app.handlers import persistent
-from .lib import cameras, shadow, render, scenes
+from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
-from .lib.post_open import change_and_reset_value
 from .lib.tracker import tracker
 from types import SimpleNamespace
 
@@ -55,8 +54,8 @@ def load_handler(dummy):
             scene.view_settings.view_transform = "Standard"
 
         scenes.refresh_look_at_me()
-        change_and_reset_value()
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = bpy.context.scene.name
+        post_open.change_and_reset_value()
+        post_open.update_scene()
     finally:
         tracker.turn_on()
 
