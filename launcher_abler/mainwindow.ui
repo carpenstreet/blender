@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>700</width>
+    <height>550</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>700</width>
+    <height>550</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ABLER Launcher</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/newPrefix/images/abler.png</normaloff>:/newPrefix/images/abler.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="btn_Quit">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>481</y>
+      <width>131</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Quit</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/Application-exit-icon.png</normaloff>:/newPrefix/images/Application-exit-icon.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_Check">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>481</y>
+      <width>131</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Version Check</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/Refresh-icon.png</normaloff>:/newPrefix/images/Refresh-icon.png</iconset>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+    <property name="default">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>431</y>
+      <width>551</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="value">
+     <number>24</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+    <property name="invertedAppearance">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_task">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>435</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_available">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>25</y>
+      <width>645</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Available versions from buildbot:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="btn_about">
+    <property name="geometry">
+     <rect>
+      <x>657</x>
+      <y>10</y>
+      <width>35</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Settings</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/Information-icon.png</normaloff>:/newPrefix/images/Information-icon.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frm_start">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>50</y>
+      <width>686</width>
+      <height>686</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_cancel">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>435</y>
+      <width>24</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/Cancel-icon.png</normaloff>:/newPrefix/images/Cancel-icon.png</iconset>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frm_progress">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>50</y>
+      <width>686</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="lbl_download_pic">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>50</y>
+       <width>24</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_extract_pic">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>80</y>
+       <width>24</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_copy_pic">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>110</y>
+       <width>24</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_downloading">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>50</y>
+       <width>561</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Downloading</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_extraction">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>80</y>
+       <width>221</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Extraction</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_copying">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>110</y>
+       <width>181</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Copying files</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_clean_pic">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>140</y>
+       <width>24</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_cleanup">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>140</y>
+       <width>171</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Cleaning up</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="btngrp_filter">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>455</y>
+      <width>307</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Filter results</string>
+    </property>
+    <widget class="QToolButton" name="btn_osx">
+     <property name="geometry">
+      <rect>
+       <x>227</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>OSX</string>
+     </property>
+     <property name="icon">
+      <iconset resource="res.qrc">
+       <normaloff>:/newPrefix/images/Apple-icon.png</normaloff>:/newPrefix/images/Apple-icon.png</iconset>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btn_windows">
+     <property name="geometry">
+      <rect>
+       <x>79</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Windows</string>
+     </property>
+     <property name="icon">
+      <iconset resource="res.qrc">
+       <normaloff>:/newPrefix/images/Windows-icon.png</normaloff>:/newPrefix/images/Windows-icon.png</iconset>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btn_allos">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>all OS</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btn_linux">
+     <property name="geometry">
+      <rect>
+       <x>153</x>
+       <y>30</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Linux</string>
+     </property>
+     <property name="icon">
+      <iconset resource="res.qrc">
+       <normaloff>:/newPrefix/images/Linux-icon.png</normaloff>:/newPrefix/images/Linux-icon.png</iconset>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="btn_oneclick">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>480</y>
+      <width>191</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Use last used settings to update blender. Uses the path in the above text field and specified version on the button.</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/Actions-quickopen-icon.png</normaloff>:/newPrefix/images/Actions-quickopen-icon.png</iconset>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_quick">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>460</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Quick Update</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_caution">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>3</y>
+      <width>645</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string> These builds are not as stable as releases, use at your own risk.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_newVersion">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>10</y>
+      <width>151</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>New version available</string>
+    </property>
+    <property name="text">
+     <string>New version available</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/software-update-icon.png</normaloff>:/newPrefix/images/software-update-icon.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_execute">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>480</y>
+      <width>191</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Run downloaded Blender version</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Run Blender</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/abler.png</normaloff>:/newPrefix/images/abler.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_update">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>480</y>
+      <width>191</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Run downloaded Blender version</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Run Blender</string>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/newPrefix/images/abler.png</normaloff>:/newPrefix/images/abler.png</iconset>
+    </property>
+   </widget>
+   <zorder>btngrp_filter</zorder>
+   <zorder>frm_start</zorder>
+   <zorder>btn_Quit</zorder>
+   <zorder>btn_Check</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>lbl_task</zorder>
+   <zorder>lbl_available</zorder>
+   <zorder>btn_about</zorder>
+   <zorder>btn_cancel</zorder>
+   <zorder>frm_progress</zorder>
+   <zorder>btn_oneclick</zorder>
+   <zorder>lbl_quick</zorder>
+   <zorder>lbl_caution</zorder>
+   <zorder>btn_newVersion</zorder>
+   <zorder>btn_execute</zorder>
+   <zorder>btn_execute</zorder>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
