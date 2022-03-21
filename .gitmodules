@@ -18,7 +18,7 @@
 	url = https://github.com/blender/blender-dev-tools.git
 	branch = blender-v3.0-release
 	ignore = all
-[submodule "QT-Launcher"]
+[submodule "launcher_qt"]
 	path = launcher_qt
 	url = https://github.com/ACON3D/QT-Launcher.git
 	branch = main
