@@ -31,6 +31,8 @@ class EventKind(enum.Enum):
     background_images_off = "Background Images Off"
     bloom_on = "Bloom On"
     bloom_off = "Bloom Off"
+    save = "save"
+    save_as = "save_as"
     group_navigate_bottom = "Group Navigate Bottom"
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
@@ -194,6 +196,12 @@ class Tracker(metaclass=ABCMeta):
 
     def bloom_off(self):
         self._track(EventKind.bloom_off.value)
+
+    def save(self):
+        self._track(EventKind.save.value)
+
+    def save_as(self):
+        self._track(EventKind.save_as.value)
 
     def group_navigate_bottom(self):
         self._track(EventKind.group_navigate_bottom.value)

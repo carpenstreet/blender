@@ -205,6 +205,46 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class SaveOperator(bpy.types.Operator):
+    """Save the current Blender file"""
+
+    bl_idname = "acon3d.save"
+    bl_label = "Save"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        tracker.save()
+
+        if bpy.data.is_saved:
+            bpy.ops.wm.save_mainfile()
+
+        else:
+            bpy.ops.wm.save_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+
+            if os.path.isfile(bpy.data.filepath):
+                self.report({"WARNING"}, "File already exists")
+
+        return {"FINISHED"}
+
+
+class SaveAsOperator(bpy.types.Operator):
+    """Save the current file in the desired location"""
+
+    bl_idname = "acon3d.save_as"
+    bl_label = "Save As"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        tracker.save_as()
+
+        bpy.ops.wm.save_as_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+
+        if os.path.isfile(bpy.data.filepath):
+            self.report({"WARNING"}, "File already exists")
+
+        return {"FINISHED"}
+
+
 class Acon3dImportPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_import"
     bl_label = "General"
@@ -224,12 +264,16 @@ class Acon3dImportPanel(bpy.types.Panel):
         row.operator("acon3d.file_open")
         row.operator("acon3d.import_blend", text="Import")
 
+        row = layout.row()
+        row.scale_y = 1.0
+        row.operator("acon3d.save", text="Save")
+        row.operator("acon3d.save_as", text="Save As...")
+
         layout.separator()
         row = layout.row()
         row.operator("acon3d.import_fbx", text="Import FBX")
 
         row = layout.row()
-
         prefs = context.preferences
         view = prefs.view
 
@@ -262,6 +306,8 @@ classes = (
     FileOpenOperator,
     FlyOperator,
     ImportFBXOperator,
+    SaveOperator,
+    SaveAsOperator,
 )
 
 
