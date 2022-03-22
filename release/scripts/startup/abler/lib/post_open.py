@@ -33,3 +33,13 @@ def change_and_reset_value() -> None:
 def update_scene() -> None:
     # 파일 맨 처음 열었을때 scene패널명을 현재 씬과 맞춰주기 위한 함수
     bpy.data.window_managers["WinMan"].ACON_prop.scene = bpy.context.scene.name
+
+
+def upadte_layers():
+
+    context = bpy.context
+    if not context.scene.l_exclude and bpy.data.collections["Layers"]:
+        for child in bpy.data.collections["Layers"].children:
+            added_l_exclude = context.scene.l_exclude.add()
+            added_l_exclude.name = child.name
+            added_l_exclude.value = True
