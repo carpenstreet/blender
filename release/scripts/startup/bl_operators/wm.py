@@ -3395,7 +3395,7 @@ class WM_MT_splash_about(Menu):
         col = split.column(align=True)
         col.emboss = "PULLDOWN_MENU"
         anchor = col.operator("acon3d.anchor", text="ABLER Source Code", icon="URL")
-        anchor.href = "https://github.com/acon3d/ABLER"
+        anchor.href = "https://github.com/acon3d/blender"
         anchor = col.operator("acon3d.anchor", text="ACON3D Website", icon="URL")
         anchor.href = "https://acon3d.com"
 

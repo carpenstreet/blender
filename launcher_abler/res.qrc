@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/newPrefix">
+        <file>images/Actions-arrow-right-icon.png</file>
+        <file>images/Actions-quickopen-icon.png</file>
+        <file>images/Check-icon.png</file>
+        <file>images/abler.png</file>
+        <file>images/abler_intro_1.png</file>
+        <file>images/abler_intro_2.png</file>
+        <file>images/Cancel-icon.png</file>
+        <file>images/Apple-icon.png</file>
+        <file>images/Linux-icon.png</file>
+        <file>images/Windows-icon.png</file>
+        <file>images/Information-icon.png</file>
+        <file>images/Open-folder-icon.png</file>
+        <file>images/Refresh-icon.png</file>
+        <file>images/Application-exit-icon.png</file>
+        <file>images/software-update-icon.png</file>
+        <file>images/Blender-icon.png</file>
+        <file>images/orange_img.png</file>
+        <file>images/favicon.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>
