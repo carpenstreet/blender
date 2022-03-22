@@ -35,8 +35,8 @@ def update_scene() -> None:
     bpy.data.window_managers["WinMan"].ACON_prop.scene = bpy.context.scene.name
 
 
-def upadte_layers():
-
+def update_layers():
+    # 파일 오픈시 Layer패널 업데이트
     context = bpy.context
     if not context.scene.l_exclude and bpy.data.collections["Layers"]:
         for child in bpy.data.collections["Layers"].children:
