@@ -56,6 +56,7 @@ def load_handler(dummy):
         scenes.refresh_look_at_me()
         post_open.change_and_reset_value()
         post_open.update_scene()
+        post_open.update_layers()
     finally:
         tracker.turn_on()
 
