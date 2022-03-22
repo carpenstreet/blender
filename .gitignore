@@ -49,3 +49,5 @@ waveletNoiseTile.bin
 
 # testing environment
 /Testing
+
+/launcher_abler/*.log
