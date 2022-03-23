@@ -660,7 +660,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def exec_osx(self):
         BlenderOSXPath = os.path.join(
-            '"' + dir_ + "\\blender.app/Contents/MacOS/blender" + '"'
+            '"' + dir_ + "\\ABLER.app/Contents/MacOS/blender" + '"'
         )
         os.system("chmod +x " + BlenderOSXPath)
         _ = subprocess.Popen(BlenderOSXPath)

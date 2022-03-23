@@ -346,7 +346,7 @@ elseif(APPLE)
       set(INSTALL_BPY_TO_SITE_PACKAGES ON)
     endif()
   else()
-    set(TARGETDIR_VER Blender.app/Contents/Resources/${BLENDER_VERSION})
+    set(TARGETDIR_VER ABLER.app/Contents/Resources/${BLENDER_VERSION})
   endif()
   set(MAC_BLENDER_TARGET_DYLIBS_DIR "${TARGETDIR_VER}/lib")
   # Skip relinking on cpack / install
@@ -1036,7 +1036,7 @@ elseif(APPLE)
     )
   endmacro()
 
-  set(OSX_APP_SOURCEDIR ${CMAKE_SOURCE_DIR}/release/darwin/Blender.app)
+  set(OSX_APP_SOURCEDIR ${CMAKE_SOURCE_DIR}/release/darwin/ABLER.app)
 
   # setup Info.plist
   execute_process(COMMAND date "+%Y-%m-%d"
@@ -1056,11 +1056,11 @@ elseif(APPLE)
   # Give the bundle actual creation/modification date
   #
   # Note that the directory might not yet exist, which happens when CMake is first run.
-  if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Blender.app)
-    file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Blender.app)
+  if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/ABLER.app)
+    file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/ABLER.app)
   endif()
   execute_process(COMMAND SetFile -d ${SETFILE_DATE} -m ${SETFILE_DATE}
-                  ${EXECUTABLE_OUTPUT_PATH}/Blender.app)
+                  ${EXECUTABLE_OUTPUT_PATH}/ABLER.app)
 
   install(
     TARGETS blender
@@ -1068,16 +1068,16 @@ elseif(APPLE)
   )
 
   # install release and app files
-  set(BLENDER_TEXT_FILES_DESTINATION Blender.app/Contents/Resources/text)
+  set(BLENDER_TEXT_FILES_DESTINATION ABLER.app/Contents/Resources/text)
 
   install(
     FILES ${OSX_APP_SOURCEDIR}/Contents/PkgInfo
-    DESTINATION Blender.app/Contents
+    DESTINATION ABLER.app/Contents
   )
 
   install_dir(
     ${OSX_APP_SOURCEDIR}/Contents/Resources
-    Blender.app/Contents/
+    ABLER.app/Contents/
   )
 
   if(WITH_OPENMP AND OPENMP_CUSTOM)
