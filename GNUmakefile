@@ -547,6 +547,9 @@ update: .FORCE
 update_code: .FORCE
 	$(PYTHON) ./build_files/utils/make_update.py --no-libraries
 
+acp: .FORCE
+	$(PYTHON) ./abler_dev_build.py
+
 format: .FORCE
 	PATH="../lib/${OS_NCASE}_${CPU}/llvm/bin/:../lib/${OS_NCASE}_centos7_${CPU}/llvm/bin/:../lib/${OS_NCASE}/llvm/bin/:$(PATH)" \
 	    $(PYTHON) source/tools/utils_maintenance/clang_format_paths.py $(PATHS)
