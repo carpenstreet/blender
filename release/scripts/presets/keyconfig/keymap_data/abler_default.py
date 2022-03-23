@@ -528,7 +528,7 @@ def km_screen(params):
         # Render
         ("acon3d.render_full", {"type": 'F12', "value": 'PRESS'},
          {"properties": [("use_viewport", True)]}),
-        ("acon3d.render_full", {"type": 'F12', "value": 'PRESS', "ctrl": True},
+        ("acon3d.render_quick", {"type": 'F12', "value": 'PRESS', "ctrl": True},
          {"properties": [("animation", True), ("use_viewport", True)]}),
         ("render.view_cancel", {"type": 'ESC', "value": 'PRESS'}, None),
         ("render.view_show", {"type": 'F11', "value": 'PRESS'}, None),
