@@ -1006,7 +1006,7 @@ elseif(WIN32)
 elseif(APPLE)
   if(NOT WITH_PYTHON_MODULE)
     # Uppercase name for app bundle
-    set_target_properties(blender PROPERTIES OUTPUT_NAME Blender)
+    set_target_properties(blender PROPERTIES OUTPUT_NAME ABLER)
   endif()
 
   # handy install macro to exclude files, we use \$ escape for the "to"
