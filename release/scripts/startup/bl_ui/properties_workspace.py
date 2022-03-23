@@ -31,14 +31,14 @@ class WorkSpaceButtonsPanel:
     # bl_context = ".workspace"
 
     # Developer note: this is displayed in tool settings as well as the 3D view.
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
     bl_category = "Tool"
 
 
 class WORKSPACE_PT_main(WorkSpaceButtonsPanel, Panel):
     bl_label = "Workspace"
-    bl_options = {"DEFAULT_CLOSED"}
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         workspace = context.workspace
@@ -68,7 +68,6 @@ class WORKSPACE_PT_addons(WorkSpaceButtonsPanel, Panel):
         col.active = workspace.use_filter_by_owner
 
         import addon_utils
-
         addon_map = {mod.__name__: mod for mod in addon_utils.modules()}
         owner_ids = {owner_id.name for owner_id in workspace.owner_ids}
 
@@ -80,10 +79,10 @@ class WORKSPACE_PT_addons(WorkSpaceButtonsPanel, Panel):
             info = addon_utils.module_bl_info(module)
             is_enabled = module_name in owner_ids
             row = col.row()
-            row.alignment = "LEFT"
+            row.alignment = 'LEFT'
             row.operator(
                 "wm.owner_disable" if is_enabled else "wm.owner_enable",
-                icon="CHECKBOX_HLT" if is_enabled else "CHECKBOX_DEHLT",
+                icon='CHECKBOX_HLT' if is_enabled else 'CHECKBOX_DEHLT',
                 text="%s: %s" % (info["category"], info["name"]),
                 emboss=False,
             ).owner_id = module_name
@@ -92,14 +91,14 @@ class WORKSPACE_PT_addons(WorkSpaceButtonsPanel, Panel):
 
         # Detect unused
         if owner_ids:
-            layout.label(text="Unknown add-ons", icon="ERROR")
+            layout.label(text="Unknown add-ons", icon='ERROR')
             col = layout.box().column(align=True)
             for module_name in sorted(owner_ids):
                 row = col.row()
-                row.alignment = "LEFT"
+                row.alignment = 'LEFT'
                 row.operator(
                     "wm.owner_disable",
-                    icon="CHECKBOX_HLT",
+                    icon='CHECKBOX_HLT',
                     text=module_name,
                     emboss=False,
                 ).owner_id = module_name
@@ -120,6 +119,5 @@ classes = (
 
 if __name__ == "__main__":  # only for live edit.
     from bpy.utils import register_class
-
     for cls in classes:
         register_class(cls)
