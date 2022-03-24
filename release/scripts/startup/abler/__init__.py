@@ -47,6 +47,7 @@ from . import shadow_control
 from . import camera_control
 from . import layer_control
 from . import render_control
+from . import import_external_files
 from . import pref
 from . import operators
 from .lib.tracker import tracker
@@ -68,6 +69,7 @@ importedLibrary = [
     camera_control,
     layer_control,
     render_control,
+    import_external_files,
     pref,
     operators,
 ]
