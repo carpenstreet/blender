@@ -48,6 +48,7 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
     def execute(self, context):
+        tracker.import_fbx()
 
         for obj in bpy.data.objects:
             obj.select_set(False)

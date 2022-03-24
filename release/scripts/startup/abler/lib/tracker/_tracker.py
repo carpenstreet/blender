@@ -19,6 +19,7 @@ class EventKind(enum.Enum):
     render_all_scenes = "Render All Scenes"
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
+    import_fbx = "Import FBX"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
     scene_add = "Scene Add"
@@ -159,6 +160,9 @@ class Tracker(metaclass=ABCMeta):
 
     def import_blend(self):
         self._track(EventKind.import_blend.value)
+
+    def import_fbx(self):
+        self._track(EventKind.import_fbx.value)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
