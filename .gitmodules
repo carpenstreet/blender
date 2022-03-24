@@ -23,3 +23,6 @@
 	url = https://github.com/ACON3D/QT-Launcher.git
 	branch = main
 	ignore = all
+[submodule "release/scripts/addons_abler/io_skp"]
+	path = release/scripts/addons_abler/io_skp
+	url = git@github.com:ACON3D/SKP_Converter.git

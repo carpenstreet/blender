@@ -55,6 +55,9 @@ def paths():
     # if folder addons_contrib/ exists, scripts in there will be loaded too
     addon_paths += _bpy.utils.script_paths(subdir="addons_contrib")
 
+    # ABLER SCRIPTS: customed scripts for abler
+    addon_paths += _bpy.utils.script_paths(subdir="addons_abler")
+
     return addon_paths
 
 
