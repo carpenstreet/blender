@@ -69,6 +69,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
             data_to.objects = list(data_from.objects)
 
         for coll in data_to.collections:
+            # Layers 콜렉션을 찾아 하위 콜렉션을 레이어 패널에 추가해주는 for문
 
             if "ACON_col" in coll.name:
                 data_to.collections.remove(coll)
@@ -82,6 +83,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
                     added_l_exclude.name = coll_2.name
                     added_l_exclude.value = True
                     col_layers.children.link(coll_2)
+                break
 
         for obj in data_to.objects:
             if obj.type == "MESH":
