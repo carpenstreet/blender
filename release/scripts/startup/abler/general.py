@@ -37,6 +37,7 @@ from bpy_extras.io_utils import ImportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
+import time
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -50,6 +51,8 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         tracker.import_blend()
+
+        time_start = time.time()
 
         for obj in bpy.data.objects:
             obj.select_set(False)
@@ -65,19 +68,12 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
             data_to.collections = data_from.collections
             data_to.objects = list(data_from.objects)
 
-        children_names = {}
-
-        for coll in data_to.collections:
-            for child in coll.children.keys():
-                children_names[child] = True
-
         for coll in data_to.collections:
 
             if "ACON_col" in coll.name:
                 data_to.collections.remove(coll)
                 break
 
-            found = any(coll.name == child for child in children_names)
             if coll.name == "Layers" or (
                 "Layers." in coll.name and len(coll.name) == 10
             ):
@@ -101,6 +97,8 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
                 ctx["area"] = area
                 ctx["region"] = area.regions[-1]
                 bpy.ops.view3d.view_selected(ctx)
+
+        print("Import Finished: %.4f sec" % (time.time() - time_start))
 
         return {"FINISHED"}
 
