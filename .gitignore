@@ -51,3 +51,6 @@ waveletNoiseTile.bin
 /Testing
 
 /launcher_abler/*.log
+
+# converter
+release/scripts/addons_abler/io_skp
