@@ -232,10 +232,14 @@ class Acon3dRenderTempSceneOperator(Acon3dRenderOperator):
         scene.render.use_lock_interface = True
 
         for mat in bpy.data.materials:
-            mat.blend_method = "OPAQUE"
-            mat.shadow_method = "OPAQUE"
+            if mat.ACON_prop.type == "Clear":
+                mat.blend_method = "BLEND"
+                mat.shadow_method = "NONE"
+            else:
+                mat.blend_method = "OPAQUE"
+                mat.shadow_method = "OPAQUE"
             if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
-                toonNode.inputs[1].default_value = 0
+                # toonNode.inputs[1].default_value = 0
                 toonNode.inputs[3].default_value = 1
 
         return {"RUNNING_MODAL"}
