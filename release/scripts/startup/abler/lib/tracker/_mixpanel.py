@@ -26,11 +26,12 @@ class MixpanelResource:
     timer: threading.Timer
     # Tracking ID, 기기마다 유일한 것으로 기대됨
     tid: str
-
+    _repeating: bool
     _consumer: BufferedConsumer
     _flush_interval = 5  # seconds
 
     def __init__(self, token: str):
+        self._repeating = True
         self._consumer = BufferedConsumer(max_size=100)
 
         self.mp = Mixpanel(token, consumer=self._consumer)
@@ -48,13 +49,19 @@ class MixpanelResource:
         self.flush_repeatedly()
 
     def flush_repeatedly(self):
-        # 현재는 cleanup 로직을 두지 않음
-        timer = threading.Timer(self._flush_interval, self.flush_repeatedly)
-        timer.daemon = True
-        timer.start()
-        self.timer = timer
+        if not self._repeating:
+            return
 
-        self._consumer.flush()
+        try:
+            timer = threading.Timer(self._flush_interval, self.flush_repeatedly)
+            timer.daemon = True
+            timer.start()
+            self.timer = timer
+
+            self._consumer.flush()
+        except Exception as e:
+            self._repeating = False
+            raise e
 
 
 class MixpanelTracker(Tracker):
