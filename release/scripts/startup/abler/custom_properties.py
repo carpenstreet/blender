@@ -265,6 +265,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         description="Adjust sun altitude",
         subtype="ANGLE",
         unit="ROTATION",
+        step=100,
         default=radians(20),
         update=shadow.changeSunRotation,
     )
@@ -275,6 +276,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         description="Adjust sun azimuth",
         subtype="ANGLE",
         unit="ROTATION",
+        step=100,
         default=radians(130),
         update=shadow.changeSunRotation,
     )
