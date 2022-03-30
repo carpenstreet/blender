@@ -18,10 +18,11 @@
 
 
 import bpy, platform, os, subprocess
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import render, cameras
 from .lib.materials import materials_handler
 from .lib.tracker import tracker
+from bpy.props import StringProperty
 
 
 bl_info = {
@@ -71,9 +72,10 @@ class Acon3dCameraViewOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dRenderOperator(bpy.types.Operator, ImportHelper):
+class Acon3dRenderOperator(bpy.types.Operator):
 
-    filter_glob: bpy.props.StringProperty(default="", options={"HIDDEN"})
+    filename_ext = ".png"
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
     show_on_completion: bpy.props.BoolProperty(
         name="Show in folder on completion", default=True
     )
@@ -109,13 +111,11 @@ class Acon3dRenderOperator(bpy.types.Operator, ImportHelper):
         render.setupBackgroundImagesCompositor()
         render.matchObjectVisibility()
 
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {"RUNNING_MODAL"}
+
     def execute(self, context):
-
-        dirname, basename = os.path.split(os.path.normpath(self.filepath))
-        if "." in basename:
-            basename = basename.split(".")[0]
-
-        self.filepath = os.path.join(dirname, basename)
         self.render_canceled = False
         self.rendering = False
         self.render_queue = []
@@ -133,6 +133,26 @@ class Acon3dRenderOperator(bpy.types.Operator, ImportHelper):
         bpy.app.handlers.render_cancel.append(self.on_render_cancel)
 
         return self.prepare_queue(context)
+
+    def modal(self, context, event):
+        return {"PASS_THROUGH"}
+
+
+class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
+    # Render Type : Quick, Full, Line, Shadow
+
+    def __init__(self):
+        scene = bpy.context.scene
+        self.filepath = f"{scene.name}{self.filename_ext}"
+
+    def execute(self, context):
+        # Get basename without file extension
+        self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
+
+        if "." in self.basename:
+            self.basename = ".".join(self.basename.split(".")[0:-1])
+
+        return super().execute(context)
 
     def modal(self, context, event):
 
@@ -158,9 +178,81 @@ class Acon3dRenderOperator(bpy.types.Operator, ImportHelper):
                 )
 
                 if self.show_on_completion:
-                    scene = context.scene
-                    filename = f"{scene.name}.{scene.render.image_settings.file_format}"
-                    openDirectory(os.path.join(self.filepath, filename))
+                    openDirectory(self.filepath)
+
+                return self.on_render_finish(context)
+
+            elif self.rendering is False:
+
+                qitem = self.render_queue[0]
+
+                # Update filename
+                if qitem.name != self.basename:
+                    qitem.name = self.basename
+
+                base_filepath = os.path.join(self.dirname, qitem.name)
+                file_format = qitem.render.image_settings.file_format
+                numbered_filepath = base_filepath
+                number = 2
+
+                while os.path.isfile(f"{numbered_filepath}.{file_format}"):
+                    numbered_filepath = f"{base_filepath} ({number})"
+                    number += 1
+
+                qitem.render.filepath = numbered_filepath
+                self.filepath = f"{numbered_filepath}{self.filename_ext}"
+                context.window_manager.ACON_prop.scene = qitem.name
+
+                self.prepare_render()
+
+                bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
+
+        return {"PASS_THROUGH"}
+
+
+class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
+    # Render Type : All Scene, Snip
+
+    def __init__(self):
+        # Get basename without file extension
+        self.filepath = bpy.context.blend_data.filepath
+
+        if not self.filepath:
+            self.filepath = "untitled"
+
+        else:
+            self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
+
+            if "." in self.basename:
+                self.basename = ".".join(self.basename.split(".")[0:-1])
+
+            self.filepath = self.basename
+
+    def modal(self, context, event):
+
+        if event.type == "TIMER":
+
+            if not self.render_queue or self.render_canceled is True:
+
+                bpy.app.handlers.render_pre.remove(self.pre_render)
+                bpy.app.handlers.render_post.remove(self.post_render)
+                bpy.app.handlers.render_cancel.remove(self.on_render_cancel)
+
+                context.window_manager.event_timer_remove(self.timer_event)
+                context.window.scene = self.initial_scene
+                context.preferences.view.render_display_type = self.initial_display_type
+
+                self.report({"INFO"}, "RENDER QUEUE FINISHED")
+
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="Render Queue Finished",
+                    message_1="Rendered images are saved in:",
+                    message_2=self.filepath,
+                )
+
+                if self.show_on_completion:
+                    openDirectory(self.filepath)
 
                 return self.on_render_finish(context)
 
@@ -186,7 +278,7 @@ class Acon3dRenderOperator(bpy.types.Operator, ImportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderAllOperator(Acon3dRenderOperator):
+class Acon3dRenderAllOperator(Acon3dRenderDirOperator):
     """Render all scenes with full render settings"""
 
     bl_idname = "acon3d.render_all"
@@ -200,12 +292,15 @@ class Acon3dRenderAllOperator(Acon3dRenderOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderFullOperator(Acon3dRenderOperator):
+class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
     """Render according to the set pixel"""
 
     bl_idname = "acon3d.render_full"
     bl_label = "Full Render"
     bl_translation_context = "*"
+
+    def __init__(self):
+        super().__init__()
 
     def prepare_queue(self, context):
         tracker.render_full()
@@ -214,7 +309,7 @@ class Acon3dRenderFullOperator(Acon3dRenderOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderTempSceneOperator(Acon3dRenderOperator):
+class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
 
     temp_scenes = []
 
@@ -256,12 +351,58 @@ class Acon3dRenderTempSceneOperator(Acon3dRenderOperator):
         return {"FINISHED"}
 
 
-class Acon3dRenderShadowOperator(Acon3dRenderTempSceneOperator):
+class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
+
+    temp_scenes = []
+
+    def prepare_render(self):
+        render.clearCompositor()
+        render.matchObjectVisibility()
+
+    def prepare_queue(self, context):
+
+        scene = context.scene.copy()
+        self.render_queue.append(scene)
+        self.temp_scenes.append(scene)
+
+        scene.eevee.use_bloom = False
+        scene.render.use_lock_interface = True
+
+        for mat in bpy.data.materials:
+            mat.blend_method = "OPAQUE"
+            mat.shadow_method = "OPAQUE"
+            if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
+                toonNode.inputs[1].default_value = 0
+                toonNode.inputs[3].default_value = 1
+
+        return {"RUNNING_MODAL"}
+
+    def on_render_finish(self, context):
+
+        for mat in bpy.data.materials:
+            materials_handler.setMaterialParametersByType(mat)
+
+        for scene in self.temp_scenes:
+            bpy.data.scenes.remove(scene)
+
+        self.temp_scenes.clear()
+
+        # set initial_scene
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
+
+        return {"FINISHED"}
+
+
+class Acon3dRenderShadowOperator(Acon3dRenderTempSceneFileOperator):
     """Renders only shadow according to the set pixel"""
 
     bl_idname = "acon3d.render_shadow"
     bl_label = "Shadow Render"
     bl_translation_context = "*"
+
+    def __init__(self):
+        scene = bpy.context.scene
+        self.filepath = f"{scene.name}_shadow{self.filename_ext}"
 
     def prepare_queue(self, context):
         tracker.render_shadow()
@@ -278,12 +419,16 @@ class Acon3dRenderShadowOperator(Acon3dRenderTempSceneOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderLineOperator(Acon3dRenderTempSceneOperator):
+class Acon3dRenderLineOperator(Acon3dRenderTempSceneFileOperator):
     """Renders only lines according to the set pixel"""
 
     bl_idname = "acon3d.render_line"
     bl_label = "Line Render"
     bl_translation_context = "*"
+
+    def __init__(self):
+        scene = bpy.context.scene
+        self.filepath = f"{scene.name}_line{self.filename_ext}"
 
     def prepare_queue(self, context):
         tracker.render_line()
@@ -300,7 +445,7 @@ class Acon3dRenderLineOperator(Acon3dRenderTempSceneOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderSnipOperator(Acon3dRenderTempSceneOperator):
+class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
     """Render selected objects isolatedly from background"""
 
     bl_idname = "acon3d.render_snip"
@@ -383,22 +528,34 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderQuickOperator(Acon3dRenderOperator):
+class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
     """Take a snapshot of the active viewport"""
 
     bl_idname = "acon3d.render_quick"
     bl_label = "Quick Render"
     bl_translation_context = "*"
 
+    def __init__(self):
+        super().__init__()
+
     def execute(self, context):
         tracker.render_quick()
         return super().execute(context)
 
     def prepare_queue(self, context):
+        # File name duplicate check
 
-        filepath = self.filepath
-        scene = context.scene
-        scene.render.filepath = os.path.join(filepath, scene.name)
+        base_filepath = os.path.join(self.dirname, self.basename)
+        file_format = self.filename_ext
+        numbered_filepath = base_filepath
+        number = 2
+
+        while os.path.isfile(f"{numbered_filepath}{file_format}"):
+            numbered_filepath = f"{base_filepath} ({number})"
+            number += 1
+
+        context.scene.render.filepath = numbered_filepath
+        self.filepath = f"{numbered_filepath}{file_format}"
 
         for obj in context.selected_objects:
             obj.select_set(False)
