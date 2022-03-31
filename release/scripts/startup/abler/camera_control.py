@@ -92,9 +92,9 @@ class DeleteCameraOperator(bpy.types.Operator):
         return collection and len(collection.objects) > 1
 
     def execute(self, context):
-        currentCameraName = context.scene.ACON_prop.view
-        camera = bpy.data.objects[currentCameraName]
-        bpy.data.objects.remove(camera)
+        if currentCameraName := context.scene.ACON_prop.view:
+            camera = bpy.data.objects[currentCameraName]
+            bpy.data.objects.remove(camera)
 
         return {"FINISHED"}
 
