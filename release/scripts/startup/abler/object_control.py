@@ -201,6 +201,10 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
+    @classmethod
+    def poll(cls, context):
+        return context.object
+
     def draw_header(self, context):
         if obj := context.object:
             layout = self.layout
