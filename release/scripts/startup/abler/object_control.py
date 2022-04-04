@@ -236,6 +236,10 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
+    @classmethod
+    def poll(cls, context):
+        return context.object
+
     def draw(self, context):
         obj = context.active_object
         prop = obj.ACON_prop
