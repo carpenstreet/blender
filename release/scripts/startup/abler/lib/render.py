@@ -72,6 +72,18 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
     for background_image in reversed(background_images):
 
         image = background_image.image
+
+        if 0 in image.size:
+            # 배경 이미지가 여러 장일 경우 문제가 있는 이미지만 알림 띄우기
+            """
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Check Background Image",
+                message_1=f"Failed to load background image : {image.name}",
+            )
+            """
+            continue
+
         node_image = nodes.new("CompositorNodeImage")
         node_image.image = image
 
