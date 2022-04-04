@@ -19,16 +19,13 @@
 
 import bpy
 
+background_color_array = (0.701102, 0.701102, 0.701102, 1.0)
+
 
 def renderWithBackgroundColor(tree, node_right):
     if bpy.context.scene.ACON_prop.render_with_background_color:
         node_alphaOver_back = tree.nodes.new("CompositorNodeAlphaOver")
-        node_alphaOver_back.inputs[1].default_value = (
-            0.701102,
-            0.701102,
-            0.701102,
-            1.0,
-        )
+        node_alphaOver_back.inputs[1].default_value = background_color_array
         node_alphaOver_front = node_right.links[0].from_node
         tree.links.new(node_alphaOver_front.outputs[0], node_alphaOver_back.inputs[2])
         tree.links.new(node_alphaOver_back.outputs[0], node_right)
