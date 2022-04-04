@@ -151,15 +151,23 @@ class Acon3dModalOperator(bpy.types.Operator):
         userInfo = bpy.data.meshes.get("ACON_userInfo")
 
         def char2key(c):
-            result = ctypes.windll.User32.VkKeyScanW(ord(c))
-            shift_state = (result & 0xFF00) >> 8
-            return result & 0xFF
+            # 로그인 modal 창 밖에서 마우스 홀드로 modal 없는 상태에서 키보드로 연타할 때
+            # ord() expected a character, but string of length 0 found 발생
+            # length가 0일 때도 splash 실행
+            if not c:
+                bpy.ops.wm.splash("INVOKE_DEFAULT")
+
+            else:
+                result = ctypes.windll.User32.VkKeyScanW(ord(c))
+                shift_state = (result & 0xFF00) >> 8
+                return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
             return {"FINISHED"}
 
-        if event.type == "LEFTMOUSE":
+        if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
             bpy.ops.wm.splash("INVOKE_DEFAULT")
+
         if event.type in self.pass_key:
             if platform.system() == "Windows":
                 if event.type == "BACK_SPACE":
