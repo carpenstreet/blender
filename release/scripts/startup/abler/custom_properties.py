@@ -391,6 +391,11 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_bloom,
     )
 
+    render_with_background_color: bpy.props.BoolProperty(
+        name="",
+        default=False,
+    )
+
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod

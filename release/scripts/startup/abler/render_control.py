@@ -603,6 +603,15 @@ class Acon3dRenderPanel(bpy.types.Panel):
             row.operator("acon3d.render_all", text="Render All Scenes")
             row.operator("acon3d.render_snip", text="Snip Render")
 
+        layout = self.layout
+        layout.use_property_split = False
+        row = layout.row(align=True)
+        row.prop(
+            scene.ACON_prop,
+            "render_with_background_color",
+            text="render with background color",
+        )
+
 
 classes = (
     Acon3dCameraViewOperator,
