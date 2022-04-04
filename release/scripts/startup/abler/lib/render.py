@@ -20,6 +20,20 @@
 import bpy
 
 
+def renderWithBackgroundColor(tree, node_right):
+    if bpy.context.scene.ACON_prop.render_with_background_color:
+        node_alphaOver_back = tree.nodes.new("CompositorNodeAlphaOver")
+        node_alphaOver_back.inputs[1].default_value = (
+            0.701102,
+            0.701102,
+            0.701102,
+            1.0,
+        )
+        node_alphaOver_front = node_right.links[0].from_node
+        tree.links.new(node_alphaOver_front.outputs[0], node_alphaOver_back.inputs[2])
+        tree.links.new(node_alphaOver_back.outputs[0], node_right)
+
+
 def setupSnipCompositor(
     node_left=None, node_right=None, snip_layer=None, shade_image=None
 ):
@@ -67,6 +81,7 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
     toggle_texture = context.scene.ACON_prop.toggle_texture
 
     if not cam.show_background_images or not toggle_texture:
+        renderWithBackgroundColor(tree, node_right)
         return
 
     for background_image in reversed(background_images):
@@ -131,6 +146,8 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
             tree.links.new(node_translate.outputs[0], node_alphaOver.inputs[2])
             tree.links.new(node_left, node_alphaOver.inputs[1])
             node_right = node_alphaOver.inputs[1]
+
+    renderWithBackgroundColor(tree, node_right)
 
 
 def clearCompositor(scene=None):
