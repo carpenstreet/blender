@@ -2988,7 +2988,8 @@ class WM_MT_splash(Menu):
         def abler_version():
             from abler.lib.tracker._versioning import get_version
             if abler_version := get_version():
-                return abler_version+" version"
+                major, minor, patch = abler_version
+                return f"v{major}.{minor}.{patch}"
             else:
                 return "Production version"
 
