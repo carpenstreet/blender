@@ -67,11 +67,11 @@ def get_datadir() -> pathlib.Path:
 
 appversion = "1.9.8"
 dir_ = ""
-if sys.platform == "win32":
-    dir_ = "C:/Program Files (x86)/ABLER"
-elif sys.platform == "darwin":
+if sys.platform == "darwin":
     dir_ = "/Applications"
 
+elif sys.platform == "win32":
+    dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
 config = configparser.ConfigParser()
 btn = {}
@@ -79,10 +79,7 @@ lastversion = ""
 installedversion = ""
 launcher_installed = ""
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-test_arg = False
-if len(sys.argv) > 1 and sys.argv[1] == "--test":
-    test_arg = True
-
+test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 if not os.path.isdir(get_datadir() / "Blender/2.96"):
     os.mkdir(get_datadir() / "Blender/2.96")
 if not os.path.isdir(get_datadir() / "Blender/2.96/updater"):
@@ -165,16 +162,17 @@ class WorkerThread(QtCore.QThread):
             self.finishedEX.emit()
             source = next(os.walk(self.temp_path))
             if "updater" in self.path and sys.platform == "win32":
-                if os.path.isfile(self.path + "/AblerLauncher.exe"):
+                if os.path.isfile(f"{self.path}/AblerLauncher.exe"):
                     os.rename(
-                        self.path + "/AblerLauncher.exe",
-                        self.path + "/AblerLauncher.bak",
+                        f"{self.path}/AblerLauncher.exe",
+                        f"{self.path}/AblerLauncher.bak",
                     )
                 time.sleep(1)
                 shutil.copyfile(
-                    self.temp_path + "/AblerLauncher.exe",
-                    self.path + "/AblerLauncher.exe",
+                    f"{self.temp_path}/AblerLauncher.exe",
+                    f"{self.path}/AblerLauncher.exe",
                 )
+
                 sym_path = (
                     get_datadir()
                     / "/Microsoft/Windows/Start Menu/Programs/ABLER/Launch ABLER.lnk"
@@ -234,9 +232,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             flavor = config.get("main", "flavor")
             if lastversion != "":
                 self.btn_oneclick.setText(f"{flavor} | {lastversion}")
-            else:
-                pass
-
         else:
             logger.debug("No previous config found")
             self.btn_oneclick.hide()
@@ -328,17 +323,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             req = req[0]
         version_tag = req["name"][1:]
         for asset in req["assets"]:
-            if sys.platform == "win32":
-                target = asset["browser_download_url"]
-                if "Windows" in target and "zip" in target and "Release" in target:
-                    info = {}
-                    info["url"] = asset["browser_download_url"]
-                    info["os"] = "Windows"
-                    info["filename"] = asset["browser_download_url"].split("/")[-1]
-                    info["version"] = version_tag
-                    info["arch"] = "x64"
-                    results.append(info)
-            elif sys.platform == "darwin":
+            if sys.platform == "darwin":
                 if os.system("sysctl -in sysctl.proc_translated") == 1:
                     target = asset["browser_download_url"]
                     if (
@@ -347,10 +332,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         and "Release" in target
                         and "M1" in target
                     ):
-                        info = {}
-                        info["url"] = asset["browser_download_url"]
-                        info["os"] = "macOS"
-                        info["filename"] = asset["browser_download_url"].split("/")[-1]
+                        info = {
+                            "url": asset["browser_download_url"],
+                            "os": "macOS",
+                            "filename": asset["browser_download_url"].split("/")[-1],
+                        }
+
                         info["version"] = version_tag
                         info["arch"] = "arm64"
                         results.append(info)
@@ -362,16 +349,29 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         and "Release" in target
                         and "Intel" in target
                     ):
-                        info = {}
-                        info["url"] = asset["browser_download_url"]
-                        info["os"] = "macOS"
-                        info["filename"] = asset["browser_download_url"].split("/")[-1]
+                        info = {
+                            "url": asset["browser_download_url"],
+                            "os": "macOS",
+                            "filename": asset["browser_download_url"].split("/")[-1],
+                        }
+
                         info["version"] = version_tag
                         info["arch"] = "x86_64"
                         results.append(info)
 
-        finallist = results
-        if len(finallist) != 0:
+            elif sys.platform == "win32":
+                target = asset["browser_download_url"]
+                if "Windows" in target and "zip" in target and "Release" in target:
+                    info = {
+                        "url": asset["browser_download_url"],
+                        "os": "Windows",
+                        "filename": asset["browser_download_url"].split("/")[-1],
+                    }
+
+                    info["version"] = version_tag
+                    info["arch"] = "x64"
+                    results.append(info)
+        if finallist := results:
             if installedversion is None or installedversion == "":
                 installedversion = "0.0.0"
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
@@ -437,10 +437,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if opsys == "Windows":
                 target = asset["browser_download_url"]
                 if "Windows" in target and "Launcher" in target and "zip" in target:
-                    info = {}
-                    info["url"] = asset["browser_download_url"]
-                    info["os"] = "Windows"
-                    info["filename"] = asset["browser_download_url"].split("/")[-1]
+                    info = {
+                        "url": asset["browser_download_url"],
+                        "os": "Windows",
+                        "filename": asset["browser_download_url"].split("/")[-1],
+                    }
+
                     # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
                     info["version"] = info["filename"].split("_")[-1][1:-4]
                     info["arch"] = "x64"
@@ -456,8 +458,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     info["version"] = info["filename"].split("_")[-1][1:-4]
                     info["arch"] = "x86_64"
                     results.append(info)
-        finallist = results
-        if len(finallist) != 0:
+        if finallist := results:
             if launcher_installed is None or launcher_installed == "":
                 launcher_installed = "0.0.0"
             if StrictVersion(finallist[0]["version"]) > StrictVersion(
@@ -608,7 +609,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(-1)
 
     def finalcopy(self):
-        logger.info("Copying to " + dir_)
+        logger.info(f"Copying to {dir_}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_extract_pic.setPixmap(donepixmap)
@@ -618,7 +619,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage(f"Copying files to {dir_}, please wait... ")
 
     def finalcopy_launcher(self):
-        logger.info("Copying to " + launcherdir_)
+        logger.info(f"Copying to {launcherdir_}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_extract_pic.setPixmap(donepixmap)
@@ -676,8 +677,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         try:
             if test_arg:
                 _ = subprocess.Popen(
-                    [get_datadir() + "Blender/2.96/updater/AblerLauncher.exe", "--test"]
+                    [f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe", "--test"]
                 )
+
             else:
                 _ = subprocess.Popen(
                     get_datadir() / "Blender/2.96/updater/AblerLauncher.exe"
@@ -693,6 +695,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                             "--test",
                         ]
                     )
+
                 else:
                     _ = subprocess.Popen(
                         get_datadir() / "Blender/2.93/updater/AblerLauncher.exe"
@@ -719,8 +722,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 application_path = os.path.dirname(sys.executable)
             elif __file__:
                 application_path = os.path.dirname(__file__)
-            BlenderOSXPath = os.path.join(application_path + "/ABLER")
-            os.system("chmod +x " + BlenderOSXPath)
+            BlenderOSXPath = os.path.join(f"{application_path}/ABLER")
+            os.system(f"chmod +x {BlenderOSXPath}")
             _ = subprocess.Popen(BlenderOSXPath)
             logger.info(f"Executing {BlenderOSXPath}")
             QtCore.QCoreApplication.instance().quit()
@@ -733,28 +736,28 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
 
 def macos_prework():
-    if sys.platform == "darwin":
-        if len(sys.argv) > 1:
-            if sys.argv[1].endswith(".blend"):
-                try:
-                    if getattr(sys, "frozen", False):
-                        application_path = os.path.dirname(sys.executable)
-                    elif __file__:
-                        application_path = os.path.dirname(__file__)
-                    BlenderOSXPath = os.path.join(application_path + "/ABLER")
-                    os.system("chmod +x " + BlenderOSXPath)
-                    _ = subprocess.Popen([BlenderOSXPath, sys.argv[1]])
-                    logger.info(f"Executing {BlenderOSXPath}")
-                    sys.exit()
-                except Exception as e:
-                    logger.error(e)
+    if sys.platform != "darwin":
+        return
+    if len(sys.argv) > 1 and sys.argv[1].endswith(".blend"):
+        try:
+            if getattr(sys, "frozen", False):
+                application_path = os.path.dirname(sys.executable)
+            elif __file__:
+                application_path = os.path.dirname(__file__)
+            BlenderOSXPath = os.path.join(f"{application_path}/ABLER")
+            os.system(f"chmod +x {BlenderOSXPath}")
+            _ = subprocess.Popen([BlenderOSXPath, sys.argv[1]])
+            logger.info(f"Executing {BlenderOSXPath}")
+            sys.exit()
+        except Exception as e:
+            logger.error(e)
 
 
 def main():
     macos_prework()
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
     window = BlenderUpdater()
-    window.setWindowTitle(f"ABLER Launcher")
+    window.setWindowTitle("ABLER Launcher")
     window.statusbar.setSizeGripEnabled(False)
     window.show()
     app.exec_()
