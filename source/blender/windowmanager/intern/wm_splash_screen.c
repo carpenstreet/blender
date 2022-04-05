@@ -212,6 +212,12 @@ static uiBlock *wm_block_create_splash(bContext *C, ARegion *region, void *UNUSE
 
   UI_but_func_set(but, wm_block_close, block, NULL);
 
+  // 블렌더 버전(2.96)을 삭제하고 에이블러 버전을 보여주기로 변경
+  // wm_block_splash_add_label(block,
+  //                           BKE_blender_version_string(),
+  //                           splash_width - 8.0 * U.dpi_fac,
+  //                           splash_height - 13.0 * U.dpi_fac);
+
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
                                      UI_LAYOUT_VERTICAL,
