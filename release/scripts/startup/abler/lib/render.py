@@ -73,7 +73,7 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
 
         image = background_image.image
 
-        if 0 in image.size:
+        if (image is None) or (0 in image.size):
             # 배경 이미지가 여러 장일 경우 문제가 있는 이미지만 알림 띄우기
             """
             bpy.ops.acon3d.alert(
