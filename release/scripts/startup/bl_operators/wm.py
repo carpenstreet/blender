@@ -2991,7 +2991,7 @@ class WM_MT_splash(Menu):
                 major, minor, patch = abler_version
                 return f"v{major}.{minor}.{patch}"
             else:
-                return "Production version"
+                return f"dev({bpy.app.build_hash})"
 
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
