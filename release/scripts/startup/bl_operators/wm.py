@@ -2985,6 +2985,13 @@ class WM_MT_splash(Menu):
     bl_label = "Splash"
 
     def draw(self, context):
+        def abler_version():
+            from abler.lib.tracker._versioning import get_version
+            if abler_version := get_version():
+                return abler_version+" version"
+            else:
+                return "Production version"
+
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
@@ -3076,12 +3083,7 @@ class WM_MT_splash(Menu):
         col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
 
         layout.separator()
-        from abler.lib.tracker._versioning import get_version
-        if abler_version := get_version():
-            layout.label(text=abler_version+" version")
-        else:
-            layout.label(text="Production version")
-
+        layout.label(text=abler_version())
         layout.separator()
 
 
