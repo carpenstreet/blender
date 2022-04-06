@@ -333,13 +333,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         and "M1" in target
                     ):
                         info = {
-                            "url": asset["browser_download_url"],
+                            "url": target,
                             "os": "macOS",
-                            "filename": asset["browser_download_url"].split("/")[-1],
+                            "filename": target.split("/")[-1],
+                            "version": version_tag,
+                            "arch": "arm64",
                         }
-
-                        info["version"] = version_tag
-                        info["arch"] = "arm64"
                         results.append(info)
                 else:
                     target = asset["browser_download_url"]
@@ -350,9 +349,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         and "Intel" in target
                     ):
                         info = {
-                            "url": asset["browser_download_url"],
+                            "url": target,
                             "os": "macOS",
-                            "filename": asset["browser_download_url"].split("/")[-1],
+                            "filename": target.split("/")[-1],
                             "version": version_tag,
                             "arch": "x86_64",
                         }
@@ -362,9 +361,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 target = asset["browser_download_url"]
                 if "Windows" in target and "zip" in target and "Release" in target:
                     info = {
-                        "url": asset["browser_download_url"],
+                        "url": target,
                         "os": "Windows",
-                        "filename": asset["browser_download_url"].split("/")[-1],
+                        "filename": target.split("/")[-1],
                         "version": version_tag,
                         "arch": "x64",
                     }
@@ -449,9 +448,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 target = asset["browser_download_url"]
                 if "macOS" in target and "Launcher" in target and "zip" in target:
                     info = {}
-                    info["url"] = asset["browser_download_url"]
+                    info["url"] = target
                     info["os"] = "macOS"
-                    info["filename"] = asset["browser_download_url"].split("/")[-1]
+                    info["filename"] = target.split("/")[-1]
                     # file name should be "ABLER_Launcher_macOS_v0.0.2.zip"
                     info["version"] = info["filename"].split("_")[-1][1:-4]
                     info["arch"] = "x86_64"
