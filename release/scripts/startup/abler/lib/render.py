@@ -18,17 +18,57 @@
 
 
 import bpy
+import os
 
 background_color_array = (0.701102, 0.701102, 0.701102, 1.0)
 
 
-def renderWithBackgroundColor(tree, node_right):
-    if bpy.context.scene.ACON_prop.render_with_background_color:
-        node_alphaOver_back = tree.nodes.new("CompositorNodeAlphaOver")
-        node_alphaOver_back.inputs[1].default_value = background_color_array
-        node_alphaOver_front = node_right.links[0].from_node
-        tree.links.new(node_alphaOver_front.outputs[0], node_alphaOver_back.inputs[2])
-        tree.links.new(node_alphaOver_back.outputs[0], node_right)
+def renderWithBackgroundColor():
+    scene = bpy.context.scene
+
+    print(scene.ACON_prop.render_with_background_color)
+
+    if scene.ACON_prop.render_with_background_color:
+        scene.render.film_transparent = False
+        scene.world.use_nodes = True
+
+        tree = scene.world.node_tree
+        nodes = tree.nodes
+        node_world_surface = nodes.get("ACON_nodeGroup_world_surface")
+        if not node_world_surface:
+            # TODO: ACON_nodeGroup_world_surface 노드 코드 넣어줘야함
+            pass
+
+        node_texture_diffuse = nodes.get("ACON_node_env_diffuse")
+        if not node_texture_diffuse:
+            node_texture_diffuse = nodes.new("ShaderNodeTexEnvironment")
+            tree.links.new(
+                node_texture_diffuse.outputs[0], node_world_surface.inputs[3]
+            )
+
+        try:
+            image_diffuse = None
+            path_abler = bpy.utils.preset_paths("abler")[0]
+            path_background_color = os.path.join(path_abler, "background_color")
+            image_diffuse_path = os.path.join(
+                path_background_color, "background_color.png"
+            )
+
+            for item in bpy.data.images:
+                if item.filepath == image_diffuse_path:
+                    image_diffuse = item
+
+            if not image_diffuse:
+                image_diffuse = bpy.data.images.load(image_diffuse_path)
+
+            node_texture_diffuse.image = image_diffuse
+
+        except Exception as e:
+            scene.render.film_transparent = True
+            raise e
+
+    else:
+        scene.render.film_transparent = True
 
 
 def setupSnipCompositor(
@@ -78,7 +118,6 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
     toggle_texture = context.scene.ACON_prop.toggle_texture
 
     if not cam.show_background_images or not toggle_texture:
-        renderWithBackgroundColor(tree, node_right)
         return
 
     for background_image in reversed(background_images):
@@ -144,8 +183,6 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
             tree.links.new(node_left, node_alphaOver.inputs[1])
             node_right = node_alphaOver.inputs[1]
 
-    renderWithBackgroundColor(tree, node_right)
-
 
 def clearCompositor(scene=None):
 
@@ -154,7 +191,6 @@ def clearCompositor(scene=None):
     if not scene:
         scene = context.scene
 
-    scene.render.film_transparent = True
     scene.use_nodes = True
     tree = scene.node_tree
     nodes = tree.nodes
