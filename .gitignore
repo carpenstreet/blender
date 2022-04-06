@@ -54,3 +54,7 @@ waveletNoiseTile.bin
 
 # converter
 release/scripts/addons_abler/io_skp
+
+# launcher
+/launcher_abler/build
+/launcher_abler/dist
