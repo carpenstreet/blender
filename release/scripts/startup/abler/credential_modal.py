@@ -18,6 +18,7 @@
 
 
 import bpy
+from json import JSONDecodeError
 import ctypes
 import platform
 from bpy.app.handlers import persistent
@@ -194,6 +195,35 @@ class Acon3dModalOperator(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
 
+class NamedException(Exception):
+    def __init__(self):
+        super().__init__(type(self).__name__)
+
+
+class GodoBadRequest(NamedException):
+    """사용자 책임의 고도몰 응답 에러"""
+
+    def __init__(self, response: requests.Response):
+        super().__init__()
+        self.response = response
+
+
+class GodoServerError(NamedException):
+    """서버 책임의 고도몰 응답 에러"""
+
+    def __init__(self, response: requests.Response):
+        super().__init__()
+        self.response = response
+
+
+class AconServerError(NamedException):
+    """서버 책임의 사내 인증 서버 에러"""
+
+    def __init__(self, response: requests.Response):
+        super().__init__()
+        self.response = response
+
+
 class LoginTask(AsyncTask):
     cookies_final = None
 
@@ -213,23 +243,24 @@ class LoginTask(AsyncTask):
         self.start()
 
     def _task(self):
-        try:
-            response_godo = requests.post(
-                "https://www.acon3d.com/api/login.php",
-                data={"loginId": self.username, "loginPwd": self.password},
-            )
-        except:
-            response_godo = None
+        response_godo = requests.post(
+            "https://www.acon3d.com/api/login.php",
+            data={"loginId": self.username, "loginPwd": self.password},
+        )
+
+        if response_godo.status_code >= 500:
+            raise GodoServerError(response_godo)
 
         try:
             success_msg = response_godo.json()["message"]
             if success_msg != "success":
-                response_godo = None
-        except:
-            response_godo = None
+                raise GodoBadRequest(response_godo)
+        # username/password 틀렸을 때는 200 상태코드로
+        # 일반 텍스트 형식의 한국어 에러 메시지가 오고 있음 -> JSONDecodeError 발생
+        except JSONDecodeError:
+            raise GodoBadRequest(response_godo)
 
-        if response_godo is not None:
-            cookies_godo = response_godo.cookies
+        cookies_godo = response_godo.cookies
 
         response = requests.post(
             "https://api-v2.acon3d.com/auth/acon3d/signin",
@@ -237,15 +268,13 @@ class LoginTask(AsyncTask):
             cookies=cookies_godo,
         )
 
-        self.cookie_final = response.cookies
-
-        if response_godo is not None:
-            self.cookie_final = requests.cookies.merge_cookies(
-                cookies_godo, response.cookies
-            )
-
+        # 고도몰 인증을 통과했다면 반드시 200 상태코드로 응답이 와야 함
         if response.status_code != 200:
-            raise Exception("status code is not 200")
+            raise AconServerError(response)
+
+        self.cookie_final = requests.cookies.merge_cookies(
+            cookies_godo, response.cookies
+        )
 
     def _on_success(self):
         tracker.login(self.username)
@@ -280,7 +309,7 @@ class LoginTask(AsyncTask):
         bpy.context.window.cursor_set("DEFAULT")
 
     def _on_failure(self, e: BaseException):
-        tracker.login_fail()
+        tracker.login_fail(type(e).__name__)
 
         self.prop.login_status = "FAIL"
         print("Login request has failed.")
@@ -292,6 +321,10 @@ class LoginTask(AsyncTask):
             message_1="If this happens continuously",
             message_2='please contact us at "cs@acon3d.com".',
         )
+
+        # 사용자 책임의 에러가 아닌 경우 Sentry error reporting
+        if not isinstance(e, GodoBadRequest):
+            raise e
 
 
 class Acon3dLoginOperator(bpy.types.Operator):
