@@ -54,20 +54,7 @@ waveletNoiseTile.bin
 
 # converter
 release/scripts/addons_abler/io_skp
-launcher_abler/requirements.txt
-launcher_abler/build/AblerLauncher/AblerLauncher.exe.manifest
-launcher_abler/build/AblerLauncher/Analysis-00.toc
-launcher_abler/build/AblerLauncher/base_library.zip
-launcher_abler/build/AblerLauncher/EXE-00.toc
-launcher_abler/build/AblerLauncher/PKG-00.pkg
-launcher_abler/build/AblerLauncher/PKG-00.toc
-launcher_abler/build/AblerLauncher/PYZ-00.pyz
-launcher_abler/build/AblerLauncher/PYZ-00.toc
-launcher_abler/build/AblerLauncher/Tree-00.toc
-launcher_abler/build/AblerLauncher/Tree-01.toc
-launcher_abler/build/AblerLauncher/Tree-02.toc
-launcher_abler/build/AblerLauncher/Tree-03.toc
-launcher_abler/build/AblerLauncher/warn-AblerLauncher.txt
-launcher_abler/build/AblerLauncher/xref-AblerLauncher.html
-launcher_abler/dist/AblerLauncher.exe
-launcher_abler/dist/config.ini
+
+# launcher
+/launcher_abler/build
+/launcher_abler/dist
