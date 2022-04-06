@@ -353,10 +353,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                             "url": asset["browser_download_url"],
                             "os": "macOS",
                             "filename": asset["browser_download_url"].split("/")[-1],
+                            "version": version_tag,
+                            "arch": "x86_64",
                         }
-
-                        info["version"] = version_tag
-                        info["arch"] = "x86_64"
                         results.append(info)
 
             elif sys.platform == "win32":
@@ -366,10 +365,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         "url": asset["browser_download_url"],
                         "os": "Windows",
                         "filename": asset["browser_download_url"].split("/")[-1],
+                        "version": version_tag,
+                        "arch": "x64",
                     }
-
-                    info["version"] = version_tag
-                    info["arch"] = "x64"
                     results.append(info)
         if finallist := results:
             if installedversion is None or installedversion == "":
@@ -437,15 +435,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if opsys == "Windows":
                 target = asset["browser_download_url"]
                 if "Windows" in target and "Launcher" in target and "zip" in target:
-                    info = {
-                        "url": asset["browser_download_url"],
-                        "os": "Windows",
-                        "filename": asset["browser_download_url"].split("/")[-1],
-                    }
-
                     # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
-                    info["version"] = info["filename"].split("_")[-1][1:-4]
-                    info["arch"] = "x64"
+
+                    info = {
+                        "url": target,
+                        "os": "Windows",
+                        "filename": target.split("/")[-1],
+                        "version": target.split("/")[-1].split("_")[-1][1:-4],
+                        "arch": "x64",
+                    }
                     results.append(info)
             if opsys == "Darwin":
                 target = asset["browser_download_url"]
