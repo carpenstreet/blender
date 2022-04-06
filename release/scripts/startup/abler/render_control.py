@@ -546,6 +546,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
         return super().execute(context)
 
     def prepare_queue(self, context):
+        render.renderWithBackgroundColor()
         # File name duplicate check
 
         base_filepath = os.path.join(self.dirname, self.basename)

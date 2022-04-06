@@ -20,13 +20,9 @@
 import bpy
 import os
 
-background_color_array = (0.701102, 0.701102, 0.701102, 1.0)
-
 
 def renderWithBackgroundColor():
     scene = bpy.context.scene
-
-    print(scene.ACON_prop.render_with_background_color)
 
     if scene.ACON_prop.render_with_background_color:
         scene.render.film_transparent = False
