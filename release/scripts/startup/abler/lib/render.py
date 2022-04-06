@@ -41,27 +41,29 @@ def renderWithBackgroundColor():
             tree.links.new(
                 node_texture_diffuse.outputs[0], node_world_surface.inputs[3]
             )
+        if not node_texture_diffuse.image:
+            try:
+                # TODO: background_color.png로 배경색 강제로 넣음
+                # 월드 셰이더와 충돌할 수 있으므로 추후 개선해야함
+                image_diffuse = None
+                path_abler = bpy.utils.preset_paths("abler")[0]
+                path_background_color = os.path.join(path_abler, "background_color")
+                image_diffuse_path = os.path.join(
+                    path_background_color, "background_color.png"
+                )
 
-        try:
-            image_diffuse = None
-            path_abler = bpy.utils.preset_paths("abler")[0]
-            path_background_color = os.path.join(path_abler, "background_color")
-            image_diffuse_path = os.path.join(
-                path_background_color, "background_color.png"
-            )
+                for item in bpy.data.images:
+                    if item.filepath == image_diffuse_path:
+                        image_diffuse = item
 
-            for item in bpy.data.images:
-                if item.filepath == image_diffuse_path:
-                    image_diffuse = item
+                if not image_diffuse:
+                    image_diffuse = bpy.data.images.load(image_diffuse_path)
 
-            if not image_diffuse:
-                image_diffuse = bpy.data.images.load(image_diffuse_path)
+                node_texture_diffuse.image = image_diffuse
 
-            node_texture_diffuse.image = image_diffuse
-
-        except Exception as e:
-            scene.render.film_transparent = True
-            raise e
+            except Exception as e:
+                scene.render.film_transparent = True
+                raise e
 
     else:
         scene.render.film_transparent = True
