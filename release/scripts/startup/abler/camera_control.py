@@ -207,9 +207,13 @@ class RemoveBackgroundOperator(bpy.types.Operator):
     index: bpy.props.IntProperty(name="Index", default=0)
 
     def execute(self, context):
-        image = context.scene.camera.data.background_images[self.index]
-        image.image = None
-        bpy.context.scene.camera.data.background_images.remove(image)
+        # self.index를 유저가 마음대로 바꿀 수 있는 패널로 인해 try/except로 감쌈
+        try:
+            image = context.scene.camera.data.background_images[self.index]
+            image.image = None
+            bpy.context.scene.camera.data.background_images.remove(image)
+        except:
+            pass
         return {"FINISHED"}
 
 
