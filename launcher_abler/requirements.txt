@@ -1,0 +1,15 @@
+certifi==2021.10.8
+charset-normalizer==2.0.12
+idna==3.3
+packaging==21.3
+pyparsing==3.0.7
+PyQt5==5.15.6
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.9.1
+PySide2==5.15.2.1
+pywin32==303
+QDarkStyle==3.0.3
+QtPy==2.0.1
+requests==2.27.1
+shiboken2==5.15.2.1
+urllib3==1.26.9
