@@ -21,6 +21,40 @@ import bpy
 import os
 
 
+def appendNodeGroup(path_abler, node_group_name):
+    # preset/abler 폴더 내 startup.blend 파일에서 노드 그룹 append
+    file_name = "startup.blend"
+    bpy.ops.wm.append(
+        filepath=file_name,
+        directory=path_abler + "/" + file_name + "\\NodeTree\\",
+        filename=node_group_name,
+        autoselect=False,
+        active_collection=False,
+        instance_object_data=False,
+        use_recursive=False,
+    )
+
+
+def setWorldSurfaceNodeGroup(tree, node_group_name):
+    # world surface 노드 그룹을 현재 설정에 맞게 세팅
+    nodes = tree.nodes
+
+    # node_world_surface로 설정
+    node_world_surface = nodes.new("ShaderNodeGroup")
+    node_world_surface.node_tree = bpy.data.node_groups[node_group_name]
+    node_world_surface.name = node_group_name
+    tree.links.new(node_world_surface.outputs[0], nodes["World Output"].inputs[0])
+
+    # node_texture_diffuse,normal 설정
+    # 호이님 월드 셰이더에서 쓴 노드 이름 그대로 사용 -> 월드 셰이더와 충돌 방지
+    node_texture_diffuse = nodes.new("ShaderNodeTexEnvironment")
+    node_texture_diffuse.name = "ACON_node_env_diffuse"
+    tree.links.new(node_texture_diffuse.outputs[0], node_world_surface.inputs[3])
+    node_texture_normal = nodes.new("ShaderNodeTexEnvironment")
+    node_texture_normal.name = "ACON_node_env_normal"
+    tree.links.new(node_texture_normal.outputs[0], node_world_surface.inputs[4])
+
+
 def renderWithBackgroundColor():
     scene = bpy.context.scene
 
@@ -28,45 +62,20 @@ def renderWithBackgroundColor():
         scene.render.film_transparent = False
         scene.world.use_nodes = True
 
-        path_abler = bpy.utils.preset_paths("abler")[0]
-
         tree = scene.world.node_tree
         nodes = tree.nodes
+        path_abler = bpy.utils.preset_paths("abler")[0]
         node_world_surface_name = "ACON_nodeGroup_world_surface"
         node_world_surface = nodes.get(node_world_surface_name)
         if not node_world_surface:
-            # preset/abler 폴더 내 startup.blend 파일에서 노드 그룹 append
-            file_name = "startup.blend"
-            bpy.ops.wm.append(
-                filepath=file_name,
-                directory=path_abler + "/" + file_name + "\\NodeTree\\",
-                filename=node_world_surface_name,
-                autoselect=False,
-                active_collection=False,
-                instance_object_data=False,
-                use_recursive=False,
-            )
-            # node_world_surface로 설정
-            node_world_surface = nodes.new("ShaderNodeGroup")
-            node_world_surface.node_tree = bpy.data.node_groups[node_world_surface_name]
-            tree.links.new(
-                node_world_surface.outputs[0], nodes["World Output"].inputs[0]
-            )
+            appendNodeGroup(path_abler, node_world_surface_name)
+            setWorldSurfaceNodeGroup(tree, node_world_surface_name)
+            node_world_surface = nodes.get(node_world_surface_name)
 
         node_texture_diffuse = nodes.get("ACON_node_env_diffuse")
-        if not node_texture_diffuse:
-            # 호이님 월드 셰이더에서 쓴 노드 이름 그대로 사용 -> 월드 셰이더와 충돌 방지
-            node_texture_diffuse = nodes.new("ShaderNodeTexEnvironment")
-            node_texture_diffuse.name = "ACON_node_env_diffuse"
-            tree.links.new(
-                node_texture_diffuse.outputs[0], node_world_surface.inputs[3]
-            )
-            node_texture_normal = nodes.new("ShaderNodeTexEnvironment")
-            node_texture_normal.name = "ACON_node_env_normal"
-            tree.links.new(node_texture_normal.outputs[0], node_world_surface.inputs[4])
-
-        # TODO: 월드 셰이더와 충돌하지 않도록 추후 개선
         if not node_texture_diffuse.image:
+            # TODO: 월드 셰이더와 충돌하지 않도록 추후 개선
+            # node_texture_diffuse.image == "background_color"
             try:
                 image_diffuse = None
                 path_background_color = os.path.join(path_abler, "background_color")
