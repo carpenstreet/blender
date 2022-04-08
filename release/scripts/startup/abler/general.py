@@ -33,7 +33,7 @@ bl_info = {
 
 import os
 import bpy
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
@@ -158,42 +158,84 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator):
+class SaveOperator(bpy.types.Operator, ExportHelper):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
     bl_translation_context = "*"
 
+    filename_ext = ".blend"
+
+    def invoke(self, context, event):
+        if bpy.data.is_saved:
+            return self.execute(context)
+
+        else:
+            return super().invoke(context, event)
+
     def execute(self, context):
         tracker.save()
 
+        # Get basename without file extension
+        dirname, basename = os.path.split(os.path.normpath(self.filepath))
+
+        if "." in basename:
+            basename = ".".join(basename.split(".")[:-1])
+
         if bpy.data.is_saved:
-            bpy.ops.wm.save_mainfile()
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
         else:
-            bpy.ops.wm.save_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+            base_filepath = os.path.join(dirname, basename)
+            numbered_filepath = base_filepath
+            number = 2
 
-            if os.path.isfile(bpy.data.filepath):
-                self.report({"WARNING"}, "File already exists")
+            while os.path.isfile(f"{numbered_filepath}{self.filename_ext}"):
+                numbered_filepath = f"{base_filepath} ({number})"
+                numbered_filename = f"{basename} ({number})"
+                number += 1
+
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         return {"FINISHED"}
 
 
-class SaveAsOperator(bpy.types.Operator):
+class SaveAsOperator(bpy.types.Operator, ExportHelper):
     """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
     bl_label = "Save As"
     bl_translation_context = "*"
 
+    filename_ext = ".blend"
+
     def execute(self, context):
         tracker.save_as()
 
-        bpy.ops.wm.save_as_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+        # Get basename without file extension
+        dirname, basename = os.path.split(os.path.normpath(self.filepath))
 
-        if os.path.isfile(bpy.data.filepath):
-            self.report({"WARNING"}, "File already exists")
+        if "." in basename:
+            basename = ".".join(basename.split(".")[:-1])
+
+        base_filepath = os.path.join(dirname, basename)
+        numbered_filepath = base_filepath
+        number = 2
+
+        while os.path.isfile(f"{numbered_filepath}{self.filename_ext}"):
+            numbered_filepath = f"{base_filepath} ({number})"
+            numbered_filename = f"{basename} ({number})"
+            number += 1
+
+        self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+        bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+        self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         return {"FINISHED"}
 
