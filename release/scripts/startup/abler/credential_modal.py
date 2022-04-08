@@ -315,15 +315,20 @@ class LoginTask(AsyncTask):
         print("Login request has failed.")
         print(e)
 
-        bpy.ops.acon3d.alert(
-            "INVOKE_DEFAULT",
-            title="Login failed",
-            message_1="If this happens continuously",
-            message_2='please contact us at "cs@acon3d.com".',
-        )
-
-        # 사용자 책임의 에러가 아닌 경우 Sentry error reporting
-        if not isinstance(e, GodoBadRequest):
+        if isinstance(e, GodoBadRequest):
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Login failed",
+                message_1="Incorrect username or password.",
+            )
+        else:
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Login failed",
+                message_1="If this happens continuously",
+                message_2='please contact us at "cs@acon3d.com".',
+            )
+            # 사용자 책임의 에러가 아닌 경우 Sentry error reporting
             raise e
 
 
