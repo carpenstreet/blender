@@ -34,6 +34,7 @@ import urllib.request
 import time
 from distutils.dir_util import copy_tree
 from distutils.version import StrictVersion
+from typing import Optional
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -264,7 +265,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if not (self.check_launcher()):
                 self.check_once()
         except Exception as e:
-            logger.info(e)
+            logger.debug(e)
 
     def open_acon3d(self):
         url = QtCore.QUrl("https://www.acon3d.com/")
@@ -296,7 +297,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             num /= 1024.0
         return "%3.1f%s" % (num, " TB")
 
-    def check_once(self):
+    def check_once(self)->None:
         global dir_
         global lastversion
         global installedversion
@@ -312,15 +313,26 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         f.close()
         try:
             req = requests.get(url).json()
-        except Exception:
+        except Exception as e:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
             )
-            logger.error("No connection to Blender nightly builds server")
+            logger.error(e)
             self.frm_start.show()
         results = []
         if test_arg:
             req = req[0]
+        if req["message"] == "Not Found":
+            self.frm_start.show()
+            self.btn_execute.show()
+            if sys.platform == "win32":
+                self.btn_execute.clicked.connect(self.exec_windows)
+            elif sys.platform == "darwin":
+                self.btn_execute.clicked.connect(self.exec_osx)
+            elif sys.platform == "linux":
+                self.btn_execute.clicked.connect(self.exec_linux)
+            self.btn_update_launcher.hide()
+            self.btn_update.hide()
         version_tag = req["name"][1:]
         for asset in req["assets"]:
             if sys.platform == "darwin":
@@ -358,6 +370,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         results.append(info)
 
             elif sys.platform == "win32":
+                print(asset)
                 target = asset["browser_download_url"]
                 if "Windows" in target and "zip" in target and "Release" in target:
                     info = {
@@ -399,7 +412,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if sys.platform == "linux":
                 self.btn_execute.clicked.connect(self.exec_linux)
 
-    def check_launcher(self):
+    def check_launcher(self) -> bool:
         launcher_need_install = False
         global dir_
         global lastversion
@@ -419,60 +432,72 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         f.close()
         try:
             req = requests.get(url).json()
-        except Exception:
+        except Exception as e:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
             )
-            logger.error("No connection to Blender nightly builds server")
+            logger.error(e)
             self.frm_start.show()
         results = []
         if test_arg:
             req = req[0]
-
-        for asset in req["assets"]:
-            opsys = platform.system()
-            if opsys == "Windows":
-                target = asset["browser_download_url"]
-                if "Windows" in target and "Launcher" in target and "zip" in target:
-                    # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
-
-                    info = {
-                        "url": target,
-                        "os": "Windows",
-                        "filename": target.split("/")[-1],
-                        "version": target.split("/")[-1].split("_")[-1][1:-4],
-                        "arch": "x64",
-                    }
-                    results.append(info)
-            if opsys == "Darwin":
-                target = asset["browser_download_url"]
-                if "macOS" in target and "Launcher" in target and "zip" in target:
-                    info = {}
-                    info["url"] = target
-                    info["os"] = "macOS"
-                    info["filename"] = target.split("/")[-1]
-                    # file name should be "ABLER_Launcher_macOS_v0.0.2.zip"
-                    info["version"] = info["filename"].split("_")[-1][1:-4]
-                    info["arch"] = "x86_64"
-                    results.append(info)
-        if finallist := results:
-            if launcher_installed is None or launcher_installed == "":
-                launcher_installed = "0.0.0"
-            if StrictVersion(finallist[0]["version"]) > StrictVersion(
-                launcher_installed
-            ):
-                self.btn_execute.hide()
-                self.btn_update.hide()
-                self.btn_update_launcher.show()
-                self.btn_update_launcher.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download_launcher(
-                        entry
-                    )
-                )
-                launcher_need_install = True
-        else:
+        if req["message"] == "Not Found":
+            self.frm_start.show()
+            self.btn_execute.show()
+            if sys.platform == "win32":
+                self.btn_execute.clicked.connect(self.exec_windows)
+            elif sys.platform == "darwin":
+                self.btn_execute.clicked.connect(self.exec_osx)
+            elif sys.platform == "linux":
+                self.btn_execute.clicked.connect(self.exec_linux)
             self.btn_update_launcher.hide()
-        return launcher_need_install
+            self.btn_update.hide()
+            return False
+        else:
+            for asset in req["assets"]:
+                opsys = platform.system()
+                if opsys == "Windows":
+                    target = asset["browser_download_url"]
+                    if "Windows" in target and "Launcher" in target and "zip" in target:
+                        # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
+
+                        info = {
+                            "url": target,
+                            "os": "Windows",
+                            "filename": target.split("/")[-1],
+                            "version": target.split("/")[-1].split("_")[-1][1:-4],
+                            "arch": "x64",
+                        }
+                        results.append(info)
+                if opsys == "Darwin":
+                    target = asset["browser_download_url"]
+                    if "macOS" in target and "Launcher" in target and "zip" in target:
+                        info = {}
+                        info["url"] = target
+                        info["os"] = "macOS"
+                        info["filename"] = target.split("/")[-1]
+                        # file name should be "ABLER_Launcher_macOS_v0.0.2.zip"
+                        info["version"] = info["filename"].split("_")[-1][1:-4]
+                        info["arch"] = "x86_64"
+                        results.append(info)
+            if finallist := results:
+                if launcher_installed is None or launcher_installed == "":
+                    launcher_installed = "0.0.0"
+                if StrictVersion(finallist[0]["version"]) > StrictVersion(
+                    launcher_installed
+                ):
+                    self.btn_execute.hide()
+                    self.btn_update.hide()
+                    self.btn_update_launcher.show()
+                    self.btn_update_launcher.clicked.connect(
+                        lambda throwaway=0, entry=finallist[0]: self.download_launcher(
+                            entry
+                        )
+                    )
+                    launcher_need_install = True
+            else:
+                self.btn_update_launcher.hide()
+            return launcher_need_install
 
     def download(self, entry):
         """Download routines."""
