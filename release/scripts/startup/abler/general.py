@@ -39,6 +39,32 @@ from .lib.materials import materials_setup
 from .lib.tracker import tracker
 
 
+def splitFilepath(filepath):
+    # Get basename without file extension
+    dirname, basename = os.path.split(os.path.normpath(filepath))
+
+    if "." in basename:
+        basename = ".".join(basename.split(".")[:-1])
+
+    return dirname, basename
+
+
+def numberingFilepath(filepath, ext):
+    dirname, basename = splitFilepath(filepath)
+    basepath = os.path.join(dirname, basename)
+
+    num_path = basepath
+    num_name = basename
+    number = 2
+
+    while os.path.isfile(f"{num_path}{ext}"):
+        num_path = f"{basepath} ({number})"
+        num_name = f"{basename} ({number})"
+        number += 1
+
+    return num_path, num_name
+
+
 class ImportOperator(bpy.types.Operator, ImportHelper):
     """Import file according to the current settings"""
 
@@ -177,25 +203,16 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         tracker.save()
 
-        # Get basename without file extension
-        dirname, basename = os.path.split(os.path.normpath(self.filepath))
-
-        if "." in basename:
-            basename = ".".join(basename.split(".")[:-1])
-
         if bpy.data.is_saved:
+            dirname, basename = splitFilepath(self.filepath)
+
             bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
             self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
         else:
-            base_filepath = os.path.join(dirname, basename)
-            numbered_filepath = base_filepath
-            number = 2
-
-            while os.path.isfile(f"{numbered_filepath}{self.filename_ext}"):
-                numbered_filepath = f"{base_filepath} ({number})"
-                numbered_filename = f"{basename} ({number})"
-                number += 1
+            numbered_filepath, numbered_filename = numberingFilepath(
+                self.filepath, self.filename_ext
+            )
 
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
@@ -217,20 +234,9 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         tracker.save_as()
 
-        # Get basename without file extension
-        dirname, basename = os.path.split(os.path.normpath(self.filepath))
-
-        if "." in basename:
-            basename = ".".join(basename.split(".")[:-1])
-
-        base_filepath = os.path.join(dirname, basename)
-        numbered_filepath = base_filepath
-        number = 2
-
-        while os.path.isfile(f"{numbered_filepath}{self.filename_ext}"):
-            numbered_filepath = f"{base_filepath} ({number})"
-            numbered_filename = f"{basename} ({number})"
-            number += 1
+        numbered_filepath, numbered_filename = numberingFilepath(
+            self.filepath, self.filename_ext
+        )
 
         self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
