@@ -370,7 +370,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         results.append(info)
 
             elif sys.platform == "win32":
-                print(asset)
                 target = asset["browser_download_url"]
                 if "Windows" in target and "zip" in target and "Release" in target:
                     info = {
