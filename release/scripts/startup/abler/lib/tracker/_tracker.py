@@ -131,8 +131,8 @@ class Tracker(metaclass=ABCMeta):
         if self._track(EventKind.login.value):
             self._enqueue_email_update(email)
 
-    def login_fail(self):
-        self._track(EventKind.login_fail.value)
+    def login_fail(self, reason: str):
+        self._track(EventKind.login_fail.value, {"reason": reason})
 
     def login_auto(self):
         self._track(EventKind.login_auto.value)
