@@ -184,40 +184,38 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator, ExportHelper):
+class SaveOperator(bpy.types.Operator):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
     bl_translation_context = "*"
 
+    def execute(self, context):
+
+        if bpy.data.is_saved:
+            bpy.ops.acon3d.save_again()
+        else:
+            tracker.turn_off()
+            bpy.ops.acon3d.save_as()
+            tracker.turn_on()
+
+        return {"FINISHED"}
+
+
+class SaveAgainOperator(bpy.types.Operator, ExportHelper):
+
+    bl_idname = "acon3d.save_again"
+    bl_label = "Save"
+    bl_translation_context = "*"
+
     filename_ext = ".blend"
 
-    def invoke(self, context, event):
-        if bpy.data.is_saved:
-            return self.execute(context)
-
-        else:
-            return super().invoke(context, event)
-
     def execute(self, context):
-        tracker.save()
+        dirname, basename = splitFilepath(self.filepath)
 
-        if bpy.data.is_saved:
-            dirname, basename = splitFilepath(self.filepath)
-
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
-
-        else:
-            numbered_filepath, numbered_filename = numberingFilepath(
-                self.filepath, self.filename_ext
-            )
-
-            self.filepath = f"{numbered_filepath}{self.filename_ext}"
-
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+        bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+        self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
         return {"FINISHED"}
 
@@ -302,8 +300,9 @@ classes = (
     ApplyToonStyleOperator,
     FileOpenOperator,
     FlyOperator,
-    SaveOperator,
+    SaveAgainOperator,
     SaveAsOperator,
+    SaveOperator,
 )
 
 
