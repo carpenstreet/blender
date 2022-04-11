@@ -199,15 +199,13 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
         else:
             return ExportHelper.invoke(self, context, event)
-            # return super().invoke(context, event)
 
     def execute(self, context):
         tracker.save()
 
         if bpy.data.is_saved:
+            self.filepath = context.blend_data.filepath
             dirname, basename = splitFilepath(self.filepath)
-            print(f"dirname  : {dirname}")
-            print(f"basename : {basename}")
 
             bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
             self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
@@ -229,16 +227,17 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
     # 파일이 최초 저장될 때는 invoke()를 활용해서 파일 브라우저에서 파일명을 관리를 해야하지만
     # 파일이 이미 저장된 상태일 때는 invoke()를 넘어가고 바로 execute()를 실행해야 합니다.
     # 그래서 invoke()와 execute()에서 모두 bpy.data.is_saved 로 나누었습니다.
+    """
+    def execute(self, context):
 
-    # def execute(self, context):
+        if bpy.data.is_saved:
+            SaveCurrentOperator.execute(self, context)
 
-    #     if bpy.data.is_saved:
-    #         SaveCurrentOperator.execute(self, context)
-
-    #     else:
-    #         tracker.turn_off()
-    #         SaveAsOperator.execute(self, context)
-    #         tracker.turn_on()
+        else:
+            tracker.turn_off()
+            SaveAsOperator.execute(self, context)
+            tracker.turn_on()
+    """
 
 
 class SaveAsOperator(bpy.types.Operator, ExportHelper):
