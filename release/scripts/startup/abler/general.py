@@ -184,40 +184,61 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator):
+class SaveOperator(bpy.types.Operator, ExportHelper):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
     bl_translation_context = "*"
 
-    def execute(self, context):
-
-        if bpy.data.is_saved:
-            bpy.ops.acon3d.save_again()
-        else:
-            tracker.turn_off()
-            bpy.ops.acon3d.save_as()
-            tracker.turn_on()
-
-        return {"FINISHED"}
-
-
-class SaveAgainOperator(bpy.types.Operator, ExportHelper):
-
-    bl_idname = "acon3d.save_again"
-    bl_label = "Save"
-    bl_translation_context = "*"
-
     filename_ext = ".blend"
 
-    def execute(self, context):
-        dirname, basename = splitFilepath(self.filepath)
+    def invoke(self, context, event):
+        if bpy.data.is_saved:
+            return self.execute(context)
 
-        bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-        self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
+        else:
+            return ExportHelper.invoke(self, context, event)
+            # return super().invoke(context, event)
+
+    def execute(self, context):
+        tracker.save()
+
+        if bpy.data.is_saved:
+            dirname, basename = splitFilepath(self.filepath)
+            print(f"dirname  : {dirname}")
+            print(f"basename : {basename}")
+
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
+
+        else:
+            numbered_filepath, numbered_filename = numberingFilepath(
+                self.filepath, self.filename_ext
+            )
+
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         return {"FINISHED"}
+
+    # invoke() 사용을 하지 않기 위해 execute() 분리 시도 방법은 현재 어렵습니다.
+    # Helper 함수에서는 invoke()가 호출되어서 파일 브라우저 관리를 하는데,
+    # 파일이 최초 저장될 때는 invoke()를 활용해서 파일 브라우저에서 파일명을 관리를 해야하지만
+    # 파일이 이미 저장된 상태일 때는 invoke()를 넘어가고 바로 execute()를 실행해야 합니다.
+    # 그래서 invoke()와 execute()에서 모두 bpy.data.is_saved 로 나누었습니다.
+
+    # def execute(self, context):
+
+    #     if bpy.data.is_saved:
+    #         SaveCurrentOperator.execute(self, context)
+
+    #     else:
+    #         tracker.turn_off()
+    #         SaveAsOperator.execute(self, context)
+    #         tracker.turn_on()
 
 
 class SaveAsOperator(bpy.types.Operator, ExportHelper):
@@ -300,9 +321,8 @@ classes = (
     ApplyToonStyleOperator,
     FileOpenOperator,
     FlyOperator,
-    SaveAgainOperator,
-    SaveAsOperator,
     SaveOperator,
+    SaveAsOperator,
 )
 
 
