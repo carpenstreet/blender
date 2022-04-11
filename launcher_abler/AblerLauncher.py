@@ -325,6 +325,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if req["message"] == "Not Found":
             self.frm_start.show()
             self.btn_execute.show()
+            if sys.platform == "win32":
+                self.btn_execute.clicked.connect(self.exec_windows)
+            elif sys.platform == "darwin":
+                self.btn_execute.clicked.connect(self.exec_osx)
+            elif sys.platform == "linux":
+                self.btn_execute.clicked.connect(self.exec_linux)
             self.btn_update_launcher.hide()
             self.btn_update.hide()
         version_tag = req["name"][1:]
