@@ -1,7 +1,7 @@
 import threading
 from typing import Optional, Any
 import os
-from uuid import uuid4
+from uuid import uuid4, UUID
 import threading
 
 from mixpanel import Mixpanel, BufferedConsumer
@@ -12,6 +12,7 @@ from ._tracker import Tracker
 
 _user_path = bpy.utils.resource_path("USER")
 _tid_path = os.path.join(_user_path, "abler_tid")
+_tid_length = 36  # UUID str length
 
 
 def _nonblock(runner):
@@ -21,40 +22,76 @@ def _nonblock(runner):
     return wrapper
 
 
+def read_tid() -> Optional[str]:
+    if not os.path.exists(_tid_path):
+        return None
+    try:
+        with open(_tid_path, "r") as f:
+            uuid_str = f.read(_tid_length)
+            uuid = UUID(uuid_str)  # possible TypeError if uuid_str is invalid
+            return str(uuid)
+    except:
+        remove_tid()
+        return None
+
+
+def generate_and_write_tid() -> Optional[str]:
+    try:
+        with open(_tid_path, "w") as f:
+            tid = str(uuid4())
+            f.write(tid)
+            return tid
+    except:
+        return None
+
+
+def remove_tid():
+    try:
+        os.remove(_tid_path)
+    except:
+        pass
+
+
+class MixpanelResourceInitializeError(Exception):
+    pass
+
+
 class MixpanelResource:
     mp: Mixpanel
     timer: threading.Timer
     # Tracking ID, 기기마다 유일한 것으로 기대됨
     tid: str
-
+    _repeating: bool
     _consumer: BufferedConsumer
     _flush_interval = 5  # seconds
 
     def __init__(self, token: str):
+        self._repeating = True
         self._consumer = BufferedConsumer(max_size=100)
 
         self.mp = Mixpanel(token, consumer=self._consumer)
 
         # NOTE: 로그아웃 후 다른 이메일로 로그인하는 경우는 고려하지 않음
-        try:
-            if not os.path.exists(_tid_path):
-                with open(_tid_path, "w") as f:
-                    f.write(str(uuid4()))
-            with open(_tid_path, "r") as f:
-                self.tid = f.read(36)
-        except OSError:
-            self.tid = "anonymous"
-
-        self.flush_repeatedly()
+        if tid := read_tid() or generate_and_write_tid():
+            self.tid = tid
+            self.flush_repeatedly()
+        else:
+            raise MixpanelResourceInitializeError()
 
     def flush_repeatedly(self):
-        # 현재는 cleanup 로직을 두지 않음
-        timer = threading.Timer(self._flush_interval, self.flush_repeatedly)
-        timer.daemon = True
-        timer.start()
-        self.timer = timer
+        if not self._repeating:
+            return
 
-        self._consumer.flush()
+        try:
+            timer = threading.Timer(self._flush_interval, self.flush_repeatedly)
+            timer.daemon = True
+            timer.start()
+            self.timer = timer
+
+            self._consumer.flush()
+        except Exception as e:
+            self._repeating = False
+            raise e
 
 
 class MixpanelTracker(Tracker):
@@ -66,8 +103,12 @@ class MixpanelTracker(Tracker):
         self._mixpanel_token = mixpanel_token
 
     def _ensure_resource(self):
-        if self._r is None:
-            self._r = MixpanelResource(self._mixpanel_token)
+        try:
+            if self._r is None:
+                self._r = MixpanelResource(self._mixpanel_token)
+        except Exception as e:
+            self.turn_off()
+            raise e
 
     @_nonblock
     def _enqueue_event(self, event_name: str, properties: dict[str, Any]):
