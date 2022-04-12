@@ -530,6 +530,10 @@ def applyAconToonStyle():
                 mat.node_tree.links.new(
                     node_texImage.outputs[1], node_combinedToon.inputs[8]
                 )
+                # 블렌더 3.0에서 자동으로 이미지와 MixFactor1이 연결, 끊어줘야함
+                if l := node_combinedToon.inputs[2].links:
+                    mat.node_tree.links.remove(l[0])
+
             mat.node_tree.links.new(node_combinedToon.outputs[0], out_node.inputs[0])
 
             materials_handler.setMaterialParametersByType(mat)
