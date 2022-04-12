@@ -259,6 +259,39 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class LogoutOperator(bpy.types.Operator):
+    """Logout"""
+
+    bl_idname = "acon3d.logout"
+    bl_label = "logout"
+    bl_translation_context = "*"
+
+    is_quit: bpy.props.BoolProperty(name="Quit Blender", default=True)
+
+    def execute(self, context):
+        # tracker.logout()
+
+        print("\nExecute Logout")
+
+        self.prop = bpy.data.meshes.get("ACON_userInfo").ACON_prop
+        path = bpy.utils.resource_path("USER")
+        path_cookiesFolder = os.path.join(path, "cookies")
+        path_cookiesFile = os.path.join(path_cookiesFolder, "acon3d_session")
+
+        if os.path.exists(path_cookiesFile):
+            os.remove(path_cookiesFile)
+            self.prop.login_status = "IDLE"
+            bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
+
+            # bpy.ops.wm.read_homefile("INVOKE_DEFAULT")
+            # bpy.ops.wm.read_homefile(use_splash=True)
+
+        else:
+            print("No login session file")
+
+        return {"FINISHED"}
+
+
 class Acon3dImportPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_import"
     bl_label = "General"
@@ -272,6 +305,9 @@ class Acon3dImportPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
+
+        row = layout.row()
+        row.operator("acon3d.logout")
 
         row = layout.row()
         row.scale_y = 1.0
@@ -317,6 +353,7 @@ classes = (
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    LogoutOperator,
 )
 
 
