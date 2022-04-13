@@ -99,7 +99,7 @@ fi
 
 # Copy dmg contents.
 echo -n "Copying ABLER.app..."
-cp -r "${SRC_DIR}/ABLER.app" "${_tmp_dir}/" || exit 1
+cp -R "${SRC_DIR}/ABLER.app" "${_tmp_dir}/" || exit 1
 echo
 
 # Create the disk image.
@@ -139,23 +139,38 @@ if [ ! -z "${C_CERT}" ]; then
     for f in $(find "${_mount_dir}/ABLER.app/Contents/Resources" -name "python*"); do
         if [ -x ${f} ] && [ ! -d ${f} ]; then
             codesign --remove-signature "${f}"
-            codesign --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
         fi
     done
     echo ; echo -n "Codesigning .dylib and .so libraries"
     for f in $(find "${_mount_dir}/ABLER.app" -name "*.dylib" -o -name "*.so"); do
+        echo "${f}"
         codesign --remove-signature "${f}"
-        codesign --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
     done
+
+    echo ; echo -n "Codesigning .framework libraries"
+    for f in $(find "${_mount_dir}/ABLER.app" -name "*.framework"); do
+        echo "${f}/Versions/A"
+        codesign --remove-signature "${f}/Versions/A"
+        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
+    done    
+    
+    sleep 30
+    
+    echo ; echo -n "Codesigning AblerLauncher"
+    codesign --remove-signature "${_mount_dir}/ABLER.app/Contents/macOS/AblerLauncher"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app/Contents/macOS/AblerLauncher"
+    echo
 
     echo ; echo -n "Codesigning ABLER"
     codesign --remove-signature "${_mount_dir}/ABLER.app/Contents/macOS/ABLER"
-    codesign --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app/Contents/macOS/ABLER"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app/Contents/macOS/ABLER"
     echo
 
     echo ; echo -n "Codesigning ABLER.app"
     codesign --remove-signature "${_mount_dir}/ABLER.app"
-    codesign --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app"
     echo
 else
     echo "No codesigning cert given, skipping..."
@@ -174,7 +189,7 @@ hdiutil convert "${_tmp_dmg}" -format UDZO -o "${DEST_DMG}"
 # Codesign the dmg
 if [ ! -z "${C_CERT}" ]; then
     echo -n "Codesigning dmg..."
-    codesign --timestamp --force --sign "${C_CERT}" "${DEST_DMG}"
+    codesign --deep --verbose --timestamp --force --sign "${C_CERT}" "${DEST_DMG}"
     echo
 fi
 
