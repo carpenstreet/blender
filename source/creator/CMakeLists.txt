@@ -1003,6 +1003,18 @@ elseif(WIN32)
       DESTINATION ${TARGETDIR_VER}/python/lib/site-packages
     )
   endif()
+  execute_process(
+    COMMAND cmake -S ${CMAKE_SOURCE_DIR}/launcher_qt -B ${CMAKE_SOURCE_DIR}/launcher_qt/build
+    COMMAND cmake --build ${CMAKE_SOURCE_DIR}/launcher_qt/build --target ALL_BUILD --config Release
+  )
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/launcher_qt/build/Release/AblerLauncher.exe
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION .
+  )
+  ADD_CUSTOM_COMMAND(TARGET blender POST_BUILD
+    COMMAND "C:\\Qt\\6.2.1\\msvc2019_64\\bin\\windeployqt.exe" --release ${CMAKE_BINARY_DIR}/bin/Release/AblerLauncher.exe
+    )
 elseif(APPLE)
   if(NOT WITH_PYTHON_MODULE)
     # Uppercase name for app bundle
@@ -1066,6 +1078,24 @@ elseif(APPLE)
     TARGETS blender
     DESTINATION "."
   )
+  # build and install abler launcher
+    # below is how to setup the build for qt launcher
+    # brew install qt
+    # git submodule update --init --recursive
+    # cd ./launcher_qt
+    # cmake -S . -B ./build
+  execute_process(
+      COMMAND cmake -S ${CMAKE_SOURCE_DIR}/launcher_qt -B ${CMAKE_SOURCE_DIR}/launcher_qt/build
+    COMMAND cmake --build ${CMAKE_SOURCE_DIR}/launcher_qt/build --target all
+  )
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/launcher_qt/build/AblerLauncher
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION ABLER.app/Contents/MacOS
+  )
+    # ADD_CUSTOM_COMMAND(TARGET blender POST_BUILD
+    # COMMAND macdeployqt ${EXECUTABLE_OUTPUT_PATH}/ABLER.app
+    # )
 
   # install release and app files
   set(BLENDER_TEXT_FILES_DESTINATION ABLER.app/Contents/Resources/text)
