@@ -198,6 +198,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="Toon Color Depth",
         description="Change number of colors used for shading",
         items=[("2", "2 depth", ""), ("3", "3 depth", "")],
+        default="3",
         update=materials_handler.changeToonDepth,
     )
 
