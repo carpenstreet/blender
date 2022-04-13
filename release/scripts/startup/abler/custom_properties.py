@@ -244,7 +244,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="",
         description="Control the strength of sunlight",
         subtype="FACTOR",
-        default=1,
+        default=1.5,
         min=0,
         max=10,
         step=1,
