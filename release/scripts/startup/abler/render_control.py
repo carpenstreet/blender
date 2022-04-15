@@ -108,7 +108,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
     def prepare_render(self):
-        render.renderWithBackgroundColor()
         render.setupBackgroundImagesCompositor()
         render.matchObjectVisibility()
 
@@ -315,7 +314,6 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
     temp_scenes = []
 
     def prepare_render(self):
-        render.renderWithBackgroundColor()
         render.clearCompositor()
         render.matchObjectVisibility()
 
@@ -358,7 +356,6 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
     temp_scenes = []
 
     def prepare_render(self):
-        render.renderWithBackgroundColor()
         render.clearCompositor()
         render.matchObjectVisibility()
 
@@ -546,7 +543,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
         return super().execute(context)
 
     def prepare_queue(self, context):
-        render.renderWithBackgroundColor()
+        render.renderWithWorldBackgroundColor()
         # File name duplicate check
 
         base_filepath = os.path.join(self.dirname, self.basename)
