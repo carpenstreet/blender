@@ -43,3 +43,14 @@ def update_layers():
             added_l_exclude = context.scene.l_exclude.add()
             added_l_exclude.name = child.name
             added_l_exclude.value = True
+
+
+def hide_adjust_last_operation_panel():
+    context = bpy.context
+
+    context.scene.render.engine = "BLENDER_EEVEE"
+    for area in context.screen.areas:
+        if area.type == "VIEW_3D":
+            for space in area.spaces:
+                if space.type == "VIEW_3D":
+                    space.show_region_hud = False
