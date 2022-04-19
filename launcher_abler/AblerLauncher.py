@@ -79,7 +79,9 @@ btn = {}
 lastversion = ""
 installedversion = ""
 launcher_installed = ""
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+LOG_FORMAT = (
+    "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
+)
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 if not os.path.isdir(get_datadir() / "Blender/2.96"):
     os.mkdir(get_datadir() / "Blender/2.96")
