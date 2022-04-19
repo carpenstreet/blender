@@ -79,7 +79,9 @@ btn = {}
 lastversion = ""
 installedversion = ""
 launcher_installed = ""
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+LOG_FORMAT = (
+    "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
+)
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 if not os.path.isdir(get_datadir() / "Blender/2.96"):
     os.mkdir(get_datadir() / "Blender/2.96")
@@ -174,16 +176,16 @@ class WorkerThread(QtCore.QThread):
                     f"{self.path}/AblerLauncher.exe",
                 )
 
-                sym_path = (
-                    get_datadir()
-                    / "/Microsoft/Windows/Start Menu/Programs/ABLER/Launch ABLER.lnk"
-                )
-                if os.path.isfile(sym_path):
-                    os.remove(sym_path)
-                shell = Dispatch("WScript.Shell")
-                shortcut = shell.CreateShortCut(sym_path)
-                shortcut.Targetpath = self.path / "/AblerLauncher.exe"
-                shortcut.save()
+                # sym_path = (
+                #     get_datadir()
+                #     / "/Microsoft/Windows/Start Menu/Programs/ABLER/Launch ABLER.lnk"
+                # )
+                # if os.path.isfile(sym_path):
+                #     os.remove(sym_path)
+                # shell = Dispatch("WScript.Shell")
+                # shortcut = shell.CreateShortCut(sym_path)
+                # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
+                # shortcut.save()
             else:
                 try:
                     copy_tree(source[0], self.path)
