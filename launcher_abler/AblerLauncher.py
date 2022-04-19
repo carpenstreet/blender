@@ -180,10 +180,6 @@ class WorkerThread(QtCore.QThread):
                 )
                 if os.path.isfile(sym_path):
                     os.remove(sym_path)
-                shell = Dispatch("WScript.Shell")
-                shortcut = shell.CreateShortCut(sym_path)
-                shortcut.Targetpath = self.path / "/AblerLauncher.exe"
-                shortcut.save()
             else:
                 try:
                     copy_tree(source[0], self.path)
