@@ -262,12 +262,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_Quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
-
         try:
             if not (self.check_launcher()):
                 self.check_once()
         except Exception as e:
-            logger.debug(e)
+            logger.error(e)
 
     def open_acon3d(self):
         url = QtCore.QUrl("https://www.acon3d.com/")
@@ -324,7 +323,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         results = []
         if test_arg:
             req = req[0]
-        if req["message"] == "Not Found":
+        is_no_release = False
+        try:
+            is_no_release = req["message"] == "Not Found"
+        except Exception as e:
+            logger.debug("Release found")
+        if is_no_release:
             self.frm_start.show()
             self.btn_execute.show()
             if sys.platform == "win32":
@@ -442,7 +446,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         results = []
         if test_arg:
             req = req[0]
-        if req["message"] == "Not Found":
+        is_no_release = False
+        try:
+            is_no_release = req["message"] == "Not Found"
+        except Exception as e:
+            logger.debug("Release found")
+        if is_no_release:
             self.frm_start.show()
             self.btn_execute.show()
             self.btn_update_launcher.hide()
