@@ -220,6 +220,10 @@ class TOPBAR_MT_editor_menus(Menu):
 
         layout.menu("TOPBAR_MT_window")
         layout.menu("TOPBAR_MT_help")
+        
+        layout.separator()
+        
+        layout.operator("acon3d.logout")
 
 
 class TOPBAR_MT_blender(Menu):
