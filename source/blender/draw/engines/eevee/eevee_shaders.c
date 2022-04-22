@@ -49,6 +49,9 @@ static const char *filter_defines =
 #endif
 
 static struct {
+  /* ABLER prepass */
+  struct GPUShader *abler_prepass_sh;
+
   /* Lookdev */
   struct GPUShader *studiolight_probe_sh;
   struct GPUShader *studiolight_background_sh;
@@ -186,6 +189,8 @@ extern char datatoc_common_math_geom_lib_glsl[];
 extern char datatoc_common_view_lib_glsl[];
 extern char datatoc_gpu_shader_common_obinfos_lib_glsl[];
 
+extern char datatoc_abler_prepass_vert_glsl[];
+extern char datatoc_abler_prepass_frag_glsl[];
 extern char datatoc_ambient_occlusion_lib_glsl[];
 extern char datatoc_background_vert_glsl[];
 extern char datatoc_bsdf_common_lib_glsl[];
@@ -935,6 +940,18 @@ GPUShader *EEVEE_shaders_update_noise_sh_get(void)
   return e_data.update_noise_sh;
 }
 
+GPUShader *EEVEE_shaders_abler_prepass_sh_get(void)
+{
+  if (e_data.abler_prepass_sh == NULL) {
+    e_data.abler_prepass_sh = DRW_shader_create_with_shaderlib(datatoc_abler_prepass_vert_glsl,
+                                                               NULL,
+                                                               datatoc_abler_prepass_frag_glsl,
+                                                               e_data.lib,
+                                                               SHADER_DEFINES);
+  }
+  return e_data.abler_prepass_sh;
+}
+
 GPUShader *EEVEE_shaders_taa_resolve_sh_get(EEVEE_EffectsFlag enabled_effects)
 {
   GPUShader **sh;
@@ -1537,6 +1554,8 @@ struct GPUMaterial *EEVEE_material_get(
 
 void EEVEE_shaders_free(void)
 {
+  DRW_SHADER_FREE_SAFE(e_data.abler_prepass_sh);
+
   MEM_SAFE_FREE(e_data.surface_prepass_frag);
   MEM_SAFE_FREE(e_data.surface_lit_frag);
   MEM_SAFE_FREE(e_data.surface_geom_barycentric);

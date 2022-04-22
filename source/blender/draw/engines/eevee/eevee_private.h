@@ -248,6 +248,9 @@ typedef struct EEVEE_BoundBox {
 } EEVEE_BoundBox;
 
 typedef struct EEVEE_PassList {
+  /* ABLER prepass */
+  struct DRWPass *abler_prepass;
+
   /* Shadows */
   struct DRWPass *shadow_pass;
   struct DRWPass *shadow_accum_pass;
@@ -344,6 +347,9 @@ typedef struct EEVEE_PassList {
 } EEVEE_PassList;
 
 typedef struct EEVEE_FramebufferList {
+  /* ABLER prepass */
+  struct GPUFrameBuffer *abler_prepass_fb;
+
   /* Effects */
   struct GPUFrameBuffer *gtao_fb;
   struct GPUFrameBuffer *gtao_debug_fb;
@@ -407,6 +413,11 @@ typedef struct EEVEE_FramebufferList {
 } EEVEE_FramebufferList;
 
 typedef struct EEVEE_TextureList {
+  /* ABLER prepass */
+  struct GPUTexture *abler_object_buffer;
+  struct GPUTexture *abler_normal_buffer;
+  struct GPUTexture *abler_depth_buffer;
+
   /* Effects */
   struct GPUTexture *color_post; /* R16_G16_B16 */
   struct GPUTexture *mist_accum;
@@ -1232,6 +1243,7 @@ struct GPUShader *EEVEE_shaders_probe_cube_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_probe_grid_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_probe_planar_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_update_noise_sh_get(void);
+struct GPUShader *EEVEE_shaders_abler_prepass_sh_get(void);
 struct GPUShader *EEVEE_shaders_velocity_resolve_sh_get(void);
 struct GPUShader *EEVEE_shaders_taa_resolve_sh_get(EEVEE_EffectsFlag enabled_effects);
 struct bNodeTree *EEVEE_shader_default_surface_nodetree(Material *ma);

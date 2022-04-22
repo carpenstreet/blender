@@ -45,6 +45,7 @@
 #include "RE_pipeline.h"
 
 #include "eevee_private.h"
+#include "eevee_abler.h"
 
 /* Return true if init properly. */
 bool EEVEE_render_init(EEVEE_Data *ved, RenderEngine *engine, struct Depsgraph *depsgraph)
@@ -626,6 +627,10 @@ void EEVEE_render_draw(EEVEE_Data *vedata, RenderEngine *engine, RenderLayer *rl
 
     GPU_framebuffer_bind(fbl->main_fb);
     GPU_framebuffer_clear_color_depth_stencil(fbl->main_fb, clear_col, clear_depth, clear_stencil);
+
+    /* Abler prepass */
+    EEVEE_abler_prepass_draw(vedata);
+
     /* Depth prepass */
     DRW_draw_pass(psl->depth_ps);
     /* Create minmax texture */
