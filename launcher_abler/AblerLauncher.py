@@ -635,18 +635,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage("Cleaning temporary files")
 
     def done(self):
-        logger.info("Finished")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_clean_pic.setPixmap(donepixmap)
-        self.statusbar.showMessage("Ready")
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(100)
-        self.lbl_task.setText("Finished")
-        self.btn_Quit.setEnabled(True)
-        self.btn_update.hide()
-        self.btn_update_launcher.hide()
-        self.btn_execute.show()
+        self.done_ui("Blender")
         opsys = platform.system()
         if opsys == "Windows":
             self.btn_execute.clicked.connect(self.exec_windows)
@@ -656,15 +645,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_execute.clicked.connect(self.exec_linux)
 
     def done_launcher(self):
-        logger.info("Finished")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_clean_pic.setPixmap(donepixmap)
-        self.statusbar.showMessage("Ready")
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(100)
-        self.lbl_task.setText("Finished")
-        self.btn_Quit.setEnabled(True)
+        self.done_ui("Launcher")
         QtWidgets.QMessageBox.information(
             self,
             "Launcher updated",
@@ -681,6 +662,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     get_datadir() / "Blender/2.96/updater/AblerLauncher.exe"
                 )
             QtCore.QCoreApplication.instance().quit()
+            # TODO: Launcher를 다시 실행할 수 있게 해주면?
         except Exception as e:
             logger.error(e)
             try:
@@ -701,6 +683,22 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
+    def done_ui(self,done_exec):
+        logger.info("Finished")	
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
+        self.lbl_clean_pic.setPixmap(donepixmap)	
+        self.statusbar.showMessage("Ready")	
+        self.progressBar.setMinimum(0)	
+        self.progressBar.setMaximum(100)	
+        self.progressBar.setValue(100)	
+        self.lbl_task.setText("Finished")	
+        self.btn_Quit.setEnabled(True)
+        if done_exec == "Blender":
+            self.btn_update.hide()
+            self.btn_update_launcher.hide()
+            self.btn_execute.show()
+        
+        
     def exec_windows(self):
         try:
             if privilege_helper.isUserAdmin():
