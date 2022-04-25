@@ -372,7 +372,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
                 self.btn_update.show()
                 self.btn_update.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download(entry)
+                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
                 )
                 self.btn_execute.hide()
                 self.btn_update_launcher.hide()
@@ -474,37 +474,43 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     self.btn_update.hide()
                     self.btn_update_launcher.show()
                     self.btn_update_launcher.clicked.connect(
-                        lambda throwaway=0, entry=finallist[0]: self.download_launcher(
-                            entry
-                        )
+                        lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
                     )
                     launcher_need_install = True
             else:
                 self.btn_update_launcher.hide()
             return launcher_need_install
-
-    def download(self, entry):
+    
+    def download(self, entry, dir_name):
         """Download routines."""
-        global dir_
+        temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
+        exec_name = "Blender" if dir_name == dir_ else "Launcher"
 
         url = entry["url"]
         version = entry["version"]
         variation = entry["arch"]
 
-        if os.path.isdir("./blendertemp"):
-            shutil.rmtree("./blendertemp")
+        if os.path.isdir(temp_name):
+            shutil.rmtree(temp_name)
 
-        os.makedirs("./blendertemp")
+        os.makedirs(temp_name)
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
         size_readable = self.hbytes(float(totalsize))
 
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "path", dir_)
-        config.set("main", "flavor", variation)
-        config.set("main", "installed", version)
-
+        
+        if dir_name == dir_:
+            config.set("main", "path", dir_)
+            config.set("main", "flavor", variation)
+            config.set("main", "installed", version)
+            
+        else:
+            config.set("main", "launcher", version)
+            logger.info(f"1 {config.get('main', 'installed')}")
+    
+        
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
         f.close()
@@ -513,11 +519,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Do the actual download #
         ##########################
 
-        dir_ = os.path.join(dir_, "")
-        filename = "./blendertemp/" + entry["filename"]
+        dir_name = os.path.join(dir_name, "")
+        filename = temp_name + entry["filename"]
 
-        for i in btn:
-            btn[i].hide()
+        if dir_name == dir_:
+            for i in btn:
+                btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
 
         self.lbl_available.hide()
@@ -529,72 +536,24 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.frm_progress.show()
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading {version}</b>")
+        
+        # self.lbl_downloading.setText(f"<b>Downloading {version}</b>")
+        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        
         self.progressBar.setValue(0)
         self.statusbar.showMessage(f"Downloading {size_readable}")
 
-        thread = WorkerThread(url, filename, dir_, "./blendertemp/")
+        thread = WorkerThread(url, filename, dir_name, temp_name)
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy(dir_))
+        thread.finishedEX.connect(self.finalcopy(dir_name))
         thread.finishedCP.connect(self.cleanup)
-        thread.finishedCL.connect(self.done)
-        thread.start()
-
-    def download_launcher(self, entry):
-        """Download routines."""
-        global launcherdir_
-
-        url = entry["url"]
-        version = entry["version"]
-        variation = entry["arch"]
-
-        if os.path.isdir("./launchertemp"):
-            shutil.rmtree("./launchertemp")
-
-        os.makedirs("./launchertemp")
-        file = urllib.request.urlopen(url)
-        totalsize = file.info()["Content-Length"]
-        size_readable = self.hbytes(float(totalsize))
-
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "launcher", version)
-        logger.info(f"1 {config.get('main', 'installed')}")
-
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-
-        ##########################
-        # Do the actual download #
-        ##########################
-
-        launcherdir_ = os.path.join(launcherdir_, "")
-        filename = "./launchertemp/" + entry["filename"]
-
-        logger.info(f"Starting download thread for {url}{version}")
-
-        self.lbl_available.hide()
-        self.lbl_caution.hide()
-        self.progressBar.show()
-        self.btngrp_filter.hide()
-        self.lbl_task.setText("Downloading")
-        self.lbl_task.show()
-        self.frm_progress.show()
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading Launcher {version}</b>")
-        self.progressBar.setValue(0)
-        self.statusbar.showMessage(f"Downloading {size_readable}")
-
-        thread = WorkerThread(url, filename, launcherdir_, "./launchertemp")
-        thread.update.connect(self.updatepb)
-        thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy(launcherdir_))
-        thread.finishedCP.connect(self.cleanup)
-        thread.finishedCL.connect(self.done_launcher)
-
+        
+        if dir_name == dir_:
+            thread.finishedCL.connect(self.done)
+        else:
+            thread.finishedCL.connect(self.done_launcher)
+            
         thread.start()
 
     def updatepb(self, percent):
