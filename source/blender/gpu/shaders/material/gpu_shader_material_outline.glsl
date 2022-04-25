@@ -1,4 +1,6 @@
 uniform usampler2D ablerObjectBuffer;
+uniform sampler2D ablerDepthBuffer;
+uniform sampler2D ablerNormalBuffer;
 
 void node_outline(vec3 normal,
                   float width,
@@ -15,9 +17,9 @@ void node_outline(vec3 normal,
   object = 0;
 
   ivec2 texel = ivec2(gl_FragCoord.xy);
-  float texel_depth = texelFetch(maxzBuffer, texel, 0).r;
+  float texel_depth = texelFetch(ablerDepthBuffer, texel, 0).r;
   float texel_z = get_view_z_from_depth(texel_depth);
-  vec2 texel_uv = vec2(texel) / textureSize(maxzBuffer, 0).xy;
+  vec2 texel_uv = vec2(texel) / textureSize(ablerDepthBuffer, 0).xy;
   vec3 texel_vs = get_view_space_from_depth(texel_uv, texel_depth);
   uint texel_object = texelFetch(ablerObjectBuffer, texel, 0).r;
 
@@ -55,14 +57,14 @@ void node_outline(vec3 normal,
     ivec2 sample_offset = offsets[i] * int(round(width));
 
     ivec2 offset = texel + sample_offset;
-    float offset_depth = texelFetch(maxzBuffer, offset, 0).r;
+    float offset_depth = texelFetch(ablerDepthBuffer, offset, 0).r;
     float offset_z = get_view_z_from_depth(offset_depth);
     uint offset_object = texelFetch(ablerObjectBuffer, offset, 0).r;
     if (texel_object != offset_object) {
       object = 1.0;
     }
 
-    vec2 offset_uv = vec2(offset) / textureSize(maxzBuffer, 0).xy;
+    vec2 offset_uv = vec2(offset) / textureSize(ablerDepthBuffer, 0).xy;
     vec3 offset_vs = get_view_space_from_depth(offset_uv, texel_depth);
     vec3 actual_offset_vs = get_view_space_from_depth(offset_uv, offset_depth);
 
