@@ -14,6 +14,8 @@ void node_outline(vec3 normal,
   ivec2 texel = ivec2(gl_FragCoord.xy);
   float texel_depth = texelFetch(maxzBuffer, texel, 0).r;
   float texel_z = get_view_z_from_depth(texel_depth);
+  vec2 texel_uv = vec2(texel) / textureSize(maxzBuffer, 0).xy;
+  vec3 texel_vs = get_view_space_from_depth(texel_uv, texel_depth);
 
   //ivec2 offsets[4] = ivec2[4](ivec2(-1, -1), ivec2(-1, 1), ivec2(1, -1), ivec2(1, 1));
   ivec2 offsets[4] = ivec2[4](ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1));
@@ -55,9 +57,6 @@ void node_outline(vec3 normal,
     vec2 offset_uv = vec2(offset) / textureSize(maxzBuffer, 0).xy;
     vec3 offset_vs = get_view_space_from_depth(offset_uv, texel_depth);
     vec3 actual_offset_vs = get_view_space_from_depth(offset_uv, offset_depth);
-
-    vec2 texel_uv = vec2(texel) / textureSize(maxzBuffer, 0).xy;
-    vec3 texel_vs = get_view_space_from_depth(texel_uv, texel_depth);
 
     width_ws_size = length(offset_vs - texel_vs);
 
