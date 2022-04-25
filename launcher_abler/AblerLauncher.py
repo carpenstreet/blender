@@ -520,13 +520,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         
         self.download_ui(entry, dir_name)
 
-        dir_name = os.path.join(dir_name, "")
+        self.exec_dir_name = os.path.join(dir_name, "")
         filename = temp_name + entry["filename"]
         
-        thread = WorkerThread(url, filename, dir_name, temp_name)
+        thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy(dir_name))
+        thread.finishedEX.connect(self.finalcopy)
         thread.finishedCP.connect(self.cleanup)
         
         if dir_name == dir_:
@@ -575,15 +575,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(-1)
 
-    def finalcopy(self, dir_name):
-        logger.info(f"Copying to {dir_name}")
+    def finalcopy(self):
+        exec_dir_name = self.exec_dir_name
+        logger.info(f"Copying to {exec_dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_extract_pic.setPixmap(donepixmap)
         self.lbl_copy_pic.setPixmap(nowpixmap)
         self.lbl_copying.setText("<b>Copying</b>")
         self.lbl_task.setText("Copying files...")
-        self.statusbar.showMessage(f"Copying files to {dir_name}, please wait... ")
+        self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
 
     def cleanup(self):
         logger.info("Cleaning up temp files")
