@@ -484,8 +484,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def download(self, entry, dir_name):
         """Download routines."""
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
-        exec_name = "Blender" if dir_name == dir_ else "Launcher"
-
+        
         url = entry["url"]
         version = entry["version"]
         variation = entry["arch"]
@@ -494,10 +493,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             shutil.rmtree(temp_name)
 
         os.makedirs(temp_name)
-        file = urllib.request.urlopen(url)
-        totalsize = file.info()["Content-Length"]
-        size_readable = self.hbytes(float(totalsize))
-
+        
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
         
@@ -505,12 +501,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.set("main", "path", dir_)
             config.set("main", "flavor", variation)
             config.set("main", "installed", version)
-            
         else:
             config.set("main", "launcher", version)
             logger.info(f"1 {config.get('main', 'installed')}")
     
-        
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
         f.close()
@@ -519,30 +513,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Do the actual download #
         ##########################
 
-        dir_name = os.path.join(dir_name, "")
-        filename = temp_name + entry["filename"]
-
         if dir_name == dir_:
             for i in btn:
                 btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
-
-        self.lbl_available.hide()
-        self.lbl_caution.hide()
-        self.progressBar.show()
-        self.btngrp_filter.hide()
-        self.lbl_task.setText("Downloading")
-        self.lbl_task.show()
-        self.frm_progress.show()
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        self.lbl_download_pic.setPixmap(nowpixmap)
         
-        # self.lbl_downloading.setText(f"<b>Downloading {version}</b>")
-        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
-        
-        self.progressBar.setValue(0)
-        self.statusbar.showMessage(f"Downloading {size_readable}")
+        self.download_ui(entry, dir_name)
 
+        dir_name = os.path.join(dir_name, "")
+        filename = temp_name + entry["filename"]
+        
         thread = WorkerThread(url, filename, dir_name, temp_name)
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
@@ -555,6 +535,28 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             thread.finishedCL.connect(self.done_launcher)
             
         thread.start()
+        
+    def download_ui(self, entry, dir_name):
+        url = entry["url"]
+        version = entry["version"]
+        exec_name = "Blender" if dir_name == dir_ else "Launcher"
+        
+        file = urllib.request.urlopen(url)
+        totalsize = file.info()["Content-Length"]
+        size_readable = self.hbytes(float(totalsize))
+    
+        self.lbl_available.hide()
+        self.lbl_caution.hide()
+        self.progressBar.show()
+        self.btngrp_filter.hide()
+        self.lbl_task.setText("Downloading")
+        self.lbl_task.show()
+        self.frm_progress.show()
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        self.lbl_download_pic.setPixmap(nowpixmap)
+        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        self.progressBar.setValue(0)
+        self.statusbar.showMessage(f"Downloading {size_readable}")
 
     def updatepb(self, percent):
         self.progressBar.setValue(percent)
