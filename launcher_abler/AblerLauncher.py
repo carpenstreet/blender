@@ -536,7 +536,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         thread = WorkerThread(url, filename, dir_, "./blendertemp/")
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy)
+        thread.finishedEX.connect(self.finalcopy(dir_))
         thread.finishedCP.connect(self.cleanup)
         thread.finishedCL.connect(self.done)
         thread.start()
@@ -591,7 +591,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         thread = WorkerThread(url, filename, launcherdir_, "./launchertemp")
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy_launcher)
+        thread.finishedEX.connect(self.finalcopy(launcherdir_))
         thread.finishedCP.connect(self.cleanup)
         thread.finishedCL.connect(self.done_launcher)
 
@@ -614,25 +614,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(-1)
 
-    def finalcopy(self):
-        logger.info(f"Copying to {dir_}")
+    def finalcopy(self, dir_name):
+        logger.info(f"Copying to {dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_extract_pic.setPixmap(donepixmap)
         self.lbl_copy_pic.setPixmap(nowpixmap)
         self.lbl_copying.setText("<b>Copying</b>")
         self.lbl_task.setText("Copying files...")
-        self.statusbar.showMessage(f"Copying files to {dir_}, please wait... ")
-
-    def finalcopy_launcher(self):
-        logger.info(f"Copying to {launcherdir_}")
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_extract_pic.setPixmap(donepixmap)
-        self.lbl_copy_pic.setPixmap(nowpixmap)
-        self.lbl_copying.setText("<b>Copying</b>")
-        self.lbl_task.setText("Copying files...")
-        self.statusbar.showMessage(f"Copying files to {launcherdir_}, please wait... ")
+        self.statusbar.showMessage(f"Copying files to {dir_name}, please wait... ")
 
     def cleanup(self):
         logger.info("Cleaning up temp files")
