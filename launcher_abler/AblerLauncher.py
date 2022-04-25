@@ -113,41 +113,23 @@ class WorkerThread(QtCore.QThread):
         self.path = path
         self.temp_path = temp_path
 
-        if "macOS" in file:
-            config.set("main", "lastdl", "OSX")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "win32" in file:
-            config.set("main", "lastdl", "Windows 32bit")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "win64" in file:
-            config.set("main", "lastdl", "Windows 64bit")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc211-i686" in file:
-            config.set("main", "lastdl", "Linux glibc211 i686")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc211-x86_64" in file:
-            config.set("main", "lastdl", "Linux glibc211 x86_64")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc219-i686" in file:
-            config.set("main", "lastdl", "Linux glibc219 i686")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc219-x86_64" in file:
-            config.set("main", "lastdl", "Linux glibc219 x86_64")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
+        os_dic = {
+            "macOS": "OSX", 
+            "win32": "Windows 32bit", 
+            "win64": "Windows 64bit", 
+            "glibc211-i686": "Linux glibc211 i686",
+            "glibc211-x86_64": "Linux glibc211 x86_64",
+            "glibc219-i686": "Linux glibc219 i686",
+            "glibc219-x86_64": "Linux glibc219 x86_64"
+        }
+
+        for os in os_dic:
+            if os in file:
+                config.set("main","lastdl",os_dic[os])
+                with open("config.ini", "w") as f:
+                    config.write(f)
+                    f.close()
+                break
 
     def progress(self, count, blockSize, totalSize):
         """Updates progress bar"""
@@ -187,10 +169,8 @@ class WorkerThread(QtCore.QThread):
                 # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
                 # shortcut.save()
             else:
-                try:
-                    copy_tree(source[0], self.path)
-                except Exception as e:
-                    logger.error(e)
+                # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
+                copy_tree(source[0], self.path)
             self.finishedCP.emit()
             shutil.rmtree(self.temp_path)
             self.finishedCL.emit()
