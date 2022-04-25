@@ -1,3 +1,5 @@
+uniform usampler2D ablerObjectBuffer;
+
 void node_outline(vec3 normal,
                   float width,
                   out float depth,
@@ -10,12 +12,14 @@ void node_outline(vec3 normal,
   vec3 viewNormal = normalize(normal_world_to_view(normal));
   depth_hit_position = vec3(0,0,0);
   negative_depth_hit_position = vec3(0, 0, 0);
+  object = 0;
 
   ivec2 texel = ivec2(gl_FragCoord.xy);
   float texel_depth = texelFetch(maxzBuffer, texel, 0).r;
   float texel_z = get_view_z_from_depth(texel_depth);
   vec2 texel_uv = vec2(texel) / textureSize(maxzBuffer, 0).xy;
   vec3 texel_vs = get_view_space_from_depth(texel_uv, texel_depth);
+  uint texel_object = texelFetch(ablerObjectBuffer, texel, 0).r;
 
   //ivec2 offsets[4] = ivec2[4](ivec2(-1, -1), ivec2(-1, 1), ivec2(1, -1), ivec2(1, 1));
   ivec2 offsets[4] = ivec2[4](ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1));
@@ -53,6 +57,10 @@ void node_outline(vec3 normal,
     ivec2 offset = texel + sample_offset;
     float offset_depth = texelFetch(maxzBuffer, offset, 0).r;
     float offset_z = get_view_z_from_depth(offset_depth);
+    uint offset_object = texelFetch(ablerObjectBuffer, offset, 0).r;
+    if (texel_object != offset_object) {
+      object = 1.0;
+    }
 
     vec2 offset_uv = vec2(offset) / textureSize(maxzBuffer, 0).xy;
     vec3 offset_vs = get_view_space_from_depth(offset_uv, texel_depth);
@@ -89,5 +97,4 @@ void node_outline(vec3 normal,
 
   depth = max_depth;
   negative_depth = -min_depth;
-  object = 0;
 }
