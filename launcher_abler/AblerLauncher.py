@@ -288,7 +288,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global installedversion
         url = "https://api.github.com/repos/acon3d/blender/releases/latest"
         if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"
+            url = "https://api.github.com/repos/acon3d/blender/releases"   
+        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
         # Do path settings save here, in case user has manually edited it
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
@@ -536,7 +537,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def download_ui(self, entry, dir_name):
         url = entry["url"]
         version = entry["version"]
-        exec_name = "Blender" if dir_name == dir_ else "Launcher"
+        # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
+        exec_name = "ABLER" if dir_name == dir_ else "Launcher"
         
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
