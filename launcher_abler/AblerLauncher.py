@@ -283,36 +283,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         return "%3.1f%s" % (num, " TB")
 
     def check_once(self)->None:
+        results = []
         global dir_
         global lastversion
         global installedversion
-        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-        if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"   
-        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
-        # Do path settings save here, in case user has manually edited it
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "path", dir_)
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-        try:
-            req = requests.get(url).json()
-        except Exception as e:
-            self.statusBar().showMessage(
-                "Error reaching server - check your internet connection"
-            )
-            logger.error(e)
-            self.frm_start.show()
-        results = []
-        if test_arg:
-            req = req[0]
-        is_no_release = False
-        try:
-            is_no_release = req["message"] == "Not Found"
-        except Exception as e:
-            logger.debug("Release found")
+        
+        is_no_release, req = self.check_release_request(dir_)
+        
         if is_no_release:
             self.frm_start.show()
             self.check_execute_ui()
@@ -377,38 +354,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def check_launcher(self) -> bool:
         launcher_need_install = False
+        results = []
         global dir_
+        global launcherdir_
+        global launcher_installed
         global lastversion
         global installedversion
-        global launcher_installed
-        global launcherdir_
-        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-        if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"
-        # Do path settings save here, in case user has manually edited it
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        launcher_installed = config.get("main", "launcher")
-        config.set("main", "path", dir_)
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-        try:
-            req = requests.get(url).json()
-        except Exception as e:
-            self.statusBar().showMessage(
-                "Error reaching server - check your internet connection"
-            )
-            logger.error(e)
-            self.frm_start.show()
-        results = []
-        if test_arg:
-            req = req[0]
-        is_no_release = False
-        try:
-            is_no_release = req["message"] == "Not Found"
-        except Exception as e:
-            logger.debug("Release found")
+
+        is_no_release, req = self.check_release_request(launcherdir_)
+        
         if is_no_release:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.check_execute_ui()에서
             #       click 빼야하는지, 있어도 되는지 확인하기
@@ -448,15 +402,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if finallist := results:
                 if launcher_installed is None or launcher_installed == "":
                     launcher_installed = "0.0.0"
-                if StrictVersion(finallist[0]["version"]) > StrictVersion(
-                    launcher_installed
-                ):
-                    # self.btn_execute.hide()
-                    # self.btn_update.hide()
-                    # self.btn_update_launcher.show()
-                    # self.btn_update_launcher.clicked.connect(
-                    #     lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
-                    # )
+                if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
                     self.check_update_ui(finallist, launcherdir_)
                     launcher_need_install = True
             else:
@@ -469,8 +415,51 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update_launcher.hide()
         
     
-    # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
+    def check_release_request(self, dir_name):
+        global dir_
+        global launcherdir_
+        global launcher_installed
+                
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
+        if test_arg:
+            url = "https://api.github.com/repos/acon3d/blender/releases"
+        
+        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
+        
+        # Do path settings save here, in case user has manually edited it
+        global config
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+        
+        if dir_name == launcherdir_:
+            launcher_installed = config.get("main", "launcher")
+        
+        config.set("main", "path", dir_)
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
+        f.close()
+        
+        try:
+            req = requests.get(url).json()
+        except Exception as e:
+            self.statusBar().showMessage(
+                "Error reaching server - check your internet connection"
+            )
+            logger.error(e)
+            self.frm_start.show()
+            
+        if test_arg:
+            req = req[0]
+            
+        is_no_release = False
+        try:
+            is_no_release = req["message"] == "Not Found"
+        except Exception as e:
+            logger.debug("Release found")
+            
+        return is_no_release, req
+        
     def check_update_ui(self, finallist, dir_name):
+        # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
         if dir_name == dir_:
             self.btn_update_launcher.hide()
             self.btn_update.show()
