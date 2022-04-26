@@ -294,53 +294,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.frm_start.show()
             self.check_execute_ui()
 
-        version_tag = req["name"][1:]
-        for asset in req["assets"]:
-            if sys.platform == "darwin":
-                if os.system("sysctl -in sysctl.proc_translated") == 1:
-                    target = asset["browser_download_url"]
-                    if (
-                        "macOS" in target
-                        and "zip" in target
-                        and "Release" in target
-                        and "M1" in target
-                    ):
-                        info = {
-                            "url": target,
-                            "os": "macOS",
-                            "filename": target.split("/")[-1],
-                            "version": version_tag,
-                            "arch": "arm64",
-                        }
-                        results.append(info)
-                else:
-                    target = asset["browser_download_url"]
-                    if (
-                        "macOS" in target
-                        and "zip" in target
-                        and "Release" in target
-                        and "Intel" in target
-                    ):
-                        info = {
-                            "url": target,
-                            "os": "macOS",
-                            "filename": target.split("/")[-1],
-                            "version": version_tag,
-                            "arch": "x86_64",
-                        }
-                        results.append(info)
-
-            elif sys.platform == "win32":
-                target = asset["browser_download_url"]
-                if "Windows" in target and "zip" in target and "Release" in target:
-                    info = {
-                        "url": target,
-                        "os": "Windows",
-                        "filename": target.split("/")[-1],
-                        "version": version_tag,
-                        "arch": "x64",
-                    }
-                    results.append(info)
+        self.check_file_platform(dir_, req, results)
+        
         if finallist := results:
             if installedversion is None or installedversion == "":
                 installedversion = "0.0.0"
@@ -372,33 +327,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_update.hide()
             # self.check_execute_ui()
             return False
+        
         else:
-            for asset in req["assets"]:
-                opsys = platform.system()
-                if opsys == "Windows":
-                    target = asset["browser_download_url"]
-                    if "Windows" in target and "Launcher" in target and "zip" in target:
-                        # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
-
-                        info = {
-                            "url": target,
-                            "os": "Windows",
-                            "filename": target.split("/")[-1],
-                            "version": target.split("/")[-1].split("_")[-1][1:-4],
-                            "arch": "x64",
-                        }
-                        results.append(info)
-                if opsys == "Darwin":
-                    target = asset["browser_download_url"]
-                    if "macOS" in target and "Launcher" in target and "zip" in target:
-                        info = {}
-                        info["url"] = target
-                        info["os"] = "macOS"
-                        info["filename"] = target.split("/")[-1]
-                        # file name should be "ABLER_Launcher_macOS_v0.0.2.zip"
-                        info["version"] = info["filename"].split("_")[-1][1:-4]
-                        info["arch"] = "x86_64"
-                        results.append(info)
+            self.check_file_platform(launcherdir_, req, results)
+            
             if finallist := results:
                 if launcher_installed is None or launcher_installed == "":
                     launcher_installed = "0.0.0"
@@ -414,6 +346,66 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update.hide()
         self.btn_update_launcher.hide()
         
+    
+    def check_file_platform(self, dir_name, req, results):
+        for asset in req["assets"]:
+            target = asset["browser_download_url"]
+            filename = target.split("/")[-1]
+            
+            if dir_name == dir_:
+                target_type = "Release"
+                version_tag = req["name"][1:]
+                
+            elif dir_name == launcherdir_:
+                target_type = "Launcher"
+                version_tag = filename.split("_")[-1][1:-4]
+            
+            if sys.platform == "win32":
+                if (
+                    "Windows" in target
+                    and "zip" in target
+                    and target_type in target
+                ):
+                    info = {
+                        "url": target,
+                        "os": "Windows",
+                        "filename": filename,
+                        "version": version_tag,
+                        "arch": "x64",
+                    }
+                    results.append(info)
+                       
+            elif sys.platform == "darwin":
+                if os.system("sysctl -in sysctl.proc_translated") == 1:
+                    if (
+                        "macOS" in target
+                        and "zip" in target
+                        and target_type in target
+                        and "M1" in target
+                    ):
+                        info = {
+                            "url": target,
+                            "os": "macOS",
+                            "filename": filename,
+                            "version": version_tag,
+                            "arch": "arm64",
+                        }
+                        results.append(info)
+                else:
+                    if (
+                        "macOS" in target
+                        and "zip" in target
+                        and target_type in target
+                        and "Intel" in target
+                    ):
+                        info = {
+                            "url": target,
+                            "os": "macOS",
+                            "filename": filename,
+                            "version": version_tag,
+                            "arch": "x86_64",
+                        }
+                        results.append(info)
     
     def check_release_request(self, dir_name):
         global dir_
