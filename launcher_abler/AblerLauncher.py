@@ -315,8 +315,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.debug("Release found")
         if is_no_release:
             self.frm_start.show()
-            self.check_ui()
-            self.check_execute()
+            self.check_execute_ui()
+
         version_tag = req["name"][1:]
         for asset in req["assets"]:
             if sys.platform == "darwin":
@@ -368,19 +368,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if installedversion is None or installedversion == "":
                 installedversion = "0.0.0"
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
-                self.btn_update.show()
-                self.btn_update.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
-                )
-                self.btn_execute.hide()
-                self.btn_update_launcher.hide()
+                self.check_update_ui(finallist, dir_)
+                
             else:
-                self.check_ui()
-                self.check_execute()
-
+                self.check_execute_ui()
         else:
-            self.check_ui()
-            self.check_execute()
+            self.check_execute_ui()
 
     def check_launcher(self) -> bool:
         launcher_need_install = False
@@ -417,9 +410,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         except Exception as e:
             logger.debug("Release found")
         if is_no_release:
+            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.check_execute_ui()에서
+            #       click 빼야하는지, 있어도 되는지 확인하기
             self.frm_start.show()
-            self.check_ui()
-
+            self.btn_execute.show()
+            self.btn_update_launcher.hide()
+            self.btn_update.hide()
+            # self.check_execute_ui()
             return False
         else:
             for asset in req["assets"]:
@@ -454,10 +451,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(
                     launcher_installed
                 ):
-                    # self.check_ui()
-                    self.btn_update_launcher.clicked.connect(
-                        lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
-                    )
+                    # self.btn_execute.hide()
+                    # self.btn_update.hide()
+                    # self.btn_update_launcher.show()
+                    # self.btn_update_launcher.clicked.connect(
+                    #     lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
+                    # )
+                    self.check_update_ui(finallist, launcherdir_)
                     launcher_need_install = True
             else:
                 self.btn_update_launcher.hide()
@@ -469,14 +469,36 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update_launcher.hide()
         
     
-    def check_execute(self):
+    # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
+    def check_update_ui(self, finallist, dir_name):
+        if dir_name == dir_:
+            self.btn_update_launcher.hide()
+            self.btn_update.show()
+            self.btn_execute.hide()
+            self.btn_update.clicked.connect(
+                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+                )
+        
+        elif dir_name == launcherdir_:
+            self.btn_update_launcher.show()
+            self.btn_update.hide()
+            self.btn_execute.hide()
+            self.btn_update_launcher.clicked.connect(
+                        lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
+                    )
+            
+    def check_execute_ui(self):
+        self.btn_update_launcher.hide()
+        self.btn_update.hide()
+        self.btn_execute.show()
+        
         if sys.platform == "win32":
-            self.btn_execute.clicked.connect(self.exec_windows)
-        if sys.platform == "darwin":
+                self.btn_execute.clicked.connect(self.exec_windows)
+        elif sys.platform == "darwin":
             self.btn_execute.clicked.connect(self.exec_osx)
-        if sys.platform == "linux":
+        elif sys.platform == "linux":
             self.btn_execute.clicked.connect(self.exec_linux)
-
+        
     def download(self, entry, dir_name):
         """Download routines."""
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
@@ -642,7 +664,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
-    def done_ui(self,done_exec):
+    def done_ui(self, done_exec):
         logger.info("Finished")	
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
         self.lbl_clean_pic.setPixmap(donepixmap)	
