@@ -418,9 +418,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.debug("Release found")
         if is_no_release:
             self.frm_start.show()
-            self.btn_execute.show()
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
+            self.check_ui()
+
             return False
         else:
             for asset in req["assets"]:
@@ -455,9 +454,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(
                     launcher_installed
                 ):
-                    self.btn_execute.hide()
-                    self.btn_update.hide()
-                    self.btn_update_launcher.show()
+                    # self.check_ui()
                     self.btn_update_launcher.clicked.connect(
                         lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
                     )
@@ -467,9 +464,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             return launcher_need_install
 
     def check_ui(self):
+        self.btn_execute.show()
         self.btn_update.hide()
         self.btn_update_launcher.hide()
-        self.btn_execute.show()
+        
     
     def check_execute(self):
         if sys.platform == "win32":
