@@ -314,15 +314,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.debug("Release found")
         if is_no_release:
             self.frm_start.show()
-            self.btn_execute.show()
-            if sys.platform == "win32":
-                self.btn_execute.clicked.connect(self.exec_windows)
-            elif sys.platform == "darwin":
-                self.btn_execute.clicked.connect(self.exec_osx)
-            elif sys.platform == "linux":
-                self.btn_execute.clicked.connect(self.exec_linux)
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
+            self.check_execute()
         version_tag = req["name"][1:]
         for asset in req["assets"]:
             if sys.platform == "darwin":
@@ -381,25 +373,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.btn_execute.hide()
                 self.btn_update_launcher.hide()
             else:
-                self.btn_update.hide()
-                self.btn_update_launcher.hide()
-                self.btn_execute.show()
-                if sys.platform == "win32":
-                    self.btn_execute.clicked.connect(self.exec_windows)
-                elif sys.platform == "darwin":
-                    self.btn_execute.clicked.connect(self.exec_osx)
-                elif sys.platform == "linux":
-                    self.btn_execute.clicked.connect(self.exec_linux)
+                self.check_execute()
+
         else:
-            self.btn_update.hide()
-            self.btn_update_launcher.hide()
-            self.btn_execute.show()
-            if sys.platform == "win32":
-                self.btn_execute.clicked.connect(self.exec_windows)
-            if sys.platform == "darwin":
-                self.btn_execute.clicked.connect(self.exec_osx)
-            if sys.platform == "linux":
-                self.btn_execute.clicked.connect(self.exec_linux)
+            self.check_execute()
 
     def check_launcher(self) -> bool:
         launcher_need_install = False
@@ -484,6 +461,18 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             else:
                 self.btn_update_launcher.hide()
             return launcher_need_install
+    
+    def check_execute(self):
+        self.btn_update.hide()
+        self.btn_update_launcher.hide()
+        self.btn_execute.show()
+        if sys.platform == "win32":
+            self.btn_execute.clicked.connect(self.exec_windows)
+        if sys.platform == "darwin":
+            self.btn_execute.clicked.connect(self.exec_osx)
+        if sys.platform == "linux":
+            self.btn_execute.clicked.connect(self.exec_linux)
+    
     
     def download(self, entry, dir_name):
         """Download routines."""
