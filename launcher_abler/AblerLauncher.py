@@ -170,7 +170,11 @@ class WorkerThread(QtCore.QThread):
                 # shortcut.save()
             else:
                 # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
-                copy_tree(source[0], self.path)
+                try:
+                    # TODO: copy_tree가 현재 작동하지 않고 바로 except로 넘어감
+                    copy_tree(source[0], self.path)
+                except Exception as e:
+                    logger.error(e)
             self.finishedCP.emit()
             shutil.rmtree(self.temp_path)
             self.finishedCL.emit()
