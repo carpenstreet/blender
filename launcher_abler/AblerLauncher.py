@@ -238,16 +238,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
+            import UpdateAbler, UpdateLauncher
             # self.check_launcher = launcher_need_install
             # launcher_need_install == True면 check_abler를 확인할 필요 X
             # -> launcher 업데이트가 우선적으로 해야하므로
-            if self.check_launcher():
+            if UpdateLauncher.check_launcher(self):
                 pass
             
             # launcher를 업데이트 하고 나서 다시 실행했을 때는 launcher_need_install == False이므로
             # check_abler 확인
             else:
-                self.check_abler()
+                UpdateAbler.check_abler(self)
         except Exception as e:
             logger.error(e)
 
