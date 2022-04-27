@@ -229,7 +229,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
-            if not (self.check_launcher()):
+            # self.check_launcher = launcher_need_install
+            # launcher_need_install == True면 check_abler를 확인할 필요 X
+            # -> launcher 업데이트가 우선적으로 해야하므로
+            if self.check_launcher():
+                pass
+            
+            # launcher를 업데이트 하고 나서 다시 실행했을 때는 launcher_need_install == False이므로
+            # check_abler 확인
+            else:
                 self.check_abler()
         except Exception as e:
             logger.error(e)
@@ -287,11 +295,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if installedversion is None or installedversion == "":
                 installedversion = "0.0.0"
             
-            # 릴리즈 버전 > 설치 버전
+            # ABLER 릴리즈 버전 > 설치 버전
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
                 self.check_update_ui(finallist, dir_)
             
-            # 릴리즈 버전 == 설치 버전
+            # ABLER 릴리즈 버전 == 설치 버전
             else:
                 self.check_execute_ui()
         
@@ -330,10 +338,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if finallist := results:
                 if launcher_installed is None or launcher_installed == "":
                     launcher_installed = "0.0.0"
+                
+                # Launcher 릴리즈 버전 > 설치 버전
+                # -> launcher_need_install = True가 반환
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
                     self.check_update_ui(finallist, launcherdir_)
                     launcher_need_install = True
 
+            # Launcher 릴리즈 버전 == 설치 버전 
+            # -> launcher_need_install = False가 반환
             return launcher_need_install
 
     def check_ui(self):
