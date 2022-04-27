@@ -597,19 +597,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage("Cleaning temporary files")
 
     def done_abler(self):
-        self.setup_done_ui("ABLER")
-        
-        opsys = platform.system()
-        if opsys == "Windows":
-            self.btn_execute.clicked.connect(self.exec_windows)
-        if opsys == "Darwin":
-            self.btn_execute.clicked.connect(self.exec_osx)
-        if opsys == "Linux":
-            self.btn_execute.clicked.connect(self.exec_linux)
+        # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
+        self.setup_download_done_ui()
+        self.setup_execute_ui()
 
     def done_launcher(self):
-        self.setup_done_ui("Launcher")
-        
+        # 최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행
+        self.setup_download_done_ui()
         QtWidgets.QMessageBox.information(
             self,
             "Launcher updated",
@@ -647,7 +641,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
-    def setup_done_ui(self, done_exec):
+    def setup_download_done_ui(self):
         logger.info("Finished")	
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
         self.lbl_clean_pic.setPixmap(donepixmap)	
@@ -657,12 +651,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(100)	
         self.lbl_task.setText("Finished")	
         self.btn_Quit.setEnabled(True)
-        if done_exec == "ABLER":
-            self.btn_update.hide()
-            self.btn_update_launcher.hide()
-            self.btn_execute.show()
-        
-        
+
     def exec_windows(self):
         try:
             if privilege_helper.isUserAdmin():
