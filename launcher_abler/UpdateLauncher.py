@@ -24,10 +24,6 @@ if sys.platform == "win32":
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
-app = QtWidgets.QApplication(sys.argv)
-
-app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
 
 def get_datadir() -> pathlib.Path:
     """
@@ -62,7 +58,6 @@ appversion = "1.9.8"
 dir_ = ""
 if sys.platform == "darwin":
     dir_ = "/Applications"
-
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"

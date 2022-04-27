@@ -24,10 +24,6 @@ if sys.platform == "win32":
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
-app = QtWidgets.QApplication(sys.argv)
-
-app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
 
 def get_datadir() -> pathlib.Path:
     """
@@ -388,6 +384,7 @@ def cleanup(self):
     self.lbl_cleanup.setText("<b>Cleaning up</b>")
     self.lbl_task.setText("Cleaning up...")
     self.statusbar.showMessage("Cleaning temporary files")
+
 def done_abler(self):
     # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
     setup_download_done_ui()
