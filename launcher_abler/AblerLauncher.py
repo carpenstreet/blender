@@ -526,7 +526,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         thread.finishedCP.connect(self.cleanup)
         
         if dir_name == dir_:
-            thread.finishedCL.connect(self.done)
+            thread.finishedCL.connect(self.done_abler)
         else:
             thread.finishedCL.connect(self.done_launcher)
             
@@ -559,6 +559,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(percent)
 
     def extraction(self):
+        # 다운로드 받은 파일 압축 해제
         logger.info("Extracting to temp directory")
         self.lbl_task.setText("Extracting...")
         self.btn_Quit.setEnabled(False)
@@ -573,6 +574,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(-1)
 
     def finalcopy(self):
+        # 설치 파일 복사
         exec_dir_name = self.exec_dir_name
         logger.info(f"Copying to {exec_dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
@@ -584,6 +586,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
 
     def cleanup(self):
+        # 설치 파일 임시 폴더 제거
         logger.info("Cleaning up temp files")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
@@ -593,8 +596,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Cleaning up...")
         self.statusbar.showMessage("Cleaning temporary files")
 
-    def done(self):
-        self.setup_done_ui("Blender")
+    def done_abler(self):
+        self.setup_done_ui("ABLER")
+        
         opsys = platform.system()
         if opsys == "Windows":
             self.btn_execute.clicked.connect(self.exec_windows)
@@ -605,6 +609,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def done_launcher(self):
         self.setup_done_ui("Launcher")
+        
         QtWidgets.QMessageBox.information(
             self,
             "Launcher updated",
@@ -652,7 +657,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(100)	
         self.lbl_task.setText("Finished")	
         self.btn_Quit.setEnabled(True)
-        if done_exec == "Blender":
+        if done_exec == "ABLER":
             self.btn_update.hide()
             self.btn_update_launcher.hide()
             self.btn_execute.show()
