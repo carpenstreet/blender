@@ -230,7 +230,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             if not (self.check_launcher()):
-                self.check_once()
+                self.check_abler()
         except Exception as e:
             logger.error(e)
 
@@ -264,13 +264,18 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             num /= 1024.0
         return "%3.1f%s" % (num, " TB")
 
-    def check_once(self)->None:
-        results = []
+    def check_abler(self)->None:
+        # 최신 릴리즈가 있는지 URL 주소로 확인
         global dir_
         global lastversion
         global installedversion
-        
-        is_no_release, req = self.check_release_request(dir_)
+        results = []
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
+        if test_arg:
+            url = "https://api.github.com/repos/acon3d/blender/releases"
+        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
+
+        is_no_release, req = self.check_release_request(dir_, url)
         
         if is_no_release:
             self.frm_start.show()
@@ -281,24 +286,33 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if finallist := results:
             if installedversion is None or installedversion == "":
                 installedversion = "0.0.0"
+            
+            # 릴리즈 버전 > 설치 버전
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
                 self.check_update_ui(finallist, dir_)
-                
+            
+            # 릴리즈 버전 == 설치 버전
             else:
                 self.check_execute_ui()
+        
+        # 통신 오류로 results가 없어서 바로 ABLER 실행
         else:
             self.check_execute_ui()
 
     def check_launcher(self) -> bool:
-        launcher_need_install = False
-        results = []
         global dir_
         global launcherdir_
         global launcher_installed
         global lastversion
         global installedversion
+        launcher_need_install = False
+        results = []
+        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
+        if test_arg:
+            url = "https://api.github.com/repos/acon3d/blender/releases"
+        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-        is_no_release, req = self.check_release_request(launcherdir_)
+        is_no_release, req = self.check_release_request(launcherdir_, url)
         
         if is_no_release:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.check_execute_ui()에서
@@ -319,8 +333,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
                     self.check_update_ui(finallist, launcherdir_)
                     launcher_need_install = True
-            else:
-                self.btn_update_launcher.hide()
+
             return launcher_need_install
 
     def check_ui(self):
@@ -389,17 +402,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         }
                         results.append(info)
     
-    def check_release_request(self, dir_name):
+    def check_release_request(self, dir_name, url):
         global dir_
         global launcherdir_
         global launcher_installed
                 
-        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-        if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"
-        
-        # TODO: 새 arg 받아서 테스트 레포 url 업데이트
-        
         # Do path settings save here, in case user has manually edited it
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
