@@ -113,24 +113,6 @@ class WorkerThread(QtCore.QThread):
         self.path = path
         self.temp_path = temp_path
 
-        os_dic = {
-            "macOS": "OSX", 
-            "win32": "Windows 32bit", 
-            "win64": "Windows 64bit", 
-            "glibc211-i686": "Linux glibc211 i686",
-            "glibc211-x86_64": "Linux glibc211 x86_64",
-            "glibc219-i686": "Linux glibc219 i686",
-            "glibc219-x86_64": "Linux glibc219 x86_64"
-        }
-
-        for os in os_dic:
-            if os in file:
-                config.set("main","lastdl",os_dic[os])
-                with open("config.ini", "w") as f:
-                    config.write(f)
-                    f.close()
-                break
-
     def progress(self, count, blockSize, totalSize):
         """Updates progress bar"""
         percent = int(count * blockSize * 100 / totalSize)
