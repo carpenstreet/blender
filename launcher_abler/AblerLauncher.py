@@ -66,6 +66,15 @@ def get_datadir() -> pathlib.Path:
         return home / "Library/Application Support"
 
 
+def hbytes(num) -> str:
+    """Translate to human readable file size."""
+    for x in [" bytes", " KB", " MB", " GB"]:
+        if num < 1024.0:
+            return "%3.1f%s" % (num, x)
+        num /= 1024.0
+    return "%3.1f%s" % (num, " TB")
+
+
 appversion = "1.9.8"
 dir_ = ""
 if sys.platform == "darwin":
@@ -263,14 +272,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             + "</p></body></html> "
         )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
-
-    def hbytes(self, num):
-        """Translate to human readable file size."""
-        for x in [" bytes", " KB", " MB", " GB"]:
-            if num < 1024.0:
-                return "%3.1f%s" % (num, x)
-            num /= 1024.0
-        return "%3.1f%s" % (num, " TB")
 
     def check_abler(self)->None:
         # 최신 릴리즈가 있는지 URL 주소로 확인
@@ -542,7 +543,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
-        size_readable = self.hbytes(float(totalsize))
+        size_readable = hbytes(float(totalsize))
     
         self.lbl_available.hide()
         self.lbl_caution.hide()
