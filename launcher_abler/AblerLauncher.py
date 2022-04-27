@@ -283,13 +283,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             url = "https://api.github.com/repos/acon3d/blender/releases"
         # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-        is_release, req = self.check_release_request(dir_, url)
+        is_release, req = self.get_req_from_url(dir_, url)
         
         if not is_release:
             self.frm_start.show()
             self.setup_execute_ui()
 
-        self.check_file_platform(dir_, req, results)
+        self.get_results_from_req(dir_, req, results)
         
         if finallist := results:
             if installedversion is None or installedversion == "":
@@ -320,7 +320,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             url = "https://api.github.com/repos/acon3d/blender/releases"
         # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-        is_release, req = self.check_release_request(launcherdir_, url)
+        is_release, req = self.get_req_from_url(launcherdir_, url)
         
         if not is_release:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
@@ -333,7 +333,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             return False
         
         else:
-            self.check_file_platform(launcherdir_, req, results)
+            self.get_results_from_req(launcherdir_, req, results)
             
             if finallist := results:
                 if launcher_installed is None or launcher_installed == "":
@@ -350,7 +350,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             return launcher_need_install
         
     
-    def check_file_platform(self, dir_name, req, results):
+    def get_results_from_req(self, dir_name, req, results):
+        # req에서 필요한 info를 results에 추가
         for asset in req["assets"]:
             target = asset["browser_download_url"]
             filename = target.split("/")[-1]
@@ -410,7 +411,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         }
                         results.append(info)
     
-    def check_release_request(self, dir_name, url):
+    def get_req_from_url(self, dir_name, url):
+        # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
         global dir_
         global launcherdir_
         global launcher_installed
