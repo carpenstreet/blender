@@ -287,7 +287,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         
         if not is_release:
             self.frm_start.show()
-            self.check_execute_ui()
+            self.setup_execute_ui()
 
         self.check_file_platform(dir_, req, results)
         
@@ -297,15 +297,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
             # ABLER 릴리즈 버전 > 설치 버전
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
-                self.check_update_abler_ui(finallist)
+                self.setup_update_abler_ui(finallist)
             
             # ABLER 릴리즈 버전 == 설치 버전
             else:
-                self.check_execute_ui()
+                self.setup_execute_ui()
         
         # 통신 오류로 results가 없어서 바로 ABLER 실행
         else:
-            self.check_execute_ui()
+            self.setup_execute_ui()
 
     def check_launcher(self) -> bool:
         global dir_
@@ -323,13 +323,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         is_release, req = self.check_release_request(launcherdir_, url)
         
         if not is_release:
-            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.check_execute_ui()에서
+            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
             #       click 빼야하는지, 있어도 되는지 확인하기
             self.frm_start.show()
             self.btn_execute.show()
             self.btn_update_launcher.hide()
             self.btn_update.hide()
-            # self.check_execute_ui()
+            # self.setup_execute_ui()
             return False
         
         else:
@@ -342,17 +342,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 # Launcher 릴리즈 버전 > 설치 버전
                 # -> launcher_need_install = True가 반환
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
-                    self.check_update_launcher_ui(finallist)
+                    self.setup_update_launcher_ui(finallist)
                     launcher_need_install = True
 
             # Launcher 릴리즈 버전 == 설치 버전 
             # -> launcher_need_install = False가 반환
             return launcher_need_install
-
-    def check_ui(self):
-        self.btn_execute.show()
-        self.btn_update.hide()
-        self.btn_update_launcher.hide()
         
     
     def check_file_platform(self, dir_name, req, results):
@@ -452,7 +447,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
         return is_release, req
         
-    def check_update_abler_ui(self, finallist):
+    def setup_update_abler_ui(self, finallist):
         # ABLER를 업데이트 
         # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
         self.btn_update_launcher.hide()
@@ -462,7 +457,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
             )
     
-    def check_update_launcher_ui(self, finallist):
+    def setup_update_launcher_ui(self, finallist):
         self.btn_update_launcher.show()
         self.btn_update.hide()
         self.btn_execute.hide()
@@ -470,7 +465,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
                 )
             
-    def check_execute_ui(self):
+    def setup_execute_ui(self):
         self.btn_update_launcher.hide()
         self.btn_update.hide()
         self.btn_execute.show()
@@ -519,7 +514,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
         
-        self.download_ui(entry, dir_name)
+        self.setup_download_ui(entry, dir_name)
 
         self.exec_dir_name = os.path.join(dir_name, "")
         filename = temp_name + entry["filename"]
@@ -537,7 +532,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
         thread.start()
         
-    def download_ui(self, entry, dir_name):
+    def setup_download_ui(self, entry, dir_name):
         url = entry["url"]
         version = entry["version"]
         # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
@@ -599,7 +594,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage("Cleaning temporary files")
 
     def done(self):
-        self.done_ui("Blender")
+        self.setup_done_ui("Blender")
         opsys = platform.system()
         if opsys == "Windows":
             self.btn_execute.clicked.connect(self.exec_windows)
@@ -609,7 +604,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_execute.clicked.connect(self.exec_linux)
 
     def done_launcher(self):
-        self.done_ui("Launcher")
+        self.setup_done_ui("Launcher")
         QtWidgets.QMessageBox.information(
             self,
             "Launcher updated",
@@ -647,7 +642,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
-    def done_ui(self, done_exec):
+    def setup_done_ui(self, done_exec):
         logger.info("Finished")	
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
         self.lbl_clean_pic.setPixmap(donepixmap)	
