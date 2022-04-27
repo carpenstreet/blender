@@ -297,7 +297,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
             # ABLER 릴리즈 버전 > 설치 버전
             if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
-                self.check_update_ui(finallist, dir_)
+                self.check_update_abler_ui(finallist)
             
             # ABLER 릴리즈 버전 == 설치 버전
             else:
@@ -342,7 +342,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 # Launcher 릴리즈 버전 > 설치 버전
                 # -> launcher_need_install = True가 반환
                 if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
-                    self.check_update_ui(finallist, launcherdir_)
+                    self.check_update_launcher_ui(finallist)
                     launcher_need_install = True
 
             # Launcher 릴리즈 버전 == 설치 버전 
@@ -452,23 +452,23 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
         return is_release, req
         
-    def check_update_ui(self, finallist, dir_name):
+    def check_update_abler_ui(self, finallist):
+        # ABLER를 업데이트 
         # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
-        if dir_name == dir_:
-            self.btn_update_launcher.hide()
-            self.btn_update.show()
-            self.btn_execute.hide()
-            self.btn_update.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+        self.btn_update_launcher.hide()
+        self.btn_update.show()
+        self.btn_execute.hide()
+        self.btn_update.clicked.connect(
+                lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+            )
+    
+    def check_update_launcher_ui(self, finallist):
+        self.btn_update_launcher.show()
+        self.btn_update.hide()
+        self.btn_execute.hide()
+        self.btn_update_launcher.clicked.connect(
+                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
                 )
-        
-        elif dir_name == launcherdir_:
-            self.btn_update_launcher.show()
-            self.btn_update.hide()
-            self.btn_execute.hide()
-            self.btn_update_launcher.clicked.connect(
-                        lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
-                    )
             
     def check_execute_ui(self):
         self.btn_update_launcher.hide()
