@@ -275,9 +275,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             url = "https://api.github.com/repos/acon3d/blender/releases"
         # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-        is_no_release, req = self.check_release_request(dir_, url)
+        is_release, req = self.check_release_request(dir_, url)
         
-        if is_no_release:
+        if not is_release:
             self.frm_start.show()
             self.check_execute_ui()
 
@@ -312,9 +312,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             url = "https://api.github.com/repos/acon3d/blender/releases"
         # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-        is_no_release, req = self.check_release_request(launcherdir_, url)
+        is_release, req = self.check_release_request(launcherdir_, url)
         
-        if is_no_release:
+        if not is_release:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.check_execute_ui()에서
             #       click 빼야하는지, 있어도 되는지 확인하기
             self.frm_start.show()
@@ -431,13 +431,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if test_arg:
             req = req[0]
             
-        is_no_release = False
+        is_release = True
         try:
-            is_no_release = req["message"] == "Not Found"
+            is_release = req["message"] != "Not Found"
         except Exception as e:
             logger.debug("Release found")
             
-        return is_no_release, req
+        return is_release, req
         
     def check_update_ui(self, finallist, dir_name):
         # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
