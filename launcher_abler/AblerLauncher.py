@@ -239,7 +239,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             import UpdateAbler, UpdateLauncher
-            self.launcher_state_parse(UpdateLauncher.check_launcher(launcher_installed))
+            self.launcher_state_parse(UpdateLauncher.check_launcher(dir_,launcher_installed))
             self.abler_state_parse(UpdateAbler.check_abler(dir_,installedversion))
         except Exception as e:
             logger.error(e)

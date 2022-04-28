@@ -47,12 +47,7 @@ def get_datadir() -> pathlib.Path:
 
 
 appversion = "1.9.8"
-dir_ = ""
-if sys.platform == "darwin":
-    dir_ = "/Applications"
 
-elif sys.platform == "win32":
-    dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
 config = configparser.ConfigParser()
 btn = {}
@@ -76,7 +71,7 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
-def check_abler(installedversion)->None:
+def check_abler(dir_,installedversion)->None:
     # 최신 릴리즈가 있는지 URL 주소로 확인
     finallist = None
     results = []
@@ -85,14 +80,14 @@ def check_abler(installedversion)->None:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req, state_ui = get_req_from_url(url)
+    is_release, req, state_ui = get_req_from_url(url,dir_)
     if state_ui:
         return state_ui, finallist
 
     if not is_release:
         state_ui = "no release"
         return state_ui, finallist
-        
+
     get_results_from_req(req, results)
 
     if results:
@@ -115,19 +110,12 @@ def check_abler(installedversion)->None:
 
     return state_ui, finallist
 
-def get_req_from_url(dir_name, url):
+def get_req_from_url(url,dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
-    global dir_
-    global launcherdir_
-    global launcher_installed
 
     # Do path settings save here, in case user has manually edited it
-    global config
+
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-
-    if dir_name == launcherdir_:
-        launcher_installed = config.get("main", "launcher")
-
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)

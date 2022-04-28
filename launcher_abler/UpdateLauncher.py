@@ -75,7 +75,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(launcher_installed) -> bool:
+def check_launcher(dir_,launcher_installed) -> bool:
     finallist = None
     results = []
     state_ui = None
@@ -84,7 +84,7 @@ def check_launcher(launcher_installed) -> bool:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req, state_ui, launcher_installed = get_req_from_url(url, state_ui, launcher_installed)
+    is_release, req, state_ui, launcher_installed = get_req_from_url(url, state_ui, launcher_installed,dir_)
     if state_ui == "error":
         return state_ui, finallist
 
@@ -109,9 +109,8 @@ def check_launcher(launcher_installed) -> bool:
         # -> finallist = None가 반환
         return state_ui, None
 
-def get_req_from_url(url, state_ui, launcher_installed):
+def get_req_from_url(url, state_ui, launcher_installed,dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
-    global dir_
 
     # Do path settings save here, in case user has manually edited it
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
