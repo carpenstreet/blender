@@ -1,23 +1,10 @@
-import privilege_helper
 import pathlib
-from PySide2 import QtWidgets, QtCore, QtGui
-import qdarkstyle
-import mainwindow
 import requests
-import configparser
 import logging
 import os
 import os.path
-import platform
-import shutil
-import subprocess
 import sys
-import urllib.parse
-import urllib.request
-import time
-from distutils.dir_util import copy_tree
 from distutils.version import StrictVersion
-from typing import Optional
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -45,15 +32,6 @@ def get_datadir() -> pathlib.Path:
         return home / "Library/Application Support"
 
 
-
-appversion = "1.9.8"
-
-launcherdir_ = get_datadir() / "Blender/2.96/updater"
-config = configparser.ConfigParser()
-btn = {}
-lastversion = ""
-installedversion = ""
-launcher_installed = ""
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
