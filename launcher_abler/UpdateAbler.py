@@ -150,7 +150,7 @@ class WorkerThread(QtCore.QThread):
         except Exception as e:
             logger.error(e)
 
-def check_abler(self)->None:
+def check_abler()->None:
     # 최신 릴리즈가 있는지 URL 주소로 확인
     global dir_
     global lastversion
@@ -162,25 +162,25 @@ def check_abler(self)->None:
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
     is_release, req = get_req_from_url(dir_, url)
-    
+
     if not is_release:
         self.frm_start.show()
-        self.setup_execute_ui()
+        setup_execute_ui()
 
     get_results_from_req(dir_, req, results)
-    
+
     if finallist := results:
         if installedversion is None or installedversion == "":
             installedversion = "0.0.0"
-        
+
         # ABLER 릴리즈 버전 > 설치 버전
         if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
             setup_update_abler_ui(finallist)
-        
+
         # ABLER 릴리즈 버전 == 설치 버전
         else:
             setup_execute_ui()
-    
+
     # 통신 오류로 results가 없어서 바로 ABLER 실행
     else:
         setup_execute_ui()
@@ -190,19 +190,19 @@ def get_req_from_url(self, dir_name, url):
     global dir_
     global launcherdir_
     global launcher_installed
-            
+
     # Do path settings save here, in case user has manually edited it
     global config
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-    
+
     if dir_name == launcherdir_:
         launcher_installed = config.get("main", "launcher")
-    
+
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)
     f.close()
-    
+
     try:
         req = requests.get(url).json()
     except Exception as e:
@@ -211,16 +211,16 @@ def get_req_from_url(self, dir_name, url):
         )
         logger.error(e)
         self.frm_start.show()
-        
+
     if test_arg:
         req = req[0]
-        
+
     is_release = True
     try:
         is_release = req["message"] != "Not Found"
     except Exception as e:
         logger.debug("Release found")
-        
+
     return is_release, req
 
 def get_results_from_req(dir_name, req, results):
@@ -228,15 +228,15 @@ def get_results_from_req(dir_name, req, results):
     for asset in req["assets"]:
         target = asset["browser_download_url"]
         filename = target.split("/")[-1]
-        
+
         if dir_name == dir_:
             target_type = "Release"
             version_tag = req["name"][1:]
-            
+
         elif dir_name == launcherdir_:
             target_type = "Launcher"
             version_tag = filename.split("_")[-1][1:-4]
-        
+
         if sys.platform == "win32":
             if (
                 "Windows" in target
@@ -251,7 +251,7 @@ def get_results_from_req(dir_name, req, results):
                     "arch": "x64",
                 }
                 results.append(info)
-                    
+
         elif sys.platform == "darwin":
             if os.system("sysctl -in sysctl.proc_translated") == 1:
                 if (
@@ -285,7 +285,7 @@ def get_results_from_req(dir_name, req, results):
                     results.append(info)
 
 def setup_update_abler_ui(self, finallist):
-    # ABLER를 업데이트 
+    # ABLER를 업데이트
     # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
     self.btn_update_launcher.hide()
     self.btn_update.show()
@@ -297,7 +297,7 @@ def setup_update_abler_ui(self, finallist):
 def download(self, entry, dir_name):
         """Download routines."""
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
-        
+
         url = entry["url"]
         version = entry["version"]
         variation = entry["arch"]
@@ -306,10 +306,10 @@ def download(self, entry, dir_name):
             shutil.rmtree(temp_name)
 
         os.makedirs(temp_name)
-        
+
         global config
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        
+
         if dir_name == dir_:
             config.set("main", "path", dir_)
             config.set("main", "flavor", variation)
@@ -317,7 +317,7 @@ def download(self, entry, dir_name):
         else:
             config.set("main", "launcher", version)
             logger.info(f"1 {config.get('main', 'installed')}")
-    
+
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
         f.close()
@@ -330,18 +330,18 @@ def download(self, entry, dir_name):
             for i in btn:
                 btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
-        
+
         self.setup_download_ui(entry, dir_name)
 
         self.exec_dir_name = os.path.join(dir_name, "")
         filename = temp_name + entry["filename"]
-        
+
         thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
         thread.update.connect(updatepb)
         thread.finishedDL.connect(extraction)
         thread.finishedEX.connect(finalcopy)
         thread.finishedCP.connect(cleanup)
-        thread.finishedCL.connect(done_abler)  
+        thread.finishedCL.connect(done_abler)
         thread.start()
 
 def updatepb(self, percent):
@@ -391,21 +391,21 @@ def done_abler(self):
     setup_execute_ui()
 
 def setup_download_done_ui(self):
-    logger.info("Finished")	
-    donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
-    self.lbl_clean_pic.setPixmap(donepixmap)	
-    self.statusbar.showMessage("Ready")	
-    self.progressBar.setMinimum(0)	
-    self.progressBar.setMaximum(100)	
-    self.progressBar.setValue(100)	
-    self.lbl_task.setText("Finished")	
+    logger.info("Finished")
+    donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+    self.lbl_clean_pic.setPixmap(donepixmap)
+    self.statusbar.showMessage("Ready")
+    self.progressBar.setMinimum(0)
+    self.progressBar.setMaximum(100)
+    self.progressBar.setValue(100)
+    self.lbl_task.setText("Finished")
     self.btn_Quit.setEnabled(True)
 
 def setup_execute_ui(self):
     self.btn_update_launcher.hide()
     self.btn_update.hide()
     self.btn_execute.show()
-    
+
     if sys.platform == "win32":
             self.btn_execute.clicked.connect(exec_windows)
     elif sys.platform == "darwin":

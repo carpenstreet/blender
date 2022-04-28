@@ -149,101 +149,102 @@ class WorkerThread(QtCore.QThread):
         except Exception as e:
             logger.error(e)
 
-def check_launcher(self) -> bool:
-    global dir_
-    global launcherdir_
-    global launcher_installed
-    global lastversion
-    global installedversion
+
+def check_launcher(launcherdir_,launcher_installed) -> bool:
+    # global dir_
+    # global launcherdir_
+    # global launcher_installed
+    # global lastversion
+    # global installedversion
+    print("AAA")
     launcher_need_install = False
     results = []
+    state_ui = None
     url = "https://api.github.com/repos/acon3d/blender/releases/latest"
     if test_arg:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req = get_req_from_url(launcherdir_, url)
-    
+    is_release, req, state_ui = get_req_from_url(launcherdir_, url, state_ui)
+    if state_ui:
+        return state_ui, False
+
     if not is_release:
-        # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
-        #       click 빼야하는지, 있어도 되는지 확인하기
-        self.frm_start.show()
-        self.btn_execute.show()
-        self.btn_update_launcher.hide()
-        self.btn_update.hide()
-        # self.setup_execute_ui()
-        return False
-    
+        state_ui = "no release"
+        return state_ui, False
+
     else:
         get_results_from_req(launcherdir_, req, results)
-        
+
         if finallist := results:
             if launcher_installed is None or launcher_installed == "":
                 launcher_installed = "0.0.0"
-            
+
             # Launcher 릴리즈 버전 > 설치 버전
             # -> launcher_need_install = True가 반환
             if StrictVersion(finallist[0]["version"]) > StrictVersion(launcher_installed):
                 setup_update_launcher_ui(finallist)
                 launcher_need_install = True
 
-        # Launcher 릴리즈 버전 == 설치 버전 
+        # Launcher 릴리즈 버전 == 설치 버전
         # -> launcher_need_install = False가 반환
         return launcher_need_install
 
 
-def get_req_from_url(self, dir_name, url):
+def get_req_from_url(dir_name, url, state_ui):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
     global dir_
     global launcherdir_
     global launcher_installed
-            
+
     # Do path settings save here, in case user has manually edited it
     global config
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-    
+
     if dir_name == launcherdir_:
         launcher_installed = config.get("main", "launcher")
-    
+
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)
     f.close()
-    
+
     try:
         req = requests.get(url).json()
     except Exception as e:
-        self.statusBar().showMessage(
-            "Error reaching server - check your internet connection"
-        )
+        # self.statusBar().showMessage(
+        #     "Error reaching server - check your internet connection"
+        # )
+        # logger.error(e)
+        # self.frm_start.show()
         logger.error(e)
-        self.frm_start.show()
-        
+        state_ui = "error"
+
     if test_arg:
         req = req[0]
-        
+
     is_release = True
     try:
         is_release = req["message"] != "Not Found"
     except Exception as e:
         logger.debug("Release found")
-        
-    return is_release, req
+
+    return is_release, req, state_ui
 
 def get_results_from_req(dir_name, req, results):
     # req에서 필요한 info를 results에 추가
     for asset in req["assets"]:
         target = asset["browser_download_url"]
         filename = target.split("/")[-1]
-        
+
         if dir_name == dir_:
             target_type = "Release"
             version_tag = req["name"][1:]
-            
+
         elif dir_name == launcherdir_:
             target_type = "Launcher"
             version_tag = filename.split("_")[-1][1:-4]
-        
+
         if sys.platform == "win32":
             if (
                 "Windows" in target
@@ -258,7 +259,7 @@ def get_results_from_req(dir_name, req, results):
                     "arch": "x64",
                 }
                 results.append(info)
-                    
+
         elif sys.platform == "darwin":
             if os.system("sysctl -in sysctl.proc_translated") == 1:
                 if (
@@ -302,7 +303,7 @@ def setup_update_launcher_ui(self, finallist):
 def download(self, entry, dir_name):
     """Download routines."""
     temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
-    
+
     url = entry["url"]
     version = entry["version"]
     variation = entry["arch"]
@@ -311,10 +312,10 @@ def download(self, entry, dir_name):
         shutil.rmtree(temp_name)
 
     os.makedirs(temp_name)
-    
+
     global config
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-    
+
     if dir_name == dir_:
         config.set("main", "path", dir_)
         config.set("main", "flavor", variation)
@@ -335,19 +336,19 @@ def download(self, entry, dir_name):
         for i in btn:
             btn[i].hide()
     logger.info(f"Starting download thread for {url}{version}")
-    
+
     self.setup_download_ui(entry, dir_name)
 
     self.exec_dir_name = os.path.join(dir_name, "")
     filename = temp_name + entry["filename"]
-    
+
     thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
     thread.update.connect(updatepb)
     thread.finishedDL.connect(extraction)
     thread.finishedEX.connect(finalcopy)
     thread.finishedCP.connect(cleanup)
     thread.finishedCL.connect(done_launcher)
-        
+
     thread.start()
 
 def updatepb(self, percent):
