@@ -239,31 +239,262 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             import UpdateAbler, UpdateLauncher
-
-            # self.check_launcher = launcher_need_install
-            # launcher_need_install == True면 check_abler를 확인할 필요 X
-            # -> launcher 업데이트가 우선적으로 해야하므로
-            state_ui, launcher_need_install = UpdateLauncher.check_launcher(launcherdir_,launcher_installed)
-            if state_ui == "error":
-                self.statusBar().showMessage(
-                    "Error reaching server - check your internet connection"
-                )
-                self.frm_start.show()
-            if state_ui == "no release":
-                # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
-                #       click 빼야하는지, 있어도 되는지 확인하기
-                self.frm_start.show()
-                self.btn_execute.show()
-                self.btn_update_launcher.hide()
-                self.btn_update.hide()
-                # self.setup_execute_ui()
-
-            # launcher를 업데이트 하고 나서 다시 실행했을 때는 launcher_need_install == False이므로
-            # check_abler 확인
-            else:
-                UpdateAbler.check_abler(self)
+            self.launcher_state_parse(UpdateLauncher.check_launcher(launcher_installed))
+            self.abler_state_parse(UpdateAbler.check_abler(dir_,installedversion))
         except Exception as e:
             logger.error(e)
+
+    def launcher_state_parse(self,state_ui, finallist):
+        if state_ui == "error":
+            self.statusBar().showMessage(
+                "Error reaching server - check your internet connection"
+            )
+            self.frm_start.show()
+
+        elif state_ui == "no release":
+            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
+            #       click 빼야하는지, 있어도 되는지 확인하기
+            self.frm_start.show()
+            self.btn_execute.show()
+            self.btn_update_launcher.hide()
+            self.btn_update.hide()
+            # self.setup_execute_ui()
+        
+        # state_ui = "update Launcher",
+        elif state_ui == "update Launcher":
+            self.setup_update_launcher_ui(finallist)
+        else:
+            return
+
+    def abler_state_parse(self, state_ui, finallist):
+        if state_ui == "error":
+            self.statusBar().showMessage(
+                "Error reaching server - check your internet connection"
+            )
+            self.frm_start.show()
+        
+        elif state_ui == "no release":
+            self.frm_start.show()
+            self.setup_execute_ui()
+        
+        # state_ui = finalist[0] = info
+        elif state_ui == "update ABLER":
+            self.setup_update_abler_ui(finallist)
+
+        elif state_ui == "execute":
+            self.setup_execute_ui()
+        else: return
+
+    def setup_update_launcher_ui(self, finallist):
+        self.btn_update_launcher.show()
+        self.btn_update.hide()
+        self.btn_execute.hide()
+        self.btn_update_launcher.clicked.connect(
+                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
+                )
+
+    def setup_update_abler_ui(self, finallist):
+        # ABLER를 업데이트
+        # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
+        self.btn_update_launcher.hide()
+        self.btn_update.show()
+        self.btn_execute.hide()
+        self.btn_update.clicked.connect(
+                lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+            )
+
+    def setup_execute_ui(self):
+        self.btn_update_launcher.hide()
+        self.btn_update.hide()
+        self.btn_execute.show()
+
+        if sys.platform == "win32":
+                self.btn_execute.clicked.connect(self.exec_windows)
+        elif sys.platform == "darwin":
+            self.btn_execute.clicked.connect(self.exec_osx)
+        elif sys.platform == "linux":
+            self.btn_execute.clicked.connect(self.exec_linux)
+
+    def download(self, entry, dir_name):
+        """Download routines."""
+        temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
+
+        url = entry["url"]
+        version = entry["version"]
+        variation = entry["arch"]
+
+        if os.path.isdir(temp_name):
+            shutil.rmtree(temp_name)
+
+        os.makedirs(temp_name)
+
+        global config
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+
+        if dir_name == dir_:
+            config.set("main", "path", dir_)
+            config.set("main", "flavor", variation)
+            config.set("main", "installed", version)
+        else:
+            config.set("main", "launcher", version)
+            logger.info(f"1 {config.get('main', 'installed')}")
+
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
+        f.close()
+
+        ##########################
+        # Do the actual download #
+        ##########################
+
+        if dir_name == dir_:
+            for i in btn:
+                btn[i].hide()
+        logger.info(f"Starting download thread for {url}{version}")
+
+        self.setup_download_ui(entry, dir_name)
+
+        self.exec_dir_name = os.path.join(dir_name, "")
+        filename = temp_name + entry["filename"]
+
+        thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
+        thread.update.connect(self.updatepb)
+        thread.finishedDL.connect(self.extraction)
+        thread.finishedEX.connect(self.finalcopy)
+        thread.finishedCP.connect(self.cleanup)
+
+        if dir_name == dir_:
+            thread.finishedCL.connect(self.done_abler)
+        else:
+            thread.finishedCL.connect(self.done_launcher)
+
+        thread.start()
+
+    def updatepb(self, percent):
+        self.progressBar.setValue(percent)
+
+    def extraction(self):
+        # 다운로드 받은 파일 압축 해제
+        logger.info("Extracting to temp directory")
+        self.lbl_task.setText("Extracting...")
+        self.btn_Quit.setEnabled(False)
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+        self.lbl_download_pic.setPixmap(donepixmap)
+        self.lbl_extract_pic.setPixmap(nowpixmap)
+        self.lbl_extraction.setText("<b>Extraction</b>")
+        self.statusbar.showMessage("Extracting to temporary folder, please wait...")
+        self.progressBar.setMaximum(0)
+        self.progressBar.setMinimum(0)
+        self.progressBar.setValue(-1)
+
+    def finalcopy(self):
+        # 설치 파일 복사
+        exec_dir_name = self.exec_dir_name
+        logger.info(f"Copying to {exec_dir_name}")
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+        self.lbl_extract_pic.setPixmap(donepixmap)
+        self.lbl_copy_pic.setPixmap(nowpixmap)
+        self.lbl_copying.setText("<b>Copying</b>")
+        self.lbl_task.setText("Copying files...")
+        self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
+
+    def cleanup(self):
+        # 설치 파일 임시 폴더 제거
+        logger.info("Cleaning up temp files")
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+        self.lbl_copy_pic.setPixmap(donepixmap)
+        self.lbl_clean_pic.setPixmap(nowpixmap)
+        self.lbl_cleanup.setText("<b>Cleaning up</b>")
+        self.lbl_task.setText("Cleaning up...")
+        self.statusbar.showMessage("Cleaning temporary files")
+
+    def done_launcher(self):
+        # 최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행
+        self.setup_download_done_ui()
+        QtWidgets.QMessageBox.information(
+            self,
+            "Launcher updated",
+            "ABLER launcher has been updated. Please re-run the launcher.",
+        )
+        try:
+            if test_arg:
+                _ = subprocess.Popen(
+                    [f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe", "--test"]
+                )
+
+            else:
+                _ = subprocess.Popen(
+                    get_datadir() / "Blender/2.96/updater/AblerLauncher.exe"
+                )
+            QtCore.QCoreApplication.instance().quit()
+            # TODO: Launcher를 다시 실행할 수 있게 해주면?
+        except Exception as e:
+            logger.error(e)
+            try:
+                if test_arg:
+                    _ = subprocess.Popen(
+                        [
+                            get_datadir() / "Blender/2.93/updater/AblerLauncher.exe",
+                            "--test",
+                        ]
+                    )
+
+                else:
+                    _ = subprocess.Popen(
+                        get_datadir() / "Blender/2.93/updater/AblerLauncher.exe"
+                    )
+                QtCore.QCoreApplication.instance().quit()
+            except Exception as ee:
+                logger.error(ee)
+                QtCore.QCoreApplication.instance().quit()
+
+    def done_abler(self):
+        # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
+        self.setup_download_done_ui()
+        self.setup_execute_ui()
+
+    def setup_download_done_ui(self):
+        logger.info("Finished")	
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
+        self.lbl_clean_pic.setPixmap(donepixmap)	
+        self.statusbar.showMessage("Ready")	
+        self.progressBar.setMinimum(0)	
+        self.progressBar.setMaximum(100)	
+        self.progressBar.setValue(100)	
+        self.lbl_task.setText("Finished")	
+        self.btn_Quit.setEnabled(True)
+
+    def exec_windows(self):
+        try:
+            if privilege_helper.isUserAdmin():
+                _ = privilege_helper.runas_shell_user(
+                    os.path.join('"' + dir_ + "/blender.exe" + '"')
+                )  # pid와 tid를 리턴함
+            logger.info(f"Executing {dir_}blender.exe")
+            QtCore.QCoreApplication.instance().quit()
+        except Exception as e:
+            logger.error(e)
+
+    def exec_osx(self):
+        try:
+            if getattr(sys, "frozen", False):
+                application_path = os.path.dirname(sys.executable)
+            elif __file__:
+                application_path = os.path.dirname(__file__)
+            BlenderOSXPath = os.path.join(f"{application_path}/ABLER")
+            os.system(f"chmod +x {BlenderOSXPath}")
+            _ = subprocess.Popen(BlenderOSXPath)
+            logger.info(f"Executing {BlenderOSXPath}")
+            QtCore.QCoreApplication.instance().quit()
+        except Exception as e:
+            logger.error(e)
+
+    def exec_linux(self):
+        _ = subprocess.Popen(os.path.join(f"{dir_}/blender"))
+        logger.info(f"Executing {dir_}blender")
 
     def open_acon3d(self):
         url = QtCore.QUrl("https://www.acon3d.com/")
