@@ -558,6 +558,7 @@ static void eevee_render_to_image(void *vedata,
       EEVEE_lights_cache_finish(sldata, vedata);
       EEVEE_lightprobes_cache_finish(sldata, vedata);
       EEVEE_renderpasses_cache_finish(sldata, vedata);
+      EEVEE_abler_prepass_cache_finish(vedata);
 
       EEVEE_subsurface_draw_init(sldata, vedata);
       EEVEE_effects_draw_init(sldata, vedata);

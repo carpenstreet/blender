@@ -152,6 +152,7 @@ void EEVEE_render_modules_init(EEVEE_Data *vedata,
   EEVEE_materials_init(sldata, vedata, stl, fbl);
   EEVEE_shadows_init(sldata);
   EEVEE_lightprobes_init(sldata, vedata);
+  EEVEE_abler_prepass_init(sldata, vedata);
 }
 
 void EEVEE_render_view_sync(EEVEE_Data *vedata, RenderEngine *engine, struct Depsgraph *depsgraph)
@@ -193,6 +194,7 @@ void EEVEE_render_cache_init(EEVEE_ViewLayerData *sldata, EEVEE_Data *vedata)
   EEVEE_temporal_sampling_cache_init(sldata, vedata);
   EEVEE_volumes_cache_init(sldata, vedata);
   EEVEE_cryptomatte_cache_init(sldata, vedata);
+  EEVEE_abler_prepass_cache_init(sldata, vedata);
 }
 
 /* Used by light cache. in this case engine is NULL. */
@@ -268,6 +270,8 @@ void EEVEE_render_cache(void *vedata,
   if (cast_shadow) {
     EEVEE_shadows_caster_register(sldata, ob);
   }
+
+  EEVEE_abler_prepass_cache_populate(vedata, ob);
 }
 
 static void eevee_render_color_result(RenderLayer *rl,
@@ -608,6 +612,9 @@ void EEVEE_render_draw(EEVEE_Data *vedata, RenderEngine *engine, RenderLayer *rl
     EEVEE_volumes_set_jitter(sldata, stl->effects->taa_current_sample - 1);
     EEVEE_materials_init(sldata, vedata, stl, fbl);
 
+    /* Abler prepass */
+    EEVEE_abler_prepass_draw(vedata);
+
     /* Refresh Probes
      * Shadows needs to be updated for correct probes */
     EEVEE_shadows_update(sldata, vedata);
@@ -627,9 +634,6 @@ void EEVEE_render_draw(EEVEE_Data *vedata, RenderEngine *engine, RenderLayer *rl
 
     GPU_framebuffer_bind(fbl->main_fb);
     GPU_framebuffer_clear_color_depth_stencil(fbl->main_fb, clear_col, clear_depth, clear_stencil);
-
-    /* Abler prepass */
-    EEVEE_abler_prepass_draw(vedata);
 
     /* Depth prepass */
     DRW_draw_pass(psl->depth_ps);
