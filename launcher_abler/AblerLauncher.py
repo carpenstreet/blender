@@ -35,7 +35,7 @@ import time
 from distutils.dir_util import copy_tree
 from distutils.version import StrictVersion
 from typing import Optional
-from WorkerThread import WorkerThread
+# from WorkerThread import WorkerThread
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -106,6 +106,71 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
+class WorkerThread(QtCore.QThread):
+    """Does all the actual work in the background, informs GUI about status"""
+
+    update = QtCore.Signal(int)
+    finishedDL = QtCore.Signal()
+    finishedEX = QtCore.Signal()
+    finishedCP = QtCore.Signal()
+    finishedCL = QtCore.Signal()
+
+    def __init__(self, url, file, path, temp_path):
+        super(WorkerThread, self).__init__(parent=app)
+        self.filename = file
+        self.url = url
+        self.path = path
+        self.temp_path = temp_path
+
+    def progress(self, count, blockSize, totalSize):
+        """Updates progress bar"""
+        percent = int(count * blockSize * 100 / totalSize)
+        self.update.emit(percent)
+
+    def run(self):
+        try:
+            urllib.request.urlretrieve(
+                self.url, self.filename, reporthook=self.progress
+            )
+            self.finishedDL.emit()
+            shutil.unpack_archive(self.filename, self.temp_path)
+            os.remove(self.filename)
+            self.finishedEX.emit()
+            source = next(os.walk(self.temp_path))
+            if "updater" in self.path and sys.platform == "win32":
+                if os.path.isfile(f"{self.path}/AblerLauncher.exe"):
+                    os.rename(
+                        f"{self.path}/AblerLauncher.exe",
+                        f"{self.path}/AblerLauncher.bak",
+                    )
+                time.sleep(1)
+                shutil.copyfile(
+                    f"{self.temp_path}/AblerLauncher.exe",
+                    f"{self.path}/AblerLauncher.exe",
+                )
+
+                # sym_path = (
+                #     get_datadir()
+                #     / "/Microsoft/Windows/Start Menu/Programs/ABLER/Launch ABLER.lnk"
+                # )
+                # if os.path.isfile(sym_path):
+                #     os.remove(sym_path)
+                # shell = Dispatch("WScript.Shell")
+                # shortcut = shell.CreateShortCut(sym_path)
+                # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
+                # shortcut.save()
+            else:
+                # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
+                try:
+                    # TODO: copy_tree가 현재 작동하지 않고 바로 except로 넘어감
+                    copy_tree(source[0], self.path)
+                except Exception as e:
+                    logger.error(e)
+            self.finishedCP.emit()
+            shutil.rmtree(self.temp_path)
+            self.finishedCL.emit()
+        except Exception as e:
+            logger.error(e)
 
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def __init__(self, parent=None):
@@ -393,6 +458,30 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
         self.setup_download_done_ui()
         self.setup_execute_ui()
+    
+    def setup_download_ui(self, entry, dir_name):
+        print("B")
+        url = entry["url"]
+        version = entry["version"]
+        # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
+        exec_name = "ABLER" if dir_name == dir_ else "Launcher"
+        
+        file = urllib.request.urlopen(url)
+        totalsize = file.info()["Content-Length"]
+        size_readable = hbytes(float(totalsize))
+    
+        self.lbl_available.hide()
+        self.lbl_caution.hide()
+        self.progressBar.show()
+        self.btngrp_filter.hide()
+        self.lbl_task.setText("Downloading")
+        self.lbl_task.show()
+        self.frm_progress.show()
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        self.lbl_download_pic.setPixmap(nowpixmap)
+        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        self.progressBar.setValue(0)
+        self.statusbar.showMessage(f"Downloading {size_readable}")
 
     def setup_download_done_ui(self):
         logger.info("Finished")	
