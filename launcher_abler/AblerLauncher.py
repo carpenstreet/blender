@@ -84,7 +84,7 @@ if sys.platform == "darwin":
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
-config = configparser.ConfigParser()
+
 btn = {}
 lastversion = ""
 installedversion = ""
@@ -122,9 +122,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
         global lastversion
         global dir_
-        global config
         global installedversion
         global launcher_installed
+        config = configparser.ConfigParser()
+        
         # print(get_datadir() / "Blender/2.96/updater/config.ini")
         # print(os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"))
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
@@ -262,7 +263,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         os.makedirs(temp_name)
 
-        global config
+        config = configparser.ConfigParser()
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
 
         if dir_name == dir_:

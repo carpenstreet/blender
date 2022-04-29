@@ -6,6 +6,7 @@ import os.path
 import sys
 from distutils.version import StrictVersion
 from typing import Optional
+import configparser
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -89,6 +90,7 @@ def get_req_from_url(url, state_ui, launcher_installed,dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
+    config = configparser.ConfigParser()
     config.read(get_datadir() / "Blender/2.96/updater/config.ini")
 
     launcher_installed = config.get("main", "launcher")
