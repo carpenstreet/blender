@@ -7,6 +7,7 @@ import sys
 from distutils.version import StrictVersion
 from typing import Optional
 import configparser
+from StateUI import StateUI
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -62,11 +63,11 @@ def check_launcher(dir_,launcher_installed) -> bool:
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(url, state_ui, launcher_installed,dir_)
-    if state_ui == "error":
+    if state_ui == StateUI.error:
         return state_ui, finallist
 
     if not is_release:
-        state_ui = "no release"
+        state_ui = StateUI.no_release
         return state_ui, finallist
 
     else:
@@ -78,13 +79,13 @@ def check_launcher(dir_,launcher_installed) -> bool:
             # Launcher 릴리즈 버전 > 설치 버전
             # -> finallist = results 반환
             if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
-                state_ui = "update Launcher"
+                state_ui = StateUI.update_launcher
                 finallist = results
                 return state_ui, finallist
 
         # Launcher 릴리즈 버전 == 설치 버전
         # -> finallist = None가 반환
-        return state_ui, None
+        return state_ui, finallist
 
 def get_req_from_url(url, state_ui, launcher_installed,dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
@@ -109,7 +110,7 @@ def get_req_from_url(url, state_ui, launcher_installed,dir_):
         # logger.error(e)
         # self.frm_start.show()
         logger.error(e)
-        state_ui = "error"
+        state_ui = StateUI.error
 
     if test_arg:
         req = req[0]

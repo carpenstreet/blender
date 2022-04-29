@@ -36,6 +36,7 @@ from distutils.dir_util import copy_tree
 from distutils.version import StrictVersion
 from typing import Optional
 # from WorkerThread import WorkerThread
+from StateUI import StateUI
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -239,22 +240,22 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             import UpdateAbler, UpdateLauncher
-            state_ui, finallist = UpdateLauncher.check_launcher(dir_,launcher_installed)
+            state_ui, finallist = UpdateLauncher.check_launcher(dir_, launcher_installed)
             self.launcher_state_parse(state_ui, finallist)
             if not state_ui:
-                state_ui, finallist = UpdateAbler.check_abler(dir_,installedversion)
+                state_ui, finallist = UpdateAbler.check_abler(dir_, installedversion)
                 self.abler_state_parse(state_ui, finallist)
         except Exception as e:
             logger.error(e)
 
-    def launcher_state_parse(self,state_ui, finallist):
-        if state_ui == "error":
+    def launcher_state_parse(self, state_ui, finallist):
+        if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
 
-        elif state_ui == "no release":
+        elif state_ui == StateUI.no_release:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
             #       click 빼야하는지, 있어도 되는지 확인하기
             self.frm_start.show()
@@ -262,39 +263,40 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_update_launcher.hide()
             self.btn_update.hide()
             # self.setup_execute_ui()
-        
+
         # state_ui = "update Launcher",
-        elif state_ui == "update Launcher":
+        elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui(finallist)
         else:
             return
 
     def abler_state_parse(self, state_ui, finallist):
-        if state_ui == "error":
+        if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
-        
-        elif state_ui == "no release":
+
+        elif state_ui == StateUI.no_release:
             self.frm_start.show()
             self.setup_execute_ui()
-        
+
         # state_ui = finalist[0] = info
-        elif state_ui == "update ABLER":
+        elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui(finallist)
 
-        elif state_ui == "execute":
+        elif state_ui == StateUI.execute:
             self.setup_execute_ui()
-        else: return
+        else:
+            return
 
     def setup_update_launcher_ui(self, finallist):
         self.btn_update_launcher.show()
         self.btn_update.hide()
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
-                )
+            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
+        )
 
     def setup_update_abler_ui(self, finallist):
         # ABLER를 업데이트
@@ -303,8 +305,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update.show()
         self.btn_execute.hide()
         self.btn_update.clicked.connect(
-                lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
-            )
+            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+        )
 
     def setup_execute_ui(self):
         self.btn_update_launcher.hide()
@@ -312,7 +314,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.show()
 
         if sys.platform == "win32":
-                self.btn_execute.clicked.connect(self.exec_windows)
+            self.btn_execute.clicked.connect(self.exec_windows)
         elif sys.platform == "darwin":
             self.btn_execute.clicked.connect(self.exec_osx)
         elif sys.platform == "linux":
