@@ -174,12 +174,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             import UpdateAbler, UpdateLauncher
-            self.launcher_state_parse(UpdateLauncher.check_launcher(dir_,launcher_installed))
-            self.abler_state_parse(UpdateAbler.check_abler(dir_,installedversion))
+            state_ui, finallist = UpdateLauncher.check_launcher(dir_,launcher_installed)
+            self.launcher_state_parse(state_ui, finallist)
+            state_ui, finallist = UpdateAbler.check_abler(dir_,installedversion)
+            self.abler_state_parse(state_ui, finallist)
         except Exception as e:
             logger.error(e)
 
     def launcher_state_parse(self,state_ui, finallist):
+
         if state_ui == "error":
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
