@@ -16,7 +16,6 @@
 """
 
 import privilege_helper
-import pathlib
 from PySide2 import QtWidgets, QtCore, QtGui
 import qdarkstyle
 import mainwindow
@@ -31,7 +30,7 @@ import urllib.parse
 import urllib.request
 import time
 from distutils.dir_util import copy_tree
-from StateUI import StateUI
+from AblerLauncherUtils import get_datadir, hbytes, StateUI
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -42,44 +41,14 @@ app = QtWidgets.QApplication(sys.argv)
 
 app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-
-def get_datadir() -> pathlib.Path:
-    """
-    Returns a parent directory path
-    where persistent application data can be stored.
-
-    linux: ~/.local/share
-    macOS: ~/Library/Application Support
-    windows: C:/Users/<USER>/AppData/Roaming
-    """
-
-    home = pathlib.Path.home()
-
-    if sys.platform == "win32":
-        return home / "AppData/Roaming/Blender Foundation"
-    elif sys.platform == "linux":
-        return home / ".local/share"
-    elif sys.platform == "darwin":
-        return home / "Library/Application Support"
-
-
-def hbytes(num) -> str:
-    """Translate to human readable file size."""
-    for x in [" bytes", " KB", " MB", " GB"]:
-        if num < 1024.0:
-            return "%3.1f%s" % (num, x)
-        num /= 1024.0
-    return "%3.1f%s" % (num, " TB")
-
-
 appversion = "1.9.8"
 dir_ = ""
+launcherdir_ = get_datadir() / "Blender/2.96/updater"
+
 if sys.platform == "darwin":
     dir_ = "/Applications"
-
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
-launcherdir_ = get_datadir() / "Blender/2.96/updater"
 
 btn = {}
 lastversion = ""
@@ -189,8 +158,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global launcher_installed
         config = configparser.ConfigParser()
 
-        # print(get_datadir() / "Blender/2.96/updater/config.ini")
-        # print(os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"))
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
             os.remove(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak")
         if os.path.isfile(get_datadir() / "Blender/2.96/config/startup.blend"):
@@ -264,7 +231,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_update.hide()
             # self.setup_execute_ui()
 
-        # state_ui = "update Launcher",
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui(finallist)
         else:
@@ -281,7 +247,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.frm_start.show()
             self.setup_execute_ui()
 
-        # state_ui = finalist[0] = info
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui(finallist)
 

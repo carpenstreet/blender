@@ -6,33 +6,12 @@ import os.path
 import sys
 from distutils.version import StrictVersion
 import configparser
-from StateUI import StateUI
+from AblerLauncherUtils import get_datadir, StateUI
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-
-
-def get_datadir() -> pathlib.Path:
-    """
-    Returns a parent directory path
-    where persistent application data can be stored.
-
-    linux: ~/.local/share
-    macOS: ~/Library/Application Support
-    windows: C:/Users/<USER>/AppData/Roaming
-    """
-
-    home = pathlib.Path.home()
-
-    if sys.platform == "win32":
-        return home / "AppData/Roaming/Blender Foundation"
-    elif sys.platform == "linux":
-        return home / ".local/share"
-    elif sys.platform == "darwin":
-        return home / "Library/Application Support"
-
 
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
