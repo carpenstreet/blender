@@ -51,7 +51,8 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
-def check_abler(dir_,installedversion)->None:
+
+def check_abler(dir_, installedversion) -> None:
     # 최신 릴리즈가 있는지 URL 주소로 확인
     finallist = None
     results = []
@@ -61,7 +62,7 @@ def check_abler(dir_,installedversion)->None:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req, state_ui = get_req_from_url(url,state_ui,dir_)
+    is_release, req, state_ui = get_req_from_url(url, state_ui, dir_)
     if state_ui:
         return state_ui, finallist
 
@@ -91,6 +92,7 @@ def check_abler(dir_,installedversion)->None:
 
     return state_ui, finallist
 
+
 def get_req_from_url(url, state_ui, dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
@@ -113,7 +115,6 @@ def get_req_from_url(url, state_ui, dir_):
         logger.error(e)
         state_ui = StateUI.error
 
-
     if test_arg:
         req = req[0]
 
@@ -125,6 +126,7 @@ def get_req_from_url(url, state_ui, dir_):
 
     return is_release, req, state_ui
 
+
 def get_results_from_req(req, results):
     # req에서 필요한 info를 results에 추가
     for asset in req["assets"]:
@@ -134,11 +136,7 @@ def get_results_from_req(req, results):
         version_tag = req["name"][1:]
 
         if sys.platform == "win32":
-            if (
-                "Windows" in target
-                and "zip" in target
-                and target_type in target
-            ):
+            if "Windows" in target and "zip" in target and target_type in target:
                 info = {
                     "url": target,
                     "os": "Windows",

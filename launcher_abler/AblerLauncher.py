@@ -20,12 +20,10 @@ import pathlib
 from PySide2 import QtWidgets, QtCore, QtGui
 import qdarkstyle
 import mainwindow
-import requests
 import configparser
 import logging
 import os
 import os.path
-import platform
 import shutil
 import subprocess
 import sys
@@ -33,9 +31,6 @@ import urllib.parse
 import urllib.request
 import time
 from distutils.dir_util import copy_tree
-from distutils.version import StrictVersion
-from typing import Optional
-# from WorkerThread import WorkerThread
 from StateUI import StateUI
 
 if sys.platform == "win32":
@@ -107,6 +102,7 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
+
 class WorkerThread(QtCore.QThread):
     """Does all the actual work in the background, informs GUI about status"""
 
@@ -173,6 +169,7 @@ class WorkerThread(QtCore.QThread):
         except Exception as e:
             logger.error(e)
 
+
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def __init__(self, parent=None):
         logger.info(f"Running version {appversion}")
@@ -191,7 +188,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         global installedversion
         global launcher_installed
         config = configparser.ConfigParser()
-        
+
         # print(get_datadir() / "Blender/2.96/updater/config.ini")
         # print(os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"))
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
@@ -240,7 +237,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
         try:
             import UpdateAbler, UpdateLauncher
-            state_ui, finallist = UpdateLauncher.check_launcher(dir_, launcher_installed)
+
+            state_ui, finallist = UpdateLauncher.check_launcher(
+                dir_, launcher_installed
+            )
             self.launcher_state_parse(state_ui, finallist)
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(dir_, installedversion)
@@ -287,6 +287,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         elif state_ui == StateUI.execute:
             self.setup_execute_ui()
+
         else:
             return
 
@@ -295,7 +296,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update.hide()
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
-            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=launcherdir_)
+            lambda throwaway=0, entry=finallist[0]: self.download(
+                entry, dir_name=launcherdir_
+            )
         )
 
     def setup_update_abler_ui(self, finallist):
@@ -460,17 +463,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
         self.setup_download_done_ui()
         self.setup_execute_ui()
-    
+
     def setup_download_ui(self, entry, dir_name):
         url = entry["url"]
         version = entry["version"]
         # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
         exec_name = "ABLER" if dir_name == dir_ else "Launcher"
-        
+
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
         size_readable = hbytes(float(totalsize))
-    
+
         self.lbl_available.hide()
         self.lbl_caution.hide()
         self.progressBar.show()
@@ -485,14 +488,14 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage(f"Downloading {size_readable}")
 
     def setup_download_done_ui(self):
-        logger.info("Finished")	
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")	
-        self.lbl_clean_pic.setPixmap(donepixmap)	
-        self.statusbar.showMessage("Ready")	
-        self.progressBar.setMinimum(0)	
-        self.progressBar.setMaximum(100)	
-        self.progressBar.setValue(100)	
-        self.lbl_task.setText("Finished")	
+        logger.info("Finished")
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+        self.lbl_clean_pic.setPixmap(donepixmap)
+        self.statusbar.showMessage("Ready")
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setValue(100)
+        self.lbl_task.setText("Finished")
         self.btn_Quit.setEnabled(True)
 
     def exec_windows(self):

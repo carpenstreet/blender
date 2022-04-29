@@ -53,7 +53,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(dir_,launcher_installed) -> bool:
+def check_launcher(dir_, launcher_installed) -> bool:
     finallist = None
     results = []
     state_ui = None
@@ -62,7 +62,9 @@ def check_launcher(dir_,launcher_installed) -> bool:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req, state_ui, launcher_installed = get_req_from_url(url, state_ui, launcher_installed,dir_)
+    is_release, req, state_ui, launcher_installed = get_req_from_url(
+        url, state_ui, launcher_installed, dir_
+    )
     if state_ui == StateUI.error:
         return state_ui, finallist
 
@@ -87,7 +89,8 @@ def check_launcher(dir_,launcher_installed) -> bool:
         # -> finallist = None가 반환
         return state_ui, finallist
 
-def get_req_from_url(url, state_ui, launcher_installed,dir_):
+
+def get_req_from_url(url, state_ui, launcher_installed, dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
@@ -123,6 +126,7 @@ def get_req_from_url(url, state_ui, launcher_installed,dir_):
 
     return is_release, req, state_ui, launcher_installed
 
+
 def get_results_from_req(req, results):
     # req에서 필요한 info를 results에 추가
     for asset in req["assets"]:
@@ -132,11 +136,7 @@ def get_results_from_req(req, results):
         version_tag = filename.split("_")[-1][1:-4]
 
         if sys.platform == "win32":
-            if (
-                "Windows" in target
-                and "zip" in target
-                and target_type in target
-            ):
+            if "Windows" in target and "zip" in target and target_type in target:
                 info = {
                     "url": target,
                     "os": "Windows",
@@ -177,5 +177,3 @@ def get_results_from_req(req, results):
                         "arch": "x86_64",
                     }
                     results.append(info)
-
-
