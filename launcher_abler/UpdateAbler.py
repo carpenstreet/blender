@@ -54,12 +54,13 @@ def check_abler(dir_,installedversion)->None:
     # 최신 릴리즈가 있는지 URL 주소로 확인
     finallist = None
     results = []
+    state_ui = None
     url = "https://api.github.com/repos/acon3d/blender/releases/latest"
     if test_arg:
         url = "https://api.github.com/repos/acon3d/blender/releases"
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
 
-    is_release, req, state_ui = get_req_from_url(url,dir_)
+    is_release, req, state_ui = get_req_from_url(url,state_ui,dir_)
     if state_ui:
         return state_ui, finallist
 
@@ -89,7 +90,7 @@ def check_abler(dir_,installedversion)->None:
 
     return state_ui, finallist
 
-def get_req_from_url(url,dir_):
+def get_req_from_url(url, state_ui, dir_):
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
@@ -110,6 +111,7 @@ def get_req_from_url(url,dir_):
         # self.frm_start.show()
         logger.error(e)
         state_ui = "error"
+        
 
     if test_arg:
         req = req[0]

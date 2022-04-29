@@ -241,13 +241,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             import UpdateAbler, UpdateLauncher
             state_ui, finallist = UpdateLauncher.check_launcher(dir_,launcher_installed)
             self.launcher_state_parse(state_ui, finallist)
-            state_ui, finallist = UpdateAbler.check_abler(dir_,installedversion)
-            self.abler_state_parse(state_ui, finallist)
+            if not state_ui:
+                state_ui, finallist = UpdateAbler.check_abler(dir_,installedversion)
+                self.abler_state_parse(state_ui, finallist)
         except Exception as e:
             logger.error(e)
 
     def launcher_state_parse(self,state_ui, finallist):
-
         if state_ui == "error":
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -460,7 +460,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.setup_execute_ui()
     
     def setup_download_ui(self, entry, dir_name):
-        print("B")
         url = entry["url"]
         version = entry["version"]
         # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
