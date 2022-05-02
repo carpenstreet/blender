@@ -38,7 +38,6 @@ if sys.platform == "win32":
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
 app = QtWidgets.QApplication(sys.argv)
-
 app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 appversion = "1.9.8"
@@ -148,8 +147,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update.hide()
         self.btn_execute.hide()
         self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
-        lastversion = ""
-        installedversion = ""
+        self.lastversion = ""
+        self.installedversion = ""
         self.launcher_installed = ""
         global dir_
         config = configparser.ConfigParser()
@@ -165,12 +164,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.info("Reading existing configuration file")
             config.read(get_datadir() / "Blender/2.96/updater/config.ini")
             lastcheck = config.get("main", "lastcheck")
-            lastversion = config.get("main", "lastdl")
-            installedversion = config.get("main", "installed")
+            self.lastversion = config.get("main", "lastdl")
+            self.installedversion = config.get("main", "installed")
             self.launcher_installed = config.get("main", "launcher")
             flavor = config.get("main", "flavor")
-            if lastversion != "":
-                self.btn_oneclick.setText(f"{flavor} | {lastversion}")
+            if self.lastversion != "":
+                self.btn_oneclick.setText(f"{flavor} | {self.lastversion}")
         else:
             logger.debug("No previous config found")
             self.btn_oneclick.hide()
@@ -206,7 +205,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.launcher_state_parse(state_ui, finallist)
             if not state_ui:
-                state_ui, finallist = UpdateAbler.check_abler(dir_, installedversion)
+                state_ui, finallist = UpdateAbler.check_abler(dir_, self.installedversion)
                 self.abler_state_parse(state_ui, finallist)
         except Exception as e:
             logger.error(e)
