@@ -31,7 +31,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(dir_, launcher_installed) -> bool:
+def check_launcher(dir_, launcher_installed) -> tuple:
     finallist = None
     results = []
     state_ui = None
@@ -68,7 +68,7 @@ def check_launcher(dir_, launcher_installed) -> bool:
         return state_ui, finallist
 
 
-def get_req_from_url(url, state_ui, launcher_installed, dir_):
+def get_req_from_url(url, state_ui, launcher_installed, dir_) -> tuple:
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
@@ -105,7 +105,7 @@ def get_req_from_url(url, state_ui, launcher_installed, dir_):
     return is_release, req, state_ui, launcher_installed
 
 
-def get_results_from_req(req, results):
+def get_results_from_req(req, results) -> None:
     # req에서 필요한 info를 results에 추가
     for asset in req["assets"]:
         target = asset["browser_download_url"]

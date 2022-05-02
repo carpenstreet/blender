@@ -144,11 +144,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.launcher_installed = ""
         self.lastcheck = ""
         global dir_
-        
+
         self.setupUi(self)
         self.setup_config()
         self.setup_init_ui()
-        
+
         try:
             import UpdateAbler, UpdateLauncher
 
@@ -157,7 +157,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.launcher_state_parse(state_ui, finallist)
             if not state_ui:
-                state_ui, finallist = UpdateAbler.check_abler(dir_, self.installedversion)
+                state_ui, finallist = UpdateAbler.check_abler(
+                    dir_, self.installedversion
+                )
                 self.abler_state_parse(state_ui, finallist)
         except Exception as e:
             logger.error(e)
