@@ -139,47 +139,14 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         logger.info(f"Running version {appversion}")
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
-        self.setupUi(self)
         self.lastversion = ""
         self.installedversion = ""
         self.launcher_installed = ""
         self.lastcheck = ""
         global dir_
-        config = configparser.ConfigParser()
-
-        if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
-            os.remove(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak")
-        if os.path.isfile(get_datadir() / "Blender/2.96/config/startup.blend"):
-            os.remove(get_datadir() / "Blender/2.96/config/startup.blend")
-        if os.path.isfile(get_datadir() / "Blender/2.96/config/userpref.blend"):
-            os.remove(get_datadir() / "Blender/2.96/config/userpref.blend")
-        if os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"):
-            config_exist = True
-            logger.info("Reading existing configuration file")
-            config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-            self.lastcheck = config.get("main", "lastcheck")
-            self.lastversion = config.get("main", "lastdl")
-            self.installedversion = config.get("main", "installed")
-            self.launcher_installed = config.get("main", "launcher")
-            flavor = config.get("main", "flavor")
-            if self.lastversion != "":
-                self.btn_oneclick.setText(f"{flavor} | {self.lastversion}")
-        else:
-            logger.debug("No previous config found")
-            self.btn_oneclick.hide()
-            config_exist = False
-            config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-            config.add_section("main")
-            config.set("main", "path", "")
-            self.lastcheck = "Never"
-            config.set("main", "lastcheck", self.lastcheck)
-            config.set("main", "lastdl", "")
-            config.set("main", "installed", "")
-            config.set("main", "launcher", "")
-            config.set("main", "flavor", "")
-            with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-                config.write(f)
-
+        
+        self.setupUi(self)
+        self.setup_config()
         self.setup_init_ui()
         
         try:
@@ -235,6 +202,42 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         else:
             return
+
+    def setup_config(self):
+        config = configparser.ConfigParser()
+
+        if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
+            os.remove(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak")
+        if os.path.isfile(get_datadir() / "Blender/2.96/config/startup.blend"):
+            os.remove(get_datadir() / "Blender/2.96/config/startup.blend")
+        if os.path.isfile(get_datadir() / "Blender/2.96/config/userpref.blend"):
+            os.remove(get_datadir() / "Blender/2.96/config/userpref.blend")
+        if os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"):
+            config_exist = True
+            logger.info("Reading existing configuration file")
+            config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+            self.lastcheck = config.get("main", "lastcheck")
+            self.lastversion = config.get("main", "lastdl")
+            self.installedversion = config.get("main", "installed")
+            self.launcher_installed = config.get("main", "launcher")
+            flavor = config.get("main", "flavor")
+            if self.lastversion != "":
+                self.btn_oneclick.setText(f"{flavor} | {self.lastversion}")
+        else:
+            logger.debug("No previous config found")
+            self.btn_oneclick.hide()
+            config_exist = False
+            config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+            config.add_section("main")
+            config.set("main", "path", "")
+            self.lastcheck = "Never"
+            config.set("main", "lastcheck", self.lastcheck)
+            config.set("main", "lastdl", "")
+            config.set("main", "installed", "")
+            config.set("main", "launcher", "")
+            config.set("main", "flavor", "")
+            with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+                config.write(f)
 
     def setup_init_ui(self):
         self.btn_oneclick.hide()
