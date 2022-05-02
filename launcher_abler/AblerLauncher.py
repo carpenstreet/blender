@@ -140,16 +140,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
         self.setupUi(self)
-        self.btn_oneclick.hide()
-        self.lbl_quick.hide()
-        self.lbl_caution.hide()
-        self.btn_newVersion.hide()
-        self.btn_update.hide()
-        self.btn_execute.hide()
-        self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
         self.lastversion = ""
         self.installedversion = ""
         self.launcher_installed = ""
+        self.lastcheck = ""
         global dir_
         config = configparser.ConfigParser()
 
@@ -163,7 +157,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config_exist = True
             logger.info("Reading existing configuration file")
             config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-            lastcheck = config.get("main", "lastcheck")
+            self.lastcheck = config.get("main", "lastcheck")
             self.lastversion = config.get("main", "lastdl")
             self.installedversion = config.get("main", "installed")
             self.launcher_installed = config.get("main", "launcher")
@@ -177,26 +171,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.read(get_datadir() / "Blender/2.96/updater/config.ini")
             config.add_section("main")
             config.set("main", "path", "")
-            lastcheck = "Never"
-            config.set("main", "lastcheck", lastcheck)
+            self.lastcheck = "Never"
+            config.set("main", "lastcheck", self.lastcheck)
             config.set("main", "lastdl", "")
             config.set("main", "installed", "")
             config.set("main", "launcher", "")
             config.set("main", "flavor", "")
             with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
                 config.write(f)
-        self.btn_cancel.hide()
-        self.frm_progress.hide()
-        self.btngrp_filter.hide()
-        self.btn_acon.setFocus()
-        self.lbl_available.hide()
-        self.progressBar.setValue(0)
-        self.progressBar.hide()
-        self.lbl_task.hide()
-        self.statusbar.showMessage(f"Ready - Last check: {lastcheck}")
-        self.btn_Quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        self.btn_about.clicked.connect(self.about)
-        self.btn_acon.clicked.connect(self.open_acon3d)
+
+        self.setup_init_ui()
+        
         try:
             import UpdateAbler, UpdateLauncher
 
@@ -250,6 +235,28 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         else:
             return
+
+    def setup_init_ui(self):
+        self.btn_oneclick.hide()
+        self.lbl_quick.hide()
+        self.lbl_caution.hide()
+        self.btn_newVersion.hide()
+        self.btn_update.hide()
+        self.btn_execute.hide()
+        self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
+
+        self.btn_cancel.hide()
+        self.frm_progress.hide()
+        self.btngrp_filter.hide()
+        self.btn_acon.setFocus()
+        self.lbl_available.hide()
+        self.progressBar.setValue(0)
+        self.progressBar.hide()
+        self.lbl_task.hide()
+        self.statusbar.showMessage(f"Ready - Last check: {self.lastcheck}")
+        self.btn_Quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
+        self.btn_about.clicked.connect(self.about)
+        self.btn_acon.clicked.connect(self.open_acon3d)
 
     def setup_update_launcher_ui(self, finallist):
         self.btn_update_launcher.show()
