@@ -51,9 +51,9 @@ elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
 
 btn = {}
-lastversion = ""
-installedversion = ""
-launcher_installed = ""
+
+
+
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
@@ -152,10 +152,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_update.hide()
         self.btn_execute.hide()
         self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
-        global lastversion
+        lastversion = ""
+        installedversion = ""
+        self.launcher_installed = ""
         global dir_
-        global installedversion
-        global launcher_installed
         config = configparser.ConfigParser()
 
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
@@ -171,7 +171,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             lastcheck = config.get("main", "lastcheck")
             lastversion = config.get("main", "lastdl")
             installedversion = config.get("main", "installed")
-            launcher_installed = config.get("main", "launcher")
+            self.launcher_installed = config.get("main", "launcher")
             flavor = config.get("main", "flavor")
             if lastversion != "":
                 self.btn_oneclick.setText(f"{flavor} | {lastversion}")
@@ -206,7 +206,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             import UpdateAbler, UpdateLauncher
 
             state_ui, finallist = UpdateLauncher.check_launcher(
-                dir_, launcher_installed
+                dir_, self.launcher_installed
             )
             self.launcher_state_parse(state_ui, finallist)
             if not state_ui:
@@ -322,6 +322,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         if dir_name == dir_:
             for i in btn:
+                print(i)
                 btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
 
@@ -509,7 +510,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         underline; color:#2980b9;">https://overmindstudios.github.io/BlenderUpdater/</a></p> \
         <p style="text-align: center;"></p> \
         <p>Application based on the version: '
-            + launcher_installed
+            + self.launcher_installed
             + "</p></body></html> "
         )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
