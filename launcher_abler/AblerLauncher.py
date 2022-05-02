@@ -44,14 +44,10 @@ app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 appversion = "1.9.8"
 dir_ = ""
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
-
 if sys.platform == "darwin":
     dir_ = "/Applications"
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
-
-btn = {}
-
 
 
 LOG_FORMAT = (
@@ -320,10 +316,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Do the actual download #
         ##########################
 
-        if dir_name == dir_:
-            for i in btn:
-                print(i)
-                btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
 
         self.setup_download_ui(entry, dir_name)
