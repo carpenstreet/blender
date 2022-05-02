@@ -155,16 +155,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
-            self.launcher_state_parse(state_ui, finallist)
+            self.parse_launcher_state(state_ui, finallist)
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
                 )
-                self.abler_state_parse(state_ui, finallist)
+                self.parse_abler_state(state_ui, finallist)
         except Exception as e:
             logger.error(e)
 
-    def launcher_state_parse(self, state_ui, finallist):
+    def parse_launcher_state(self, state_ui, finallist):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -185,7 +185,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         else:
             return
 
-    def abler_state_parse(self, state_ui, finallist):
+    def parse_abler_state(self, state_ui, finallist):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
