@@ -436,7 +436,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def setup_download_ui(self, entry, dir_name):
         url = entry["url"]
         version = entry["version"]
-        # TODO: exec_name 있으면 ui가 깨져서 뺄지 논의
+        # TODO: exec_name 있으면 문자열이 UI 영역을 넘어가서 뺄지 논의
         exec_name = "ABLER" if dir_name == dir_ else "Launcher"
 
         file = urllib.request.urlopen(url)
@@ -455,6 +455,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
         self.progressBar.setValue(0)
         self.statusbar.showMessage(f"Downloading {size_readable}")
+
+        # 중복 다운로드 방지를 위한 버튼 비활성화
+        if dir_name == dir_:
+            self.btn_update.setDisabled(True)
+        else:
+            self.btn_update_launcher.setDisabled(True)
 
     def setup_download_done_ui(self):
         logger.info("Finished")
