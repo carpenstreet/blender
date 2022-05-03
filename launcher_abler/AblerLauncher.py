@@ -275,7 +275,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def setup_update_abler_ui(self, finallist):
         # ABLER를 업데이트
-        # TODO: 버튼 한번 클릭되면 비활성화 기능 넣기
         self.btn_update_launcher.hide()
         self.btn_update.show()
         self.btn_execute.hide()
@@ -407,7 +406,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     get_datadir() / "Blender/2.96/updater/AblerLauncher.exe"
                 )
             QtCore.QCoreApplication.instance().quit()
-            # TODO: Launcher를 다시 실행할 수 있게 해주면?
         except Exception as e:
             logger.error(e)
             try:
