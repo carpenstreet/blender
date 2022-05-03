@@ -29,21 +29,6 @@ void EEVEE_abler_prepass_cache_init(EEVEE_ViewLayerData *sldata, EEVEE_Data *ved
   DRW_PASS_CREATE(psl->abler_prepass, state);
 }
 
-void EEVEE_abler_prepass_cache_populate(EEVEE_Data *vedata, Object *ob)
-{
-  // Inspired by `workbench_cache_common_populate`
-  EEVEE_PassList *psl = vedata->psl;
-  EEVEE_ViewLayerData *sldata = EEVEE_view_layer_data_ensure();
-
-  struct GPUBatch *batch = DRW_cache_object_surface_get(ob);
-  if (batch) {
-    GPUShader *sh = EEVEE_shaders_abler_prepass_sh_get();
-    DRWShadingGroup *grp = DRW_shgroup_create(sh, psl->abler_prepass);
-    DRW_shgroup_uniform_block(grp, "common_block", sldata->common_ubo);
-    DRW_shgroup_call(grp, batch, ob);
-  }
-}
-
 void EEVEE_abler_prepass_cache_finish(EEVEE_Data *vedata)
 {
   // Inspired by `workbench_cache_finish`

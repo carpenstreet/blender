@@ -270,8 +270,6 @@ void EEVEE_render_cache(void *vedata,
   if (cast_shadow) {
     EEVEE_shadows_caster_register(sldata, ob);
   }
-
-  EEVEE_abler_prepass_cache_populate(vedata, ob);
 }
 
 static void eevee_render_color_result(RenderLayer *rl,

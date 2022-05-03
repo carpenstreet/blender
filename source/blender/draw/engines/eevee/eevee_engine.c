@@ -154,8 +154,6 @@ void EEVEE_cache_populate(void *vedata, Object *ob)
   if (cast_shadow) {
     EEVEE_shadows_caster_register(sldata, ob);
   }
-
-  EEVEE_abler_prepass_cache_populate(vedata, ob);
 }
 
 static void eevee_cache_finish(void *vedata)

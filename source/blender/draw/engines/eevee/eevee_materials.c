@@ -61,6 +61,8 @@ typedef struct EeveeMaterialCache {
   struct DRWShadingGroup *shading_grp;
   struct DRWShadingGroup *shadow_grp;
   struct GPUMaterial *shading_gpumat;
+  /* Abler prepass */
+  struct DRWShadingGroup *abler_prepass_grp;
   /* Meh, Used by hair to ensure draw order when calling DRW_shgroup_create_sub.
    * Pointers to ghash values. */
   struct DRWShadingGroup **depth_grp_p;
@@ -550,7 +552,13 @@ static EeveeMaterialCache material_opaque(EEVEE_Data *vedata,
   *emc_p = emc = BLI_memblock_alloc(sldata->material_cache);
 
   material_shadow(vedata, sldata, ma, is_hair, emc);
-
+  {
+    /* Abler prepass */
+    GPUShader *sh = EEVEE_shaders_abler_prepass_sh_get();
+    DRWShadingGroup *grp = DRW_shgroup_create(sh, psl->abler_prepass);
+    DRW_shgroup_uniform_block(grp, "common_block", sldata->common_ubo);
+    emc->abler_prepass_grp = grp;
+  }
   {
     /* Depth Pass */
     int mat_options = VAR_MAT_MESH | VAR_MAT_DEPTH;
@@ -883,6 +891,9 @@ void EEVEE_materials_cache_populate(EEVEE_Data *vedata,
             ADD_SHGROUP_CALL_SAFE(matcache[i].depth_grp, ob, mat_geom[i], oedata);
             ADD_SHGROUP_CALL_SAFE(matcache[i].shadow_grp, ob, mat_geom[i], oedata);
             *cast_shadow = *cast_shadow || (matcache[i].shadow_grp != NULL);
+
+            /* Abler prepass */
+            ADD_SHGROUP_CALL_SAFE(matcache[i].abler_prepass_grp, ob, mat_geom[i], oedata);
           }
         }
       }
