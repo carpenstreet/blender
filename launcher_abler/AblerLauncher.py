@@ -347,7 +347,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(percent)
 
     def extraction(self):
-        # 다운로드 받은 파일 압축 해제
+        """다운로드 받은 파일 압축 해제"""
         logger.info("Extracting to temp directory")
         self.lbl_task.setText("Extracting...")
         self.btn_Quit.setEnabled(False)
@@ -362,7 +362,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(-1)
 
     def finalcopy(self):
-        # 설치 파일 복사
+        """설치 파일 복사"""
         exec_dir_name = self.exec_dir_name
         logger.info(f"Copying to {exec_dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
@@ -374,7 +374,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
 
     def cleanup(self):
-        # 설치 파일 임시 폴더 제거
+        """설치 파일 임시 폴더 제거"""
         logger.info("Cleaning up temp files")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
@@ -385,7 +385,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage("Cleaning temporary files")
 
     def done_launcher(self):
-        # 최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행
+        """최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행"""
         self.setup_download_done_ui()
         QtWidgets.QMessageBox.information(
             self,
@@ -424,7 +424,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 QtCore.QCoreApplication.instance().quit()
 
     def done_abler(self):
-        # 최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행
+        """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
         self.setup_download_done_ui()
         self.setup_execute_ui()
 
