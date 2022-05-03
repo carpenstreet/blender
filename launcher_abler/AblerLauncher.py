@@ -502,20 +502,22 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(url)
 
     def about(self):
+        blender_download_url = "https://builder.blender.org/download/" #TODO: ABLER download url
+        overmind_studios_url = "http://www.overmind-studios.de"
+        gpl_license_url = "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
+        overmind_studios_github_url = "https://overmindstudios.github.io/BlenderUpdater/"
         aboutText = (
-            '<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
-        <a href="https://builder.blender.org/download/"><span style=" text-decoration: underline; color:#2980b9;">\
-        https://builder.blender.org/download/</span></a></p><p><br/>Developed by Tobias Kummer for \
-        <a href="http://www.overmind-studios.de"><span style="text-decoration:underline; color:#2980b9;"> \
+            f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
+        <a href="{blender_download_url}"><span style=" text-decoration: underline; color:#2980b9;">\
+        {blender_download_url}</span></a></p><p><br/>Developed by Tobias Kummer for \
+        <a href="{overmind_studios_url}"><span style="text-decoration:underline; color:#2980b9;"> \
         Overmind Studios</span></a></p><p>\
-        Licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html"><span style=" text-decoration:\
+        Licensed under the <a href="{gpl_license_url}"><span style=" text-decoration:\
         underline; color:#2980b9;">GPL v3 license</span></a></p><p>Project home: \
-        <a href="https://overmindstudios.github.io/BlenderUpdater/"><span style=" text-decoration:\
-        underline; color:#2980b9;">https://overmindstudios.github.io/BlenderUpdater/</a></p> \
+        <a href="{overmind_studios_github_url}"><span style=" text-decoration:\
+        underline; color:#2980b9;">{overmind_studios_github_url}</a></p> \
         <p style="text-align: center;"></p> \
-        <p>Application based on the version: '
-            + self.launcher_installed
-            + "</p></body></html> "
+        <p>Application based on the version:{self.launcher_installed}</p></body></html>'
         )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
