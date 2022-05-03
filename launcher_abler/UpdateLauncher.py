@@ -4,6 +4,8 @@ import logging
 import os
 import os.path
 import sys
+from typing import Tuple
+from enum import Enum
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import get_datadir, StateUI
@@ -31,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(dir_, launcher_installed) -> tuple:
+def check_launcher(dir_, launcher_installed) -> Tuple[Enum, list]:
     finallist = None
     results = []
     state_ui = None
@@ -68,7 +70,7 @@ def check_launcher(dir_, launcher_installed) -> tuple:
         return state_ui, finallist
 
 
-def get_req_from_url(url, state_ui, launcher_installed, dir_) -> tuple:
+def get_req_from_url(url, state_ui, launcher_installed, dir_) -> Tuple[bool,dict,Enum,str]:
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it

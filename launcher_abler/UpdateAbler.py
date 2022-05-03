@@ -4,9 +4,12 @@ import logging
 import os
 import os.path
 import sys
+from typing import Tuple
+from enum import Enum
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import get_datadir, StateUI
+
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -31,7 +34,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_abler(dir_, installedversion) -> tuple:
+def check_abler(dir_, installedversion) -> Tuple[Enum, list]:
     # 최신 릴리즈가 있는지 URL 주소로 확인
     finallist = None
     results = []
@@ -72,7 +75,7 @@ def check_abler(dir_, installedversion) -> tuple:
     return state_ui, finallist
 
 
-def get_req_from_url(url, state_ui, dir_) -> tuple:
+def get_req_from_url(url, state_ui, dir_) -> Tuple[bool,dict,Enum]:
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
