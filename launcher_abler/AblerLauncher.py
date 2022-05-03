@@ -53,10 +53,8 @@ LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
-if not os.path.isdir(get_datadir() / "Blender/2.96"):
-    os.mkdir(get_datadir() / "Blender/2.96")
-if not os.path.isdir(get_datadir() / "Blender/2.96/updater"):
-    os.mkdir(get_datadir() / "Blender/2.96/updater")
+os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
