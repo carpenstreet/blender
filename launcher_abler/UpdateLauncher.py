@@ -4,7 +4,7 @@ import logging
 import os
 import os.path
 import sys
-from typing import Tuple
+from typing import Tuple, Optional
 from enum import Enum
 from distutils.version import StrictVersion
 import configparser
@@ -31,7 +31,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(dir_, launcher_installed) -> Tuple[Enum, list]:
+def check_launcher(dir_, launcher_installed) -> Tuple[Enum, Optional[list]]:
     finallist = None
     results = []
     state_ui = None
@@ -68,7 +68,7 @@ def check_launcher(dir_, launcher_installed) -> Tuple[Enum, list]:
         return state_ui, finallist
 
 
-def get_req_from_url(url, state_ui, launcher_installed, dir_) -> Tuple[bool,dict,Enum,str]:
+def get_req_from_url(url, state_ui, launcher_installed, dir_) -> Tuple[bool,Optional[dict],Enum,str]:
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
