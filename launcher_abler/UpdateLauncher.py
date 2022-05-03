@@ -82,7 +82,6 @@ def get_req_from_url(url, state_ui, launcher_installed, dir_) -> Tuple[bool,dict
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)
-    f.close()
 
     try:
         req = requests.get(url).json()

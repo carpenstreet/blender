@@ -320,7 +320,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
-        f.close()
 
         ##########################
         # Do the actual download #
