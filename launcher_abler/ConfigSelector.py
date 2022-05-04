@@ -89,7 +89,6 @@ class ConfigSelector:
 
         if os.path.isfile(self.config_bak):
             shutil.copyfile(self.config_bak, self.config)
-            os.remove(self.config_bak)
 
         return
 
