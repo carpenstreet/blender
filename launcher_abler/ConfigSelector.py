@@ -88,10 +88,11 @@ class ConfigSelector:
         """
         if os.path.isfile(self.config_bak):
             shutil.copyfile(self.config_bak, self.config)
+            os.remove(self.config_bak)
 
         return
 
-    def remove_config(self):
+    def remove_backup(self):
         """
         Remove config.bak
         """
@@ -111,12 +112,12 @@ def main():
         config.reset_config()
 
     if args.remove:
-        config.remove_config()
-
-    config.read_config()
-    config.set_config()
+        config.remove_backup()
 
     if args.run:
+        config.copy_config()
+        config.read_config()
+        config.set_config()
         subprocess.call(config.launcher)
 
     return
