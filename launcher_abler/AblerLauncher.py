@@ -298,26 +298,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         url = entry["url"]
         version = entry["version"]
-        variation = entry["arch"]
+        self.entry = entry
 
         if os.path.isdir(temp_name):
             shutil.rmtree(temp_name)
 
         os.makedirs(temp_name)
-
-        config = configparser.ConfigParser()
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-
-        if dir_name == dir_:
-            config.set("main", "path", dir_)
-            config.set("main", "flavor", variation)
-            config.set("main", "installed", version)
-        else:
-            config.set("main", "launcher", version)
-            logger.info(f"1 {config.get('main', 'installed')}")
-
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
 
         ##########################
         # Do the actual download #
@@ -386,6 +372,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def done_launcher(self):
         """최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행"""
+
+        # update config
+        version = self.entry["version"]
+        config = configparser.ConfigParser()
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+        config.set("main", "launcher", version)
+        logger.info(f"1 {config.get('main', 'installed')}")
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
+
         self.setup_download_done_ui()
         QtWidgets.QMessageBox.information(
             self,
@@ -425,6 +421,18 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def done_abler(self):
         """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
+
+        # update config
+        version = self.entry["version"]
+        variation = self.entry["arch"]
+        config = configparser.ConfigParser()
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+        config.set("main", "path", dir_)
+        config.set("main", "flavor", variation)
+        config.set("main", "installed", version)
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
+
         self.setup_download_done_ui()
         self.setup_execute_ui()
 
