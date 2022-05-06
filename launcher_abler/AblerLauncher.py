@@ -16,16 +16,13 @@
 """
 
 import privilege_helper
-import pathlib
 from PySide2 import QtWidgets, QtCore, QtGui
 import qdarkstyle
 import mainwindow
-import requests
 import configparser
 import logging
 import os
 import os.path
-import platform
 import shutil
 import subprocess
 import sys
@@ -33,8 +30,7 @@ import urllib.parse
 import urllib.request
 import time
 from distutils.dir_util import copy_tree
-from distutils.version import StrictVersion
-from typing import Optional
+from AblerLauncherUtils import get_datadir, hbytes, StateUI
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -42,51 +38,23 @@ if sys.platform == "win32":
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
 app = QtWidgets.QApplication(sys.argv)
-
 app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
-
-def get_datadir() -> pathlib.Path:
-    """
-    Returns a parent directory path
-    where persistent application data can be stored.
-
-    linux: ~/.local/share
-    macOS: ~/Library/Application Support
-    windows: C:/Users/<USER>/AppData/Roaming
-    """
-
-    home = pathlib.Path.home()
-
-    if sys.platform == "win32":
-        return home / "AppData/Roaming/Blender Foundation"
-    elif sys.platform == "linux":
-        return home / ".local/share"
-    elif sys.platform == "darwin":
-        return home / "Library/Application Support"
-
 
 appversion = "1.9.8"
 dir_ = ""
+launcherdir_ = get_datadir() / "Blender/2.96/updater"
 if sys.platform == "darwin":
     dir_ = "/Applications"
-
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
-launcherdir_ = get_datadir() / "Blender/2.96/updater"
-config = configparser.ConfigParser()
-btn = {}
-lastversion = ""
-installedversion = ""
-launcher_installed = ""
+
+
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
-if not os.path.isdir(get_datadir() / "Blender/2.96"):
-    os.mkdir(get_datadir() / "Blender/2.96")
-if not os.path.isdir(get_datadir() / "Blender/2.96/updater"):
-    os.mkdir(get_datadir() / "Blender/2.96/updater")
+os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
@@ -112,42 +80,6 @@ class WorkerThread(QtCore.QThread):
         self.url = url
         self.path = path
         self.temp_path = temp_path
-
-        if "macOS" in file:
-            config.set("main", "lastdl", "OSX")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "win32" in file:
-            config.set("main", "lastdl", "Windows 32bit")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "win64" in file:
-            config.set("main", "lastdl", "Windows 64bit")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc211-i686" in file:
-            config.set("main", "lastdl", "Linux glibc211 i686")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc211-x86_64" in file:
-            config.set("main", "lastdl", "Linux glibc211 x86_64")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc219-i686" in file:
-            config.set("main", "lastdl", "Linux glibc219 i686")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
-        elif "glibc219-x86_64" in file:
-            config.set("main", "lastdl", "Linux glibc219 x86_64")
-            with open("config.ini", "w") as f:
-                config.write(f)
-                f.close()
 
     def progress(self, count, blockSize, totalSize):
         """Updates progress bar"""
@@ -187,7 +119,9 @@ class WorkerThread(QtCore.QThread):
                 # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
                 # shortcut.save()
             else:
+                # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
                 try:
+                    # TODO: copy_tree가 현재 작동하지 않고 바로 except로 넘어감
                     copy_tree(source[0], self.path)
                 except Exception as e:
                     logger.error(e)
@@ -203,21 +137,75 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         logger.info(f"Running version {appversion}")
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
-        self.setupUi(self)
-        self.btn_oneclick.hide()
-        self.lbl_quick.hide()
-        self.lbl_caution.hide()
-        self.btn_newVersion.hide()
-        self.btn_update.hide()
-        self.btn_execute.hide()
-        self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
-        global lastversion
+        self.lastversion = ""
+        self.installedversion = ""
+        self.launcher_installed = ""
+        self.lastcheck = ""
         global dir_
-        global config
-        global installedversion
-        global launcher_installed
-        # print(get_datadir() / "Blender/2.96/updater/config.ini")
-        # print(os.path.isfile(get_datadir() / "Blender/2.96/updater/config.ini"))
+
+        self.setupUi(self)
+        self.setup_config()
+        self.setup_init_ui()
+
+        try:
+            import UpdateAbler, UpdateLauncher
+
+            state_ui, finallist = UpdateLauncher.check_launcher(
+                dir_, self.launcher_installed
+            )
+            self.parse_launcher_state(state_ui, finallist)
+            if not state_ui:
+                state_ui, finallist = UpdateAbler.check_abler(
+                    dir_, self.installedversion
+                )
+                self.parse_abler_state(state_ui, finallist)
+        except Exception as e:
+            logger.error(e)
+
+    def parse_launcher_state(self, state_ui, finallist):
+        if state_ui == StateUI.error:
+            self.statusBar().showMessage(
+                "Error reaching server - check your internet connection"
+            )
+            self.frm_start.show()
+
+        elif state_ui == StateUI.no_release:
+            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
+            #       click 빼야하는지, 있어도 되는지 확인하기
+            self.frm_start.show()
+            self.btn_execute.show()
+            self.btn_update_launcher.hide()
+            self.btn_update.hide()
+            # self.setup_execute_ui()
+
+        elif state_ui == StateUI.update_launcher:
+            self.setup_update_launcher_ui(finallist)
+        else:
+            return
+
+    def parse_abler_state(self, state_ui, finallist):
+        if state_ui == StateUI.error:
+            self.statusBar().showMessage(
+                "Error reaching server - check your internet connection"
+            )
+            self.frm_start.show()
+
+        elif state_ui == StateUI.no_release:
+            self.frm_start.show()
+            self.setup_execute_ui()
+
+        elif state_ui == StateUI.update_abler:
+            self.setup_update_abler_ui(finallist)
+
+        elif state_ui == StateUI.execute:
+            self.setup_execute_ui()
+
+        else:
+            return
+
+    def setup_config(self):
+        config = configparser.ConfigParser()
+
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
             os.remove(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak")
         if os.path.isfile(get_datadir() / "Blender/2.96/config/startup.blend"):
@@ -228,13 +216,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config_exist = True
             logger.info("Reading existing configuration file")
             config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-            lastcheck = config.get("main", "lastcheck")
-            lastversion = config.get("main", "lastdl")
-            installedversion = config.get("main", "installed")
-            launcher_installed = config.get("main", "launcher")
+            self.lastcheck = config.get("main", "lastcheck")
+            self.lastversion = config.get("main", "lastdl")
+            self.installedversion = config.get("main", "installed")
+            self.launcher_installed = config.get("main", "launcher")
             flavor = config.get("main", "flavor")
-            if lastversion != "":
-                self.btn_oneclick.setText(f"{flavor} | {lastversion}")
+            if self.lastversion != "":
+                self.btn_oneclick.setText(f"{flavor} | {self.lastversion}")
         else:
             logger.debug("No previous config found")
             self.btn_oneclick.hide()
@@ -242,14 +230,24 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.read(get_datadir() / "Blender/2.96/updater/config.ini")
             config.add_section("main")
             config.set("main", "path", "")
-            lastcheck = "Never"
-            config.set("main", "lastcheck", lastcheck)
+            self.lastcheck = "Never"
+            config.set("main", "lastcheck", self.lastcheck)
             config.set("main", "lastdl", "")
             config.set("main", "installed", "")
             config.set("main", "launcher", "")
             config.set("main", "flavor", "")
             with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
                 config.write(f)
+
+    def setup_init_ui(self):
+        self.btn_oneclick.hide()
+        self.lbl_quick.hide()
+        self.lbl_caution.hide()
+        self.btn_newVersion.hide()
+        self.btn_update.hide()
+        self.btn_execute.hide()
+        self.lbl_caution.setStyleSheet("background: rgb(255, 155, 8);\n" "color: white")
+
         self.btn_cancel.hide()
         self.frm_progress.hide()
         self.btngrp_filter.hide()
@@ -258,362 +256,90 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(0)
         self.progressBar.hide()
         self.lbl_task.hide()
-        self.statusbar.showMessage(f"Ready - Last check: {lastcheck}")
+        self.statusbar.showMessage(f"Ready - Last check: {self.lastcheck}")
         self.btn_Quit.clicked.connect(QtCore.QCoreApplication.instance().quit)
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
-        try:
-            if not (self.check_launcher()):
-                self.check_once()
-        except Exception as e:
-            logger.error(e)
 
-    def open_acon3d(self):
-        url = QtCore.QUrl("https://www.acon3d.com/")
-        QtGui.QDesktopServices.openUrl(url)
-
-    def about(self):
-        aboutText = (
-            '<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
-        <a href="https://builder.blender.org/download/"><span style=" text-decoration: underline; color:#2980b9;">\
-        https://builder.blender.org/download/</span></a></p><p><br/>Developed by Tobias Kummer for \
-        <a href="http://www.overmind-studios.de"><span style="text-decoration:underline; color:#2980b9;"> \
-        Overmind Studios</span></a></p><p>\
-        Licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0-standalone.html"><span style=" text-decoration:\
-        underline; color:#2980b9;">GPL v3 license</span></a></p><p>Project home: \
-        <a href="https://overmindstudios.github.io/BlenderUpdater/"><span style=" text-decoration:\
-        underline; color:#2980b9;">https://overmindstudios.github.io/BlenderUpdater/</a></p> \
-        <p style="text-align: center;"></p> \
-        <p>Application based on the version: '
-            + launcher_installed
-            + "</p></body></html> "
+    def setup_update_launcher_ui(self, finallist):
+        self.btn_update_launcher.show()
+        self.btn_update.hide()
+        self.btn_execute.hide()
+        self.btn_update_launcher.clicked.connect(
+            lambda throwaway=0, entry=finallist[0]: self.download(
+                entry, dir_name=launcherdir_
+            )
         )
-        QtWidgets.QMessageBox.about(self, "About", aboutText)
 
-    def hbytes(self, num):
-        """Translate to human readable file size."""
-        for x in [" bytes", " KB", " MB", " GB"]:
-            if num < 1024.0:
-                return "%3.1f%s" % (num, x)
-            num /= 1024.0
-        return "%3.1f%s" % (num, " TB")
+    def setup_update_abler_ui(self, finallist):
+        # ABLER를 업데이트
+        self.btn_update_launcher.hide()
+        self.btn_update.show()
+        self.btn_execute.hide()
+        self.btn_update.clicked.connect(
+            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+        )
 
-    def check_once(self)->None:
-        global dir_
-        global lastversion
-        global installedversion
-        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-        if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"
-        # Do path settings save here, in case user has manually edited it
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "path", dir_)
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-        try:
-            req = requests.get(url).json()
-        except Exception as e:
-            self.statusBar().showMessage(
-                "Error reaching server - check your internet connection"
-            )
-            logger.error(e)
-            self.frm_start.show()
-        results = []
-        if test_arg:
-            req = req[0]
-        is_no_release = False
-        try:
-            is_no_release = req["message"] == "Not Found"
-        except Exception as e:
-            logger.debug("Release found")
-        if is_no_release:
-            self.frm_start.show()
-            self.btn_execute.show()
-            if sys.platform == "win32":
-                self.btn_execute.clicked.connect(self.exec_windows)
-            elif sys.platform == "darwin":
-                self.btn_execute.clicked.connect(self.exec_osx)
-            elif sys.platform == "linux":
-                self.btn_execute.clicked.connect(self.exec_linux)
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
-        version_tag = req["name"][1:]
-        for asset in req["assets"]:
-            if sys.platform == "darwin":
-                if os.system("sysctl -in sysctl.proc_translated") == 1:
-                    target = asset["browser_download_url"]
-                    if (
-                        "macOS" in target
-                        and "zip" in target
-                        and "Release" in target
-                        and "M1" in target
-                    ):
-                        info = {
-                            "url": target,
-                            "os": "macOS",
-                            "filename": target.split("/")[-1],
-                            "version": version_tag,
-                            "arch": "arm64",
-                        }
-                        results.append(info)
-                else:
-                    target = asset["browser_download_url"]
-                    if (
-                        "macOS" in target
-                        and "zip" in target
-                        and "Release" in target
-                        and "Intel" in target
-                    ):
-                        info = {
-                            "url": target,
-                            "os": "macOS",
-                            "filename": target.split("/")[-1],
-                            "version": version_tag,
-                            "arch": "x86_64",
-                        }
-                        results.append(info)
+    def setup_execute_ui(self):
+        self.btn_update_launcher.hide()
+        self.btn_update.hide()
+        self.btn_execute.show()
 
-            elif sys.platform == "win32":
-                target = asset["browser_download_url"]
-                if "Windows" in target and "zip" in target and "Release" in target:
-                    info = {
-                        "url": target,
-                        "os": "Windows",
-                        "filename": target.split("/")[-1],
-                        "version": version_tag,
-                        "arch": "x64",
-                    }
-                    results.append(info)
-        if finallist := results:
-            if installedversion is None or installedversion == "":
-                installedversion = "0.0.0"
-            if StrictVersion(finallist[0]["version"]) > StrictVersion(installedversion):
-                self.btn_update.show()
-                self.btn_update.clicked.connect(
-                    lambda throwaway=0, entry=finallist[0]: self.download(entry)
-                )
-                self.btn_execute.hide()
-                self.btn_update_launcher.hide()
-            else:
-                self.btn_update.hide()
-                self.btn_update_launcher.hide()
-                self.btn_execute.show()
-                if sys.platform == "win32":
-                    self.btn_execute.clicked.connect(self.exec_windows)
-                elif sys.platform == "darwin":
-                    self.btn_execute.clicked.connect(self.exec_osx)
-                elif sys.platform == "linux":
-                    self.btn_execute.clicked.connect(self.exec_linux)
-        else:
-            self.btn_update.hide()
-            self.btn_update_launcher.hide()
-            self.btn_execute.show()
-            if sys.platform == "win32":
-                self.btn_execute.clicked.connect(self.exec_windows)
-            if sys.platform == "darwin":
-                self.btn_execute.clicked.connect(self.exec_osx)
-            if sys.platform == "linux":
-                self.btn_execute.clicked.connect(self.exec_linux)
+        if sys.platform == "win32":
+            self.btn_execute.clicked.connect(self.exec_windows)
+        elif sys.platform == "darwin":
+            self.btn_execute.clicked.connect(self.exec_osx)
+        elif sys.platform == "linux":
+            self.btn_execute.clicked.connect(self.exec_linux)
 
-    def check_launcher(self) -> bool:
-        launcher_need_install = False
-        global dir_
-        global lastversion
-        global installedversion
-        global launcher_installed
-        global launcherdir_
-        url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-        if test_arg:
-            url = "https://api.github.com/repos/acon3d/blender/releases"
-        # Do path settings save here, in case user has manually edited it
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        launcher_installed = config.get("main", "launcher")
-        config.set("main", "path", dir_)
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-        try:
-            req = requests.get(url).json()
-        except Exception as e:
-            self.statusBar().showMessage(
-                "Error reaching server - check your internet connection"
-            )
-            logger.error(e)
-            self.frm_start.show()
-        results = []
-        if test_arg:
-            req = req[0]
-        is_no_release = False
-        try:
-            is_no_release = req["message"] == "Not Found"
-        except Exception as e:
-            logger.debug("Release found")
-        if is_no_release:
-            self.frm_start.show()
-            self.btn_execute.show()
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
-            return False
-        else:
-            for asset in req["assets"]:
-                opsys = platform.system()
-                if opsys == "Windows":
-                    target = asset["browser_download_url"]
-                    if "Windows" in target and "Launcher" in target and "zip" in target:
-                        # file name should be "ABLER_Launcher_Windows_v0.0.2.zip"
-
-                        info = {
-                            "url": target,
-                            "os": "Windows",
-                            "filename": target.split("/")[-1],
-                            "version": target.split("/")[-1].split("_")[-1][1:-4],
-                            "arch": "x64",
-                        }
-                        results.append(info)
-                if opsys == "Darwin":
-                    target = asset["browser_download_url"]
-                    if "macOS" in target and "Launcher" in target and "zip" in target:
-                        info = {}
-                        info["url"] = target
-                        info["os"] = "macOS"
-                        info["filename"] = target.split("/")[-1]
-                        # file name should be "ABLER_Launcher_macOS_v0.0.2.zip"
-                        info["version"] = info["filename"].split("_")[-1][1:-4]
-                        info["arch"] = "x86_64"
-                        results.append(info)
-            if finallist := results:
-                if launcher_installed is None or launcher_installed == "":
-                    launcher_installed = "0.0.0"
-                if StrictVersion(finallist[0]["version"]) > StrictVersion(
-                    launcher_installed
-                ):
-                    self.btn_execute.hide()
-                    self.btn_update.hide()
-                    self.btn_update_launcher.show()
-                    self.btn_update_launcher.clicked.connect(
-                        lambda throwaway=0, entry=finallist[0]: self.download_launcher(
-                            entry
-                        )
-                    )
-                    launcher_need_install = True
-            else:
-                self.btn_update_launcher.hide()
-            return launcher_need_install
-
-    def download(self, entry):
+    def download(self, entry, dir_name):
         """Download routines."""
-        global dir_
+        temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
 
         url = entry["url"]
         version = entry["version"]
         variation = entry["arch"]
 
-        if os.path.isdir("./blendertemp"):
-            shutil.rmtree("./blendertemp")
+        if os.path.isdir(temp_name):
+            shutil.rmtree(temp_name)
 
-        os.makedirs("./blendertemp")
-        file = urllib.request.urlopen(url)
-        totalsize = file.info()["Content-Length"]
-        size_readable = self.hbytes(float(totalsize))
+        os.makedirs(temp_name)
 
-        global config
+        config = configparser.ConfigParser()
         config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "path", dir_)
-        config.set("main", "flavor", variation)
-        config.set("main", "installed", version)
+
+        if dir_name == dir_:
+            config.set("main", "path", dir_)
+            config.set("main", "flavor", variation)
+            config.set("main", "installed", version)
+        else:
+            config.set("main", "launcher", version)
+            logger.info(f"1 {config.get('main', 'installed')}")
 
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
-        f.close()
 
         ##########################
         # Do the actual download #
         ##########################
 
-        dir_ = os.path.join(dir_, "")
-        filename = "./blendertemp/" + entry["filename"]
-
-        for i in btn:
-            btn[i].hide()
         logger.info(f"Starting download thread for {url}{version}")
 
-        self.lbl_available.hide()
-        self.lbl_caution.hide()
-        self.progressBar.show()
-        self.btngrp_filter.hide()
-        self.lbl_task.setText("Downloading")
-        self.lbl_task.show()
-        self.frm_progress.show()
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading {version}</b>")
-        self.progressBar.setValue(0)
-        self.statusbar.showMessage(f"Downloading {size_readable}")
+        self.setup_download_ui(entry, dir_name)
 
-        thread = WorkerThread(url, filename, dir_, "./blendertemp/")
+        self.exec_dir_name = os.path.join(dir_name, "")
+        filename = temp_name + entry["filename"]
+
+        thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
         thread.update.connect(self.updatepb)
         thread.finishedDL.connect(self.extraction)
         thread.finishedEX.connect(self.finalcopy)
         thread.finishedCP.connect(self.cleanup)
-        thread.finishedCL.connect(self.done)
-        thread.start()
 
-    def download_launcher(self, entry):
-        """Download routines."""
-        global launcherdir_
-
-        url = entry["url"]
-        version = entry["version"]
-        variation = entry["arch"]
-
-        if os.path.isdir("./launchertemp"):
-            shutil.rmtree("./launchertemp")
-
-        os.makedirs("./launchertemp")
-        file = urllib.request.urlopen(url)
-        totalsize = file.info()["Content-Length"]
-        size_readable = self.hbytes(float(totalsize))
-
-        global config
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-        config.set("main", "launcher", version)
-        logger.info(f"1 {config.get('main', 'installed')}")
-
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-        f.close()
-
-        ##########################
-        # Do the actual download #
-        ##########################
-
-        launcherdir_ = os.path.join(launcherdir_, "")
-        filename = "./launchertemp/" + entry["filename"]
-
-        logger.info(f"Starting download thread for {url}{version}")
-
-        self.lbl_available.hide()
-        self.lbl_caution.hide()
-        self.progressBar.show()
-        self.btngrp_filter.hide()
-        self.lbl_task.setText("Downloading")
-        self.lbl_task.show()
-        self.frm_progress.show()
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading Launcher {version}</b>")
-        self.progressBar.setValue(0)
-        self.statusbar.showMessage(f"Downloading {size_readable}")
-
-        thread = WorkerThread(url, filename, launcherdir_, "./launchertemp")
-        thread.update.connect(self.updatepb)
-        thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy_launcher)
-        thread.finishedCP.connect(self.cleanup)
-        thread.finishedCL.connect(self.done_launcher)
+        if dir_name == dir_:
+            thread.finishedCL.connect(self.done_abler)
+        else:
+            thread.finishedCL.connect(self.done_launcher)
 
         thread.start()
 
@@ -621,6 +347,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(percent)
 
     def extraction(self):
+        """다운로드 받은 파일 압축 해제"""
         logger.info("Extracting to temp directory")
         self.lbl_task.setText("Extracting...")
         self.btn_Quit.setEnabled(False)
@@ -635,26 +362,19 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(-1)
 
     def finalcopy(self):
-        logger.info(f"Copying to {dir_}")
+        """설치 파일 복사"""
+        exec_dir_name = self.exec_dir_name
+        logger.info(f"Copying to {exec_dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_extract_pic.setPixmap(donepixmap)
         self.lbl_copy_pic.setPixmap(nowpixmap)
         self.lbl_copying.setText("<b>Copying</b>")
         self.lbl_task.setText("Copying files...")
-        self.statusbar.showMessage(f"Copying files to {dir_}, please wait... ")
-
-    def finalcopy_launcher(self):
-        logger.info(f"Copying to {launcherdir_}")
-        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_extract_pic.setPixmap(donepixmap)
-        self.lbl_copy_pic.setPixmap(nowpixmap)
-        self.lbl_copying.setText("<b>Copying</b>")
-        self.lbl_task.setText("Copying files...")
-        self.statusbar.showMessage(f"Copying files to {launcherdir_}, please wait... ")
+        self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
 
     def cleanup(self):
+        """설치 파일 임시 폴더 제거"""
         logger.info("Cleaning up temp files")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
@@ -664,37 +384,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Cleaning up...")
         self.statusbar.showMessage("Cleaning temporary files")
 
-    def done(self):
-        logger.info("Finished")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_clean_pic.setPixmap(donepixmap)
-        self.statusbar.showMessage("Ready")
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(100)
-        self.lbl_task.setText("Finished")
-        self.btn_Quit.setEnabled(True)
-        self.btn_update.hide()
-        self.btn_update_launcher.hide()
-        self.btn_execute.show()
-        opsys = platform.system()
-        if opsys == "Windows":
-            self.btn_execute.clicked.connect(self.exec_windows)
-        if opsys == "Darwin":
-            self.btn_execute.clicked.connect(self.exec_osx)
-        if opsys == "Linux":
-            self.btn_execute.clicked.connect(self.exec_linux)
-
     def done_launcher(self):
-        logger.info("Finished")
-        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
-        self.lbl_clean_pic.setPixmap(donepixmap)
-        self.statusbar.showMessage("Ready")
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
-        self.progressBar.setValue(100)
-        self.lbl_task.setText("Finished")
-        self.btn_Quit.setEnabled(True)
+        """최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행"""
+        self.setup_download_done_ui()
         QtWidgets.QMessageBox.information(
             self,
             "Launcher updated",
@@ -731,6 +423,51 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
+    def done_abler(self):
+        """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
+        self.setup_download_done_ui()
+        self.setup_execute_ui()
+
+    def setup_download_ui(self, entry, dir_name):
+        url = entry["url"]
+        version = entry["version"]
+        # TODO: exec_name 있으면 문자열이 UI 영역을 넘어가서 뺄지 논의
+        exec_name = "ABLER" if dir_name == dir_ else "Launcher"
+
+        file = urllib.request.urlopen(url)
+        totalsize = file.info()["Content-Length"]
+        size_readable = hbytes(float(totalsize))
+
+        self.lbl_available.hide()
+        self.lbl_caution.hide()
+        self.progressBar.show()
+        self.btngrp_filter.hide()
+        self.lbl_task.setText("Downloading")
+        self.lbl_task.show()
+        self.frm_progress.show()
+        nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
+        self.lbl_download_pic.setPixmap(nowpixmap)
+        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        self.progressBar.setValue(0)
+        self.statusbar.showMessage(f"Downloading {size_readable}")
+
+        # 중복 다운로드 방지를 위한 버튼 비활성화
+        if dir_name == dir_:
+            self.btn_update.setDisabled(True)
+        else:
+            self.btn_update_launcher.setDisabled(True)
+
+    def setup_download_done_ui(self):
+        logger.info("Finished")
+        donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
+        self.lbl_clean_pic.setPixmap(donepixmap)
+        self.statusbar.showMessage("Ready")
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setValue(100)
+        self.lbl_task.setText("Finished")
+        self.btn_Quit.setEnabled(True)
+
     def exec_windows(self):
         try:
             if privilege_helper.isUserAdmin():
@@ -759,6 +496,30 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def exec_linux(self):
         _ = subprocess.Popen(os.path.join(f"{dir_}/blender"))
         logger.info(f"Executing {dir_}blender")
+
+    def open_acon3d(self):
+        url = QtCore.QUrl("https://www.acon3d.com/")
+        QtGui.QDesktopServices.openUrl(url)
+
+    def about(self):
+        blender_download_url = "https://builder.blender.org/download/" #TODO: ABLER download url
+        overmind_studios_url = "http://www.overmind-studios.de"
+        gpl_license_url = "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
+        overmind_studios_github_url = "https://overmindstudios.github.io/BlenderUpdater/"
+        aboutText = (
+            f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
+        <a href="{blender_download_url}"><span style=" text-decoration: underline; color:#2980b9;">\
+        {blender_download_url}</span></a></p><p><br/>Developed by Tobias Kummer for \
+        <a href="{overmind_studios_url}"><span style="text-decoration:underline; color:#2980b9;"> \
+        Overmind Studios</span></a></p><p>\
+        Licensed under the <a href="{gpl_license_url}"><span style=" text-decoration:\
+        underline; color:#2980b9;">GPL v3 license</span></a></p><p>Project home: \
+        <a href="{overmind_studios_github_url}"><span style=" text-decoration:\
+        underline; color:#2980b9;">{overmind_studios_github_url}</a></p> \
+        <p style="text-align: center;"></p> \
+        <p>Application based on the version:{self.launcher_installed}</p></body></html>'
+        )
+        QtWidgets.QMessageBox.about(self, "About", aboutText)
 
 
 def macos_prework():
