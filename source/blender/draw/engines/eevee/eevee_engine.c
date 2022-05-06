@@ -281,13 +281,13 @@ static void eevee_draw_scene(void *vedata)
     SET_FLAG_FROM_TEST(clear_bits, (stl->effects->enabled_effects & EFFECT_SSS), GPU_STENCIL_BIT);
     GPU_framebuffer_clear(fbl->main_fb, clear_bits, clear_col, clear_depth, clear_stencil);
 
-    /* Abler prepass */
-    EEVEE_abler_prepass_draw(vedata);
-
     /* Depth prepass */
     DRW_stats_group_start("Prepass");
     DRW_draw_pass(psl->depth_ps);
     DRW_stats_group_end();
+
+    /* Abler prepass */
+    EEVEE_abler_prepass_draw(vedata);
 
     /* Create minmax texture */
     DRW_stats_group_start("Main MinMax buffer");

@@ -249,6 +249,7 @@ typedef struct EEVEE_BoundBox {
 
 typedef struct EEVEE_PassList {
   /* ABLER prepass */
+  struct DRWPass *abler_copy_depth_pass;
   struct DRWPass *abler_prepass;
 
   /* Shadows */
@@ -348,6 +349,7 @@ typedef struct EEVEE_PassList {
 
 typedef struct EEVEE_FramebufferList {
   /* ABLER prepass */
+  struct GPUFrameBuffer *abler_copy_depth_fb;
   struct GPUFrameBuffer *abler_prepass_fb;
 
   /* Effects */
@@ -1243,6 +1245,7 @@ struct GPUShader *EEVEE_shaders_probe_cube_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_probe_grid_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_probe_planar_display_sh_get(void);
 struct GPUShader *EEVEE_shaders_update_noise_sh_get(void);
+struct GPUShader *EEVEE_shaders_abler_copy_depth_pass_sh_get(void);
 struct GPUShader *EEVEE_shaders_abler_prepass_sh_get(void);
 struct GPUShader *EEVEE_shaders_velocity_resolve_sh_get(void);
 struct GPUShader *EEVEE_shaders_taa_resolve_sh_get(EEVEE_EffectsFlag enabled_effects);
