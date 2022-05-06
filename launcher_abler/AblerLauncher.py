@@ -142,6 +142,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.launcher_installed = ""
         self.lastcheck = ""
         global dir_
+        global launcherdir_
 
         self.setupUi(self)
         self.setup_config()
@@ -154,11 +155,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 dir_, self.launcher_installed
             )
             self.parse_launcher_state(state_ui, finallist)
+
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
                 )
                 self.parse_abler_state(state_ui, finallist)
+
+            # config.ini 업데이트 위해서 새로 할당
+            self.entry = finallist[0]
+
         except Exception as e:
             logger.error(e)
 
@@ -305,20 +311,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         os.makedirs(temp_name)
 
-        config = configparser.ConfigParser()
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-
-        if dir_name == dir_:
-            config.set("main", "path", dir_)
-            config.set("main", "flavor", variation)
-            config.set("main", "installed", version)
-        else:
-            config.set("main", "launcher", version)
-            logger.info(f"1 {config.get('main', 'installed')}")
-
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
-
         ##########################
         # Do the actual download #
         ##########################
@@ -423,10 +415,34 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
+        # Update config file
+        self.update_config(self.entry, launcherdir_)
+
     def done_abler(self):
         """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
         self.setup_download_done_ui()
         self.setup_execute_ui()
+
+        # Update config file
+        self.update_config(self.entry, dir_)
+
+    def update_config(self, entry, dir_name):
+        """
+        런처 & 에이블러 업데이트를 완료하고 config.ini 파일 업데이트
+        """
+        config = configparser.ConfigParser()
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+
+        if dir_name == dir_:
+            config.set("main", "path", dir_)
+            config.set("main", "flavor", entry["arch"])
+            config.set("main", "installed", entry["version"])
+        else:
+            config.set("main", "launcher", entry["version"])
+            logger.info(f"1 {config.get('main', 'installed')}")
+
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
 
     def setup_download_ui(self, entry, dir_name):
         url = entry["url"]
