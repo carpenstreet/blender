@@ -114,6 +114,8 @@ set(SRC
   engines/basic/basic_engine.c
   engines/image/image_engine.c
   engines/image/image_shader.c
+  engines/eevee/eevee_abler.h
+  engines/eevee/eevee_abler.c
   engines/eevee/eevee_bloom.c
   engines/eevee/eevee_cryptomatte.c
   engines/eevee/eevee_data.c
@@ -235,6 +237,7 @@ set(LIB
   bf_windowmanager
 )
 
+data_to_c_simple(engines/eevee/shaders/abler_copy_depth_pass_frag.glsl SRC)
 data_to_c_simple(engines/eevee/shaders/ambient_occlusion_lib.glsl SRC)
 data_to_c_simple(engines/eevee/shaders/background_vert.glsl SRC)
 data_to_c_simple(engines/eevee/shaders/common_uniforms_lib.glsl SRC)
