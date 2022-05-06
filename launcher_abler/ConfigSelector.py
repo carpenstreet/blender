@@ -18,7 +18,7 @@ class ConfigSelector:
         )
         self.launcher = os.path.join(self.updater, "AblerLauncher.exe")
         self.config = os.path.join(self.updater, "config.ini")
-        self.config_bak = os.path.join(self.updater, "config.bak")
+        self.config_bak = os.path.join(self.updater, "config.ini.bak")
         self.config_data = []
 
         # Version
@@ -74,7 +74,7 @@ class ConfigSelector:
         """
         Save back-up of config.ini
         """
-        print("Copy config.ini to config.bak")
+        print("Copy config.ini to config.ini.bak")
 
         if not os.path.isfile(self.config_bak):
             shutil.copyfile(self.config, self.config_bak)
@@ -85,7 +85,7 @@ class ConfigSelector:
         """
         Reset back-up to config.ini
         """
-        print("Reset config.bak to config.ini")
+        print("Reset config.ini.bak to config.ini")
 
         if os.path.isfile(self.config_bak):
             shutil.copyfile(self.config_bak, self.config)
@@ -94,9 +94,9 @@ class ConfigSelector:
 
     def remove_backup(self):
         """
-        Remove config.bak
+        Remove config.ini.bak
         """
-        print("Remove config.bak")
+        print("Remove config.ini.bak")
 
         if os.path.isfile(self.config_bak):
             os.remove(self.config_bak)
@@ -126,7 +126,7 @@ def main():
 
     else:
         if args.copy:
-            print("Already exists back-up file.")
+            print("Back-up file already exists.")
 
         if args.reset:
             config.reset_config()
