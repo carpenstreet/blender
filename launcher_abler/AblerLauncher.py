@@ -188,6 +188,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
+
         else:
             return
 
