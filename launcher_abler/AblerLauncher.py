@@ -171,6 +171,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.error(e)
 
     def parse_launcher_state(self, state_ui):
+        """Launcher 버전 확인 후 상태 결정"""
+
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -192,6 +194,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             return
 
     def parse_abler_state(self, state_ui):
+        """ABLER 버전 확인 후 상태 결정"""
+
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -212,6 +216,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             return
 
     def setup_config(self):
+        """초기 config 내용 세팅"""
+
         config = configparser.ConfigParser()
 
         if os.path.isfile(get_datadir() / "Blender/2.96/updater/AblerLauncher.bak"):
@@ -248,6 +254,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 config.write(f)
 
     def setup_init_ui(self):
+        """초기 UI 세팅"""
+
         self.btn_oneclick.hide()
         self.lbl_quick.hide()
         self.lbl_caution.hide()
@@ -270,6 +278,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_acon.clicked.connect(self.open_acon3d)
 
     def setup_update_launcher_ui(self):
+        """Update Launcher 버튼 활성화 UI"""
+
         self.btn_update_launcher.show()
         self.btn_update.hide()
         self.btn_execute.hide()
@@ -280,7 +290,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         )
 
     def setup_update_abler_ui(self):
-        # ABLER를 업데이트
+        """Update ABLER 버튼 활성화 UI"""
+
         self.btn_update_launcher.hide()
         self.btn_update.show()
         self.btn_execute.hide()
@@ -289,6 +300,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         )
 
     def setup_execute_ui(self):
+        """Run ABLER 버튼 활성화 UI"""
+
         self.btn_update_launcher.hide()
         self.btn_update.hide()
         self.btn_execute.show()
@@ -301,7 +314,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_execute.clicked.connect(self.exec_linux)
 
     def download(self, entry, dir_name):
-        """Download routines."""
+        """ABLER/Launcher 최신 릴리즈 다운로드"""
+
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
 
         url = entry["url"]
@@ -338,10 +352,13 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         thread.start()
 
     def updatepb(self, percent):
+        """다운로드 진행상황 바 표시"""
+
         self.progressBar.setValue(percent)
 
     def extraction(self):
         """다운로드 받은 파일 압축 해제"""
+
         logger.info("Extracting to temp directory")
         self.lbl_task.setText("Extracting...")
         self.btn_Quit.setEnabled(False)
@@ -357,6 +374,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def finalcopy(self):
         """설치 파일 복사"""
+
         exec_dir_name = self.exec_dir_name
         logger.info(f"Copying to {exec_dir_name}")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
@@ -369,6 +387,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def cleanup(self):
         """설치 파일 임시 폴더 제거"""
+
         logger.info("Cleaning up temp files")
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
@@ -379,7 +398,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.statusbar.showMessage("Cleaning temporary files")
 
     def done_launcher(self):
-        """최신 릴리즈의 launcher를 다운받고 나서는 launcher를 재실행"""
+        """최신 릴리즈의 launcher를 다운받은 후 launcher를 재실행"""
+
         self.setup_download_done_ui()
         QtWidgets.QMessageBox.information(
             self,
@@ -422,6 +442,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def done_abler(self):
         """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
+
         self.setup_download_done_ui()
         self.setup_execute_ui()
 
@@ -447,6 +468,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.write(f)
 
     def setup_download_ui(self, entry, dir_name):
+        """다운로드 실행 중인 UI"""
+
         url = entry["url"]
         version = entry["version"]
         # TODO: exec_name 있으면 문자열이 UI 영역을 넘어가서 뺄지 논의
@@ -476,6 +499,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.btn_update_launcher.setDisabled(True)
 
     def setup_download_done_ui(self):
+        """ABLER/Launcher 다운 후 완료 UI"""
+
         logger.info("Finished")
         donepixmap = QtGui.QPixmap(":/newPrefix/images/Check-icon.png")
         self.lbl_clean_pic.setPixmap(donepixmap)
@@ -487,6 +512,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_Quit.setEnabled(True)
 
     def exec_windows(self):
+        """window에서 ABLER 실행"""
+
         try:
             if privilege_helper.isUserAdmin():
                 _ = privilege_helper.runas_shell_user(
@@ -498,6 +525,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.error(e)
 
     def exec_osx(self):
+        """mac에서 ABLER 실행"""
+
         try:
             if getattr(sys, "frozen", False):
                 application_path = os.path.dirname(sys.executable)
@@ -512,6 +541,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             logger.error(e)
 
     def exec_linux(self):
+        """linux에서 ABLER 실행"""
+
         _ = subprocess.Popen(os.path.join(f"{dir_}/blender"))
         logger.info(f"Executing {dir_}blender")
 
