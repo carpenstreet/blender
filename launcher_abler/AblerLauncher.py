@@ -54,7 +54,7 @@ LOG_FORMAT = (
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
-os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
@@ -520,12 +520,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(url)
 
     def about(self):
-        blender_download_url = "https://builder.blender.org/download/" #TODO: ABLER download url
+        blender_download_url = (
+            "https://builder.blender.org/download/"  # TODO: ABLER download url
+        )
         overmind_studios_url = "http://www.overmind-studios.de"
         gpl_license_url = "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
-        overmind_studios_github_url = "https://overmindstudios.github.io/BlenderUpdater/"
-        aboutText = (
-            f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
+        overmind_studios_github_url = (
+            "https://overmindstudios.github.io/BlenderUpdater/"
+        )
+        aboutText = f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
         <a href="{blender_download_url}"><span style=" text-decoration: underline; color:#2980b9;">\
         {blender_download_url}</span></a></p><p><br/>Developed by Tobias Kummer for \
         <a href="{overmind_studios_url}"><span style="text-decoration:underline; color:#2980b9;"> \
@@ -536,7 +539,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         underline; color:#2980b9;">{overmind_studios_github_url}</a></p> \
         <p style="text-align: center;"></p> \
         <p>Application based on the version:{self.launcher_installed}</p></body></html>'
-        )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
 
