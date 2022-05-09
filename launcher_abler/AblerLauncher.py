@@ -155,14 +155,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
-            self.entry = finallist[0]
+            if finallist:
+                self.entry = finallist[0]
             self.parse_launcher_state(state_ui)
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
                 )
-                self.entry = finallist[0]
+                if finallist:
+                    self.entry = finallist[0]
                 self.parse_abler_state(state_ui)
 
         except Exception as e:
