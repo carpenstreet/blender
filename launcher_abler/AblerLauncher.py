@@ -141,6 +141,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.installedversion = ""
         self.launcher_installed = ""
         self.lastcheck = ""
+        self.entry = {}
         global dir_
         global launcherdir_
 
@@ -154,21 +155,20 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
-            self.parse_launcher_state(state_ui, finallist)
+            self.entry = finallist[0]
+            self.parse_launcher_state(state_ui)
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
                 )
-                self.parse_abler_state(state_ui, finallist)
-
-            # config.ini 업데이트 위해서 새로 할당
-            self.entry = finallist[0]
+                self.entry = finallist[0]
+                self.parse_abler_state(state_ui)
 
         except Exception as e:
             logger.error(e)
 
-    def parse_launcher_state(self, state_ui, finallist):
+    def parse_launcher_state(self, state_ui):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -185,11 +185,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             # self.setup_execute_ui()
 
         elif state_ui == StateUI.update_launcher:
-            self.setup_update_launcher_ui(finallist)
+            self.setup_update_launcher_ui()
         else:
             return
 
-    def parse_abler_state(self, state_ui, finallist):
+    def parse_abler_state(self, state_ui):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -201,7 +201,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
-            self.setup_update_abler_ui(finallist)
+            self.setup_update_abler_ui()
 
         elif state_ui == StateUI.execute:
             self.setup_execute_ui()
@@ -267,23 +267,23 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
 
-    def setup_update_launcher_ui(self, finallist):
+    def setup_update_launcher_ui(self):
         self.btn_update_launcher.show()
         self.btn_update.hide()
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
-            lambda throwaway=0, entry=finallist[0]: self.download(
+            lambda throwaway=0, entry=self.entry: self.download(
                 entry, dir_name=launcherdir_
             )
         )
 
-    def setup_update_abler_ui(self, finallist):
+    def setup_update_abler_ui(self):
         # ABLER를 업데이트
         self.btn_update_launcher.hide()
         self.btn_update.show()
         self.btn_execute.hide()
         self.btn_update.clicked.connect(
-            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+            lambda throwaway=0, entry=self.entry: self.download(entry, dir_name=dir_)
         )
 
     def setup_execute_ui(self):
