@@ -141,7 +141,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.installedversion = ""
         self.launcher_installed = ""
         self.lastcheck = ""
+        self.entry = {}
         global dir_
+        global launcherdir_
 
         self.setupUi(self)
         self.setup_config()
@@ -153,16 +155,22 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
-            self.parse_launcher_state(state_ui, finallist)
+            if finallist:
+                self.entry = finallist[0]
+            self.parse_launcher_state(state_ui)
+
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
                 )
-                self.parse_abler_state(state_ui, finallist)
+                if finallist:
+                    self.entry = finallist[0]
+                self.parse_abler_state(state_ui)
+
         except Exception as e:
             logger.error(e)
 
-    def parse_launcher_state(self, state_ui, finallist):
+    def parse_launcher_state(self, state_ui):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -179,11 +187,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             # self.setup_execute_ui()
 
         elif state_ui == StateUI.update_launcher:
-            self.setup_update_launcher_ui(finallist)
+            self.setup_update_launcher_ui()
         else:
             return
 
-    def parse_abler_state(self, state_ui, finallist):
+    def parse_abler_state(self, state_ui):
         if state_ui == StateUI.error:
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
@@ -195,7 +203,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
-            self.setup_update_abler_ui(finallist)
+            self.setup_update_abler_ui()
 
         elif state_ui == StateUI.execute:
             self.setup_execute_ui()
@@ -261,23 +269,23 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
 
-    def setup_update_launcher_ui(self, finallist):
+    def setup_update_launcher_ui(self):
         self.btn_update_launcher.show()
         self.btn_update.hide()
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
-            lambda throwaway=0, entry=finallist[0]: self.download(
+            lambda throwaway=0, entry=self.entry: self.download(
                 entry, dir_name=launcherdir_
             )
         )
 
-    def setup_update_abler_ui(self, finallist):
+    def setup_update_abler_ui(self):
         # ABLER를 업데이트
         self.btn_update_launcher.hide()
         self.btn_update.show()
         self.btn_execute.hide()
         self.btn_update.clicked.connect(
-            lambda throwaway=0, entry=finallist[0]: self.download(entry, dir_name=dir_)
+            lambda throwaway=0, entry=self.entry: self.download(entry, dir_name=dir_)
         )
 
     def setup_execute_ui(self):
@@ -304,20 +312,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             shutil.rmtree(temp_name)
 
         os.makedirs(temp_name)
-
-        config = configparser.ConfigParser()
-        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
-
-        if dir_name == dir_:
-            config.set("main", "path", dir_)
-            config.set("main", "flavor", variation)
-            config.set("main", "installed", version)
-        else:
-            config.set("main", "launcher", version)
-            logger.info(f"1 {config.get('main', 'installed')}")
-
-        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
-            config.write(f)
 
         ##########################
         # Do the actual download #
@@ -423,10 +417,34 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 logger.error(ee)
                 QtCore.QCoreApplication.instance().quit()
 
+        # Update config file
+        self.update_config(self.entry, launcherdir_)
+
     def done_abler(self):
         """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
         self.setup_download_done_ui()
         self.setup_execute_ui()
+
+        # Update config file
+        self.update_config(self.entry, dir_)
+
+    def update_config(self, entry, dir_name):
+        """
+        런처 & 에이블러 업데이트를 완료하고 config.ini 파일 업데이트
+        """
+        config = configparser.ConfigParser()
+        config.read(get_datadir() / "Blender/2.96/updater/config.ini")
+
+        if dir_name == dir_:
+            config.set("main", "path", dir_)
+            config.set("main", "flavor", entry["arch"])
+            config.set("main", "installed", entry["version"])
+        else:
+            config.set("main", "launcher", entry["version"])
+            logger.info(f"1 {config.get('main', 'installed')}")
+
+        with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
+            config.write(f)
 
     def setup_download_ui(self, entry, dir_name):
         url = entry["url"]
