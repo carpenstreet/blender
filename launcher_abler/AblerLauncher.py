@@ -31,6 +31,9 @@ import urllib.request
 import time
 from distutils.dir_util import copy_tree
 from AblerLauncherUtils import get_datadir, hbytes, StateUI
+from typing import Tuple, Optional
+from enum import Enum
+
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -133,7 +136,7 @@ class WorkerThread(QtCore.QThread):
 
 
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         logger.info(f"Running version {appversion}")
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
@@ -170,7 +173,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         except Exception as e:
             logger.error(e)
 
-    def parse_launcher_state(self, state_ui):
+    def parse_launcher_state(self, state_ui: Enum) -> None:
         """Launcher 버전 확인 후 상태 결정"""
 
         if state_ui == StateUI.error:
@@ -193,7 +196,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         else:
             return
 
-    def parse_abler_state(self, state_ui):
+    def parse_abler_state(self, state_ui: Enum) -> None:
         """ABLER 버전 확인 후 상태 결정"""
 
         if state_ui == StateUI.error:
@@ -215,7 +218,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         else:
             return
 
-    def setup_config(self):
+    def setup_config(self) -> None:
         """초기 config 내용 세팅"""
 
         config = configparser.ConfigParser()
@@ -253,7 +256,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
                 config.write(f)
 
-    def setup_init_ui(self):
+    def setup_init_ui(self) -> None:
         """초기 UI 세팅"""
 
         self.btn_oneclick.hide()
@@ -277,7 +280,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_about.clicked.connect(self.about)
         self.btn_acon.clicked.connect(self.open_acon3d)
 
-    def setup_update_launcher_ui(self):
+    def setup_update_launcher_ui(self) -> None:
         """Update Launcher 버튼 활성화 UI"""
 
         self.btn_update_launcher.show()
@@ -289,7 +292,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
         )
 
-    def setup_update_abler_ui(self):
+    def setup_update_abler_ui(self) -> None:
         """Update ABLER 버튼 활성화 UI"""
 
         self.btn_update_launcher.hide()
@@ -299,7 +302,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             lambda throwaway=0, entry=self.entry: self.download(entry, dir_name=dir_)
         )
 
-    def setup_execute_ui(self):
+    def setup_execute_ui(self) -> None:
         """Run ABLER 버튼 활성화 UI"""
 
         self.btn_update_launcher.hide()
@@ -313,7 +316,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         elif sys.platform == "linux":
             self.btn_execute.clicked.connect(self.exec_linux)
 
-    def download(self, entry, dir_name):
+    def download(self, entry: dict, dir_name: str) -> None:
         """ABLER/Launcher 최신 릴리즈 다운로드"""
 
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
@@ -351,12 +354,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         thread.start()
 
-    def updatepb(self, percent):
+    def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""
 
         self.progressBar.setValue(percent)
 
-    def extraction(self):
+    def extraction(self) -> None:
         """다운로드 받은 파일 압축 해제"""
 
         logger.info("Extracting to temp directory")
@@ -372,7 +375,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setMinimum(0)
         self.progressBar.setValue(-1)
 
-    def finalcopy(self):
+    def finalcopy(self) -> None:
         """설치 파일 복사"""
 
         exec_dir_name = self.exec_dir_name
@@ -385,7 +388,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Copying files...")
         self.statusbar.showMessage(f"Copying files to {exec_dir_name}, please wait... ")
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         """설치 파일 임시 폴더 제거"""
 
         logger.info("Cleaning up temp files")
@@ -397,7 +400,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Cleaning up...")
         self.statusbar.showMessage("Cleaning temporary files")
 
-    def done_launcher(self):
+    def done_launcher(self) -> None:
         """최신 릴리즈의 launcher를 다운받은 후 launcher를 재실행"""
 
         self.setup_download_done_ui()
@@ -440,7 +443,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Update config file
         self.update_config(self.entry, launcherdir_)
 
-    def done_abler(self):
+    def done_abler(self) -> None:
         """최신 릴리즈의 ABLER를 다운받고 나서는 self.setup_execute_ui() 실행"""
 
         self.setup_download_done_ui()
@@ -449,7 +452,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Update config file
         self.update_config(self.entry, dir_)
 
-    def update_config(self, entry, dir_name):
+    def update_config(self, entry: dict, dir_name: str) -> None:
         """
         런처 & 에이블러 업데이트를 완료하고 config.ini 파일 업데이트
         """
@@ -467,7 +470,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
             config.write(f)
 
-    def setup_download_ui(self, entry, dir_name):
+    def setup_download_ui(self, entry: dict, dir_name: str) -> None:
         """다운로드 실행 중인 UI"""
 
         url = entry["url"]
@@ -498,7 +501,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         else:
             self.btn_update_launcher.setDisabled(True)
 
-    def setup_download_done_ui(self):
+    def setup_download_done_ui(self) -> None:
         """ABLER/Launcher 다운 후 완료 UI"""
 
         logger.info("Finished")
@@ -511,7 +514,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lbl_task.setText("Finished")
         self.btn_Quit.setEnabled(True)
 
-    def exec_windows(self):
+    def exec_windows(self) -> None:
         """window에서 ABLER 실행"""
 
         try:
@@ -524,7 +527,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         except Exception as e:
             logger.error(e)
 
-    def exec_osx(self):
+    def exec_osx(self) -> None:
         """mac에서 ABLER 실행"""
 
         try:
@@ -540,23 +543,26 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         except Exception as e:
             logger.error(e)
 
-    def exec_linux(self):
+    def exec_linux(self) -> None:
         """linux에서 ABLER 실행"""
 
         _ = subprocess.Popen(os.path.join(f"{dir_}/blender"))
         logger.info(f"Executing {dir_}blender")
 
-    def open_acon3d(self):
+    def open_acon3d(self) -> None:
         url = QtCore.QUrl("https://www.acon3d.com/")
         QtGui.QDesktopServices.openUrl(url)
 
-    def about(self):
-        blender_download_url = "https://builder.blender.org/download/" #TODO: ABLER download url
+    def about(self) -> None:
+        blender_download_url = (
+            "https://builder.blender.org/download/"  # TODO: ABLER download url
+        )
         overmind_studios_url = "http://www.overmind-studios.de"
         gpl_license_url = "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
-        overmind_studios_github_url = "https://overmindstudios.github.io/BlenderUpdater/"
-        aboutText = (
-            f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
+        overmind_studios_github_url = (
+            "https://overmindstudios.github.io/BlenderUpdater/"
+        )
+        aboutText = f'<html><head/><body><p>Utility to update ABLER to the latest version available at<br> \
         <a href="{blender_download_url}"><span style=" text-decoration: underline; color:#2980b9;">\
         {blender_download_url}</span></a></p><p><br/>Developed by Tobias Kummer for \
         <a href="{overmind_studios_url}"><span style="text-decoration:underline; color:#2980b9;"> \
@@ -567,7 +573,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         underline; color:#2980b9;">{overmind_studios_github_url}</a></p> \
         <p style="text-align: center;"></p> \
         <p>Application based on the version:{self.launcher_installed}</p></body></html>'
-        )
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
 
