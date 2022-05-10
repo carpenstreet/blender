@@ -74,9 +74,9 @@ class ConfigSelector:
         """
         Save back-up of config.ini
         """
-        print("Copy config.ini to config.ini.bak")
 
         if not os.path.isfile(self.config_bak):
+            print("Copy config.ini to config.ini.bak")
             shutil.copyfile(self.config, self.config_bak)
 
         return

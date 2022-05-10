@@ -57,7 +57,7 @@ LOG_FORMAT = (
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
-os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
@@ -193,6 +193,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
+
         else:
             return
 
@@ -554,6 +555,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(url)
 
     def about(self) -> None:
+
         blender_download_url = (
             "https://builder.blender.org/download/"  # TODO: ABLER download url
         )

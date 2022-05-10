@@ -20,7 +20,7 @@ LOG_FORMAT = (
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
-os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
