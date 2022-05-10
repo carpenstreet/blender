@@ -20,7 +20,7 @@ LOG_FORMAT = (
 )
 test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
-os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True) 
+os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
     filename=get_datadir() / "Blender/2.96/updater/AblerLauncher.log",
     format=LOG_FORMAT,
@@ -68,7 +68,9 @@ def check_launcher(dir_, launcher_installed) -> Tuple[Enum, Optional[list]]:
         return state_ui, finallist
 
 
-def get_req_from_url(url, state_ui, launcher_installed, dir_) -> Tuple[bool,Optional[dict],Enum,str]:
+def get_req_from_url(
+    url, state_ui, launcher_installed, dir_
+) -> Tuple[bool, Optional[dict], Enum, str]:
     # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
 
     # Do path settings save here, in case user has manually edited it
