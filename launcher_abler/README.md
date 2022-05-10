@@ -75,14 +75,14 @@ $ pyrcc5 res.qrc -o res_rc.py
 
 
 6. `Launcher` 버전 확인
-    
-    ![ver_Launcher](./images/ver_Launcher.png)
-    
+
+   <img src="./images/ver_Launcher.png" width="400">
+
 
 7. `ABLER` 버전 확인
-    
-    ![ver_ABLER](./images/ver_ABLER.png)
-    
+
+   <img src="./images/ver_ABLER.png" width="400">
+
 
 8. `config.ini` 파일 리셋 및 백업 파일 삭제
     
