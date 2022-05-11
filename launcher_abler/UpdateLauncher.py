@@ -8,8 +8,7 @@ from typing import Tuple, Optional
 from enum import Enum
 from distutils.version import StrictVersion
 import configparser
-from AblerLauncherUtils import get_datadir, StateUI
-from AblerLauncherUtils import repo, repo_pre
+from AblerLauncherUtils import *
 
 
 if sys.platform == "win32":
@@ -20,7 +19,6 @@ os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
-test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
 os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
@@ -32,8 +30,6 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
-print("UpdateLauncher.py 들어갔는지나 확인")
-
 
 def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[list]]:
     """최신 릴리즈가 있는지 URL 주소로 확인"""
@@ -41,31 +37,33 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     finallist = None
     results = []
     state_ui = None
-    url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-    if test_arg:
-        url = "https://api.github.com/repos/acon3d/blender/releases"
-    if repo:
-        print("repo url 받아오는지 확인")
-        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/latest"
-        print(f"url : {url}")
-    if repo_pre:
-        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases"
+
+    # URL settings
+    # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
+    print("\n-> UpdateLauncher.py")
+    print("def check_launcher():")
+    print("    # url settings")
+
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
+    url = "https://api.github.com/repos/acon3d/blender/releases/latest"
+    if pre_rel:
+        url = "https://api.github.com/repos/acon3d/blender/releases"
+    if new_rel:
+        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/latest"
+    if new_pre_rel:
+        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/"
+
+    print(f"    # url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_
     )
 
-    print(state_ui)
-    print(is_release)
-
     if state_ui == StateUI.error:
         return state_ui, finallist
 
     if not is_release:
-        print("is_release가 false면 여기로 들어감")
         state_ui = StateUI.no_release
-        print(f"check_launcher 나가기 전에 state_ui : {state_ui}")
         return state_ui, finallist
 
     else:
@@ -83,7 +81,6 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
 
         # Launcher 릴리즈 버전 == 설치 버전
         # -> finallist = None가 반환
-        print(f"launcher의 릴리즈 버전 == 설치 버전 state_ui 체크 {state_ui}")
         return state_ui, finallist
 
 
@@ -113,10 +110,8 @@ def get_req_from_url(
         logger.error(e)
         state_ui = StateUI.error
 
-    if test_arg:
-        req = req[0]
-
-    if repo_pre:
+    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
+    if pre_rel or new_pre_rel:
         req = req[0]
 
     is_release = True

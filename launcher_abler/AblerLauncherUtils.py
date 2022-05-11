@@ -3,8 +3,16 @@ import sys
 from enum import Enum, auto
 
 
-repo = len(sys.argv) > 1 and sys.argv[1] == "--repo"
-repo_pre = len(sys.argv) > 1 and sys.argv[1] == "--repo-pre"
+# 테스트용 argument 추가
+if len(sys.argv) > 1:
+    pre_rel = sys.argv[1] == "--pre-release"
+    new_rel = sys.argv[1] == "--new-repo-release"
+    new_pre_rel = sys.argv[1] == "--new-repo-pre-release"
+
+    print("\n-> AblerLauncherUtils.py")
+    print(f"--pre-release          : {pre_rel}")
+    print(f"--new-repo-release     : {new_rel}")
+    print(f"--new-repo-pre-release : {new_pre_rel}")
 
 
 def get_datadir() -> pathlib.Path:

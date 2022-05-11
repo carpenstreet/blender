@@ -30,7 +30,7 @@ import urllib.parse
 import urllib.request
 import time
 from distutils.dir_util import copy_tree
-from AblerLauncherUtils import get_datadir, hbytes, StateUI
+from AblerLauncherUtils import *
 from typing import Tuple, Optional
 from enum import Enum
 
@@ -46,16 +46,15 @@ app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 appversion = "1.9.8"
 dir_ = ""
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
+
 if sys.platform == "darwin":
     dir_ = "/Applications"
 elif sys.platform == "win32":
     dir_ = "C:/Program Files (x86)/ABLER"
 
-
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
-test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
 os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
@@ -99,6 +98,7 @@ class WorkerThread(QtCore.QThread):
             os.remove(self.filename)
             self.finishedEX.emit()
             source = next(os.walk(self.temp_path))
+
             if "updater" in self.path and sys.platform == "win32":
                 if os.path.isfile(f"{self.path}/AblerLauncher.exe"):
                     os.rename(
@@ -128,6 +128,7 @@ class WorkerThread(QtCore.QThread):
                     copy_tree(source[0], self.path)
                 except Exception as e:
                     logger.error(e)
+
             self.finishedCP.emit()
             shutil.rmtree(self.temp_path)
             self.finishedCL.emit()
@@ -136,7 +137,9 @@ class WorkerThread(QtCore.QThread):
 
 
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None):
+        print("\n-> BlenderUpdater 실행 확인")
+
         logger.info(f"Running version {appversion}")
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
@@ -159,21 +162,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
-            print(f"UpdateLauncher.check_launcher에서 받아온 state_ui {state_ui}")
 
             if finallist:
                 self.entry = finallist[0]
             self.parse_launcher_state(state_ui)
 
-            # release가 없으면 ABLER 업데이트도 없기 때문에
+            # release가 없으면, ABLER 업데이트 확인 불필요
             if state_ui == StateUI.no_release:
                 self.frm_start.show()
                 self.setup_execute_ui()
                 return
 
-            print("\n")
-            print("if not state_ui 위에")
-            print(f"state_ui 출력 : {state_ui}")
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
@@ -181,7 +180,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if finallist:
                     self.entry = finallist[0]
                 self.parse_abler_state(state_ui)
-            print(f"마지막 state_ui 확인 {state_ui}")
 
         except Exception as e:
             logger.error(e)
@@ -194,16 +192,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
-
-        # elif state_ui == StateUI.no_release:
-        #     print("state_ui == StateUI.no_release")
-        #     # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
-        #     #       click 빼야하는지, 있어도 되는지 확인하기
-        #     self.frm_start.show()
-        #     self.btn_execute.show()
-        #     self.btn_update_launcher.hide()
-        #     self.btn_update.hide()
-        #     # self.setup_execute_ui()
 
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
@@ -220,10 +208,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
-
-        # elif state_ui == StateUI.no_release:
-        #     self.frm_start.show()
-        #     self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
@@ -426,48 +410,44 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             "ABLER launcher has been updated. Please re-run the launcher.",
         )
         try:
-            print("try를 확인해보자!")
+            path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
 
-            if test_arg:
-                print(
-                    os.path.isfile(
-                        f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe"
-                    )
-                )
-                _ = subprocess.Popen(
-                    [f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe", "--test"]
-                )
+            if pre_rel:
+                _ = subprocess.Popen([path, "--pre-release"])
 
-            elif repo:
-                print("repo 들어갔는지 확인")
-                path = f"{get_datadir()}/Desktop/ABLER/3.0/blender/launcher_abler/dist/AblerLauncher.exe"
+            elif new_rel:
+                # 빈 repo를 사용할 때는 pyinstaller를 계속 사용하기 때문에
+                # ~/blender/launcher_abler/dist/AblerLauncher.exe를 실행하면 파일 복사 불필요
+                # $ pyinstaller --icon=icon.ico --onefile --uac-admin AblerLauncher.py
+                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
+                _ = subprocess.Popen([path, "--new-repo-release"])
 
-                print(path)
-
-                print(os.path.isfile(path))
-                _ = subprocess.Popen([path, "--repo"])
+            elif new_pre_rel:
+                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
+                _ = subprocess.Popen([path, "--new-repo-pre-release"])
 
             else:
-                _ = subprocess.Popen(
-                    get_datadir() / "Blender/2.96/updater/AblerLauncher.exe"
-                )
+                _ = subprocess.Popen(path)
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
             logger.error(e)
-            print("H")
             try:
-                if test_arg:
-                    _ = subprocess.Popen(
-                        [
-                            get_datadir() / "Blender/2.93/updater/AblerLauncher.exe",
-                            "--test",
-                        ]
-                    )
+                path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
+
+                if pre_rel:
+                    _ = subprocess.Popen([path, "--pre-release"])
+
+                elif new_rel:
+                    # try의 이유와 동일
+                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
+                    _ = subprocess.Popen([path, "--new-repo-release"])
+
+                elif new_pre_rel:
+                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
+                    _ = subprocess.Popen([path, "--new-repo-pre-release"])
 
                 else:
-                    _ = subprocess.Popen(
-                        get_datadir() / "Blender/2.93/updater/AblerLauncher.exe"
-                    )
+                    _ = subprocess.Popen(path)
                 QtCore.QCoreApplication.instance().quit()
             except Exception as ee:
                 logger.error(ee)
