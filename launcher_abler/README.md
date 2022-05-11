@@ -36,7 +36,7 @@ $ pyrcc5 res.qrc -o res_rc.py
 ### Windows
 
 1. **관리자 권한**으로 터미널 실행
-    - `AblerLauncher.exe` 가 숨긴 항목에 있고, 런처 업데이트 후 재실행을 위해서 관리자 권한이 필요
+    - `AblerLauncher.exe` 가 숨김 폴더에 있기 때문에, 런처 업데이트 후 재실행을 위해서 관리자 권한이 필요
 
 
 2. 터미널에서 ABLER Launcher 디렉터리로 이동
@@ -75,12 +75,12 @@ $ pyrcc5 res.qrc -o res_rc.py
 
 
 6. `Launcher` 버전 확인
-
+   
    <img src="./images/ver_Launcher.png" width="500">
 
 
 7. `ABLER` 버전 확인
-
+   
    <img src="./images/ver_ABLER.png" width="500">
 
 
