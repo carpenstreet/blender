@@ -3,6 +3,10 @@ import sys
 from enum import Enum, auto
 
 
+repo = len(sys.argv) > 1 and sys.argv[1] == "--repo"
+repo_pre = len(sys.argv) > 1 and sys.argv[1] == "--repo-pre"
+
+
 def get_datadir() -> pathlib.Path:
     """
     Returns a parent directory path

@@ -153,15 +153,27 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.setup_init_ui()
 
         try:
-            import UpdateAbler, UpdateLauncher
+            import UpdateLauncher
+            import UpdateAbler
 
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
+            print(f"UpdateLauncher.check_launcher에서 받아온 state_ui {state_ui}")
+
             if finallist:
                 self.entry = finallist[0]
             self.parse_launcher_state(state_ui)
 
+            # release가 없으면 ABLER 업데이트도 없기 때문에
+            if state_ui == StateUI.no_release:
+                self.frm_start.show()
+                self.setup_execute_ui()
+                return
+
+            print("\n")
+            print("if not state_ui 위에")
+            print(f"state_ui 출력 : {state_ui}")
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
                     dir_, self.installedversion
@@ -169,6 +181,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if finallist:
                     self.entry = finallist[0]
                 self.parse_abler_state(state_ui)
+            print(f"마지막 state_ui 확인 {state_ui}")
 
         except Exception as e:
             logger.error(e)
@@ -182,19 +195,21 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
-            # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
-            #       click 빼야하는지, 있어도 되는지 확인하기
-            self.frm_start.show()
-            self.btn_execute.show()
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
-            # self.setup_execute_ui()
+        # elif state_ui == StateUI.no_release:
+        #     print("state_ui == StateUI.no_release")
+        #     # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
+        #     #       click 빼야하는지, 있어도 되는지 확인하기
+        #     self.frm_start.show()
+        #     self.btn_execute.show()
+        #     self.btn_update_launcher.hide()
+        #     self.btn_update.hide()
+        #     # self.setup_execute_ui()
 
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
 
         else:
+            # state_ui == None
             return
 
     def parse_abler_state(self, state_ui: Enum) -> None:
@@ -206,9 +221,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
-            self.frm_start.show()
-            self.setup_execute_ui()
+        # elif state_ui == StateUI.no_release:
+        #     self.frm_start.show()
+        #     self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
@@ -411,10 +426,26 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             "ABLER launcher has been updated. Please re-run the launcher.",
         )
         try:
+            print("try를 확인해보자!")
+
             if test_arg:
+                print(
+                    os.path.isfile(
+                        f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe"
+                    )
+                )
                 _ = subprocess.Popen(
                     [f"{get_datadir()}Blender/2.96/updater/AblerLauncher.exe", "--test"]
                 )
+
+            elif repo:
+                print("repo 들어갔는지 확인")
+                path = f"{get_datadir()}/Desktop/ABLER/3.0/blender/launcher_abler/dist/AblerLauncher.exe"
+
+                print(path)
+
+                print(os.path.isfile(path))
+                _ = subprocess.Popen([path, "--repo"])
 
             else:
                 _ = subprocess.Popen(
@@ -423,6 +454,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
             logger.error(e)
+            print("H")
             try:
                 if test_arg:
                     _ = subprocess.Popen(
