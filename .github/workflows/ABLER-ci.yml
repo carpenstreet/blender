@@ -3,11 +3,11 @@ name: Build master
 on:
   push:
     branches:
-      - master
+      - ABLER/main
   # trigger on all PRs against master
   pull_request:
     branches:
-      - master
+      - ABLER/main
   # allow manual dispatches
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ jobs:
         include:
           - builder: "windows_master"
             os: "windows-2019"
-            branch: "master"
+            branch: "ABLER/main"
     steps:
       - name: Cache lib folder
         uses: actions/cache@v2
@@ -45,7 +45,8 @@ jobs:
         with:
           path: blender.git
           fetch-depth: 0
-          submodules: false
+          submodules: true
+          token: ${{ secrets.GIT_KEY }}
 
       - name: submodules and libraries update
         working-directory: ${{ github.workspace }}/build
