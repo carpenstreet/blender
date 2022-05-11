@@ -45,13 +45,7 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
     print("    # url settings")
 
     # TODO: 새 arg 받아서 테스트 레포 url 업데이트
-    url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-    if pre_rel:
-        url = "https://api.github.com/repos/acon3d/blender/releases"
-    if new_rel:
-        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/latest"
-    if new_pre_rel:
-        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/"
+    url = set_url()
 
     print(f"    # url : {url}")
 

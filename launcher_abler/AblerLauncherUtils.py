@@ -13,6 +13,22 @@ if len(sys.argv) > 1:
     print(f"--pre-release          : {pre_rel}")
     print(f"--new-repo-release     : {new_rel}")
     print(f"--new-repo-pre-release : {new_pre_rel}")
+    print("\n")
+
+
+def set_url() -> str:
+    url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
+
+    if pre_rel:
+        url = "https://api.github.com/repos/ACON3D/blender/releases"
+    elif new_rel:
+        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/latest"
+    elif new_pre_rel:
+        # 새 repo가 완전히 비어있을 때는 req에 정보가 없기 때문에 url 정보를 받을 수 없음
+        # 따라서 pre-release 생성했을 때만 테스트
+        url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases"
+
+    return url
 
 
 def get_datadir() -> pathlib.Path:
