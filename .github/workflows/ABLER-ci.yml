@@ -9,7 +9,7 @@ on:
 
 jobs:
   builder:
-    runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
