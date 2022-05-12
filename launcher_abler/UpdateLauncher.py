@@ -31,7 +31,9 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def check_launcher(dir_, launcher_installed) -> Tuple[Enum, Optional[list]]:
+def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[list]]:
+    """최신 릴리즈가 있는지 URL 주소로 확인"""
+
     finallist = None
     results = []
     state_ui = None
@@ -69,9 +71,9 @@ def check_launcher(dir_, launcher_installed) -> Tuple[Enum, Optional[list]]:
 
 
 def get_req_from_url(
-    url, state_ui, launcher_installed, dir_
+    url: str, state_ui: Enum, launcher_installed: str, dir_: str
 ) -> Tuple[bool, Optional[dict], Enum, str]:
-    # 깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수
+    """깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수"""
 
     # Do path settings save here, in case user has manually edited it
     config = configparser.ConfigParser()
@@ -106,8 +108,9 @@ def get_req_from_url(
     return is_release, req, state_ui, launcher_installed
 
 
-def get_results_from_req(req, results) -> None:
-    # req에서 필요한 info를 results에 추가
+def get_results_from_req(req: dict, results: list) -> None:
+    """req에서 필요한 info를 results에 추가"""
+
     for asset in req["assets"]:
         target = asset["browser_download_url"]
         filename = target.split("/")[-1]
