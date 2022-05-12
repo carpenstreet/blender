@@ -369,6 +369,14 @@ class Acon3dVersionPopupOperator(bpy.types.Operator):
             layout = self.layout
             layout.label(text="Please Update ABLER 0.2.2")
 
+            anchor = layout.operator(
+                "acon3d.anchor", text="See ACON3D models!", icon="EVENT_A"
+            )
+            anchor.href = "https://acon3d.com"
+
+            anchor = layout.operator("acon3d.anchor", text="NAVER", icon="EVENT_A")
+            anchor.href = "https://naver.com"
+
         bpy.context.window_manager.popup_menu(draw, title="Message Box", icon="INFO")
 
         return {"FINISHED"}
