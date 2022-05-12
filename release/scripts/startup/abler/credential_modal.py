@@ -164,8 +164,7 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
-            print("version popup!")
-            bpy.ops.acon3d.version_popup()
+            bpy.ops.acon3d.version_popup("INVOKE_DEFAULT")
             return {"FINISHED"}
 
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
@@ -194,7 +193,6 @@ class Acon3dModalOperator(bpy.types.Operator):
 
     def invoke(self, context, event):
         context.window_manager.modal_handler_add(self)
-        print("MODAL START!")
         return {"RUNNING_MODAL"}
 
 
@@ -365,21 +363,25 @@ class Acon3dVersionPopupOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        def draw(self, context):
-            layout = self.layout
-            layout.label(text="Please Update ABLER 0.2.2")
-
-            anchor = layout.operator(
-                "acon3d.anchor", text="See ACON3D models!", icon="EVENT_A"
-            )
-            anchor.href = "https://acon3d.com"
-
-            anchor = layout.operator("acon3d.anchor", text="NAVER", icon="EVENT_A")
-            anchor.href = "https://naver.com"
-
-        bpy.context.window_manager.popup_menu(draw, title="Message Box", icon="INFO")
-
         return {"FINISHED"}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=750)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="Please Update ABLER 0.2.2aaaaaaaaaaaaaaaa")
+        layout.label(text="Stop Using")
+
+        split = layout.split()
+        col1 = split.column()
+        anchor = col1.operator(
+            "acon3d.anchor", text="See ACON3D models!", icon="EVENT_A"
+        )
+        anchor.href = "https://acon3d.com"
+
+        anchor = col1.operator("acon3d.anchor", text="NAVER", icon="EVENT_A")
+        anchor.href = "https://naver.com"
 
 
 @persistent
