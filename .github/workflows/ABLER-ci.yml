@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - ABLER/main
-  # trigger on all PRs against master
-  pull_request:
-    branches:
-      - ABLER/main
   # allow manual dispatches
   workflow_dispatch:
 
