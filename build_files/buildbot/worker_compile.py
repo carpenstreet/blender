@@ -35,14 +35,14 @@ def get_cmake_options(builder):
         options.append('-DCMAKE_OSX_ARCHITECTURES:STRING=x86_64')
         options.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9')
     elif builder.platform == 'win':
-        options.extend(['-G', 'Visual Studio 16 2019', '-A', 'x64'])
+        options.extend(['-G', 'Visual Studio 17 2022', '-A', 'x64'])
         if builder.codesign:
             options.extend(['-DPOSTINSTALL_SCRIPT:PATH=' + codesign_script])
     elif builder.platform == 'linux':
         config_file = "build_files/buildbot/config/blender_linux.cmake"
 
-    optix_sdk_dir = os.path.join(builder.blender_dir, '..', '..', 'NVIDIA-Optix-SDK')
-    options.append('-DOPTIX_ROOT_DIR:PATH=' + optix_sdk_dir)
+    # optix_sdk_dir = os.path.join(builder.blender_dir, '..', '..', 'NVIDIA-Optix-SDK')
+    # options.append('-DOPTIX_ROOT_DIR:PATH=' + optix_sdk_dir)
 
     options.append("-C" + os.path.join(builder.blender_dir, config_file))
     options.append("-DCMAKE_INSTALL_PREFIX=%s" % (builder.install_dir))
