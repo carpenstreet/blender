@@ -164,6 +164,8 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
+            print("version popup!")
+            bpy.ops.acon3d.version_popup()
             return {"FINISHED"}
 
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
@@ -192,6 +194,7 @@ class Acon3dModalOperator(bpy.types.Operator):
 
     def invoke(self, context, event):
         context.window_manager.modal_handler_add(self)
+        print("MODAL START!")
         return {"RUNNING_MODAL"}
 
 
@@ -356,6 +359,21 @@ class Acon3dAnchorOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class Acon3dVersionPopupOperator(bpy.types.Operator):
+    bl_idname = "acon3d.version_popup"
+    bl_label = "Version Update"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        def draw(self, context):
+            layout = self.layout
+            layout.label(text="Please Update ABLER 0.2.2")
+
+        bpy.context.window_manager.popup_menu(draw, title="Message Box", icon="INFO")
+
+        return {"FINISHED"}
+
+
 @persistent
 def open_credential_modal(dummy):
 
@@ -412,6 +430,7 @@ classes = (
     Acon3dModalOperator,
     Acon3dLoginOperator,
     Acon3dAnchorOperator,
+    Acon3dVersionPopupOperator,
 )
 
 
