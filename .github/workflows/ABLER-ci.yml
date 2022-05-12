@@ -10,6 +10,14 @@ on:
 jobs:
   builder:
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        builder: ["windows_master"]
+        include:
+          - builder: "windows_master"
+            os: "windows-latest"
+            branch: "ABLER/main"
     steps:
       - name: Cache lib folder
         uses: actions/cache@v2
