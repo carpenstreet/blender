@@ -359,29 +359,32 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 class Acon3dVersionPopupOperator(bpy.types.Operator):
     bl_idname = "acon3d.version_popup"
-    bl_label = "Version Update"
+    bl_label = "[에이블러 0.2.2버전 업데이트 안내]"
     bl_translation_context = "*"
 
     def execute(self, context):
         return {"FINISHED"}
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=750)
+        return context.window_manager.invoke_props_dialog(self, width=500)
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="Please Update ABLER 0.2.2aaaaaaaaaaaaaaaa")
-        layout.label(text="Stop Using")
+        layout.label(text="")
+        layout.label(text="에이블러는 더 나은 서비스를 위하여 오는 16일 0.2.2버전으로의 업데이트를 제공합니다.")
+        layout.label(text="이후, 0.2.1버전은 지원이 중단 될 예정입니다.")
+        layout.label(text="")
+        layout.label(text="16일 이후 에이블러를 최신 버전으로 업데이트 하시어 보다 안정적인 서비스를 이용하시기 바랍니다.")
+        layout.label(text="")
+        layout.label(text="감사합니다.")
+        layout.label(text="")
 
         split = layout.split()
         col1 = split.column()
-        anchor = col1.operator(
-            "acon3d.anchor", text="See ACON3D models!", icon="EVENT_A"
+        anchor = col1.operator("acon3d.anchor", text="업데이트 방법 보러가기 (클릭)", icon="URL")
+        anchor.href = (
+            "https://www.notion.so/acon3d/0-2-2-f634e13265ca44f0bae7ed081762ec59"
         )
-        anchor.href = "https://acon3d.com"
-
-        anchor = col1.operator("acon3d.anchor", text="NAVER", icon="EVENT_A")
-        anchor.href = "https://naver.com"
 
 
 @persistent
