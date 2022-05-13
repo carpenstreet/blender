@@ -89,7 +89,7 @@ def cmake_configure(builder):
 
 def cmake_build(builder):
     # CMake build
-    os.chdir(builder.build_dir)
+    os.chdir(builder.blender_dir)
 
     # NOTE: CPack will build an INSTALL target, which would mean that code
     # signing will happen twice when using `make install` and CPack.
@@ -103,9 +103,9 @@ def cmake_build(builder):
     # a clean build of buildbot, especially with regression tests enabled.
     if builder.platform == 'win':
         # command = ['cmake', '--build', '.', '--target', 'install', '--config', 'Release']
-        command = ['make.bat']
+        command = ['./make.bat']
     else:
-        command = ['make', '-s', '-j16', 'install']
+        command = ['make']
 
     print("CMake build:")
     buildbot_utils.call(builder.command_prefix + command)
@@ -114,5 +114,5 @@ if __name__ == "__main__":
     builder = buildbot_utils.create_builder_from_arguments()
     update_git(builder)
     clean_directories(builder)
-    cmake_configure(builder)
+    # cmake_configure(builder)
     cmake_build(builder)
