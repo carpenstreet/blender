@@ -103,7 +103,7 @@ def cmake_build(builder):
     # a clean build of buildbot, especially with regression tests enabled.
     if builder.platform == 'win':
         # command = ['cmake', '--build', '.', '--target', 'install', '--config', 'Release']
-        command = ['./make.bat']
+        command = ['make.bat']
     else:
         command = ['make', '-s', '-j16', 'install']
 
