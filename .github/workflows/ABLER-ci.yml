@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - ABLER/main
+  pull_request:
+    branches:
+      - ABLER/main
   # allow manual dispatches
   workflow_dispatch:
 
@@ -13,11 +16,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        builder: ["windows_master"]
+        builder: ["windows"]
         include:
-          - builder: "windows_master"
-            os: "windows-latest"
-            branch: "ABLER/main"
+          - builder: "windows"
+            os: "windows-2019"
+
     steps:
       - name: Cache lib folder
         uses: actions/cache@v2
@@ -33,8 +36,8 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: worker_preparation
-        run: mkdir -p ${{ github.workspace }}/build
+#      - name: worker_preparation
+#        run: mkdir -p ${{ github.workspace }}/build
 
       - name: Checkout Blender ${{ matrix.branch }}
         uses: actions/checkout@v2
@@ -45,23 +48,26 @@ jobs:
           token: ${{ secrets.GIT_KEY }}
 
       - name: submodules and libraries update
-        working-directory: ${{ github.workspace }}/build
+        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
         run: python ../blender.git/build_files/buildbot/worker_update.py ${{ matrix.builder }} ${{ matrix.branch }}
 
       - name: compile
-        working-directory: ${{ github.workspace }}/build
+        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
         run: python ../blender.git/build_files/buildbot/worker_compile.py ${{ matrix.builder }} ${{ matrix.branch }}
 
-      - name: test
-        working-directory: ${{ github.workspace }}/build
-        run: python ../blender.git/build_files/buildbot/worker_test.py ${{ matrix.builder }} ${{ matrix.branch }}
-
-      - name: package
-        working-directory: ${{ github.workspace }}/build
-        run: python ../blender.git/build_files/buildbot/worker_pack.py ${{ matrix.builder }} ${{ matrix.branch }}
+#      - name: test
+#        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
+#        run: python ../blender.git/build_files/buildbot/worker_test.py ${{ matrix.builder }} ${{ matrix.branch }}
+#
+#      - name: package
+#        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
+#        run: python ../blender.git/build_files/buildbot/worker_pack.py ${{ matrix.builder }} ${{ matrix.branch }}
+      - name: Compress folder
+        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release/bin/Release
+        run: Compress-Archive . ../../../Release.zip
 
       - name: Create artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: blender-${{ matrix.builder }}
-          path: ${{ github.workspace }}/install
+          name: abler-${{ matrix.builder }}
+          path: ${{ github.workspace }}/Release.zip

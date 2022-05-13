@@ -41,8 +41,8 @@ def get_cmake_options(builder):
     elif builder.platform == 'linux':
         config_file = "build_files/buildbot/config/blender_linux.cmake"
 
-    # optix_sdk_dir = os.path.join(builder.blender_dir, '..', '..', 'NVIDIA-Optix-SDK')
-    # options.append('-DOPTIX_ROOT_DIR:PATH=' + optix_sdk_dir)
+    optix_sdk_dir = os.path.join(builder.blender_dir, '..', '..', 'NVIDIA-Optix-SDK')
+    options.append('-DOPTIX_ROOT_DIR:PATH=' + optix_sdk_dir)
 
     options.append("-C" + os.path.join(builder.blender_dir, config_file))
     options.append("-DCMAKE_INSTALL_PREFIX=%s" % (builder.install_dir))
@@ -89,7 +89,7 @@ def cmake_configure(builder):
 
 def cmake_build(builder):
     # CMake build
-    os.chdir(builder.build_dir)
+    os.chdir(builder.blender_dir)
 
     # NOTE: CPack will build an INSTALL target, which would mean that code
     # signing will happen twice when using `make install` and CPack.
@@ -102,9 +102,10 @@ def cmake_build(builder):
     # fragile trying to avoid this. The signing process is way faster than just
     # a clean build of buildbot, especially with regression tests enabled.
     if builder.platform == 'win':
-        command = ['cmake', '--build', '.', '--target', 'install', '--config', 'Release']
+        # command = ['cmake', '--build', '.', '--target', 'install', '--config', 'Release']
+        command = ['make.bat']
     else:
-        command = ['make', '-s', '-j16', 'install']
+        command = ['make']
 
     print("CMake build:")
     buildbot_utils.call(builder.command_prefix + command)
@@ -113,5 +114,5 @@ if __name__ == "__main__":
     builder = buildbot_utils.create_builder_from_arguments()
     update_git(builder)
     clean_directories(builder)
-    cmake_configure(builder)
+    # cmake_configure(builder)
     cmake_build(builder)
