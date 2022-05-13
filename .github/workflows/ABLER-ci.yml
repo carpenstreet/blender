@@ -70,3 +70,8 @@ jobs:
         with:
           name: abler-${{ matrix.builder }}
           path: ${{ github.workspace }}/Release.zip
+
+      - name: Delete archive
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path Release.zip
+
