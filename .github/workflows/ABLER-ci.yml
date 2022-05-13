@@ -60,9 +60,8 @@ jobs:
 #        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
 #        run: python ../blender.git/build_files/buildbot/worker_pack.py ${{ matrix.builder }} ${{ matrix.branch }}
       - name: Compress folder
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r ${{ github.workspace }}/Release.zip ${{ github.workspace }}/build_windows_x64_vc17_Release/bin/Release
+        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release/bin/Release
+        run: Compress-Archive . release.zip
 
       - name: Create artifact
         uses: actions/upload-artifact@v2
