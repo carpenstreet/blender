@@ -61,10 +61,10 @@ jobs:
 #        run: python ../blender.git/build_files/buildbot/worker_pack.py ${{ matrix.builder }} ${{ matrix.branch }}
       - name: Compress folder
         working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release/bin/Release
-        run: Compress-Archive . release.zip
+        run: Compress-Archive . ../../../Release.zip
 
       - name: Create artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: blender-${{ matrix.builder }}
-          path: ${{ github.workspace }}/build_windows_x64_vc17_Release
+          path: ${{ github.workspace }}/Release.zip
