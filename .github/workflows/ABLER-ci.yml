@@ -3,7 +3,10 @@ name: Build ABLER/main
 on:
   push:
     branches:
-      - feature/ci-test-branch
+      - ABLER/main
+  pull_request:
+    branches:
+      - ABLER/main
   # allow manual dispatches
   workflow_dispatch:
 
@@ -13,11 +16,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        builder: ["windows_master"]
+        builder: ["windows"]
         include:
-          - builder: "windows_master"
+          - builder: "windows"
             os: "windows-2019"
-            branch: "feature/ci-test-branch"
     steps:
       - name: Cache lib folder
         uses: actions/cache@v2
@@ -66,5 +68,5 @@ jobs:
       - name: Create artifact
         uses: actions/upload-artifact@v3
         with:
-          name: blender-${{ matrix.builder }}
+          name: abler-${{ matrix.builder }}
           path: ${{ github.workspace }}/Release.zip
