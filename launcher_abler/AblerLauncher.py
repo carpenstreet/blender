@@ -182,7 +182,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
+        elif state_ui == StateUI.empty_repo:
             # TODO: 테스트 서버에서 릴리즈가 없이 테스트할 때 self.setup_execute_ui()에서
             #       click 빼야하는지, 있어도 되는지 확인하기
             self.frm_start.show()
@@ -206,7 +206,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
+        elif state_ui == StateUI.empty_repo:
             self.frm_start.show()
             self.setup_execute_ui()
 

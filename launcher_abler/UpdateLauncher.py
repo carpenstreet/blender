@@ -49,7 +49,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
         return state_ui, finallist
 
     if not is_release:
-        state_ui = StateUI.no_release
+        state_ui = StateUI.empty_repo
         return state_ui, finallist
 
     else:
