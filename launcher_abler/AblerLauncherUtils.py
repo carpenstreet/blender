@@ -9,10 +9,10 @@ if len(sys.argv) > 1:
     new_rel = sys.argv[1] == "--new-repo-release"
     new_pre_rel = sys.argv[1] == "--new-repo-pre-release"
 
-    print("\n-> AblerLauncherUtils.py")
-    print(f"--pre-release          : {'O' if pre_rel else 'X'}")
-    print(f"--new-repo-release     : {'O' if new_rel else 'X'}")
-    print(f"--new-repo-pre-release : {'O' if new_pre_rel else 'X'}")
+    print("\n> release test argv 확인")
+    print(f"> --pre-release          : {'O' if pre_rel else 'X'}")
+    print(f"> --new-repo-release     : {'O' if new_rel else 'X'}")
+    print(f"> --new-repo-pre-release : {'O' if new_pre_rel else 'X'}")
     print("\n")
 
 

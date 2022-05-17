@@ -38,14 +38,8 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
 
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
-    print("\n-> UpdateLauncher.py")
-    print("def check_launcher():")
-    print("    # url settings")
-
-    # TODO: 새 arg 받아서 테스트 레포 url 업데이트
     url = set_url()
-
-    print(f"    # url : {url}")
+    print(f"> url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_
@@ -68,7 +62,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
             # Launcher 릴리즈 버전 > 설치 버전
             # -> finallist = results 반환
             if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
-                print(f"    # New Launcher Ver. : {results[0]['version']}")
+                print(f"> New Launcher Ver. : {results[0]['version']}")
                 state_ui = StateUI.update_launcher
                 finallist = results
                 return state_ui, finallist

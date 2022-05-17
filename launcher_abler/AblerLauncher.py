@@ -137,8 +137,6 @@ class WorkerThread(QtCore.QThread):
 
 class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def __init__(self, parent=None) -> None:
-        print("\n-> BlenderUpdater 실행")
-
         logger.info(f"Running version {appversion}")
         logger.debug("Constructing UI")
         super(BlenderUpdater, self).__init__(parent)
