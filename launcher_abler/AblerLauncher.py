@@ -413,14 +413,14 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if pre_rel:
                 _ = subprocess.Popen([path, "--pre-release"])
 
-            elif new_rel:
+            elif new_repo_rel:
                 # 빈 repo를 사용할 때는 pyinstaller를 계속 사용하기 때문에
                 # ~/blender/launcher_abler/dist/AblerLauncher.exe를 실행하면 파일 복사 불필요
                 # $ pyinstaller --icon=icon.ico --onefile --uac-admin AblerLauncher.py
                 path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                 _ = subprocess.Popen([path, "--new-repo-release"])
 
-            elif new_pre_rel:
+            elif new_repo_pre_rel:
                 path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                 _ = subprocess.Popen([path, "--new-repo-pre-release"])
 
@@ -435,12 +435,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if pre_rel:
                     _ = subprocess.Popen([path, "--pre-release"])
 
-                elif new_rel:
+                elif new_repo_rel:
                     # try의 이유와 동일
                     path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                     _ = subprocess.Popen([path, "--new-repo-release"])
 
-                elif new_pre_rel:
+                elif new_repo_pre_rel:
                     path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                     _ = subprocess.Popen([path, "--new-repo-pre-release"])
 

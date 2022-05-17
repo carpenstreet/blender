@@ -6,13 +6,13 @@ from enum import Enum, auto
 # 테스트용 argument 추가
 if len(sys.argv) > 1:
     pre_rel = sys.argv[1] == "--pre-release"
-    new_rel = sys.argv[1] == "--new-repo-release"
-    new_pre_rel = sys.argv[1] == "--new-repo-pre-release"
+    new_repo_rel = sys.argv[1] == "--new-repo-release"
+    new_repo_pre_rel = sys.argv[1] == "--new-repo-pre-release"
 
     print("\n> release test argv 확인")
     print(f"> --pre-release          : {'O' if pre_rel else 'X'}")
-    print(f"> --new-repo-release     : {'O' if new_rel else 'X'}")
-    print(f"> --new-repo-pre-release : {'O' if new_pre_rel else 'X'}")
+    print(f"> --new-repo-release     : {'O' if new_repo_rel else 'X'}")
+    print(f"> --new-repo-pre-release : {'O' if new_repo_pre_rel else 'X'}")
     print("\n")
 
 
@@ -22,11 +22,9 @@ def set_url() -> str:
 
     if pre_rel:
         url = "https://api.github.com/repos/ACON3D/blender/releases"
-    elif new_rel:
+    elif new_repo_rel:
         url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases/latest"
-    elif new_pre_rel:
-        # 새 repo가 완전히 비어있을 때는 req에 정보가 없기 때문에 url 정보를 받을 수 없음
-        # 따라서 pre-release 생성했을 때만 테스트
+    elif new_repo_pre_rel:
         url = "https://api.github.com/repos/ACON3D/launcherTestRepo/releases"
 
     return url
