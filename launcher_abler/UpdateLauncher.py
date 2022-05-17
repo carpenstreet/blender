@@ -62,6 +62,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
 
     else:
         get_results_from_req(req, results)
+
         if results:
             if launcher_installed is None or launcher_installed == "":
                 launcher_installed = "0.0.0"
@@ -69,6 +70,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
             # Launcher 릴리즈 버전 > 설치 버전
             # -> finallist = results 반환
             if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
+                print(f"    # New Launcher Ver. : {results[0]['version']}")
                 state_ui = StateUI.update_launcher
                 finallist = results
                 return state_ui, finallist

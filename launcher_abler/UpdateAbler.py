@@ -65,6 +65,7 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
 
         # ABLER 릴리즈 버전 > 설치 버전
         if StrictVersion(results[0]["version"]) > StrictVersion(installedversion):
+            print(f"    # New ABLER Ver. : {results[0]['version']}")
             state_ui = StateUI.update_abler
             finallist = results
             return state_ui, finallist

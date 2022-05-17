@@ -10,13 +10,14 @@ if len(sys.argv) > 1:
     new_pre_rel = sys.argv[1] == "--new-repo-pre-release"
 
     print("\n-> AblerLauncherUtils.py")
-    print(f"--pre-release          : {pre_rel}")
-    print(f"--new-repo-release     : {new_rel}")
-    print(f"--new-repo-pre-release : {new_pre_rel}")
+    print(f"--pre-release          : {'O' if pre_rel else 'X'}")
+    print(f"--new-repo-release     : {'O' if new_rel else 'X'}")
+    print(f"--new-repo-pre-release : {'O' if new_pre_rel else 'X'}")
     print("\n")
 
 
 def set_url() -> str:
+    """GitHub Repo의 URL 세팅"""
     url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
 
     if pre_rel:
