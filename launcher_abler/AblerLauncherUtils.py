@@ -63,7 +63,7 @@ def hbytes(num) -> str:
 
 class StateUI(Enum):
     check = auto()
-    no_release = auto()
+    empty_repo = auto()
     update_launcher = auto()
     update_abler = auto()
     execute = auto()

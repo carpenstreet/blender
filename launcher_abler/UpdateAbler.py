@@ -46,7 +46,7 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
         return state_ui, finallist
 
     if not is_release:
-        state_ui = StateUI.no_release
+        state_ui = StateUI.empty_repo
         return state_ui, finallist
 
     get_results_from_req(req, results)

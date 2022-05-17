@@ -216,7 +216,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
+        elif state_ui == StateUI.empty_repo:
             self.frm_start.show()
             self.setup_execute_ui()
 
