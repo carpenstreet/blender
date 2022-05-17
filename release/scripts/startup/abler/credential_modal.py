@@ -164,6 +164,7 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
+            bpy.ops.acon3d.version_popup("INVOKE_DEFAULT")
             return {"FINISHED"}
 
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
@@ -356,6 +357,44 @@ class Acon3dAnchorOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class Acon3dVersionPopupOperator(bpy.types.Operator):
+    bl_idname = "acon3d.version_popup"
+    bl_label = "[MANDATORY UPDATE]"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=500)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="")
+        layout.label(
+            text="The new version of ABLER will be released on May 16th, 2022 (KST)."
+        )
+        layout.label(
+            text="Please click the button below to update to the latest version."
+        )
+        layout.label(text="")
+        layout.label(
+            text="After the update, the previous version will no longer be supported."
+        )
+        layout.label(text="")
+        layout.label(text="Thank you.")
+        layout.label(text="")
+
+        split = layout.split()
+        col1 = split.column()
+        anchor = col1.operator(
+            "acon3d.anchor", text="HOW TO UPDATE (click)", icon="URL"
+        )
+        anchor.href = (
+            "https://www.notion.so/acon3d/0-2-2-f634e13265ca44f0bae7ed081762ec59"
+        )
+
+
 @persistent
 def open_credential_modal(dummy):
 
@@ -395,8 +434,10 @@ def open_credential_modal(dummy):
     except:
         print("Failed to load cookies")
 
-    if userInfo.ACON_prop.login_status != "SUCCESS":
-        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
+    # if userInfo.ACON_prop.login_status != "SUCCESS":
+    # 자동로그인 시 modal이 실행 안되고 있어서
+    # 자동로그인인 경우에도 modal 실행하도록 if문 제거
+    bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
     if prop.remember_username:
         prop.username = read_remembered_username()
@@ -412,6 +453,7 @@ classes = (
     Acon3dModalOperator,
     Acon3dLoginOperator,
     Acon3dAnchorOperator,
+    Acon3dVersionPopupOperator,
 )
 
 
