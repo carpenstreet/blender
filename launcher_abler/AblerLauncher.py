@@ -166,11 +166,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.entry = finallist[0]
             self.parse_launcher_state(state_ui)
 
-            # release가 없으면, ABLER 업데이트 확인 불필요
-            if state_ui == StateUI.no_release:
-                self.frm_start.show()
-                self.setup_execute_ui()
-                return
+            # release가 없는 빈 repo일 때, Launcher에서 확인되면
+            # ABLER 업데이트 확인 불필요
+            # if state_ui == StateUI.no_release:
+            #     self.frm_start.show()
+            #     self.setup_execute_ui()
+            #     return
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
@@ -192,6 +193,15 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
+        elif state_ui == StateUI.no_release:
+            # TODO: 빈 테스트 repo를 테스트할 때, self.setup_execute_ui()로
+            #       실행되는지 확인하기
+            self.frm_start.show()
+            self.btn_execute.show()
+            self.btn_update_launcher.hide()
+            self.btn_update.hide()
+            # self.setup_execute_ui()
+
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
 
@@ -207,6 +217,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
+
+        elif state_ui == StateUI.no_release:
+            self.frm_start.show()
+            self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
