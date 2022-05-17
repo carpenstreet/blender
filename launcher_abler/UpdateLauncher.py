@@ -49,7 +49,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
         return state_ui, finallist
 
     if not is_release:
-        state_ui = StateUI.no_release
+        state_ui = StateUI.empty_repo
         return state_ui, finallist
 
     else:
@@ -98,11 +98,16 @@ def get_req_from_url(
         logger.error(e)
         state_ui = StateUI.error
 
-    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
-    if pre_rel or new_pre_rel:
-        req = req[0]
-
     is_release = True
+
+    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
+    if pre_rel:
+        req = req[0]
+    elif new_repo_pre_rel:
+        # 새 저장소가 비어있으면 requests.get(url).json() 정보가 없어 req = []
+        # 따라서 len(req) == 0 이고, is_release를 False로 업데이트
+        is_release = False if len(req) == 0 else is_release
+
     try:
         is_release = req["message"] != "Not Found"
     except Exception as e:

@@ -164,12 +164,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.entry = finallist[0]
             self.parse_launcher_state(state_ui)
 
-            # release가 없는 빈 repo일 때, Launcher에서 확인되면
-            # ABLER 업데이트 확인 불필요
-            # if state_ui == StateUI.no_release:
-            #     self.frm_start.show()
-            #     self.setup_execute_ui()
-            #     return
+            # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
+            state_ui = None if StateUI.empty_repo else state_ui
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
@@ -191,14 +187,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             )
             self.frm_start.show()
 
-        elif state_ui == StateUI.no_release:
-            # TODO: 빈 테스트 repo를 테스트할 때, self.setup_execute_ui()로
-            #       실행되는지 확인하기
+        elif state_ui == StateUI.empty_repo:
             self.frm_start.show()
-            self.btn_execute.show()
-            self.btn_update_launcher.hide()
-            self.btn_update.hide()
-            # self.setup_execute_ui()
+            self.setup_execute_ui()
 
         elif state_ui == StateUI.update_launcher:
             self.setup_update_launcher_ui()
@@ -215,10 +206,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 "Error reaching server - check your internet connection"
             )
             self.frm_start.show()
-
-        elif state_ui == StateUI.no_release:
-            self.frm_start.show()
-            self.setup_execute_ui()
 
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
@@ -426,14 +413,14 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if pre_rel:
                 _ = subprocess.Popen([path, "--pre-release"])
 
-            elif new_rel:
+            elif new_repo_rel:
                 # 빈 repo를 사용할 때는 pyinstaller를 계속 사용하기 때문에
                 # ~/blender/launcher_abler/dist/AblerLauncher.exe를 실행하면 파일 복사 불필요
                 # $ pyinstaller --icon=icon.ico --onefile --uac-admin AblerLauncher.py
                 path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                 _ = subprocess.Popen([path, "--new-repo-release"])
 
-            elif new_pre_rel:
+            elif new_repo_pre_rel:
                 path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                 _ = subprocess.Popen([path, "--new-repo-pre-release"])
 
@@ -448,12 +435,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 if pre_rel:
                     _ = subprocess.Popen([path, "--pre-release"])
 
-                elif new_rel:
+                elif new_repo_rel:
                     # try의 이유와 동일
                     path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                     _ = subprocess.Popen([path, "--new-repo-release"])
 
-                elif new_pre_rel:
+                elif new_repo_pre_rel:
                     path = f"{os.getcwd()}/dist/AblerLauncher.exe"
                     _ = subprocess.Popen([path, "--new-repo-pre-release"])
 
