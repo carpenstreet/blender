@@ -22,14 +22,14 @@ jobs:
             os: "windows-2019"
 
     steps:
-      - name: Cache lib folder
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}/lib
-          key: ${{ matrix.builder }}-lib-${{ github.ref }}-${{ runner.OS }}
-          restore-keys: |
-            ${{ matrix.builder }}-lib-${{ github.ref }}
-            ${{ matrix.builder }}-lib
+#       - name: Cache lib folder
+#         uses: actions/cache@v2
+#         with:
+#           path: ${{ github.workspace }}/lib
+#           key: ${{ matrix.builder }}-lib-${{ github.ref }}-${{ runner.OS }}
+#           restore-keys: |
+#             ${{ matrix.builder }}-lib-${{ github.ref }}
+#             ${{ matrix.builder }}-lib
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
