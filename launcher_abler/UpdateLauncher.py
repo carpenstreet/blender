@@ -1,11 +1,9 @@
-import pathlib
 import requests
 import logging
 import os
 import os.path
 import sys
 from typing import Tuple, Optional
-from enum import Enum
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import *
