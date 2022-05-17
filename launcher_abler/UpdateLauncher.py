@@ -1,14 +1,13 @@
-import pathlib
 import requests
 import logging
 import os
 import os.path
 import sys
 from typing import Tuple, Optional
-from enum import Enum
 from distutils.version import StrictVersion
 import configparser
-from AblerLauncherUtils import get_datadir, StateUI
+from AblerLauncherUtils import *
+
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -18,7 +17,6 @@ os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
-test_arg = len(sys.argv) > 1 and sys.argv[1] == "--test"
 os.makedirs(get_datadir() / "Blender/2.96", exist_ok=True)
 os.makedirs(get_datadir() / "Blender/2.96/updater", exist_ok=True)
 logging.basicConfig(
@@ -37,14 +35,16 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     finallist = None
     results = []
     state_ui = None
-    url = "https://api.github.com/repos/acon3d/blender/releases/latest"
-    if test_arg:
-        url = "https://api.github.com/repos/acon3d/blender/releases"
-    # TODO: 새 arg 받아서 테스트 레포 url 업데이트
+
+    # URL settings
+    # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
+    url = set_url()
+    print(f"> url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_
     )
+
     if state_ui == StateUI.error:
         return state_ui, finallist
 
@@ -54,6 +54,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
 
     else:
         get_results_from_req(req, results)
+
         if results:
             if launcher_installed is None or launcher_installed == "":
                 launcher_installed = "0.0.0"
@@ -61,6 +62,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
             # Launcher 릴리즈 버전 > 설치 버전
             # -> finallist = results 반환
             if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
+                print(f"> New Launcher Ver. : {results[0]['version']}")
                 state_ui = StateUI.update_launcher
                 finallist = results
                 return state_ui, finallist
@@ -96,7 +98,8 @@ def get_req_from_url(
         logger.error(e)
         state_ui = StateUI.error
 
-    if test_arg:
+    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
+    if pre_rel or new_pre_rel:
         req = req[0]
 
     is_release = True
