@@ -4,6 +4,10 @@ from enum import Enum, auto
 
 
 # 테스트용 argument 추가
+pre_rel = None
+new_repo_rel = None
+new_repo_pre_rel = None
+
 if len(sys.argv) > 1:
     pre_rel = sys.argv[1] == "--pre-release"
     new_repo_rel = sys.argv[1] == "--new-repo-release"
