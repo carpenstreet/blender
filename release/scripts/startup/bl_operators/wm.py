@@ -3065,6 +3065,7 @@ class WM_MT_splash(Menu):
         view = prefs.view
 
         layout.prop(view, "language")
+        layout.operator("acon3d.notice", text="Go to notice", icon='URL')
 
         layout.separator()
         layout.separator()

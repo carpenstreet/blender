@@ -17,12 +17,20 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-import bpy
-from json import JSONDecodeError
 import ctypes
+import json
+import os
+import pickle
 import platform
+import webbrowser
+from json import JSONDecodeError
+
+import bpy
+import requests
 from bpy.app.handlers import persistent
-import requests, webbrowser, pickle, os
+
+from .lib.async_task import AsyncTask
+from .lib.login import is_first_open
 from .lib.post_open import tracker_file_open
 from .lib.remember_username import (
     delete_remembered_username,
@@ -30,9 +38,7 @@ from .lib.remember_username import (
     remember_username,
     read_remembered_username,
 )
-from .lib.login import is_first_open
 from .lib.tracker import tracker
-from .lib.async_task import AsyncTask
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -72,6 +78,55 @@ class Acon3dAlertOperator(bpy.types.Operator):
             row.label(text=self.message_3)
         layout.separator()
         layout.separator()
+
+
+class Acon3dNoticeInvokeOperator(bpy.types.Operator):
+    bl_idname = "acon3d.notice_invoke"
+    bl_label = ""
+
+    ret: bpy.props.StringProperty(name="Return value")
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        self.ret = requests.get("https://cms.abler3d.biz/notices/?language=ko").text
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self, width=750)
+
+    def draw(self, context):
+        layout = self.layout
+        # print(self.ret)
+        for notice in json.loads(self.ret)["results"]:
+            box = layout.box()
+            row = box.row()
+            row.label(text=notice['title'])
+
+            notice_list = notice['content'].split('\r\n')
+
+            for notice_line in notice_list:
+                if notice_line != "":
+                    row = box.row()
+                    row.label(text=notice_line)
+
+            # if "link" in notice.keys() and "link_name" in notice.keys():
+            #     row = box.row()
+            #     anchor = row.operator("acon3d.anchor", text=notice['link_name'], icon='URL')
+            #     anchor.href = notice['link']
+            row = box.row()
+            row.separator()
+
+        layout.separator()
+        layout.separator()
+
+
+class Acon3dNoticeOperator(bpy.types.Operator):
+    bl_idname = "acon3d.notice"
+    bl_label = ""
+
+    def execute(self, context):
+        bpy.ops.acon3d.notice_invoke("INVOKE_DEFAULT")
+        return {"FINISHED"}
 
 
 class Acon3dModalOperator(bpy.types.Operator):
@@ -358,7 +413,6 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 @persistent
 def open_credential_modal(dummy):
-
     fileopen = tracker_file_open()
 
     prefs = bpy.context.preferences
@@ -412,6 +466,8 @@ classes = (
     Acon3dModalOperator,
     Acon3dLoginOperator,
     Acon3dAnchorOperator,
+    Acon3dNoticeOperator,
+    Acon3dNoticeInvokeOperator
 )
 
 
