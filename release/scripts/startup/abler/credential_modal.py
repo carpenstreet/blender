@@ -22,6 +22,7 @@ import json
 import os
 import pickle
 import platform
+import textwrap
 import webbrowser
 from json import JSONDecodeError
 
@@ -85,39 +86,63 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
     bl_label = ""
 
     ret: bpy.props.StringProperty(name="Return value")
+    width: 750
 
     def execute(self, context):
         return {"FINISHED"}
 
     def invoke(self, context, event):
         self.ret = requests.get("https://cms.abler3d.biz/notices/?language=ko").text
+        self.width = 750
         wm = context.window_manager
-        return wm.invoke_props_dialog(self, width=750)
+        return wm.invoke_props_dialog(self, width=self.width)
 
     def draw(self, context):
+        print(context.region.width)
+        # apply scale factor for retina screens etc
+        # self.width /= self.dpi_scale()
+
         layout = self.layout
-        # print(self.ret)
         for notice in json.loads(self.ret)["results"]:
             box = layout.box()
             row = box.row()
-            row.label(text=notice['title'])
+            # 제목 위에 점으로 만든 줄
+            row.scale_y = 0.5
+            row.label(text="." * 1000)
+            # 제목도 혹시 몰라서 line wrap 추가
+            sub_lns = textwrap.fill(notice['title'], 70)
+            spl = sub_lns.split("\n")
+            for i, s in enumerate(spl):
+                row = box.row()
+                if i == 0:
+                    row.label(text=s, icon="RIGHTARROW")
+                else:
+                    row.label(text=s)
 
-            notice_list = notice['content'].split('\r\n')
-
+            row = box.row()
+            # 제목 아래에 점으로 만든 줄
+            row.scale_y = 0.2
+            row.label(text="." * 1000)
+            # 내용에는 line wrap 넣어놨음. 현재 box 사이즈에 맞춰서 line wrap 하는 방법 추가 가능하면 좋겠음
+            notice_list = notice['content'].split('\r\n')  # 개행문자를 기준으로 나눠서 리스트로 만든다.
             for notice_line in notice_list:
                 if notice_line != "":
+                    sub_lns = textwrap.fill(notice_line, 75)
+                    spl = sub_lns.split("\n")
+                    for s in spl:
+                        row = box.row()
+                        row.label(text=s)
+                else:
                     row = box.row()
-                    row.label(text=notice_line)
-
+                    row.separator()
+            # link 집어넣는 코드
             # if "link" in notice.keys() and "link_name" in notice.keys():
-            #     row = box.row()
-            #     anchor = row.operator("acon3d.anchor", text=notice['link_name'], icon='URL')
-            #     anchor.href = notice['link']
             row = box.row()
-            row.separator()
+            anchor = row.operator("acon3d.anchor", text="naver", icon='URL')
+            anchor.href = "https://www.naver.com"
 
-        layout.separator()
-        layout.separator()
+    def dpi_scale(self):
+        return bpy.context.preferences.system.pixel_size
 
 
 class Acon3dNoticeOperator(bpy.types.Operator):
