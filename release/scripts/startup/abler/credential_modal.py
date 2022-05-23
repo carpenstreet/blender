@@ -18,7 +18,6 @@
 
 
 import ctypes
-import json
 import os
 import pickle
 import platform
@@ -85,72 +84,71 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice_invoke"
     bl_label = ""
 
-    ret: bpy.props.StringProperty(name="Return value")
     width: 750
+    title: bpy.props.StringProperty(name="Title")
+    content: bpy.props.StringProperty(name="Content")
+    link: bpy.props.StringProperty(name="Link")
+    link_name: bpy.props.StringProperty(name="Link name")
 
     def execute(self, context):
         return {"FINISHED"}
 
     def invoke(self, context, event):
-        self.ret = requests.get("https://cms.abler3d.biz/notices/?language=ko").text
         self.width = 750
         wm = context.window_manager
         return wm.invoke_props_dialog(self, width=self.width)
 
     def draw(self, context):
-        print(context.region.width)
-        # apply scale factor for retina screens etc
-        # self.width /= self.dpi_scale()
-
         layout = self.layout
-        for notice in json.loads(self.ret)["results"]:
-            box = layout.box()
-            row = box.row()
-            # 제목 위에 점으로 만든 줄
-            row.scale_y = 0.5
-            row.label(text="." * 1000)
-            # 제목도 혹시 몰라서 line wrap 추가
-            sub_lns = textwrap.fill(notice['title'], 70)
-            spl = sub_lns.split("\n")
-            for i, s in enumerate(spl):
-                row = box.row()
-                if i == 0:
-                    row.label(text=s, icon="RIGHTARROW")
-                else:
+        row = layout.row()
+        # 제목 위에 점으로 만든 줄
+        row.scale_y = 0.5
+        row.label(text="." * 1000)
+        # 제목도 혹시 몰라서 line wrap 추가
+        sub_lns = textwrap.fill(self.title, 70)
+        spl = sub_lns.split("\n")
+        for i, s in enumerate(spl):
+            row = layout.row()
+            if i == 0:
+                row.label(text=s, icon="RIGHTARROW")
+            else:
+                row.label(text=s)
+
+        row = layout.row()
+        # 제목 아래에 점으로 만든 줄
+        row.scale_y = 0.2
+        row.label(text="." * 1000)
+        # 내용에는 line wrap 넣어놨음. 현재 box 사이즈에 맞춰서 line wrap 하는 방법 추가 가능하면 좋겠음
+        notice_list = self.content.split('\r\n')  # 개행문자를 기준으로 나눠서 리스트로 만든다.
+        for notice_line in notice_list:
+            if notice_line != "":
+                sub_lns = textwrap.fill(notice_line, 75)
+                spl = sub_lns.split("\n")
+                for s in spl:
+                    row = layout.row()
                     row.label(text=s)
-
-            row = box.row()
-            # 제목 아래에 점으로 만든 줄
-            row.scale_y = 0.2
-            row.label(text="." * 1000)
-            # 내용에는 line wrap 넣어놨음. 현재 box 사이즈에 맞춰서 line wrap 하는 방법 추가 가능하면 좋겠음
-            notice_list = notice['content'].split('\r\n')  # 개행문자를 기준으로 나눠서 리스트로 만든다.
-            for notice_line in notice_list:
-                if notice_line != "":
-                    sub_lns = textwrap.fill(notice_line, 75)
-                    spl = sub_lns.split("\n")
-                    for s in spl:
-                        row = box.row()
-                        row.label(text=s)
-                else:
-                    row = box.row()
-                    row.separator()
-            # link 집어넣는 코드
-            # if "link" in notice.keys() and "link_name" in notice.keys():
-            row = box.row()
-            anchor = row.operator("acon3d.anchor", text="naver", icon='URL')
-            anchor.href = "https://www.naver.com"
-
-    def dpi_scale(self):
-        return bpy.context.preferences.system.pixel_size
+            else:
+                row = layout.row()
+                row.separator()
+        # link 집어넣는 코드
+        if self.link and self.link_name:
+            row = layout.row()
+            anchor = row.operator("acon3d.anchor", text=self.link_name, icon='URL')
+            anchor.href = self.link
+        layout.separator()
 
 
 class Acon3dNoticeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice"
     bl_label = ""
+    title: bpy.props.StringProperty(name="Title")
+    content: bpy.props.StringProperty(name="Content", description="content")
+    link: bpy.props.StringProperty(name="Link", description="link")
+    link_name: bpy.props.StringProperty(name="Link Name", description="link_name")
 
     def execute(self, context):
-        bpy.ops.acon3d.notice_invoke("INVOKE_DEFAULT")
+        bpy.ops.acon3d.notice_invoke("INVOKE_DEFAULT", title=self.title, content=self.content, link=self.link,
+                                     link_name=self.link_name)
         return {"FINISHED"}
 
 
