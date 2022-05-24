@@ -47,9 +47,9 @@ jobs:
           submodules: true
           token: ${{ secrets.GIT_KEY }}
 
-      - name: submodules and libraries update
-        working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
-        run: python ../blender.git/build_files/buildbot/worker_update.py ${{ matrix.builder }} ${{ matrix.branch }}
+#       - name: submodules and libraries update
+#         working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
+#         run: python ../blender.git/build_files/buildbot/worker_update.py ${{ matrix.builder }} ${{ matrix.branch }}
 
       - name: compile
         working-directory: ${{ github.workspace }}/build_windows_x64_vc17_Release
