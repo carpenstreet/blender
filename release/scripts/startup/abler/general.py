@@ -30,10 +30,11 @@ bl_info = {
     "category": "ACON3D",
 }
 
-
 import os
+
 import bpy
 from bpy_extras.io_utils import ImportHelper
+
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
@@ -79,7 +80,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
             found = any(coll.name == child for child in children_names)
             if coll.name == "Layers" or (
-                "Layers." in coll.name and len(coll.name) == 10
+                    "Layers." in coll.name and len(coll.name) == 10
             ):
                 for coll_2 in coll.children:
                     added_l_exclude = context.scene.l_exclude.add()
@@ -136,8 +137,18 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        FILEPATH = self.filepath
-        bpy.ops.wm.open_mainfile(filepath=FILEPATH)
+        path = self.filepath
+        if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
+            return {"FINISHED"}
+        elif not os.path.isfile(path):
+            # TODO: translate messages in alert box
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="File not found",
+                message_1="Selected file does not exist",
+            )
+            return {"FINISHED"}
+        bpy.ops.wm.open_mainfile(filepath=path)
 
         return {"FINISHED"}
 
