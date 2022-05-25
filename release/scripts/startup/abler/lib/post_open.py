@@ -47,8 +47,6 @@ def update_layers():
 
 def hide_adjust_last_operation_panel():
     context = bpy.context
-
-    context.scene.render.engine = "BLENDER_EEVEE"
     for area in context.screen.areas:
         if area.type == "VIEW_3D":
             for space in area.spaces:
