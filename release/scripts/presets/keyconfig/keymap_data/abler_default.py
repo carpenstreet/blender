@@ -3041,9 +3041,10 @@ def km_frames(params):
                 ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS', "shift": True}, None),
             )
         elif params.spacebar_action == 'PLAY':
-            items.append(
-                ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS'}, None),
-            )
+            # items.append(
+            #     ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS'}, None),
+            # )
+            pass
         else:
             assert False
 
