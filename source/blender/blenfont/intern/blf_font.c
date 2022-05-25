@@ -353,7 +353,86 @@ BLI_INLINE void blf_kerning_step_fast(FontBLF *font,
     *pen_x_p += blf_unscaled_F26Dot6_to_pixels(font, delta.x);
   }
 }
+static int get_jamo_type(uint jamo)
+{
+  // returns 0 for a consonant, 1 for a vowel, and 2 for a final consonant
+  if (jamo >= 0x1100 && jamo <= 0x115E)
+    return 0;  // initial consonants
+  if (jamo >= 0x1161 && jamo <= 0x1175)
+    return 1;  // vowels
+  if (jamo >= 0x11A8 && jamo <= 0x11C2)
+    return 2;  // final consonants
+  return -1;   // not a valid jamo
+}
 
+static void join_jamos(const uint *jamos, uint *syllables)
+{
+  // joins the given Unicode jamo characters into Korean syllables and writes the result to the
+  // given array
+  int i = 0, j = 0;
+  while (jamos[i] != 0) {
+    uint32_t c = jamos[i];
+    int type = get_jamo_type(c);
+    if (type == 0) {
+      // initial consonant
+      uint next_c = jamos[i + 1];
+      int next_type = get_jamo_type(next_c);
+      if (next_type == 1) {
+        // consonant + vowel
+        uint next_next_c = jamos[i + 2];
+        int next_next_type = get_jamo_type(next_next_c);
+        if (next_next_type == 2) {
+          // consonant + vowel + final consonant
+          int cho = c - 0x1100;
+          int jung = next_c - 0x1161;
+          int jong = next_next_c - 0x11A7;
+          syllables[j++] = (uint)(0xAC00 + (cho * 21 + jung) * 28 + jong);
+          i += 3;
+          continue;
+        }
+        else {
+          int cho = c - 0x1100;
+          int jung = next_c - 0x1161;
+          syllables[j++] = (uint)(0xAC00 + (cho * 21 + jung) * 28);
+          i += 2;
+        }
+      }
+      else {
+        // single consonant
+        syllables[j++] = c;
+        i += 1;
+      }
+    }
+    else if (type == 1) {
+      // vowel
+      syllables[j++] = c;
+      i += 1;
+    }
+    else if (type == 2) {
+      // final consonant
+      uint prev_c = syllables[j - 1];
+      int prev_type = get_jamo_type(prev_c);
+      if (prev_type == 1) {
+        // vowel + final consonant
+        int cho = (prev_c - 0xAC00) / 28 / 21;
+        int jung = (prev_c - 0xAC00) / 28 % 21;
+        int jong = c - 0x11A7;
+        syllables[j - 1] = (uint)(0xAC00 + (cho * 21 + jung) * 28 + jong);
+        i += 1;
+      }
+      else {
+        // final consonant only (invalid)
+        i += 1;
+      }
+    }
+    else {
+      // invalid jamo
+      syllables[j++] = c;
+      i += 1;
+    }
+  }
+  syllables[j] = 0;
+}
 /** \} */
 
 /* -------------------------------------------------------------------- */
@@ -371,6 +450,7 @@ static void blf_font_draw_ex(FontBLF *font,
   GlyphBLF *g, *g_prev = NULL;
   int pen_x = 0;
   size_t i = 0;
+  size_t index = 0;
 
   if (str_len == 0) {
     /* early output, don't do any IMM OpenGL. */
@@ -378,24 +458,39 @@ static void blf_font_draw_ex(FontBLF *font,
   }
 
   blf_batch_draw_begin(font);
-
+  uint strstr[str_len];
   while ((i < str_len) && str[i]) {
-    g = blf_utf8_next_fast(font, gc, str, str_len, &i, &c);
+    uint charcode = BLI_str_utf8_as_unicode_step(str, str_len, &i);
+    BLI_assert(charcode != BLI_UTF8_ERR);
+    strstr[index] = charcode;
+    index++;
+  }
+  strstr[index] = 0;
+  index = 0;
+  i = 0;
+  uint str_new[str_len];
+  join_jamos(strstr, str_new);
 
-    if (UNLIKELY(c == BLI_UTF8_ERR)) {
+  while ((i < str_len) && str_new[i]) {
+    g = blf_glyph_search(gc, str_new[i]);
+    if (UNLIKELY(g == NULL)) {
+      g = blf_glyph_add(font, gc, FT_Get_Char_Index(font->face, str_new[i]), str_new[i]);
+    }
+    i++;
+    if (UNLIKELY(str_new[i] == BLI_UTF8_ERR)) {
       break;
     }
     if (UNLIKELY(g == NULL)) {
       continue;
     }
-    blf_kerning_step_fast(font, g_prev, g, c_prev, c, &pen_x);
+    blf_kerning_step_fast(font, g_prev, g, c_prev, str_new[i], &pen_x);
 
     /* do not return this loop if clipped, we want every character tested */
     blf_glyph_render(font, gc, g, (float)pen_x, (float)pen_y);
 
     pen_x += g->advance_i;
     g_prev = g;
-    c_prev = c;
+    c_prev = str_new[i];
   }
 
   blf_batch_draw_end();
