@@ -208,7 +208,7 @@ def _template_items_select_actions(params, operator):
     if not params.use_select_all_toggle:
         return [
             (operator, {"type": 'A', "value": 'PRESS'}, {"properties": [("action", 'SELECT')]}),
-            (operator, {"type": 'A', "value": 'PRESS', "alt": True}, {"properties": [("action", 'DESELECT')]}),
+            (operator, {"type": 'ESC', "value": 'PRESS'}, {"properties": [("action", 'DESELECT')]}),
             (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, {"properties": [("action", 'INVERT')]}),
             (operator, {"type": 'A', "value": 'DOUBLE_CLICK'}, {"properties": [("action", 'DESELECT')]}),
         ]
