@@ -62,6 +62,7 @@ def load_handler(dummy):
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()
+        post_open.hide_adjust_last_operation_panel()
     finally:
         tracker.turn_on()
 
