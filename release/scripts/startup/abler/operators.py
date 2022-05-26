@@ -30,9 +30,9 @@ class Acon3dLogoutOperator(bpy.types.Operator):
         path_cookiesFolder = os.path.join(path, "cookies")
         path_cookiesFile = os.path.join(path_cookiesFolder, "acon3d_session")
 
-        # TODO: New, Quit 대화창을 사용하지 말고, is_dirty == True 면 save_as() 실행해주기
-        #       save_as()에서 modal을 실행할 때, sleep()을 하면 return {"FINISHED"}가 늦어져서 sleep() 사용 불가능
-        #       Render에 있는 event timer를 참고하면 좋을 것 같음
+        # TODO: 종료창 대신, is_dirty == True면 save 먼저 실행해주기
+        #       save modal과 splash modal이 동시에 겹쳐지는 문제가 있음
+        #       render.py에 있는 event timer를 참고하면 좋을듯
         if os.path.exists(path_cookiesFile):
             os.remove(path_cookiesFile)
 
@@ -45,11 +45,6 @@ class Acon3dLogoutOperator(bpy.types.Operator):
             prop.username = read_remembered_username()
 
             bpy.ops.wm.splash("INVOKE_DEFAULT")
-
-            # TODO: bpy.ops.wm.read_homefile()을 사용해 현재 파일 처리 과정 구현
-            #       현재 splash 화면에서 프로그램을 종료하면 Quit 대화창으로 저장 기능을 사용할 수는 있지만
-            #       splash 화면과 저장 modal이 충돌할 가능성 있음
-
         else:
             print("No login session file")
 
