@@ -3098,9 +3098,9 @@ class WM_MT_splash(Menu):
                 but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
                 but.title = notice["title"]
                 but.content = notice["content"]
-                if "link" in notice.keys() and "link_name" in notice.keys():
-                    but.link = notice["link"]
-                    but.link_name = notice["link_name"]
+                if notice["link"] is not None:
+                    but.link = notice["link"]["url"]
+                    but.link_name = notice["link"]["title"]
         layout.separator()
         layout.label(text=abler_version())
         layout.separator()
