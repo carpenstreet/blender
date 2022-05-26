@@ -3090,7 +3090,8 @@ class WM_MT_splash(Menu):
         layout.separator()
         layout.label(text="Notice:", text_ctxt="*")
         if self.ret is None:
-            self.ret = requests.get("https://cms.abler3d.biz/notices/?language=ko").text
+            lang = bpy.context.preferences.view.language.split('_')[0]
+            self.ret = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}").text
         ret_list = json.loads(self.ret)["results"]
         ret_list = list(reversed(ret_list))
         for i, notice in enumerate(ret_list):
