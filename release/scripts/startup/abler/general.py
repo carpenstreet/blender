@@ -29,7 +29,6 @@ bl_info = {
     "tracker_url": "",
     "category": "ACON3D",
 }
-
 import os
 
 import bpy
@@ -80,7 +79,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
             found = any(coll.name == child for child in children_names)
             if coll.name == "Layers" or (
-                    "Layers." in coll.name and len(coll.name) == 10
+                "Layers." in coll.name and len(coll.name) == 10
             ):
                 for coll_2 in coll.children:
                     added_l_exclude = context.scene.l_exclude.add()
