@@ -33,10 +33,36 @@ bl_info = {
 
 import os
 import bpy
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
+
+
+def splitFilepath(filepath):
+    # Get basename without file extension
+    dirname, basename = os.path.split(os.path.normpath(filepath))
+
+    if "." in basename:
+        basename = ".".join(basename.split(".")[:-1])
+
+    return dirname, basename
+
+
+def numberingFilepath(filepath, ext):
+    dirname, basename = splitFilepath(filepath)
+    basepath = os.path.join(dirname, basename)
+
+    num_path = basepath
+    num_name = basename
+    number = 2
+
+    while os.path.isfile(f"{num_path}{ext}"):
+        num_path = f"{basepath} ({number})"
+        num_name = f"{basename} ({number})"
+        number += 1
+
+    return num_path, num_name
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -158,42 +184,69 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator):
+class SaveOperator(bpy.types.Operator, ExportHelper):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
     bl_translation_context = "*"
 
+    filename_ext = ".blend"
+
+    # invoke() 사용을 하지 않고 execute() 분리 시도 방법은 현재 어렵습니다.
+    # Helper 함수에서는 invoke()가 호출되어서 파일 브라우저 관리를 하는데,
+    # 파일이 최초 저장될 때는 invoke()를 활용해서 파일 브라우저에서 파일명을 관리를 해야하지만,
+    # 파일이 이미 저장된 상태일 때는 invoke()를 넘어가고 바로 execute()를 실행해야 합니다.
+    def invoke(self, context, event):
+        if bpy.data.is_saved:
+            return self.execute(context)
+
+        else:
+            return ExportHelper.invoke(self, context, event)
+
     def execute(self, context):
         tracker.save()
 
         if bpy.data.is_saved:
-            bpy.ops.wm.save_mainfile()
+            self.filepath = context.blend_data.filepath
+            dirname, basename = splitFilepath(self.filepath)
+
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
         else:
-            bpy.ops.wm.save_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+            numbered_filepath, numbered_filename = numberingFilepath(
+                self.filepath, self.filename_ext
+            )
 
-            if os.path.isfile(bpy.data.filepath):
-                self.report({"WARNING"}, "File already exists")
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         return {"FINISHED"}
 
 
-class SaveAsOperator(bpy.types.Operator):
+class SaveAsOperator(bpy.types.Operator, ExportHelper):
     """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
     bl_label = "Save As"
     bl_translation_context = "*"
 
+    filename_ext = ".blend"
+
     def execute(self, context):
         tracker.save_as()
 
-        bpy.ops.wm.save_as_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+        numbered_filepath, numbered_filename = numberingFilepath(
+            self.filepath, self.filename_ext
+        )
 
-        if os.path.isfile(bpy.data.filepath):
-            self.report({"WARNING"}, "File already exists")
+        self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+        bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+        self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         return {"FINISHED"}
 
