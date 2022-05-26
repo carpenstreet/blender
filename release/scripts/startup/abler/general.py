@@ -141,7 +141,6 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
         if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
             return {"FINISHED"}
         elif not os.path.isfile(path):
-            # TODO: translate messages in alert box
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
                 title="File not found",
