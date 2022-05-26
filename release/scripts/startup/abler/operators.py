@@ -3,6 +3,7 @@ import bpy
 from .lib.materials import materials_setup
 from .lib.remember_username import read_remembered_checkbox, read_remembered_username
 
+
 class Acon3dToonStyleOperator(bpy.types.Operator):
     """Iterate all materials and change them into toon style"""
 
@@ -15,15 +16,15 @@ class Acon3dToonStyleOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Logout(bpy.types.Operator):
-    """Logout user account for menu"""
+class Acon3dLogoutOperator(bpy.types.Operator):
+    """Logout user account"""
 
-    bl_idname = "acon3d.logout_menu"
-    bl_label = "Logout_menu"
+    bl_idname = "acon3d.logout"
+    bl_label = "Log Out"
     bl_translation_context = "*"
 
     def execute(self, context):
-        # prop를 업데이트 하면 ACON_userInfo에도 반영됨
+        # prop를 업데이트 하면 ACON_userInfo도 업데이트
         prop = bpy.data.meshes.get("ACON_userInfo").ACON_prop
         path = bpy.utils.resource_path("USER")
         path_cookiesFolder = os.path.join(path, "cookies")
@@ -35,13 +36,14 @@ class Logout(bpy.types.Operator):
         if os.path.exists(path_cookiesFile):
             os.remove(path_cookiesFile)
 
-            # login_status가 SUCCESS가 아닌 상태에서 modal_operator를 실행하고 쿠키 파일 확인하기
+            # login_status가 SUCCESS가 아닌 상태에서 modal_operator를 실행
             prop.login_status = "IDLE"
             bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
-            # 아이디 기억하기 체크박스 상태와 아이디 업데이트
+            # 아이디 기억하기 체크박스 상태와 아이디 불러오기
             prop.remember_username = read_remembered_checkbox()
             prop.username = read_remembered_username()
+
             bpy.ops.wm.splash("INVOKE_DEFAULT")
 
             # TODO: bpy.ops.wm.read_homefile()을 사용해 현재 파일 처리 과정 구현
@@ -54,10 +56,9 @@ class Logout(bpy.types.Operator):
         return {"FINISHED"}
 
 
-
 classes = (
     Acon3dToonStyleOperator,
-    Logout,
+    Acon3dLogoutOperator,
 )
 
 

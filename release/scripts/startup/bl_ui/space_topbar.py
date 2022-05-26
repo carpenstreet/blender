@@ -220,11 +220,6 @@ class TOPBAR_MT_editor_menus(Menu):
 
         layout.menu("TOPBAR_MT_window")
         layout.menu("TOPBAR_MT_help")
-        
-        layout.separator()
-
-        # layout.operator("acon3d.logout")
-        layout.operator("acon3d.logout_menu")
 
 
 class TOPBAR_MT_blender(Menu):
@@ -235,6 +230,7 @@ class TOPBAR_MT_blender(Menu):
 
         layout.operator("wm.splash")
         layout.operator("wm.splash_about")
+        layout.operator("acon3d.logout")
 
         layout.separator()
 
