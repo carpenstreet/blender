@@ -29,9 +29,8 @@ bl_info = {
     "tracker_url": "",
     "category": "ACON3D",
 }
-
-
 import os
+
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
@@ -162,8 +161,17 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        FILEPATH = self.filepath
-        bpy.ops.wm.open_mainfile(filepath=FILEPATH)
+        path = self.filepath
+        if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
+            return {"FINISHED"}
+        elif not os.path.isfile(path):
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="File not found",
+                message_1="Selected file does not exist",
+            )
+            return {"FINISHED"}
+        bpy.ops.wm.open_mainfile(filepath=path)
 
         return {"FINISHED"}
 
