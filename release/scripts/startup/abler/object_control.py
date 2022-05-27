@@ -185,9 +185,9 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
+    # @classmethod
+    # def poll(cls, context):
+    #     return context.object
 
     def draw_header(self, context):
         if obj := context.object:
@@ -201,14 +201,17 @@ class ObjectSubPanel(bpy.types.Panel):
         layout.use_property_split = True
         layout.use_property_decorate = True
 
-        obj = context.object
-        prop = obj.ACON_prop
+        if obj := context.object:
+            prop = obj.ACON_prop
 
-        layout.active = prop.use_state and bool(len(context.selected_objects))
-        layout.enabled = layout.active
-        row = layout.row(align=True)
-        row.prop(prop, "state_slider", slider=True)
-        row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
+            layout.active = prop.use_state and bool(len(context.selected_objects))
+            layout.enabled = layout.active
+            row = layout.row(align=True)
+            row.prop(prop, "state_slider", slider=True)
+            row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
+        else:
+            row = layout.row(align=True)
+            row.label(text="No Selected Object")
 
 
 class Acon3dGroupNavigaionPanel(bpy.types.Panel):
