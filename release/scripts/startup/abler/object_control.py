@@ -43,10 +43,6 @@ class GroupNavigateTopOperator(bpy.types.Operator):
     bl_label = "Group Navigate Top"
     bl_translation_context = "*"
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def execute(self, context):
         tracker.group_navigate_top()
         layers.selectByGroup("TOP")
@@ -59,10 +55,6 @@ class GroupNavigateUpOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_up"
     bl_label = "Group Navigate Up"
     bl_translation_context = "*"
-
-    @classmethod
-    def poll(cls, context):
-        return context.object
 
     def execute(self, context):
         tracker.group_navigate_up()
@@ -77,10 +69,6 @@ class GroupNavigateDownOperator(bpy.types.Operator):
     bl_label = "Group Navigate Down"
     bl_translation_context = "*"
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def execute(self, context):
         tracker.group_navigate_down()
         layers.selectByGroup("DOWN")
@@ -93,10 +81,6 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_bottom"
     bl_label = "Group Navigate Bottom"
     bl_translation_context = "*"
-
-    @classmethod
-    def poll(cls, context):
-        return context.object
 
     def execute(self, context):
         tracker.group_navigate_bottom()
