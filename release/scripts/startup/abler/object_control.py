@@ -177,7 +177,7 @@ class Acon3dObjectPanel(bpy.types.Panel):
         else:
             row = col.row(align=True)
             row.enabled = False
-            row.label(text="Look at me", icon="CHECKBOX_DEHLT")
+            row.label(text="Look at me", icon="SELECT_SET")
 
 
 class ObjectSubPanel(bpy.types.Panel):
