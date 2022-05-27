@@ -167,6 +167,9 @@ class Acon3dObjectPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
 
+        # context.object로 조건문을 두면 선택된 개체가 없어도 버튼을 누를 수 있음
+        # prop에선 선택된 개체가 없을 때 바로 안 보여야 유저가 헷갈리지 않기 때문에
+        # 조건문에서 context.selected_objects로 설정
         if context.selected_objects:
             row = col.row()
             row.prop(
