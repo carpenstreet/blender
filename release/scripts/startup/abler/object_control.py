@@ -167,7 +167,7 @@ class Acon3dObjectPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
 
-        if context.object:
+        if context.selected_objects:
             row = col.row()
             row.prop(
                 context.object.ACON_prop,
