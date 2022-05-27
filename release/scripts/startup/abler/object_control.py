@@ -174,6 +174,10 @@ class Acon3dObjectPanel(bpy.types.Panel):
                 "constraint_to_camera_rotation_z",
                 text="Look at me",
             )
+        else:
+            row = col.row(align=True)
+            row.enabled = False
+            row.label(text="Look at me", icon="CHECKBOX_DEHLT")
 
 
 class ObjectSubPanel(bpy.types.Panel):
@@ -184,10 +188,6 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
-
-    # @classmethod
-    # def poll(cls, context):
-    #     return context.object
 
     def draw_header(self, context):
         if obj := context.object:
@@ -223,22 +223,22 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def draw(self, context):
-        obj = context.active_object
-        prop = obj.ACON_prop
-        layout = self.layout
+        if obj := context.object:
+            prop = obj.ACON_prop
+            layout = self.layout
 
-        row = layout.row(align=True)
-        row.enabled = "Groups" in context.collection.children.keys()
-        row.prop(prop, "group_list", text="")
-        row.operator("acon3d.group_navigate_top", text="", icon="TRIA_UP_BAR")
-        row.operator("acon3d.group_navigate_up", text="", icon="TRIA_UP")
-        row.operator("acon3d.group_navigate_down", text="", icon="TRIA_DOWN")
-        row.operator("acon3d.group_navigate_bottom", text="", icon="TRIA_DOWN_BAR")
+            row = layout.row(align=True)
+            row.enabled = "Groups" in context.collection.children.keys()
+            row.prop(prop, "group_list", text="")
+            row.operator("acon3d.group_navigate_top", text="", icon="TRIA_UP_BAR")
+            row.operator("acon3d.group_navigate_up", text="", icon="TRIA_UP")
+            row.operator("acon3d.group_navigate_down", text="", icon="TRIA_DOWN")
+            row.operator("acon3d.group_navigate_bottom", text="", icon="TRIA_DOWN_BAR")
+        else:
+            layout = self.layout
+            row = layout.row(align=True)
+            row.label(text="No Selected Object")
 
 
 classes = (
