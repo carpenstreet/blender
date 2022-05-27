@@ -519,6 +519,10 @@ void EEVEE_renderpasses_draw_debug(EEVEE_Data *vedata)
     case 11:
       tx = effects->velocity_tx;
       break;
+    // Abler specific
+    case 99:
+      tx = txl->abler_depth_buffer;
+      break;
     default:
       break;
   }

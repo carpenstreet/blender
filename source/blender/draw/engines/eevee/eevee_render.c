@@ -44,6 +44,7 @@
 
 #include "RE_pipeline.h"
 
+#include "eevee_abler.h"
 #include "eevee_private.h"
 
 /* Return true if init properly. */
@@ -151,6 +152,7 @@ void EEVEE_render_modules_init(EEVEE_Data *vedata,
   EEVEE_materials_init(sldata, vedata, stl, fbl);
   EEVEE_shadows_init(sldata);
   EEVEE_lightprobes_init(sldata, vedata);
+  EEVEE_abler_prepass_init(sldata, vedata);
 }
 
 void EEVEE_render_view_sync(EEVEE_Data *vedata, RenderEngine *engine, struct Depsgraph *depsgraph)
@@ -192,6 +194,7 @@ void EEVEE_render_cache_init(EEVEE_ViewLayerData *sldata, EEVEE_Data *vedata)
   EEVEE_temporal_sampling_cache_init(sldata, vedata);
   EEVEE_volumes_cache_init(sldata, vedata);
   EEVEE_cryptomatte_cache_init(sldata, vedata);
+  EEVEE_abler_prepass_cache_init(sldata, vedata);
 }
 
 /* Used by light cache. in this case engine is NULL. */
@@ -628,6 +631,10 @@ void EEVEE_render_draw(EEVEE_Data *vedata, RenderEngine *engine, RenderLayer *rl
     GPU_framebuffer_clear_color_depth_stencil(fbl->main_fb, clear_col, clear_depth, clear_stencil);
     /* Depth prepass */
     DRW_draw_pass(psl->depth_ps);
+
+    /* ABLER specific */
+    EEVEE_abler_prepass_draw(vedata);
+
     /* Create minmax texture */
     EEVEE_create_minmax_buffer(vedata, dtxl->depth, -1);
     EEVEE_occlusion_compute(sldata, vedata);
