@@ -131,7 +131,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
                 row = layout.row()
                 row.separator()
         # link 집어넣는 코드
-        if self.link and self.link_name:
+        if self.link != "" and self.link_name != "":
             row = layout.row()
             anchor = row.operator("acon3d.anchor", text=self.link_name, icon='URL')
             anchor.href = self.link

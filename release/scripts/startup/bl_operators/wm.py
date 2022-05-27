@@ -3086,23 +3086,28 @@ class WM_MT_splash(Menu):
         col2.operator("wm.url_open_preset", text="Blender Release Notes", icon='URL',
                       text_ctxt="*").type = 'RELEASE_NOTES'
         col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
-
-        layout.separator()
-        layout.label(text="Notice:", text_ctxt="*")
-        if self.ret is None:
-            lang = bpy.context.preferences.view.language.split('_')[0]
-            self.ret = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}").text
-        ret_list = json.loads(self.ret)["results"]
-        ret_list = list(reversed(ret_list))
-        for i, notice in enumerate(ret_list):
-            if i < 3:
-                but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
-                but.title = notice["title"]
-                but.content = notice["content"]
-                if notice["link"] is not None:
-                    but.link = notice["link"]["url"]
-                    but.link_name = notice["link"]["title"]
-        layout.separator()
+        # 공지사항 파트
+        lang = bpy.context.preferences.view.language.split('_')[0]
+        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+        if req.status_code == 200:
+            layout.separator()
+            layout.label(text="Notice:", text_ctxt="*")
+            if self.ret is None:
+                self.ret = req.text
+            ret_list = json.loads(self.ret)["results"]
+            ret_list = list(reversed(ret_list))
+            for i, notice in enumerate(ret_list):
+                if i < 3:
+                    but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
+                    but.title = notice["title"]
+                    but.content = notice["content"]
+                    if notice["link"] is not None:
+                        but.link = notice["link"]["url"]
+                        but.link_name = notice["link"]["title"]
+                    else:
+                        but.link = ""
+                        but.link_name = ""
+            layout.separator()
         layout.label(text=abler_version())
         layout.separator()
 
