@@ -119,7 +119,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
         row.scale_y = 0.2
         row.label(text="." * 1000)
         # 내용에는 line wrap 넣어놨음. 현재 box 사이즈에 맞춰서 line wrap 하는 방법 추가 가능하면 좋겠음
-        notice_list = self.content.split('\r\n')  # 개행문자를 기준으로 나눠서 리스트로 만든다.
+        notice_list = self.content.split("\r\n")  # 개행문자를 기준으로 나눠서 리스트로 만든다.
         for notice_line in notice_list:
             if notice_line != "":
                 sub_lns = textwrap.fill(notice_line, 75)
@@ -133,7 +133,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
         # link 집어넣는 코드
         if self.link != "" and self.link_name != "":
             row = layout.row()
-            anchor = row.operator("acon3d.anchor", text=self.link_name, icon='URL')
+            anchor = row.operator("acon3d.anchor", text=self.link_name, icon="URL")
             anchor.href = self.link
         layout.separator()
 
@@ -147,8 +147,13 @@ class Acon3dNoticeOperator(bpy.types.Operator):
     link_name: bpy.props.StringProperty(name="Link Name", description="link_name")
 
     def execute(self, context):
-        bpy.ops.acon3d.notice_invoke("INVOKE_DEFAULT", title=self.title, content=self.content, link=self.link,
-                                     link_name=self.link_name)
+        bpy.ops.acon3d.notice_invoke(
+            "INVOKE_DEFAULT",
+            title=self.title,
+            content=self.content,
+            link=self.link,
+            link_name=self.link_name,
+        )
         return {"FINISHED"}
 
 
@@ -490,7 +495,7 @@ classes = (
     Acon3dLoginOperator,
     Acon3dAnchorOperator,
     Acon3dNoticeOperator,
-    Acon3dNoticeInvokeOperator
+    Acon3dNoticeInvokeOperator,
 )
 
 
