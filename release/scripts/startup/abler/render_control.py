@@ -98,6 +98,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         self.render_canceled = True
 
     def on_render_finish(self, context):
+        # set initial_scene
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
         return {"FINISHED"}
 
     def prepare_queue(self, context):
