@@ -230,6 +230,7 @@ class TOPBAR_MT_blender(Menu):
 
         layout.operator("wm.splash")
         layout.operator("wm.splash_about")
+        layout.operator("acon3d.logout")
 
         layout.separator()
 

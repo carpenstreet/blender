@@ -36,6 +36,7 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
+from .lib.remember_username import read_remembered_username
 
 
 def splitFilepath(filepath):
