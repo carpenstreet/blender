@@ -212,7 +212,7 @@ class ObjectSubPanel(bpy.types.Panel):
             row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
         else:
             row = layout.row(align=True)
-            row.label(text="No Selected Object")
+            row.label(text="No selected object")
 
 
 class Acon3dGroupNavigaionPanel(bpy.types.Panel):
@@ -240,7 +240,7 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
         else:
             layout = self.layout
             row = layout.row(align=True)
-            row.label(text="No Selected Object")
+            row.label(text="No selected object")
 
 
 classes = (
