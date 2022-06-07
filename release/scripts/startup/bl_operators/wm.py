@@ -3092,7 +3092,7 @@ class WM_MT_splash(Menu):
         if req.status_code == 200:
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
-            if self.ret is None:
+            if not self.ret:
                 self.ret = req.text
             ret_list = json.loads(self.ret)["results"]
             # request의 result를 뒤집어서 최신순으로 정렬
