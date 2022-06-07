@@ -3095,8 +3095,10 @@ class WM_MT_splash(Menu):
             if self.ret is None:
                 self.ret = req.text
             ret_list = json.loads(self.ret)["results"]
+            # request의 result를 뒤집어서 최신순으로 정렬
             ret_list = list(reversed(ret_list))
             for i, notice in enumerate(ret_list):
+                # 가장 최신의 공지사항 중 3개만 보여주도록 index로 필터링
                 if i < 3:
                     but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
                     but.title = notice["title"]
