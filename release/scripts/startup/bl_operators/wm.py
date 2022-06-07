@@ -69,7 +69,7 @@ rna_relative_prop = BoolProperty(
 rna_space_type_prop = EnumProperty(
     name="Type",
     items=tuple(
-        (e.identifier, e.name, "", e.value)
+        (e.identifier, e.name, "", e. value)
         for e in bpy.types.Space.bl_rna.properties["type"].enum_items
     ),
     default='EMPTY',
@@ -139,10 +139,10 @@ def context_path_decompose(data_path):
         prop_item = "".join(path_split[i + 1:])
 
         if base_path:
-            assert (base_path.startswith("."))
+            assert(base_path.startswith("."))
             base_path = base_path[1:]
         if prop_attr:
-            assert (prop_attr.startswith("."))
+            assert(prop_attr.startswith("."))
             prop_attr = prop_attr[1:]
     else:
         # If there are no properties, everything is an item.
@@ -930,7 +930,7 @@ class WM_OT_context_modal_mouse(Operator):
             header_text = self.header_text
             if header_text:
                 if len(self._values) == 1:
-                    (item,) = self._values.keys()
+                    (item, ) = self._values.keys()
                     header_text = header_text % eval("item.%s" % self.data_path_item)
                 else:
                     header_text = (self.header_text % delta) + " (delta)"
@@ -1110,6 +1110,7 @@ class WM_OT_path_open(Operator):
 
 
 def _wm_doc_get_id(doc_id, *, do_url=True, url_prefix="", report=None):
+
     def operator_exists_pair(a, b):
         # Not fast, this is only for docs.
         return b in dir(getattr(bpy.ops, a))
@@ -1344,7 +1345,7 @@ class WM_OT_properties_edit(Operator):
         name="Array Length",
         default=3,
         min=1,
-        max=32,  # 32 is the maximum size for RNA array properties.
+        max=32, # 32 is the maximum size for RNA array properties.
     )
 
     # Integer properties.
@@ -1538,7 +1539,7 @@ class WM_OT_properties_edit(Operator):
         elif self.property_type == 'STRING':
             self.default_string = rna_data["default"]
 
-        if self.property_type in {'FLOAT_ARRAY', 'INT_ARRAY'}:
+        if self.property_type in { 'FLOAT_ARRAY', 'INT_ARRAY'}:
             self.array_length = len(item[name])
 
         # The dictionary does not contain the description if it was empty.
@@ -2631,7 +2632,7 @@ class WM_OT_batch_rename(Operator):
                 elif method == 'SUFFIX':
                     name = name + text
                 else:
-                    assert (0)
+                    assert(0)
 
             elif ty == 'STRIP':
                 chars = action.strip_chars
@@ -2676,9 +2677,9 @@ class WM_OT_batch_rename(Operator):
                 elif method == 'TITLE':
                     name = name.title()
                 else:
-                    assert (0)
+                    assert(0)
             else:
-                assert (0)
+                assert(0)
         return name
 
     def _data_update(self, context):
@@ -3118,6 +3119,7 @@ class WM_MT_splash_about(Menu):
     bl_label = "About"
 
     def draw(self, context):
+
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
