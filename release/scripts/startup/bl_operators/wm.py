@@ -2982,6 +2982,21 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
         layout.separator()
 
+# 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
+notices = ('READY', None) 
+
+def fetch_notices():
+    # 전에 이미 성공/실패했으면 일찍 종료
+    global notices
+    if notices[0] != 'READY':
+        return
+    lang = bpy.context.preferences.view.language.split('_')[0]
+    req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+    if req is not None and req.status_code == 200:
+        ret_list = json.loads(req.text)["results"]
+        notices = ('SUCCESS', ret_list)
+    else:
+        notices = ('FAILED', None)
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
@@ -3088,28 +3103,22 @@ class WM_MT_splash(Menu):
                       text_ctxt="*").type = 'RELEASE_NOTES'
         col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
         # 공지사항 파트
-        lang = bpy.context.preferences.view.language.split('_')[0]
-        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
-        if req.status_code == 200:
+        fetch_notices()
+        global notices
+        if notices[0] == 'SUCCESS':
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
-            if not self.ret:
-                self.ret = req.text
-            ret_list = json.loads(self.ret)["results"]
-            # request의 result를 뒤집어서 최신순으로 정렬
-            ret_list = list(reversed(ret_list))
-            for i, notice in enumerate(ret_list):
-                # 가장 최신의 공지사항 중 3개만 보여주도록 index로 필터링
-                if i < 3:
-                    but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
-                    but.title = notice["title"]
-                    but.content = notice["content"]
-                    if notice["link"] is not None:
-                        but.link = notice["link"]["url"]
-                        but.link_name = notice["link"]["title"]
-                    else:
-                        but.link = ""
-                        but.link_name = ""
+            ret_list = notices[1]
+            for notice in ret_list[:3]:
+                but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
+                but.title = notice["title"]
+                but.content = notice["content"]
+                if notice["link"] is not None:
+                    but.link = notice["link"]["url"]
+                    but.link_name = notice["link"]["title"]
+                else:
+                    but.link = ""
+                    but.link_name = ""
             layout.separator()
         layout.label(text=abler_version())
         layout.separator()
