@@ -18,6 +18,8 @@
 
 # <pep8 compliant>
 from __future__ import annotations
+import json
+import requests
 
 import bpy
 from bpy.types import (
@@ -2980,9 +2982,30 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
         layout.separator()
 
+# 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
+notices = ('READY', None) 
+
+def fetch_notices():
+    # 전에 이미 성공/실패했으면 일찍 종료
+    global notices
+    if notices[0] != 'READY':
+        return
+    lang = bpy.context.preferences.view.language.split('_')[0]
+    req = None
+    try:
+        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+    except Exception as ex:
+        notices = ('FAILED', None)
+        return
+    if req is not None and req.status_code == 200:
+        ret_list = json.loads(req.text)["results"]
+        notices = ('SUCCESS', ret_list)
+    else:
+        notices = ('FAILED', None)
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
+    ret = None
 
     def draw(self, context):
         def abler_version():
@@ -3065,6 +3088,7 @@ class WM_MT_splash(Menu):
         view = prefs.view
 
         layout.prop(view, "language")
+        # layout.operator("acon3d.notice", text="Go to notice", icon='URL')
 
         layout.separator()
         layout.separator()
@@ -3080,10 +3104,27 @@ class WM_MT_splash(Menu):
         anchor.href = 'https://www.acon3d.com/member/join'
 
         col2 = split.column()
-        col2.operator("wm.url_open_preset", text="Blender Release Notes", icon='URL', text_ctxt="*").type = 'RELEASE_NOTES'
+        col2.operator("wm.url_open_preset", text="Blender Release Notes", icon='URL',
+                      text_ctxt="*").type = 'RELEASE_NOTES'
         col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
-
-        layout.separator()
+        # 공지사항 파트
+        fetch_notices()
+        global notices
+        if notices[0] == 'SUCCESS':
+            layout.separator()
+            layout.label(text="Notice:", text_ctxt="*")
+            ret_list = notices[1]
+            for notice in ret_list[:3]:
+                but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
+                but.title = notice["title"]
+                but.content = notice["content"]
+                if notice["link"] is not None:
+                    but.link = notice["link"]["url"]
+                    but.link_name = notice["link"]["title"]
+                else:
+                    but.link = ""
+                    but.link_name = ""
+            layout.separator()
         layout.label(text=abler_version())
         layout.separator()
 

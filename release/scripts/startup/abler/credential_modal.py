@@ -17,12 +17,20 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-import bpy
-from json import JSONDecodeError
 import ctypes
+import os
+import pickle
 import platform
+import textwrap
+import webbrowser
+from json import JSONDecodeError
+
+import bpy
+import requests
 from bpy.app.handlers import persistent
-import requests, webbrowser, pickle, os
+
+from .lib.async_task import AsyncTask
+from .lib.login import is_first_open
 from .lib.post_open import tracker_file_open
 from .lib.remember_username import (
     delete_remembered_username,
@@ -30,9 +38,7 @@ from .lib.remember_username import (
     remember_username,
     read_remembered_username,
 )
-from .lib.login import is_first_open
 from .lib.tracker import tracker
-from .lib.async_task import AsyncTask
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -72,6 +78,83 @@ class Acon3dAlertOperator(bpy.types.Operator):
             row.label(text=self.message_3)
         layout.separator()
         layout.separator()
+
+
+class Acon3dNoticeInvokeOperator(bpy.types.Operator):
+    bl_idname = "acon3d.notice_invoke"
+    bl_label = ""
+
+    width: 750
+    title: bpy.props.StringProperty(name="Title")
+    content: bpy.props.StringProperty(name="Content")
+    link: bpy.props.StringProperty(name="Link")
+    link_name: bpy.props.StringProperty(name="Link name")
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        self.width = 750
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self, width=self.width)
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        # 제목 위에 점으로 만든 줄
+        row.scale_y = 0.5
+        row.label(text="." * 1000)
+        # 제목도 혹시 몰라서 line wrap 추가
+        sub_lns = textwrap.fill(self.title, 70)
+        spl = sub_lns.split("\n")
+        for i, s in enumerate(spl):
+            row = layout.row()
+            if i == 0:
+                row.label(text=s, icon="RIGHTARROW")
+            else:
+                row.label(text=s)
+
+        row = layout.row()
+        # 제목 아래에 점으로 만든 줄
+        row.scale_y = 0.2
+        row.label(text="." * 1000)
+        # 내용에는 line wrap 넣어놨음. 현재 box 사이즈에 맞춰서 line wrap 하는 방법 추가 가능하면 좋겠음
+        notice_list = self.content.split("\r\n")  # 개행문자를 기준으로 나눠서 리스트로 만든다.
+        for notice_line in notice_list:
+            if notice_line != "":
+                sub_lns = textwrap.fill(notice_line, 75)
+                spl = sub_lns.split("\n")
+                for s in spl:
+                    row = layout.row()
+                    row.label(text=s)
+            else:
+                row = layout.row()
+                row.separator()
+        # link 집어넣는 코드
+        if self.link != "" and self.link_name != "":
+            row = layout.row()
+            anchor = row.operator("acon3d.anchor", text=self.link_name, icon="URL")
+            anchor.href = self.link
+        layout.separator()
+
+
+class Acon3dNoticeOperator(bpy.types.Operator):
+    bl_idname = "acon3d.notice"
+    bl_label = ""
+    title: bpy.props.StringProperty(name="Title")
+    content: bpy.props.StringProperty(name="Content", description="content")
+    link: bpy.props.StringProperty(name="Link", description="link")
+    link_name: bpy.props.StringProperty(name="Link Name", description="link_name")
+
+    def execute(self, context):
+        bpy.ops.acon3d.notice_invoke(
+            "INVOKE_DEFAULT",
+            title=self.title,
+            content=self.content,
+            link=self.link,
+            link_name=self.link_name,
+        )
+        return {"FINISHED"}
 
 
 class Acon3dModalOperator(bpy.types.Operator):
@@ -358,7 +441,6 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 @persistent
 def open_credential_modal(dummy):
-
     fileopen = tracker_file_open()
 
     prefs = bpy.context.preferences
@@ -412,6 +494,8 @@ classes = (
     Acon3dModalOperator,
     Acon3dLoginOperator,
     Acon3dAnchorOperator,
+    Acon3dNoticeOperator,
+    Acon3dNoticeInvokeOperator,
 )
 
 
