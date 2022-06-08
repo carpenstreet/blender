@@ -2991,7 +2991,12 @@ def fetch_notices():
     if notices[0] != 'READY':
         return
     lang = bpy.context.preferences.view.language.split('_')[0]
-    req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+    req = None
+    try:
+        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+    except Exception as ex:
+        notices = ('FAILED', None)
+        return
     if req is not None and req.status_code == 200:
         ret_list = json.loads(req.text)["results"]
         notices = ('SUCCESS', ret_list)
