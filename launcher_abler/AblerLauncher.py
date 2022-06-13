@@ -15,27 +15,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import privilege_helper
-from PySide2 import QtWidgets, QtCore, QtGui
-import qdarkstyle
-import mainwindow
 import configparser
 import logging
 import os
 import os.path
 import shutil
 import subprocess
-import sys
+import time
 import urllib.parse
 import urllib.request
-import time
 from distutils.dir_util import copy_tree
-from AblerLauncherUtils import *
-from enum import Enum
 
+import qdarkstyle
+from PySide2 import QtWidgets, QtCore, QtGui
+
+import mainwindow
+import privilege_helper
+from AblerLauncherUtils import *
 
 if sys.platform == "win32":
-    from win32com.client import Dispatch
+    pass
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
@@ -486,8 +485,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         url = entry["url"]
         version = entry["version"]
-        # TODO: exec_name 있으면 문자열이 UI 영역을 넘어가서 뺄지 논의
-        exec_name = "ABLER" if dir_name == dir_ else "Launcher"
 
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
@@ -502,7 +499,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.frm_progress.show()
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        self.lbl_downloading.setText(f"<b>Downloading</b>")
         self.progressBar.setValue(0)
         self.statusbar.showMessage(f"Downloading {size_readable}")
 

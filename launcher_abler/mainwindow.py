@@ -12,8 +12,6 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-import res_rc
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -372,10 +370,10 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Update ABLER", None)
         )
         self.btn_update_launcher.setToolTip(
-            QCoreApplication.translate("MainWindow", "Update ABLER Launcher", None)
+            QCoreApplication.translate("MainWindow", "Update Launcher", None)
         )
         self.btn_update_launcher.setText(
-            QCoreApplication.translate("MainWindow", "Update ABLER Launcher", None)
+            QCoreApplication.translate("MainWindow", "Update Launcher", None)
         )
 
     # retranslateUi
