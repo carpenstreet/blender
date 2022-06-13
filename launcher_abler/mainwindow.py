@@ -12,6 +12,9 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+# png파일 경로가 res.qrc에 저장돼서 읽어주는 모듈을 불러와야함
+import res_rc
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
