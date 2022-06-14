@@ -33,10 +33,10 @@ if ! "${testing}"; then
 
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/AblerLauncher /opt/homebrew/Cellar/qt/6.2.3_1/
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/ABLER /opt/homebrew/Cellar/qt/6.2.3_1/
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign 2ADA4D39CF99C227755D54DEC93F41ACEAAE3707
+    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign DB82C5FEFDA970CD40B3D984DD99318D2FA1DCEC
 else
     macdeployqt "${_mount_dir}"/ABLER.app
     # python macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/AblerLauncher /opt/homebrew/Cellar/qt/6.1.3/
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/ABLER /opt/homebrew/Cellar/qt/6.2.3_1/
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign 2ADA4D39CF99C227755D54DEC93F41ACEAAE3707 --test
+    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign DB82C5FEFDA970CD40B3D984DD99318D2FA1DCEC --test
 fi
