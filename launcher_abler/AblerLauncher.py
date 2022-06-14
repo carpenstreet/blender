@@ -15,26 +15,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import privilege_helper
+from PySide2 import QtWidgets, QtCore, QtGui
+import qdarkstyle
+import mainwindow
 import configparser
 import logging
 import os
 import os.path
 import shutil
 import subprocess
-import time
+import sys
 import urllib.parse
 import urllib.request
+import time
 from distutils.dir_util import copy_tree
-
-import qdarkstyle
-from PySide2 import QtWidgets, QtCore, QtGui
-
-import mainwindow
-import privilege_helper
 from AblerLauncherUtils import *
+from enum import Enum
 
 if sys.platform == "win32":
-    pass
+    from win32com.client import Dispatch
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
