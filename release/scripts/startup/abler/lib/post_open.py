@@ -38,8 +38,10 @@ def update_scene() -> None:
 def update_layers():
     # 파일 오픈시 Layer패널 업데이트
     context = bpy.context
+    view_layer = context.view_layer
+
     if not context.scene.l_exclude:
-        if "Layers" in bpy.data.collections:
+        if "Layers" in view_layer.layer_collection.children:
             for child in bpy.data.collections["Layers"].children:
                 added_l_exclude = context.scene.l_exclude.add()
                 added_l_exclude.name = child.name
