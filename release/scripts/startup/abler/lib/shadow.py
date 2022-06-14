@@ -87,12 +87,14 @@ def setupSharpShadow():
 def createAconSun() -> Object:
     acon_sun_data: Light = bpy.data.lights.new("ACON_sun", type="SUN")
     acon_sun_data.energy = 1
+
     acon_sun: Object = bpy.data.objects.new("ACON_sun", acon_sun_data)
     acon_sun.rotation_euler.x = math.radians(90 - 35)
     acon_sun.rotation_euler.y = 0
     acon_sun.rotation_euler.z = math.radians(65)
     acon_sun.data.use_contact_shadow = False
     acon_sun.data.shadow_buffer_bias = 0.001
+
     bpy.context.scene.collection.objects.link(acon_sun)
 
     return acon_sun
