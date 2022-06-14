@@ -170,14 +170,13 @@ class Acon3dLayerPanel(bpy.types.Panel):
         return index
 
     def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = False
-        box = layout.box()
-
         view = context.space_data
         view_layer = context.view_layer
 
         if "Layers" in view_layer.layer_collection.children:
+            layout = self.layout
+            layout.use_property_split = False
+            box = layout.box()
 
             self._draw_collection(
                 box,
@@ -186,6 +185,10 @@ class Acon3dLayerPanel(bpy.types.Panel):
                 view_layer.layer_collection.children["Layers"],
                 1,
             )
+        else:
+            layout = self.layout
+            row = layout.row(align=True)
+            row.label(text="No 'Layers' collection in Outliner")
 
 
 classes = (
