@@ -185,6 +185,10 @@ class Acon3dLayerPanel(bpy.types.Panel):
                 view_layer.layer_collection.children["Layers"],
                 1,
             )
+        else:
+            layout = self.layout
+            row = layout.row(align=True)
+            row.label(text="No 'Layers' collection in Outliner")
 
 
 classes = (
