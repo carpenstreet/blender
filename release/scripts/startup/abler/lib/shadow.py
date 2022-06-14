@@ -76,7 +76,12 @@ def setupSharpShadow():
         acon_sun = createAconSun()
     if acon_sun.data.type == "SUN":
         acon_sun.data.angle = 0
-        acon_sun.data.use_contact_shadow = 1
+
+    # 오브젝트의 그림자가 아닌 옵션에 의한 그림자는 "불량 그림자"로 판단하고 해당 옵션 off
+    # 그림자가 생기는 면과 붙어 있지 않고 떠있는 느낌을 지우기 위해 bias를 최소치로 조정
+    # createAconSun(), startup.blend에도 같은 작업 수행
+    acon_sun.data.use_contact_shadow = False
+    acon_sun.data.shadow_buffer_bias = 0.001
 
 
 def createAconSun() -> Object:
@@ -86,6 +91,8 @@ def createAconSun() -> Object:
     acon_sun.rotation_euler.x = math.radians(90 - 35)
     acon_sun.rotation_euler.y = 0
     acon_sun.rotation_euler.z = math.radians(65)
+    acon_sun.data.use_contact_shadow = False
+    acon_sun.data.shadow_buffer_bias = 0.001
     bpy.context.scene.collection.objects.link(acon_sun)
 
     return acon_sun
