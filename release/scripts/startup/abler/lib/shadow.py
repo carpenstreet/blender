@@ -65,7 +65,7 @@ def toggleShadow(self, context: Context) -> None:
         acon_sun.data.use_shadow = prop.toggle_shadow
 
 
-def setupSharpShadow():
+def setupClearShadow():
     bpy.context.scene.eevee.shadow_cube_size = "4096"
     bpy.context.scene.eevee.shadow_cascade_size = "4096"
     bpy.context.scene.eevee.use_soft_shadows = True
