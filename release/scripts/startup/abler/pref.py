@@ -49,7 +49,7 @@ def load_handler(dummy):
         cameras.makeSureCameraExists()
         cameras.switchToRendredView()
         cameras.turnOnCameraView(False)
-        shadow.setupSharpShadow()
+        shadow.setupClearShadow()
         render.setupBackgroundImagesCompositor()
         materials_setup.applyAconToonStyle()
         for scene in bpy.data.scenes:
