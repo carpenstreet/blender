@@ -97,6 +97,49 @@ if [ -d "${_mount_dir}" ]; then
     echo
 fi
 
+if [ ! -z "${C_CERT}" ]; then
+    # Codesigning requires all libs and binaries to be signed separately.
+    echo -n "Codesigning Python"
+    for f in $(find "${SRC_DIR}/ABLER.app/Contents/Resources" -name "python*"); do
+        if [ -x ${f} ] && [ ! -d ${f} ]; then
+            codesign --remove-signature "${f}"
+            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+        fi
+    done
+    echo ; echo -n "Codesigning .dylib and .so libraries"
+    for f in $(find "${SRC_DIR}/ABLER.app" -name "*.dylib" -o -name "*.so"); do
+        echo "${f}"
+        codesign --remove-signature "${f}"
+        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+    done
+
+    echo ; echo -n "Codesigning .framework libraries"
+    for f in $(find "${SRC_DIR}/ABLER.app" -name "*.framework"); do
+        echo "${f}/Versions/A"
+        codesign --remove-signature "${f}/Versions/A"
+        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
+    done
+
+    sleep 30
+
+    echo ; echo -n "Codesigning AblerLauncher"
+    codesign --remove-signature "${SRC_DIR}/ABLER.app/Contents/macOS/AblerLauncher"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app/Contents/macOS/AblerLauncher"
+    echo
+
+    echo ; echo -n "Codesigning ABLER"
+    codesign --remove-signature "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"
+    echo
+
+    echo ; echo -n "Codesigning ABLER.app"
+    codesign --remove-signature "${SRC_DIR}/ABLER.app"
+    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app"
+    echo
+else
+    echo "No codesigning cert given, skipping..."
+fi
+
 # Copy dmg contents.
 echo -n "Copying ABLER.app..."
 cp -R "${SRC_DIR}/ABLER.app" "${_tmp_dir}/" || exit 1
@@ -133,48 +176,7 @@ cat "${_script_dir}/abler.applescript" | osascript
 echo "Waiting after applescript ..."
 sleep 5
 
-if [ ! -z "${C_CERT}" ]; then
-    # Codesigning requires all libs and binaries to be signed separately.
-    echo -n "Codesigning Python"
-    for f in $(find "${_mount_dir}/ABLER.app/Contents/Resources" -name "python*"); do
-        if [ -x ${f} ] && [ ! -d ${f} ]; then
-            codesign --remove-signature "${f}"
-            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
-        fi
-    done
-    echo ; echo -n "Codesigning .dylib and .so libraries"
-    for f in $(find "${_mount_dir}/ABLER.app" -name "*.dylib" -o -name "*.so"); do
-        echo "${f}"
-        codesign --remove-signature "${f}"
-        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
-    done
 
-    echo ; echo -n "Codesigning .framework libraries"
-    for f in $(find "${_mount_dir}/ABLER.app" -name "*.framework"); do
-        echo "${f}/Versions/A"
-        codesign --remove-signature "${f}/Versions/A"
-        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
-    done    
-    
-    sleep 30
-    
-    echo ; echo -n "Codesigning AblerLauncher"
-    codesign --remove-signature "${_mount_dir}/ABLER.app/Contents/macOS/AblerLauncher"
-    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app/Contents/macOS/AblerLauncher"
-    echo
-
-    echo ; echo -n "Codesigning ABLER"
-    codesign --remove-signature "${_mount_dir}/ABLER.app/Contents/macOS/ABLER"
-    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app/Contents/macOS/ABLER"
-    echo
-
-    echo ; echo -n "Codesigning ABLER.app"
-    codesign --remove-signature "${_mount_dir}/ABLER.app"
-    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${_mount_dir}/ABLER.app"
-    echo
-else
-    echo "No codesigning cert given, skipping..."
-fi
 
 # Need to eject dev files to remove /dev files and free .dmg for converting
 echo "Unmounting rw disk image ..."
