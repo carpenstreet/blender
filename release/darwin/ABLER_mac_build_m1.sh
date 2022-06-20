@@ -10,6 +10,9 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+# get codesign cert from keychain
+_codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID Application: carpenstreet Inc." | awk '{print $2}')"
+echo "${_codesign_cert}"
 # cd ~/Desktop/ACON3D/RND_aconBlender/launcher_abler
 # pyinstaller --icon=icon.icns --onefile --windowed --uac-admin AblerLauncher.py -y --argv-emulation
 cd ~/Desktop/ABLER/blender || exit
@@ -33,10 +36,10 @@ if ! "${testing}"; then
 
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/AblerLauncher /opt/homebrew/Cellar/qt/6.2.3_1/
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/ABLER /opt/homebrew/Cellar/qt/6.2.3_1/
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign 00C27AD11E39DC0680D374C504E07942128AC59E
+    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}"
 else
     macdeployqt "${_mount_dir}"/ABLER.app
     # python macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/AblerLauncher /opt/homebrew/Cellar/qt/6.1.3/
     python ~/Desktop/ABLER/ABLER-Misc/ABLER_installer_assets/macdeployqtfix.py "${_mount_dir}"/ABLER.app/Contents/macOS/ABLER /opt/homebrew/Cellar/qt/6.2.3_1/
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign 00C27AD11E39DC0680D374C504E07942128AC59E --test
+    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --test
 fi
