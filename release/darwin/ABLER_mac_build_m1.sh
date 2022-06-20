@@ -12,7 +12,6 @@ while [[ $# -gt 0 ]]; do
 done
 # get codesign cert from keychain
 _codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID Application: carpenstreet Inc." | awk '{print $2}')"
-echo "${_codesign_cert}"
 # cd ~/Desktop/ACON3D/RND_aconBlender/launcher_abler
 # pyinstaller --icon=icon.icns --onefile --windowed --uac-admin AblerLauncher.py -y --argv-emulation
 cd ~/Desktop/ABLER/blender || exit
