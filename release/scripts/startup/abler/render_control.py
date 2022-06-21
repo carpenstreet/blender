@@ -98,6 +98,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         self.render_canceled = True
 
     def on_render_finish(self, context):
+        # set initial_scene
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
         return {"FINISHED"}
 
     def prepare_queue(self, context):
@@ -502,10 +504,6 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
 
         scene = context.scene.copy()
         scene.name = f"{context.scene.name}_snipped"
-        prop = scene.ACON_prop
-        prop.toggle_texture = False
-        prop.toggle_shading = False
-        prop.toggle_toon_edge = False
         self.render_queue.append(scene)
         self.temp_scenes.append(scene)
 
