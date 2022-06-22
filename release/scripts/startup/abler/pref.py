@@ -1,14 +1,16 @@
-import bpy
+import os
 import sys
+from types import SimpleNamespace
+
+import bpy
 from bpy.app.handlers import persistent
+
 from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
-from types import SimpleNamespace
 
 
 def init_setting(dummy):
-
     prefs = bpy.context.preferences
     prefs_sys = prefs.system
     prefs_view = prefs.view
@@ -47,16 +49,20 @@ def load_handler(dummy):
         cameras.makeSureCameraExists()
         cameras.switchToRendredView()
         cameras.turnOnCameraView(False)
-        shadow.setupSharpShadow()
+        shadow.setupClearShadow()
         render.setupBackgroundImagesCompositor()
         materials_setup.applyAconToonStyle()
         for scene in bpy.data.scenes:
             scene.view_settings.view_transform = "Standard"
-
+        # 키맵이 ABLER로 세팅되어있는지 확인하고, 아닐 경우 세팅을 바로잡아줌
+        if bpy.context.preferences.keymap.active_keyconfig != "ABLER":
+            abler_keymap_path: str = os.path.join(bpy.utils.script_paths()[1], "presets", "keyconfig", "ABLER.py")
+            bpy.ops.preferences.keyconfig_activate(filepath=abler_keymap_path)
         scenes.refresh_look_at_me()
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()
+        post_open.hide_adjust_last_operation_panel()
     finally:
         tracker.turn_on()
 

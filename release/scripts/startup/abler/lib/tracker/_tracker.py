@@ -11,6 +11,7 @@ class EventKind(enum.Enum):
     login = "Login"
     login_fail = "Login Fail"
     login_auto = "Login Auto"
+    logout = "Logout"
     file_open = "File Open"
     render_quick = "Render Quick"
     render_full = "Render Full"
@@ -136,6 +137,9 @@ class Tracker(metaclass=ABCMeta):
 
     def login_auto(self):
         self._track(EventKind.login_auto.value)
+
+    def logout(self):
+        self._track(EventKind.logout.value)
 
     def file_open(self):
         self._track(EventKind.file_open.value)

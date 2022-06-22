@@ -38,6 +38,8 @@
 
 #include "eevee_engine.h" /* own include */
 
+#include "eevee_abler.h"
+
 #define EEVEE_ENGINE "BLENDER_EEVEE"
 
 /* *********** FUNCTIONS *********** */
@@ -89,6 +91,7 @@ static void eevee_engine_init(void *ved)
   EEVEE_materials_init(sldata, vedata, stl, fbl);
   EEVEE_shadows_init(sldata);
   EEVEE_lightprobes_init(sldata, vedata);
+  EEVEE_abler_prepass_init(sldata, vedata);
 }
 
 static void eevee_cache_init(void *vedata)
@@ -107,6 +110,7 @@ static void eevee_cache_init(void *vedata)
   EEVEE_subsurface_cache_init(sldata, vedata);
   EEVEE_temporal_sampling_cache_init(sldata, vedata);
   EEVEE_volumes_cache_init(sldata, vedata);
+  EEVEE_abler_prepass_cache_init(sldata, vedata);
 }
 
 void EEVEE_cache_populate(void *vedata, Object *ob)
@@ -165,6 +169,7 @@ static void eevee_cache_finish(void *vedata)
   EEVEE_lights_cache_finish(sldata, vedata);
   EEVEE_lightprobes_cache_finish(sldata, vedata);
   EEVEE_renderpasses_cache_finish(sldata, vedata);
+  EEVEE_abler_prepass_cache_finish(vedata);
 
   EEVEE_subsurface_draw_init(sldata, vedata);
   EEVEE_effects_draw_init(sldata, vedata);
@@ -280,6 +285,9 @@ static void eevee_draw_scene(void *vedata)
     DRW_stats_group_start("Prepass");
     DRW_draw_pass(psl->depth_ps);
     DRW_stats_group_end();
+
+    /* ABLER specific */
+    EEVEE_abler_prepass_draw(vedata);
 
     /* Create minmax texture */
     DRW_stats_group_start("Main MinMax buffer");
@@ -548,6 +556,7 @@ static void eevee_render_to_image(void *vedata,
       EEVEE_lights_cache_finish(sldata, vedata);
       EEVEE_lightprobes_cache_finish(sldata, vedata);
       EEVEE_renderpasses_cache_finish(sldata, vedata);
+      EEVEE_abler_prepass_cache_finish(vedata);
 
       EEVEE_subsurface_draw_init(sldata, vedata);
       EEVEE_effects_draw_init(sldata, vedata);
@@ -613,6 +622,7 @@ static void eevee_store_metadata(void *vedata, struct RenderResult *render_resul
 
 static void eevee_engine_free(void)
 {
+  EEVEE_abler_prepass_free();
   EEVEE_shaders_free();
   EEVEE_lightprobes_free();
   EEVEE_materials_free();

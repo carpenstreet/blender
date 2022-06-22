@@ -165,7 +165,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.parse_launcher_state(state_ui)
 
             # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-            state_ui = None if StateUI.empty_repo else state_ui
+            state_ui = None if state_ui == StateUI.empty_repo else state_ui
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
@@ -486,8 +486,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         url = entry["url"]
         version = entry["version"]
-        # TODO: exec_name 있으면 문자열이 UI 영역을 넘어가서 뺄지 논의
-        exec_name = "ABLER" if dir_name == dir_ else "Launcher"
 
         file = urllib.request.urlopen(url)
         totalsize = file.info()["Content-Length"]
@@ -502,7 +500,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.frm_progress.show()
         nowpixmap = QtGui.QPixmap(":/newPrefix/images/Actions-arrow-right-icon.png")
         self.lbl_download_pic.setPixmap(nowpixmap)
-        self.lbl_downloading.setText(f"<b>Downloading {exec_name} {version}</b>")
+        self.lbl_downloading.setText(f"<b>Downloading</b>")
         self.progressBar.setValue(0)
         self.statusbar.showMessage(f"Downloading {size_readable}")
 

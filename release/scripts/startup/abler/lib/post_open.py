@@ -38,8 +38,24 @@ def update_scene() -> None:
 def update_layers():
     # 파일 오픈시 Layer패널 업데이트
     context = bpy.context
-    if not context.scene.l_exclude and bpy.data.collections["Layers"]:
-        for child in bpy.data.collections["Layers"].children:
-            added_l_exclude = context.scene.l_exclude.add()
-            added_l_exclude.name = child.name
-            added_l_exclude.value = True
+    view_layer = context.view_layer
+
+    if not context.scene.l_exclude:
+        if "Layers" in view_layer.layer_collection.children:
+            for child in bpy.data.collections["Layers"].children:
+                added_l_exclude = context.scene.l_exclude.add()
+                added_l_exclude.name = child.name
+                added_l_exclude.value = True
+        else:
+            # "Layers" 컬렉션이 없으면 에이블러 전용 파일이 아니므로
+            # l_exclude를 지워서 Layer Control 패널을 비활성화시킴
+            bpy.context.scene.l_exclude.clear()
+
+
+def hide_adjust_last_operation_panel():
+    context = bpy.context
+    for area in context.screen.areas:
+        if area.type == "VIEW_3D":
+            for space in area.spaces:
+                if space.type == "VIEW_3D":
+                    space.show_region_hud = False

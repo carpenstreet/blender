@@ -59,5 +59,11 @@ release/scripts/addons_abler/io_skp
 # launcher
 /launcher_abler/build
 /launcher_abler/dist
+<<<<<<< HEAD
 # /launcher_abler/res_rc.py
 /launcher_venv
+=======
+/launcher_abler/res_rc.py
+/launcher_venv
+/cmake-build-debug
+>>>>>>> f1783b48c72b4243f7768fd682e44e1b43d70ec3

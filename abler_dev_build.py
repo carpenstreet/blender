@@ -1,7 +1,9 @@
-import platform, os, shutil
+import os
+import platform
+import shutil
 
-src_path = "./release/scripts/startup/abler"
-dest_path_ending = "2.96/scripts/startup/abler"
+src_path = "./release/scripts/startup"
+dest_path_ending = "2.96/scripts/startup"
 dest_path = ""
 
 
@@ -15,6 +17,7 @@ if platform.system() == "Windows":
 elif platform.system() == "Darwin":
     dest_path_heading = "../build_darwin/bin/ABLER.app/Contents/Resources/"
     dest_path = os.path.join(dest_path_heading, dest_path_ending)
+
 else:
     print("Not supported")
     exit(1)
@@ -22,4 +25,4 @@ try:
     copy_scripts(src_path, dest_path)
     print("Successfully copied scripts from abler")
 except Exception as e:
-    raise Exception(e) from e
+    raise e

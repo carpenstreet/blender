@@ -49,6 +49,9 @@ static const char *filter_defines =
 #endif
 
 static struct {
+  /* ABLER specific */
+  struct GPUShader *abler_copy_depth_pass_sh;
+
   /* Lookdev */
   struct GPUShader *studiolight_probe_sh;
   struct GPUShader *studiolight_background_sh;
@@ -186,6 +189,7 @@ extern char datatoc_common_math_geom_lib_glsl[];
 extern char datatoc_common_view_lib_glsl[];
 extern char datatoc_gpu_shader_common_obinfos_lib_glsl[];
 
+extern char datatoc_abler_copy_depth_pass_frag_glsl[];
 extern char datatoc_ambient_occlusion_lib_glsl[];
 extern char datatoc_background_vert_glsl[];
 extern char datatoc_bsdf_common_lib_glsl[];
@@ -935,6 +939,18 @@ GPUShader *EEVEE_shaders_update_noise_sh_get(void)
   return e_data.update_noise_sh;
 }
 
+GPUShader *EEVEE_shaders_abler_copy_depth_pass_sh_get(void)
+{
+  // Adapted from EEVEE_shaders_effect_maxz_copydepth_sh_get
+  if (e_data.abler_copy_depth_pass_sh == NULL) {
+    e_data.abler_copy_depth_pass_sh = DRW_shader_create_fullscreen(
+        datatoc_abler_copy_depth_pass_frag_glsl,
+        "#define MAX_PASS\n"
+        "#define COPY_DEPTH\n");
+  }
+  return e_data.abler_copy_depth_pass_sh;
+}
+
 GPUShader *EEVEE_shaders_taa_resolve_sh_get(EEVEE_EffectsFlag enabled_effects)
 {
   GPUShader **sh;
@@ -1651,4 +1667,7 @@ void EEVEE_shaders_free(void)
     MEM_freeN(e_data.world.ntree);
     e_data.world.ntree = NULL;
   }
+
+  /* Abler specific */
+  DRW_SHADER_FREE_SAFE(e_data.abler_copy_depth_pass_sh);
 }

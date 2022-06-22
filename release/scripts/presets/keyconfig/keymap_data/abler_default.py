@@ -208,7 +208,8 @@ def _template_items_select_actions(params, operator):
     if not params.use_select_all_toggle:
         return [
             (operator, {"type": 'A', "value": 'PRESS'}, {"properties": [("action", 'SELECT')]}),
-            (operator, {"type": 'A', "value": 'PRESS', "alt": True}, {"properties": [("action", 'DESELECT')]}),
+            # (operator, {"type": 'A', "value": 'PRESS', "alt": True}, {"properties": [("action", 'DESELECT')]}),
+            (operator, {"type": 'ESC', "value": 'PRESS'}, {"properties": [("action", 'DESELECT')]}),
             (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, {"properties": [("action", 'INVERT')]}),
             (operator, {"type": 'A', "value": 'DOUBLE_CLICK'}, {"properties": [("action", 'DESELECT')]}),
         ]
@@ -398,9 +399,9 @@ def km_window(params):
             ("acon3d.file_open", {"type": 'F1', "value": 'PRESS'}, None),
             ("wm.link", {"type": 'O', "value": 'PRESS', "ctrl": True, "alt": True}, None),
             ("wm.append", {"type": 'F1', "value": 'PRESS', "shift": True}, None),
-            ("wm.save_mainfile", {"type": 'W', "value": 'PRESS', "ctrl": True}, None),
-            ("wm.save_as_mainfile", {"type": 'F2', "value": 'PRESS'}, None),
-            ("wm.save_as_mainfile", {"type": 'S', "value": 'PRESS', "ctrl": True, "alt": True},
+            ("acon3d.save", {"type": 'W', "value": 'PRESS', "ctrl": True}, None),
+            ("acon3d.save_as", {"type": 'F2', "value": 'PRESS'}, None),
+            ("acon3d.save_as", {"type": 'S', "value": 'PRESS', "ctrl": True, "alt": True},
              {"properties": [("copy", True)]}),
             ("wm.window_new", {"type": 'W', "value": 'PRESS', "ctrl": True, "alt": True}, None),
             ("wm.window_fullscreen_toggle", {"type": 'F11', "value": 'PRESS', "alt": True}, None),
@@ -415,8 +416,8 @@ def km_window(params):
         op_menu("TOPBAR_MT_file_new", {"type": 'N', "value": 'PRESS', "ctrl": True}),
         op_menu("TOPBAR_MT_file_open_recent", {"type": 'O', "value": 'PRESS', "shift": True, "ctrl": True}),
         ("acon3d.file_open", {"type": 'O', "value": 'PRESS', "ctrl": True}, None),
-        ("wm.save_mainfile", {"type": 'S', "value": 'PRESS', "ctrl": True}, None),
-        ("wm.save_as_mainfile", {"type": 'S', "value": 'PRESS', "shift": True, "ctrl": True}, None),
+        ("acon3d.save", {"type": 'S', "value": 'PRESS', "ctrl": True}, None),
+        ("acon3d.save_as", {"type": 'S', "value": 'PRESS', "shift": True, "ctrl": True}, None),
         ("wm.quit_blender", {"type": 'Q', "value": 'PRESS', "ctrl": True}, None),
 
         # Quick menu and toolbar
@@ -3041,9 +3042,10 @@ def km_frames(params):
                 ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS', "shift": True}, None),
             )
         elif params.spacebar_action == 'PLAY':
-            items.append(
-                ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS'}, None),
-            )
+            # items.append(
+            #     ("screen.animation_play", {"type": 'SPACE', "value": 'PRESS'}, None),
+            # )
+            pass
         else:
             assert False
 

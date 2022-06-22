@@ -43,10 +43,6 @@ class GroupNavigateTopOperator(bpy.types.Operator):
     bl_label = "Group Navigate Top"
     bl_translation_context = "*"
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def execute(self, context):
         tracker.group_navigate_top()
         layers.selectByGroup("TOP")
@@ -59,10 +55,6 @@ class GroupNavigateUpOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_up"
     bl_label = "Group Navigate Up"
     bl_translation_context = "*"
-
-    @classmethod
-    def poll(cls, context):
-        return context.object
 
     def execute(self, context):
         tracker.group_navigate_up()
@@ -77,10 +69,6 @@ class GroupNavigateDownOperator(bpy.types.Operator):
     bl_label = "Group Navigate Down"
     bl_translation_context = "*"
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def execute(self, context):
         tracker.group_navigate_down()
         layers.selectByGroup("DOWN")
@@ -93,10 +81,6 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_bottom"
     bl_label = "Group Navigate Bottom"
     bl_translation_context = "*"
-
-    @classmethod
-    def poll(cls, context):
-        return context.object
 
     def execute(self, context):
         tracker.group_navigate_bottom()
@@ -183,13 +167,17 @@ class Acon3dObjectPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
 
-        if context.object:
+        if context.selected_objects:
             row = col.row()
             row.prop(
                 context.object.ACON_prop,
                 "constraint_to_camera_rotation_z",
                 text="Look at me",
             )
+        else:
+            row = col.row(align=True)
+            row.enabled = False
+            row.label(text="Look at me", icon="SELECT_SET")
 
 
 class ObjectSubPanel(bpy.types.Panel):
@@ -200,10 +188,6 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
-
-    @classmethod
-    def poll(cls, context):
-        return context.object
 
     def draw_header(self, context):
         if obj := context.object:
@@ -217,14 +201,18 @@ class ObjectSubPanel(bpy.types.Panel):
         layout.use_property_split = True
         layout.use_property_decorate = True
 
-        obj = context.object
-        prop = obj.ACON_prop
+        if context.selected_objects:
+            obj = context.object
+            prop = obj.ACON_prop
 
-        layout.active = prop.use_state and bool(len(context.selected_objects))
-        layout.enabled = layout.active
-        row = layout.row(align=True)
-        row.prop(prop, "state_slider", slider=True)
-        row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
+            layout.active = prop.use_state and bool(len(context.selected_objects))
+            layout.enabled = layout.active
+            row = layout.row(align=True)
+            row.prop(prop, "state_slider", slider=True)
+            row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
+        else:
+            row = layout.row(align=True)
+            row.label(text="No selected object")
 
 
 class Acon3dGroupNavigaionPanel(bpy.types.Panel):
@@ -236,22 +224,23 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
-    @classmethod
-    def poll(cls, context):
-        return context.object
-
     def draw(self, context):
-        obj = context.active_object
-        prop = obj.ACON_prop
-        layout = self.layout
+        if context.selected_objects:
+            obj = context.object
+            prop = obj.ACON_prop
+            layout = self.layout
 
-        row = layout.row(align=True)
-        row.enabled = "Groups" in context.collection.children.keys()
-        row.prop(prop, "group_list", text="")
-        row.operator("acon3d.group_navigate_top", text="", icon="TRIA_UP_BAR")
-        row.operator("acon3d.group_navigate_up", text="", icon="TRIA_UP")
-        row.operator("acon3d.group_navigate_down", text="", icon="TRIA_DOWN")
-        row.operator("acon3d.group_navigate_bottom", text="", icon="TRIA_DOWN_BAR")
+            row = layout.row(align=True)
+            row.enabled = "Groups" in context.collection.children.keys()
+            row.prop(prop, "group_list", text="")
+            row.operator("acon3d.group_navigate_top", text="", icon="TRIA_UP_BAR")
+            row.operator("acon3d.group_navigate_up", text="", icon="TRIA_UP")
+            row.operator("acon3d.group_navigate_down", text="", icon="TRIA_DOWN")
+            row.operator("acon3d.group_navigate_bottom", text="", icon="TRIA_DOWN_BAR")
+        else:
+            layout = self.layout
+            row = layout.row(align=True)
+            row.label(text="No selected object")
 
 
 classes = (
