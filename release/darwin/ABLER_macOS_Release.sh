@@ -25,9 +25,6 @@ fi
 # 빌드
 cd ../.. || exit
 make update
-#cd ./launcher_qt || exit
-#make
-#cd ..
 make
 cd ./release/darwin || exit
 
