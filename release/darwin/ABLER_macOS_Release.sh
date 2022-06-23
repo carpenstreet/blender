@@ -23,7 +23,6 @@ if uname -m | grep -q "x86_64"; then
 fi
 
 # 빌드
-cd ../.. || exit
 make update
 make
 cd ./release/darwin || exit

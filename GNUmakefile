@@ -550,6 +550,9 @@ update_code: .FORCE
 acp: .FORCE
 	$(PYTHON) ./abler_dev_build.py
 
+deploy: .FORCE
+	sh ./release/darwin/ABLER_macOS_Release.sh
+
 format: .FORCE
 	PATH="../lib/${OS_NCASE}_${CPU}/llvm/bin/:../lib/${OS_NCASE}_centos7_${CPU}/llvm/bin/:../lib/${OS_NCASE}/llvm/bin/:$(PATH)" \
 	    $(PYTHON) source/tools/utils_maintenance/clang_format_paths.py $(PATHS)
