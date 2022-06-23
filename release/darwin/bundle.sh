@@ -108,14 +108,12 @@ if [ ! -z "${C_CERT}" ]; then
     done
     echo ; echo -n "Codesigning .dylib and .so libraries"
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.dylib" -o -name "*.so"); do
-        echo "${f}"
         codesign --remove-signature "${f}"
         codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
     done
 
     echo ; echo -n "Codesigning .framework libraries"
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.framework"); do
-        echo "${f}/Versions/A"
         codesign --remove-signature "${f}/Versions/A"
         codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
     done
