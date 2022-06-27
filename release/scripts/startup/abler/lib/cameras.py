@@ -93,6 +93,9 @@ def makeSureCameraExists() -> None:
     # set context camera
     bpy.context.scene.camera = camera_object
 
+    # View_Camera 오브젝트 활성화
+    bpy.context.view_layer.objects.active = camera_object
+
 
 # turn on camera view (set viewport to the current selected camera's view)
 def turnOnCameraView(center_camera: bool = True) -> None:
