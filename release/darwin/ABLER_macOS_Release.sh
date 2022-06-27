@@ -5,7 +5,7 @@ _codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID 
 _mount_dir="../../../build_darwin/bin"
 _qt_loc=""
 
-# test 아큐먼트 처리
+# test 아규먼트 처리
 while [[ $# -gt 0 ]]; do
     key=$1
     case $key in

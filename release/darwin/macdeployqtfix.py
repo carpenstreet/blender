@@ -4,15 +4,14 @@
 finish the job started by macdeployqtfix
 """
 
-from subprocess import Popen, PIPE
-from string import Template
-import os
-import sys
-import logging
 import argparse
+import logging
+import os
 import re
+import sys
 from collections import namedtuple
-
+from string import Template
+from subprocess import Popen, PIPE
 
 QTLIB_NAME_REGEX = r'^(?:@executable_path)?/.*/(Qt[a-zA-Z]*).framework/(?:Versions/\d/)?\1$'
 QTLIB_NORMALIZED = r'$prefix/Frameworks/$qtlib.framework/Versions/$qtversion/$qtlib'
@@ -163,7 +162,7 @@ def normalize_qtlib_name(filename):
 
     # qtlib normalization settings
     qtlib = rgxret.groups()[0]
-    qtversion = 5
+    qtversion = 6
 
     templ = Template(QTLIB_NORMALIZED)
 
