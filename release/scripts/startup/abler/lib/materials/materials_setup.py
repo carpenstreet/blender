@@ -19,7 +19,6 @@
 
 import bpy
 from types import SimpleNamespace
-
 from . import materials_handler
 from .. import cameras
 
