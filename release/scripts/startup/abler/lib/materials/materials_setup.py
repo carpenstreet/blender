@@ -19,6 +19,7 @@
 
 import bpy
 from types import SimpleNamespace
+
 from . import materials_handler
 from .. import cameras
 
@@ -501,9 +502,13 @@ def applyAconToonStyle():
                     if index == 0:
                         node_combinedToon.inputs[index].default_value = baseColor
                     else:
-                        node_combinedToon.inputs[
-                            index
-                        ].default_value = default_value_list[index]
+                        if len(default_value_list) > index:
+                            node_combinedToon.inputs[
+                                index
+                            ].default_value = default_value_list[index]
+                        # node_combinedToon.inputs[
+                        #     index
+                        # ].default_value = default_value_list[index]
 
             elif node.type == "TEX_IMAGE":
                 node_texImage = node
