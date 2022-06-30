@@ -484,6 +484,9 @@ def open_credential_modal(dummy):
 
     if prop.remember_username:
         prop.username = read_remembered_username()
+        # login_auto시 read_remembered_username()에서 username을 받아 
+        # update_profile로 ip -> mixpanel
+        tracker.update_profile(prop.username)
 
 
 @persistent
