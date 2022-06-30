@@ -32,26 +32,25 @@ bl_info = {
 
 
 # Main imports
-import bpy
 import sys
 from types import ModuleType
 
+from . import action_history
+from . import camera_control
 from . import custom_properties
-from . import general
-from . import scene_control
 from . import edge_control
 from . import face_control
-from . import object_control
+from . import general
 from . import image_adjustment
-from . import shadow_control
-from . import camera_control
-from . import layer_control
-from . import render_control
 from . import import_external_files
-from . import pref
+from . import layer_control
+from . import object_control
 from . import operators
+from . import pref
+from . import render_control
+from . import scene_control
+from . import shadow_control
 from .lib.tracker import tracker
-
 
 # =========================================================================
 # Registration:
@@ -72,6 +71,7 @@ importedLibrary = [
     import_external_files,
     pref,
     operators,
+    action_history,
 ]
 if "--background" not in sys.argv and "-b" not in sys.argv:
     from . import credential_modal
