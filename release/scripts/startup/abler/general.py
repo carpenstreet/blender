@@ -65,6 +65,46 @@ def numberingFilepath(filepath, ext):
     return num_path, num_name
 
 
+class AconTutorialGuidePopUpOperator(bpy.types.Operator):
+    """Show Tutorial Guide"""
+
+    bl_idname = "acon3d.tutorial_guide_popup"
+    bl_label = "Show Tutorial Guide"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=500)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="")
+        layout.label(
+            text="The new version of ABLER will be released on May 16th, 2022 (KST)."
+        )
+        layout.label(
+            text="Please click the button below to update to the latest version."
+        )
+        layout.label(text="")
+        layout.label(
+            text="After the update, the previous version will no longer be supported."
+        )
+        layout.label(text="")
+        layout.label(text="Thank you.")
+        layout.label(text="")
+
+        split = layout.split()
+        col1 = split.column()
+        anchor = col1.operator(
+            "acon3d.anchor", text="HOW TO UPDATE (click)", icon="URL"
+        )
+        anchor.href = (
+            "https://www.notion.so/acon3d/0-2-2-f634e13265ca44f0bae7ed081762ec59"
+        )
+
+
 class ImportOperator(bpy.types.Operator, ImportHelper):
     """Import file according to the current settings"""
 
@@ -276,6 +316,10 @@ class Acon3dImportPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
+        row.operator("acon3d.tutorial_guide_popup")
+
+        row = layout.row()
+        row.scale_y = 1.0
         row.operator("acon3d.file_open")
         row.operator("acon3d.import_blend", text="Import")
 
@@ -310,6 +354,7 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 
 classes = (
+    AconTutorialGuidePopUpOperator,
     Acon3dImportPanel,
     ToggleToolbarOperator,
     ImportOperator,
