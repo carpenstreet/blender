@@ -108,10 +108,10 @@ class ConfigSelector:
         Auto update with args
         """
         if "abler" in args.update:
-            self.abler_ver = "0.0.1"
+            self.abler_ver = "0.0.0"
 
         if "launcher" in args.update:
-            self.launcher_ver = "0.0.1"
+            self.launcher_ver = "0.0.0"
 
 
 def main():
