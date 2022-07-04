@@ -16,7 +16,7 @@ class ConfigSelector:
         self.updater = os.path.join(
             self.home, "AppData\\Roaming\\Blender Foundation\\Blender\\2.96\\updater"
         )
-        self.launcher = os.path.join(self.updater, "AblerLauncher.exe")
+        self.launcher = os.path.join(self.updater, "AblerLauncher.exe --pre-release")
         self.config = os.path.join(self.updater, "config.ini")
         self.config_bak = os.path.join(self.updater, "config.ini.bak")
         self.config_data = []
