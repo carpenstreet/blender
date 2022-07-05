@@ -85,6 +85,9 @@ class Tracker(metaclass=ABCMeta):
         else:
             self._default_properties["version"] = "development"
 
+        if ip := get_ip():
+            self._default_properties["ip"] = ip
+
     def turn_on(self):
         self._enabled = True
 

@@ -114,13 +114,10 @@ class MixpanelTracker(Tracker):
     @_nonblock
     def _enqueue_event(self, event_name: str, properties: dict[str, Any]):
         self._ensure_resource()
-        # track()에서 ip 추적하는건 properties에 "ip"키로 추가
-        properties["ip"] = get_ip()
         self._r.mp.track(self._r.tid, event_name, properties)
 
     @_nonblock
     def _enqueue_profile_update(self, email: str, ip: str):
         self._ensure_resource()
-        # people_set()에서 ip 추적하는건 meta에 "ip"키로 추가
         self._r.mp.people_set(self._r.tid, {"$email": email}, meta={"$ip": ip})
         self._r.mp.alias(self._r.tid, email)
