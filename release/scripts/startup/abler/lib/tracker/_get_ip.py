@@ -6,8 +6,6 @@ def get_ip() -> Optional[str]:
     try:
         return get("https://api.ipify.org", timeout=3).text
     except ConnectionError:
-        # If you get here, then some ipify exception occurred.
         print("Unable to reach the ipify service")
     except:
-        # If you get here, some non-ipify related exception occurred.
         print("Non ipify related exception occured")
