@@ -120,4 +120,4 @@ class MixpanelTracker(Tracker):
     def _enqueue_profile_update(self, email: str, ip: str):
         self._ensure_resource()
         self._r.mp.people_set(self._r.tid, {"$email": email}, meta={"$ip": ip})
-        self._r.mp.alias(self._r.tid, email)
+        self._r.mp.alias(self._r.tid, email, meta={"$ip": ip})
