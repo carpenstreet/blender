@@ -3189,6 +3189,18 @@ class WM_MT_splash_about(Menu):
         col.operator("wm.url_open", text="License", icon='URL').url = "https://www.blender.org/about/license/"
 
 
+class WM_MT_splash_tutorial(Menu):
+    bl_label = "Tutorial"
+    ret = None
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator_context = 'EXEC_DEFAULT'
+
+        row = layout.row()
+        row.label(text="Hi!")
+
+
 class WM_OT_drop_blend_file(Operator):
     bl_idname = "wm.drop_blend_file"
     bl_label = "Handle dropped .blend file"
@@ -3267,4 +3279,5 @@ classes = (
     WM_MT_splash_quick_setup,
     WM_MT_splash,
     WM_MT_splash_about,
+    WM_MT_splash_tutorial,
 )

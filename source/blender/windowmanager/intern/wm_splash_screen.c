@@ -357,3 +357,129 @@ void WM_OT_splash_about(wmOperatorType *ot)
   ot->invoke = wm_about_invoke;
   ot->poll = WM_operator_winactive;
 }
+
+/*
+ */
+static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
+{
+#ifndef WITH_HEADLESS
+  extern char datatoc_splash_png[];
+  extern int datatoc_splash_png_size;
+
+  ImBuf *ibuf = NULL;
+  if (U.app_template[0] != '\0') {
+    char splash_filepath[FILE_MAX];
+    char template_directory[FILE_MAX];
+    if (BKE_appdir_app_template_id_search(
+            U.app_template, template_directory, sizeof(template_directory))) {
+      BLI_join_dirfile(
+          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_1.png");
+      ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
+    }
+  }
+
+  if (ibuf == NULL) {
+    const uchar *splash_data = (const uchar *)datatoc_splash_png;
+    size_t splash_data_size = datatoc_splash_png_size;
+    ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
+  }
+
+  int height = 0;
+  if (ibuf) {
+    height = (width * ibuf->y) / ibuf->x;
+    if (width != ibuf->x || height != ibuf->y) {
+      IMB_scaleImBuf(ibuf, width, height);
+    }
+
+    wm_block_splash_image_roundcorners_add(ibuf);
+    IMB_premultiply_alpha(ibuf);
+  }
+
+  *r_height = height;
+
+  return ibuf;
+#else
+  UNUSED_VARS(width, r_height);
+  return NULL;
+#endif
+}
+
+static uiBlock *wm_block_create_tutorial(bContext *C, ARegion *region, void *UNUSED(arg))
+{
+  const uiStyle *style = UI_style_get_dpi();
+  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
+  const int dialog_width = text_points_max * 42 * U.dpi_fac;
+
+  uiBlock *block = UI_block_begin(C, region, "about", UI_EMBOSS);
+
+  UI_block_flag_enable(block, UI_BLOCK_KEEP_OPEN | UI_BLOCK_LOOP | UI_BLOCK_NO_WIN_CLIP);
+  UI_block_theme_style_set(block, UI_BLOCK_THEME_STYLE_POPUP);
+
+  uiLayout *layout = UI_block_layout(
+      block, UI_LAYOUT_VERTICAL, UI_LAYOUT_PANEL, 0, 0, dialog_width, 0, 0, style);
+
+  /* Blender logo. */
+#ifndef WITH_HEADLESS
+  extern char datatoc_blender_logo_png[];
+  extern int datatoc_blender_logo_png_size;
+
+  const uchar *blender_logo_data = (const uchar *)datatoc_blender_logo_png;
+  size_t blender_logo_data_size = datatoc_blender_logo_png_size;
+  ImBuf *ibuf = IMB_ibImageFromMemory(
+      blender_logo_data, blender_logo_data_size, IB_rect, NULL, "tutorial_guide_1");
+
+  if (ibuf) {
+    int width = 0.5 * dialog_width;
+    int height = (width * ibuf->y) / ibuf->x;
+
+    IMB_premultiply_alpha(ibuf);
+    IMB_scaleImBuf(ibuf, width, height);
+
+    bTheme *btheme = UI_GetTheme();
+    const uchar *color = btheme->tui.wcol_menu_back.text_sel;
+
+    /* The top margin. */
+    uiLayout *row = uiLayoutRow(layout, false);
+    uiItemS_ex(row, 0.2f);
+
+    /* The logo image. */
+    row = uiLayoutRow(layout, false);
+    uiLayoutSetAlignment(row, UI_LAYOUT_ALIGN_LEFT);
+    uiDefButImage(block, ibuf, 0, U.widget_unit, width, height, color);
+
+    /* Padding below the logo. */
+    row = uiLayoutRow(layout, false);
+    uiItemS_ex(row, 2.7f);
+  }
+#endif /* WITH_HEADLESS */
+
+  uiLayout *col = uiLayoutColumn(layout, true);
+
+  uiItemL_ex(col, IFACE_("ABLER"), ICON_NONE, true, false);
+
+  MenuType *mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+  if (mt) {
+    UI_menutype_draw(C, mt, col);
+  }
+
+  UI_block_bounds_set_centered(block, 22 * U.dpi_fac);
+
+  return block;
+}
+
+static int wm_tutorial_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  UI_popup_block_invoke(C, wm_block_create_tutorial, NULL, NULL);
+
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_tutorial(wmOperatorType *ot)
+{
+  ot->name = "Tutorial Guide";
+  ot->idname = "WM_OT_splash_tutorial";
+  ot->description = "Open the tutorial screen";
+
+  ot->invoke = wm_tutorial_invoke;
+  ot->poll = WM_operator_winactive;
+}

@@ -80,29 +80,9 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="")
-        layout.label(
-            text="The new version of ABLER will be released on May 16th, 2022 (KST)."
-        )
-        layout.label(
-            text="Please click the button below to update to the latest version."
-        )
-        layout.label(text="")
-        layout.label(
-            text="After the update, the previous version will no longer be supported."
-        )
-        layout.label(text="")
-        layout.label(text="Thank you.")
-        layout.label(text="")
-
-        split = layout.split()
-        col1 = split.column()
-        anchor = col1.operator(
-            "acon3d.anchor", text="HOW TO UPDATE (click)", icon="URL"
-        )
-        anchor.href = (
-            "https://www.notion.so/acon3d/0-2-2-f634e13265ca44f0bae7ed081762ec59"
-        )
+        layout.operator("wm.splash")
+        layout.operator("wm.splash_about")
+        layout.operator("wm.splash_tutorial")
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
