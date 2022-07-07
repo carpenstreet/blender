@@ -3191,14 +3191,23 @@ class WM_MT_splash_about(Menu):
 
 class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
-    ret = None
 
     def draw(self, context):
+        
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
         row = layout.row()
         row.label(text="Hi!")
+
+        split = layout.split()
+        col1 = split.column()
+        col1.operator("wm.splash_tutorial_1")
+        col2 = split.column()
+        col2.operator("wm.splash_tutorial_2")
+        col3 = split.column()
+        col3.operator("wm.splash_tutorial_3")
+        layout.separator()
 
 
 class WM_OT_drop_blend_file(Operator):
