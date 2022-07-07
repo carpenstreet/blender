@@ -363,8 +363,8 @@ void WM_OT_splash_about(wmOperatorType *ot)
 static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_splash_png[];
-  extern int datatoc_splash_png_size;
+  extern char datatoc_tutorial_guide_1_png[];
+  extern int datatoc_tutorial_guide_1_png_size;
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -379,8 +379,8 @@ static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_splash_png;
-    size_t splash_data_size = datatoc_splash_png_size;
+    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_1_png;
+    size_t splash_data_size = datatoc_tutorial_guide_1_png_size;
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -407,62 +407,74 @@ static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
 static uiBlock *wm_block_create_tutorial(bContext *C, ARegion *region, void *UNUSED(arg))
 {
   const uiStyle *style = UI_style_get_dpi();
-  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
-  const int dialog_width = text_points_max * 42 * U.dpi_fac;
 
-  uiBlock *block = UI_block_begin(C, region, "about", UI_EMBOSS);
+  uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
 
-  UI_block_flag_enable(block, UI_BLOCK_KEEP_OPEN | UI_BLOCK_LOOP | UI_BLOCK_NO_WIN_CLIP);
+  /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
+   * with the OS when the splash shows, window clipping in this case gives
+   * ugly results and clipping the splash isn't useful anyway, just disable it T32938. */
+  UI_block_flag_enable(block, UI_BLOCK_LOOP | UI_BLOCK_KEEP_OPEN | UI_BLOCK_NO_WIN_CLIP);
   UI_block_theme_style_set(block, UI_BLOCK_THEME_STYLE_POPUP);
 
-  uiLayout *layout = UI_block_layout(
-      block, UI_LAYOUT_VERTICAL, UI_LAYOUT_PANEL, 0, 0, dialog_width, 0, 0, style);
+  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
+  int splash_width = text_points_max * 45 * U.dpi_fac;
+  CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
+  int splash_height;
 
-  /* Blender logo. */
-#ifndef WITH_HEADLESS
-  extern char datatoc_blender_logo_png[];
-  extern int datatoc_blender_logo_png_size;
+  /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
+   * first draw or if the image changed. */
+  ImBuf *ibuf = wm_block_splash_tutorial_image(splash_width, &splash_height);
 
-  const uchar *blender_logo_data = (const uchar *)datatoc_blender_logo_png;
-  size_t blender_logo_data_size = datatoc_blender_logo_png_size;
-  ImBuf *ibuf = IMB_ibImageFromMemory(
-      blender_logo_data, blender_logo_data_size, IB_rect, NULL, "tutorial_guide_1");
+  uiBut *but = uiDefButImage(
+      block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
 
-  if (ibuf) {
-    int width = 0.5 * dialog_width;
-    int height = (width * ibuf->y) / ibuf->x;
+  UI_but_func_set(but, wm_block_close, block, NULL);
 
-    IMB_premultiply_alpha(ibuf);
-    IMB_scaleImBuf(ibuf, width, height);
+  // 블렌더 버전(2.96)을 삭제하고 에이블러 버전을 보여주기로 변경
+  // wm_block_splash_add_label(block,
+  //                           BKE_blender_version_string(),
+  //                           splash_width - 8.0 * U.dpi_fac,
+  //                           splash_height - 13.0 * U.dpi_fac);
 
-    bTheme *btheme = UI_GetTheme();
-    const uchar *color = btheme->tui.wcol_menu_back.text_sel;
+  const int layout_margin_x = U.dpi_fac * 26;
+  uiLayout *layout = UI_block_layout(block,
+                                     UI_LAYOUT_VERTICAL,
+                                     UI_LAYOUT_PANEL,
+                                     layout_margin_x,
+                                     0,
+                                     splash_width - (layout_margin_x * 2),
+                                     U.dpi_fac * 110,
+                                     0,
+                                     style);
 
-    /* The top margin. */
-    uiLayout *row = uiLayoutRow(layout, false);
-    uiItemS_ex(row, 0.2f);
+  MenuType *mt;
+  char userpref[FILE_MAX];
+  const char *const cfgdir = BKE_appdir_folder_id(BLENDER_USER_CONFIG, NULL);
 
-    /* The logo image. */
-    row = uiLayoutRow(layout, false);
-    uiLayoutSetAlignment(row, UI_LAYOUT_ALIGN_LEFT);
-    uiDefButImage(block, ibuf, 0, U.widget_unit, width, height, color);
-
-    /* Padding below the logo. */
-    row = uiLayoutRow(layout, false);
-    uiItemS_ex(row, 2.7f);
+  if (cfgdir) {
+    BLI_path_join(userpref, sizeof(userpref), cfgdir, BLENDER_USERPREF_FILE, NULL);
   }
-#endif /* WITH_HEADLESS */
 
-  uiLayout *col = uiLayoutColumn(layout, true);
+  /* Draw setup screen if no preferences have been saved yet. */
+  if (!BLI_exists(userpref)) {
+    // call WM_OT_save_userpref to automatically save the default setting
+    WM_operator_name_call(C, "WM_OT_save_userpref", WM_OP_EXEC_DEFAULT, NULL);
+    // mt = WM_menutype_find("WM_MT_splash_quick_setup", true);
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
 
-  uiItemL_ex(col, IFACE_("ABLER"), ICON_NONE, true, false);
+    /* The UI_BLOCK_QUICK_SETUP flag prevents the button text from being left-aligned,
+       as it is for all menus due to the UI_BLOCK_LOOP flag, see in 'ui_def_but'. */
+    // UI_block_flag_enable(block, UI_BLOCK_QUICK_SETUP);
+  }
+  else {
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+  }
 
-  MenuType *mt = WM_menutype_find("WM_MT_splash_tutorial", true);
   if (mt) {
-    UI_menutype_draw(C, mt, col);
+    UI_menutype_draw(C, mt, layout);
   }
 
-  UI_block_bounds_set_centered(block, 22 * U.dpi_fac);
+  UI_block_bounds_set_centered(block, 0);
 
   return block;
 }
