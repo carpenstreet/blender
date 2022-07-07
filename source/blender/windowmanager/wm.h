@@ -81,7 +81,9 @@ void wm_autosave_delete(void);
 /* wm_splash_screen.c */
 void WM_OT_splash(wmOperatorType *ot);
 void WM_OT_splash_about(wmOperatorType *ot);
-void WM_OT_splash_tutorial(wmOperatorType *ot);
+void WM_OT_splash_tutorial_1(wmOperatorType *ot);
+void WM_OT_splash_tutorial_2(wmOperatorType *ot);
+void WM_OT_splash_tutorial_3(wmOperatorType *ot);
 
 /* wm_stereo.c */
 void wm_stereo3d_draw_sidebyside(wmWindow *win, int view);

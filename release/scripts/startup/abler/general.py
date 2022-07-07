@@ -80,9 +80,9 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("wm.splash")
-        layout.operator("wm.splash_about")
-        layout.operator("wm.splash_tutorial")
+        layout.operator("wm.splash_tutorial_1")
+        layout.operator("wm.splash_tutorial_2")
+        layout.operator("wm.splash_tutorial_3")
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):

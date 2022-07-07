@@ -360,7 +360,7 @@ void WM_OT_splash_about(wmOperatorType *ot)
 
 /*
  */
-static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
+static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
   extern char datatoc_tutorial_guide_1_png[];
@@ -404,7 +404,7 @@ static ImBuf *wm_block_splash_tutorial_image(int width, int *r_height)
 #endif
 }
 
-static uiBlock *wm_block_create_tutorial(bContext *C, ARegion *region, void *UNUSED(arg))
+static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *UNUSED(arg))
 {
   const uiStyle *style = UI_style_get_dpi();
 
@@ -423,18 +423,12 @@ static uiBlock *wm_block_create_tutorial(bContext *C, ARegion *region, void *UNU
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
-  ImBuf *ibuf = wm_block_splash_tutorial_image(splash_width, &splash_height);
+  ImBuf *ibuf = wm_block_splash_tutorial_image_1(splash_width, &splash_height);
 
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
 
   UI_but_func_set(but, wm_block_close, block, NULL);
-
-  // 블렌더 버전(2.96)을 삭제하고 에이블러 버전을 보여주기로 변경
-  // wm_block_splash_add_label(block,
-  //                           BKE_blender_version_string(),
-  //                           splash_width - 8.0 * U.dpi_fac,
-  //                           splash_height - 13.0 * U.dpi_fac);
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
@@ -479,19 +473,279 @@ static uiBlock *wm_block_create_tutorial(bContext *C, ARegion *region, void *UNU
   return block;
 }
 
-static int wm_tutorial_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_tutorial_invoke_1(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
 {
-  UI_popup_block_invoke(C, wm_block_create_tutorial, NULL, NULL);
+  UI_popup_block_invoke(C, wm_block_create_tutorial_1, NULL, NULL);
 
   return OPERATOR_FINISHED;
 }
 
-void WM_OT_splash_tutorial(wmOperatorType *ot)
+void WM_OT_splash_tutorial_1(wmOperatorType *ot)
 {
-  ot->name = "Tutorial Guide";
-  ot->idname = "WM_OT_splash_tutorial";
+  ot->name = "Tutorial Guide 1";
+  ot->idname = "WM_OT_splash_tutorial_1";
   ot->description = "Open the tutorial screen";
 
-  ot->invoke = wm_tutorial_invoke;
+  ot->invoke = wm_tutorial_invoke_1;
+  ot->poll = WM_operator_winactive;
+}
+
+static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
+{
+#ifndef WITH_HEADLESS
+  extern char datatoc_tutorial_guide_2_png[];
+  extern int datatoc_tutorial_guide_2_png_size;
+
+  ImBuf *ibuf = NULL;
+  if (U.app_template[0] != '\0') {
+    char splash_filepath[FILE_MAX];
+    char template_directory[FILE_MAX];
+    if (BKE_appdir_app_template_id_search(
+            U.app_template, template_directory, sizeof(template_directory))) {
+      BLI_join_dirfile(
+          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_2.png");
+      ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
+    }
+  }
+
+  if (ibuf == NULL) {
+    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_2_png;
+    size_t splash_data_size = datatoc_tutorial_guide_2_png_size;
+    ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
+  }
+
+  int height = 0;
+  if (ibuf) {
+    height = (width * ibuf->y) / ibuf->x;
+    if (width != ibuf->x || height != ibuf->y) {
+      IMB_scaleImBuf(ibuf, width, height);
+    }
+
+    wm_block_splash_image_roundcorners_add(ibuf);
+    IMB_premultiply_alpha(ibuf);
+  }
+
+  *r_height = height;
+
+  return ibuf;
+#else
+  UNUSED_VARS(width, r_height);
+  return NULL;
+#endif
+}
+
+static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *UNUSED(arg))
+{
+  const uiStyle *style = UI_style_get_dpi();
+
+  uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+
+  /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
+   * with the OS when the splash shows, window clipping in this case gives
+   * ugly results and clipping the splash isn't useful anyway, just disable it T32938. */
+  UI_block_flag_enable(block, UI_BLOCK_LOOP | UI_BLOCK_KEEP_OPEN | UI_BLOCK_NO_WIN_CLIP);
+  UI_block_theme_style_set(block, UI_BLOCK_THEME_STYLE_POPUP);
+
+  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
+  int splash_width = text_points_max * 45 * U.dpi_fac;
+  CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
+  int splash_height;
+
+  /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
+   * first draw or if the image changed. */
+  ImBuf *ibuf = wm_block_splash_tutorial_image_2(splash_width, &splash_height);
+
+  uiBut *but = uiDefButImage(
+      block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
+
+  UI_but_func_set(but, wm_block_close, block, NULL);
+
+  const int layout_margin_x = U.dpi_fac * 26;
+  uiLayout *layout = UI_block_layout(block,
+                                     UI_LAYOUT_VERTICAL,
+                                     UI_LAYOUT_PANEL,
+                                     layout_margin_x,
+                                     0,
+                                     splash_width - (layout_margin_x * 2),
+                                     U.dpi_fac * 110,
+                                     0,
+                                     style);
+
+  MenuType *mt;
+  char userpref[FILE_MAX];
+  const char *const cfgdir = BKE_appdir_folder_id(BLENDER_USER_CONFIG, NULL);
+
+  if (cfgdir) {
+    BLI_path_join(userpref, sizeof(userpref), cfgdir, BLENDER_USERPREF_FILE, NULL);
+  }
+
+  /* Draw setup screen if no preferences have been saved yet. */
+  if (!BLI_exists(userpref)) {
+    // call WM_OT_save_userpref to automatically save the default setting
+    WM_operator_name_call(C, "WM_OT_save_userpref", WM_OP_EXEC_DEFAULT, NULL);
+    // mt = WM_menutype_find("WM_MT_splash_quick_setup", true);
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+
+    /* The UI_BLOCK_QUICK_SETUP flag prevents the button text from being left-aligned,
+       as it is for all menus due to the UI_BLOCK_LOOP flag, see in 'ui_def_but'. */
+    // UI_block_flag_enable(block, UI_BLOCK_QUICK_SETUP);
+  }
+  else {
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+  }
+
+  if (mt) {
+    UI_menutype_draw(C, mt, layout);
+  }
+
+  UI_block_bounds_set_centered(block, 0);
+
+  return block;
+}
+
+static int wm_tutorial_invoke_2(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  UI_popup_block_invoke(C, wm_block_create_tutorial_2, NULL, NULL);
+
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_tutorial_2(wmOperatorType *ot)
+{
+  ot->name = "Tutorial Guide 2";
+  ot->idname = "WM_OT_splash_tutorial_2";
+  ot->description = "Open the tutorial screen";
+
+  ot->invoke = wm_tutorial_invoke_2;
+  ot->poll = WM_operator_winactive;
+}
+
+static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
+{
+#ifndef WITH_HEADLESS
+  extern char datatoc_tutorial_guide_3_png[];
+  extern int datatoc_tutorial_guide_3_png_size;
+
+  ImBuf *ibuf = NULL;
+  if (U.app_template[0] != '\0') {
+    char splash_filepath[FILE_MAX];
+    char template_directory[FILE_MAX];
+    if (BKE_appdir_app_template_id_search(
+            U.app_template, template_directory, sizeof(template_directory))) {
+      BLI_join_dirfile(
+          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_3.png");
+      ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
+    }
+  }
+
+  if (ibuf == NULL) {
+    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_3_png;
+    size_t splash_data_size = datatoc_tutorial_guide_3_png_size;
+    ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
+  }
+
+  int height = 0;
+  if (ibuf) {
+    height = (width * ibuf->y) / ibuf->x;
+    if (width != ibuf->x || height != ibuf->y) {
+      IMB_scaleImBuf(ibuf, width, height);
+    }
+
+    wm_block_splash_image_roundcorners_add(ibuf);
+    IMB_premultiply_alpha(ibuf);
+  }
+
+  *r_height = height;
+
+  return ibuf;
+#else
+  UNUSED_VARS(width, r_height);
+  return NULL;
+#endif
+}
+
+static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *UNUSED(arg))
+{
+  const uiStyle *style = UI_style_get_dpi();
+
+  uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+
+  /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
+   * with the OS when the splash shows, window clipping in this case gives
+   * ugly results and clipping the splash isn't useful anyway, just disable it T32938. */
+  UI_block_flag_enable(block, UI_BLOCK_LOOP | UI_BLOCK_KEEP_OPEN | UI_BLOCK_NO_WIN_CLIP);
+  UI_block_theme_style_set(block, UI_BLOCK_THEME_STYLE_POPUP);
+
+  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
+  int splash_width = text_points_max * 45 * U.dpi_fac;
+  CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
+  int splash_height;
+
+  /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
+   * first draw or if the image changed. */
+  ImBuf *ibuf = wm_block_splash_tutorial_image_3(splash_width, &splash_height);
+
+  uiBut *but = uiDefButImage(
+      block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
+
+  UI_but_func_set(but, wm_block_close, block, NULL);
+
+  const int layout_margin_x = U.dpi_fac * 26;
+  uiLayout *layout = UI_block_layout(block,
+                                     UI_LAYOUT_VERTICAL,
+                                     UI_LAYOUT_PANEL,
+                                     layout_margin_x,
+                                     0,
+                                     splash_width - (layout_margin_x * 2),
+                                     U.dpi_fac * 110,
+                                     0,
+                                     style);
+
+  MenuType *mt;
+  char userpref[FILE_MAX];
+  const char *const cfgdir = BKE_appdir_folder_id(BLENDER_USER_CONFIG, NULL);
+
+  if (cfgdir) {
+    BLI_path_join(userpref, sizeof(userpref), cfgdir, BLENDER_USERPREF_FILE, NULL);
+  }
+
+  /* Draw setup screen if no preferences have been saved yet. */
+  if (!BLI_exists(userpref)) {
+    // call WM_OT_save_userpref to automatically save the default setting
+    WM_operator_name_call(C, "WM_OT_save_userpref", WM_OP_EXEC_DEFAULT, NULL);
+    // mt = WM_menutype_find("WM_MT_splash_quick_setup", true);
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+
+    /* The UI_BLOCK_QUICK_SETUP flag prevents the button text from being left-aligned,
+       as it is for all menus due to the UI_BLOCK_LOOP flag, see in 'ui_def_but'. */
+    // UI_block_flag_enable(block, UI_BLOCK_QUICK_SETUP);
+  }
+  else {
+    mt = WM_menutype_find("WM_MT_splash_tutorial", true);
+  }
+
+  if (mt) {
+    UI_menutype_draw(C, mt, layout);
+  }
+
+  UI_block_bounds_set_centered(block, 0);
+
+  return block;
+}
+
+static int wm_tutorial_invoke_3(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  UI_popup_block_invoke(C, wm_block_create_tutorial_3, NULL, NULL);
+
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_tutorial_3(wmOperatorType *ot)
+{
+  ot->name = "Tutorial Guide 3";
+  ot->idname = "WM_OT_splash_tutorial_3";
+  ot->description = "Open the tutorial screen";
+
+  ot->invoke = wm_tutorial_invoke_3;
   ot->poll = WM_operator_winactive;
 }
