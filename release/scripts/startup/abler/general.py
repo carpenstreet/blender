@@ -73,16 +73,17 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
-    def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=500)
+    # def invoke(self, context, event):
+    #     return context.window_manager.invoke_props_dialog(self, width=500)
 
-    def draw(self, context):
-        layout = self.layout
-        layout.operator("wm.splash_tutorial_1")
-        layout.operator("wm.splash_tutorial_2")
-        layout.operator("wm.splash_tutorial_3")
+    # def draw(self, context):
+    #     layout = self.layout
+    #     layout.operator("wm.splash_tutorial_1")
+    #     layout.operator("wm.splash_tutorial_2")
+    #     layout.operator("wm.splash_tutorial_3")
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -183,7 +184,7 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         path = self.filepath
-        if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
+        if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
             return {"FINISHED"}
         elif not os.path.isfile(path):
             bpy.ops.acon3d.alert(

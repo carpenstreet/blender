@@ -466,6 +466,8 @@ class AconMeshProperty(bpy.types.PropertyGroup):
         description="Login Status",
     )
 
+    show_guide: bpy.props.BoolProperty(name="Show Guide", default=True)
+
 
 class AconObjectGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(name="Group", description="Group", default="")

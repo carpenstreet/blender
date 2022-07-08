@@ -3193,7 +3193,7 @@ class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
 
     def draw(self, context):
-        
+        userInfo = bpy.data.meshes.get("ACON_userInfo")
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
@@ -3202,13 +3202,28 @@ class WM_MT_splash_tutorial(Menu):
 
         split = layout.split()
         col1 = split.column()
+        col1.operator_context = 'INVOKE_DEFAULT'
         col1.operator("wm.splash_tutorial_1")
         col2 = split.column()
+        col2.operator_context = 'INVOKE_DEFAULT'
         col2.operator("wm.splash_tutorial_2")
         col3 = split.column()
+        col3.operator_context = 'INVOKE_DEFAULT'
         col3.operator("wm.splash_tutorial_3")
         layout.separator()
 
+        row = layout.row()
+        anchor = row.operator("wm.url_open", text="See Guides(Notion)", icon='URL')
+        anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7' # TODO: URL 넣기
+        layout.separator()
+
+        row = layout.row()
+        column = row.column()
+        row = column.row()
+        row.prop(userInfo.ACON_prop,"show_guide",text="",icon="CHECKBOX_HLT",emboss=False,invert_checkbox=True,)
+        row.label(text="Show ABLER starts")
+        layout.separator()
+        
 
 class WM_OT_drop_blend_file(Operator):
     bl_idname = "wm.drop_blend_file"
