@@ -3213,14 +3213,14 @@ class WM_MT_splash_tutorial(Menu):
         layout.separator()
 
         row = layout.row()
-        anchor = row.operator("wm.url_open", text="See Guides(Notion)", icon='URL')
+        anchor = row.operator("wm.url_open", text="Go to the Guides(Notion)", icon='URL')
         anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7' # TODO: URL 넣기
         layout.separator()
 
-        row = layout.row()
-        column = row.column()
+        column = layout.column()
         row = column.row()
         row.prop(userInfo.ACON_prop,"show_guide",text="",icon="CHECKBOX_HLT",emboss=False,invert_checkbox=True,)
+        row.alignment = "RIGHT"
         row.label(text="Show ABLER starts")
         layout.separator()
         
