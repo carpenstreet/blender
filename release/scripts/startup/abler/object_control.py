@@ -45,7 +45,7 @@ class GroupNavigateTopOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_top()
-        layers.selectByGroup("TOP")
+        layers.select_by_group("TOP")
         return {"FINISHED"}
 
 
@@ -58,7 +58,7 @@ class GroupNavigateUpOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_up()
-        layers.selectByGroup("UP")
+        layers.select_by_group("UP")
         return {"FINISHED"}
 
 
@@ -71,7 +71,7 @@ class GroupNavigateDownOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_down()
-        layers.selectByGroup("DOWN")
+        layers.select_by_group("DOWN")
         return {"FINISHED"}
 
 
@@ -84,7 +84,7 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_bottom()
-        layers.selectByGroup("BOTTOM")
+        layers.select_by_group("BOTTOM")
         return {"FINISHED"}
 
 

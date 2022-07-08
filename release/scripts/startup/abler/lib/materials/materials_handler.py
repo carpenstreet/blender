@@ -34,7 +34,7 @@ from bpy.types import (
 )
 
 
-def toggleToonEdge(self, context: Context) -> None:
+def toggle_toon_edge(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -55,7 +55,7 @@ def toggleToonEdge(self, context: Context) -> None:
     node.outputs[0].default_value = toonEdgeFactorValue
 
 
-def toggleEachEdge(self, context: Context) -> None:
+def toggle_each_edge(self, context: Context) -> None:
     if not context:
         context = bpy.context
     if "object" not in dir(context):
@@ -76,7 +76,7 @@ def toggleEachEdge(self, context: Context) -> None:
         toonNode.inputs[9].default_value = toonEdgeFactorValue
 
 
-def toggleToonFace(self, context: Context) -> None:
+def toggle_toon_face(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -96,19 +96,19 @@ def toggleToonFace(self, context: Context) -> None:
         node.inputs[4].default_value = toonFaceFactorValue
 
 
-def toggleTexture(self, context: Context) -> None:
+def toggle_texture(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
     if not self:
         self = context.scene.ACON_prop
 
-    toggle_texture: BoolProperty = context.scene.ACON_prop.toggle_texture
-    textureFactorValue: int = int(not toggle_texture)
+    texture: BoolProperty = context.scene.ACON_prop.toggle_texture
+    textureFactorValue: int = int(not texture)
 
     if context.scene.camera:
         for image in context.scene.camera.data.background_images:
-            image.show_background_image = toggle_texture
+            image.show_background_image = texture
 
     node_group: Optional[NodeTree] = bpy.data.node_groups.get(
         "ACON_nodeGroup_combinedToon"
@@ -122,15 +122,15 @@ def toggleTexture(self, context: Context) -> None:
     node.inputs[0].default_value = textureFactorValue
 
 
-def toggleShading(self, context: Context) -> None:
+def toggle_shading(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
     if not self:
         self = context.scene.ACON_prop
 
-    toggle_shading: BoolProperty = context.scene.ACON_prop.toggle_shading
-    shadingFactorValue: int = int(toggle_shading)
+    shading: BoolProperty = context.scene.ACON_prop.toggle_shading
+    shadingFactorValue: int = int(shading)
 
     node_group: Optional[NodeTree] = bpy.data.node_groups.get(
         "ACON_nodeGroup_combinedToon"
@@ -144,7 +144,7 @@ def toggleShading(self, context: Context) -> None:
     node.outputs[0].default_value = shadingFactorValue
 
 
-def toggleEachShading(self, context: Context) -> None:
+def toggle_each_shading(self, context: Context) -> None:
 
     if not context:
         context = bpy.context
@@ -171,7 +171,7 @@ def toggleEachShading(self, context: Context) -> None:
     toonNode.inputs[4].default_value = shadingFactorValue
 
 
-def toggleEachShadow(self, context: Context) -> None:
+def toggle_each_shadow(self, context: Context) -> None:
 
     if not context:
         context = bpy.context
@@ -194,7 +194,7 @@ def toggleEachShadow(self, context: Context) -> None:
     mat.shadow_method = "CLIP" if mat.ACON_prop.toggle_shadow else "NONE"
 
 
-def changeToonDepth(self, context: Context) -> None:
+def change_toon_depth(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -215,7 +215,7 @@ def changeToonDepth(self, context: Context) -> None:
     node.inputs[1].default_value = toonFaceFactorValue
 
 
-def setMaterialParametersByType(mat: Material) -> None:
+def set_material_parameters_by_type(mat: Material) -> None:
 
     type: EnumProperty = mat.ACON_prop.type
 
@@ -254,7 +254,7 @@ def setMaterialParametersByType(mat: Material) -> None:
         toonNode.inputs[3].default_value = 0.5
 
 
-def changeMaterialType(self, context: Context) -> None:
+def change_material_type(self, context: Context) -> None:
     try:
         if not context:
             context = bpy.context
@@ -263,13 +263,13 @@ def changeMaterialType(self, context: Context) -> None:
 
         for mat_slot in material_slots:
             mat: Material = mat_slot.material
-            setMaterialParametersByType(mat)
+            set_material_parameters_by_type(mat)
 
     except:
         print("ACON Material Type change handler could not complete.")
 
 
-def changeImageAdjustBrightness(self, context: Context) -> None:
+def change_image_adjust_brightness(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -295,7 +295,7 @@ def changeImageAdjustBrightness(self, context: Context) -> None:
     inputs[2].default_value = value
 
 
-def changeImageAdjustContrast(self, context: Context) -> None:
+def change_image_adjust_contrast(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -318,7 +318,7 @@ def changeImageAdjustContrast(self, context: Context) -> None:
     inputs[2].default_value = value
 
 
-def changeImageAdjustColor(self, context: Context) -> None:
+def change_image_adjust_color(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -346,7 +346,7 @@ def changeImageAdjustColor(self, context: Context) -> None:
     inputs[2].default_value = color
 
 
-def changeImageAdjustHue(self, context: Context) -> None:
+def change_image_adjust_hue(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -371,7 +371,7 @@ def changeImageAdjustHue(self, context: Context) -> None:
     inputs[0].default_value = value
 
 
-def changeImageAdjustSaturation(self, context: Context) -> None:
+def change_image_adjust_saturation(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -396,7 +396,7 @@ def changeImageAdjustSaturation(self, context: Context) -> None:
     inputs[1].default_value = value
 
 
-def changeLineProps(self, context: Context) -> None:
+def change_line_props(self, context: Context) -> None:
     if not context:
         context = bpy.context
 
@@ -425,7 +425,7 @@ def changeLineProps(self, context: Context) -> None:
     inputs[3].default_value = line_detail
 
 
-def changeToonShadingBrightness(self, context: Context) -> None:
+def change_toon_shading_brightness(self, context: Context) -> None:
     if not context:
         context = bpy.context
 

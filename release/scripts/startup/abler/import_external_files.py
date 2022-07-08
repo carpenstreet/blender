@@ -81,7 +81,7 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
         # create group
         bpy.ops.acon3d.create_group()
         # apply AconToonStyle
-        materials_setup.applyAconToonStyle()
+        materials_setup.apply_ACON_toon_style()
 
         return {"FINISHED"}
 

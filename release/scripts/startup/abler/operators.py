@@ -12,7 +12,7 @@ class Acon3dToonStyleOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        materials_setup.applyAconToonStyle()
+        materials_setup.apply_ACON_toon_style()
         return {"FINISHED"}
 
 
