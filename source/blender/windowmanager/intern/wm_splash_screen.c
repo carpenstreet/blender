@@ -420,6 +420,8 @@ static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *U
   int splash_width = text_points_max * 45 * U.dpi_fac;
   CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
   int splash_height;
+  splash_width *= 2;
+  splash_height *= 2;
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
@@ -550,6 +552,8 @@ static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *U
   int splash_width = text_points_max * 45 * U.dpi_fac;
   CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
   int splash_height;
+  splash_width *= 2;
+  splash_height *= 2;
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
@@ -680,6 +684,8 @@ static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *U
   int splash_width = text_points_max * 45 * U.dpi_fac;
   CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
   int splash_height;
+  splash_width *= 2;
+  splash_height *= 2;
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
