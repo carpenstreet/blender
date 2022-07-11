@@ -8,7 +8,6 @@ from mixpanel import Mixpanel, BufferedConsumer
 import bpy
 
 from ._tracker import Tracker
-from ._get_ip import get_ip
 
 
 _user_path = bpy.utils.resource_path("USER")

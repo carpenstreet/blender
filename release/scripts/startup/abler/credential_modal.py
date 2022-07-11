@@ -39,6 +39,7 @@ from .lib.remember_username import (
     read_remembered_username,
 )
 from .lib.tracker import tracker
+from .lib.tracker._get_ip import get_ip
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -362,7 +363,7 @@ class LoginTask(AsyncTask):
     def _on_success(self):
 
         tracker.login()
-        tracker.update_profile(self.username)
+        tracker.update_profile(self.username, get_ip())
 
         prop = self.prop
         path = bpy.utils.resource_path("USER")
@@ -484,9 +485,6 @@ def open_credential_modal(dummy):
 
     if prop.remember_username:
         prop.username = read_remembered_username()
-        # login_auto시 read_remembered_username()에서 username을 받아 
-        # update_profile로 ip -> mixpanel
-        tracker.update_profile(prop.username)
 
 
 @persistent
