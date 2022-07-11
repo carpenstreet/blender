@@ -3197,19 +3197,16 @@ class WM_MT_splash_tutorial(Menu):
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
-        row = layout.row()
-        row.label(text="Hi!")
-
         split = layout.split()
         col1 = split.column()
         col1.operator_context = 'INVOKE_DEFAULT'
-        col1.operator("wm.splash_tutorial_1")
+        col1.operator("wm.splash_tutorial_1", text="Mouse Mode")
         col2 = split.column()
         col2.operator_context = 'INVOKE_DEFAULT'
-        col2.operator("wm.splash_tutorial_2")
+        col2.operator("wm.splash_tutorial_2", text="Fly Mode")
         col3 = split.column()
         col3.operator_context = 'INVOKE_DEFAULT'
-        col3.operator("wm.splash_tutorial_3")
+        col3.operator("wm.splash_tutorial_3", text="Control")
         layout.separator()
 
         row = layout.row()
@@ -3218,7 +3215,7 @@ class WM_MT_splash_tutorial(Menu):
         layout.separator()
 
         row = layout.row()
-        row.operator("acon3d.close_by_double_click")
+        row.operator("acon3d.close_by_double_click", text="OK")
         layout.separator()
 
         column = layout.column()
