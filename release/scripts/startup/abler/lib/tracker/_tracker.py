@@ -181,9 +181,11 @@ class Tracker(metaclass=ABCMeta):
     def fly_mode(self):
         self._track(EventKind.fly_mode.value)
 
+    @accumulate()
     def use_state_on(self):
         self._track(EventKind.use_state_on.value)
 
+    @accumulate()
     def use_state_off(self):
         self._track(EventKind.use_state_off.value)
 
