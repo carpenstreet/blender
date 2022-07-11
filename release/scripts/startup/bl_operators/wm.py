@@ -3217,6 +3217,10 @@ class WM_MT_splash_tutorial(Menu):
         anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7' # TODO: URL 넣기
         layout.separator()
 
+        row = layout.row()
+        row.operator("acon3d.close_by_double_click")
+        layout.separator()
+
         column = layout.column()
         row = column.row()
         row.prop(userInfo.ACON_prop,"show_guide",text="",icon="CHECKBOX_HLT",emboss=False,invert_checkbox=True,)

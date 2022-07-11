@@ -37,6 +37,7 @@ from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
 from .lib.remember_username import read_remembered_username
+import pyautogui
 
 
 def splitFilepath(filepath):
@@ -76,14 +77,21 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
         bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
-    # def invoke(self, context, event):
-    #     return context.window_manager.invoke_props_dialog(self, width=500)
 
-    # def draw(self, context):
-    #     layout = self.layout
-    #     layout.operator("wm.splash_tutorial_1")
-    #     layout.operator("wm.splash_tutorial_2")
-    #     layout.operator("wm.splash_tutorial_3")
+class AconTutorialGuideCloseOperator(bpy.types.Operator):
+    bl_idname = "acon3d.close_by_double_click"
+    bl_label = "OK"
+
+    def execute(self, context):
+        # 스플래시 이미지 바깥에서 더블클릭하면 splash가 한꺼번에 다 꺼짐
+        window = bpy.context.window
+        origianl_position = pyautogui.position()
+        window.cursor_warp(50, 50)
+
+        pyautogui.click(clicks=2)
+        pyautogui.moveTo(origianl_position)
+
+        return {"FINISHED"}
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -336,6 +344,7 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 classes = (
     AconTutorialGuidePopUpOperator,
+    AconTutorialGuideCloseOperator,
     Acon3dImportPanel,
     ToggleToolbarOperator,
     ImportOperator,
