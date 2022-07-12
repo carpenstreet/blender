@@ -32,12 +32,7 @@ from bpy.app.handlers import persistent
 from .lib.async_task import AsyncTask
 from .lib.login import is_first_open
 from .lib.post_open import tracker_file_open
-from .lib.remember_username import (
-    delete_remembered_username,
-    read_remembered_checkbox,
-    remember_username,
-    read_remembered_username,
-)
+from .lib.remember_username import *
 from .lib.tracker import tracker
 
 
@@ -247,6 +242,10 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
+            # 튜토리얼 가이드 토글 값 받아와 띄우기
+            if read_remembered_show_guide():
+                bpy.ops.acon3d.tutorial_guide_popup()
+
             return {"FINISHED"}
 
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
@@ -473,6 +472,10 @@ def open_credential_modal(dummy):
             if not fileopen and is_first_open():
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
+
+            # 튜토리얼 가이드 토글 값 받아와 띄우기
+            if read_remembered_show_guide():
+                bpy.ops.acon3d.tutorial_guide_popup()
 
     except:
         print("Failed to load cookies")
