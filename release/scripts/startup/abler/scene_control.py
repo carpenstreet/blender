@@ -102,7 +102,7 @@ class DeleteSceneOperator(bpy.types.Operator):
         length = len(scenesList)
         nextScene = scenesList[min(i, length - 1)]
 
-        # Updating `scene` value invoke `loadScene` function which compares current
+        # Updating `scene` value invoke `load_scene` function which compares current
         # scene and target scene. So it should happen before removing scene.
         context.window_manager.ACON_prop.scene = nextScene.name
 
