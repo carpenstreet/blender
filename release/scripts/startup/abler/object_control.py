@@ -169,6 +169,7 @@ class Acon3dObjectPanel(bpy.types.Panel):
 
         # context.selected_objects는 드래그로 선택된 개체, context.object는 개별 선택 개체
         # 드래그로 선택해도 context.object=None일 수 있으므로 두 조건을 모두 확인
+        # https://docs.blender.org/manual/en/3.0/scene_layout/object/selecting.html#selections-and-the-active-object
         if context.selected_objects and context.object:
             row = col.row()
             row.prop(
