@@ -53,7 +53,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     def unregister(cls):
         del bpy.types.Scene.l_exclude
 
-    def update_layer_vis(self, context):
+    def update_layer_visibility(self, context):
         target_layer = bpy.data.collections[self.name]
         for objs in target_layer.objects:
             belonging_col_names = {
@@ -79,7 +79,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         name="Layer Exclude",
         description="Make objects on the current layer invisible in the viewport",
         default=True,
-        update=update_layer_vis,
+        update=update_layer_visibility,
     )
 
     lock: bpy.props.BoolProperty(
