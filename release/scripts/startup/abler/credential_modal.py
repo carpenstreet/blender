@@ -39,7 +39,7 @@ from .lib.remember_username import (
     read_remembered_username,
 )
 from .lib.tracker import tracker
-from .lib.tracker._get_ip import get_ip
+from .lib.tracker._get_ip import user_ip
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -363,7 +363,7 @@ class LoginTask(AsyncTask):
     def _on_success(self):
 
         tracker.login()
-        tracker.update_profile(self.username, get_ip())
+        tracker.update_profile(self.username, user_ip)
 
         prop = self.prop
         path = bpy.utils.resource_path("USER")

@@ -5,7 +5,7 @@ from typing import Any, Optional
 import bpy
 
 from ._versioning import get_version
-from ._get_ip import get_ip
+from ._get_ip import user_ip
 
 
 class EventKind(enum.Enum):
@@ -74,7 +74,7 @@ def accumulate(interval=0):
 
 
 class Tracker(metaclass=ABCMeta):
-    ip = get_ip()
+    ip = user_ip
 
     def __init__(self):
         self._agreed = True

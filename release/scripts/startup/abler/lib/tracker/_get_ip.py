@@ -9,3 +9,6 @@ def get_ip() -> Optional[str]:
         print("Unable to reach the ipify service")
     except:
         print("Non ipify related exception occured")
+
+
+user_ip = get_ip()
