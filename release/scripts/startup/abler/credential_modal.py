@@ -32,7 +32,7 @@ from bpy.app.handlers import persistent
 from .lib.async_task import AsyncTask
 from .lib.login import is_first_open
 from .lib.post_open import tracker_file_open
-from .lib.remember_username import *
+from .lib.read_cookies import *
 from .lib.tracker import tracker
 
 
