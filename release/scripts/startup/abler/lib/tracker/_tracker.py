@@ -74,8 +74,6 @@ def accumulate(interval=0):
 
 
 class Tracker(metaclass=ABCMeta):
-    ip = user_ip
-
     def __init__(self):
         self._agreed = True
         self._default_properties = {}
@@ -87,8 +85,8 @@ class Tracker(metaclass=ABCMeta):
         else:
             self._default_properties["version"] = "development"
 
-        if self.ip is not None:
-            self._default_properties["ip"] = self.ip
+        if user_ip is not None:
+            self._default_properties["ip"] = user_ip
 
     def turn_on(self):
         self._enabled = True
