@@ -45,7 +45,7 @@ class CreateCameraOperator(bpy.types.Operator):
     name: bpy.props.StringProperty(name="Name")
 
     def execute(self, context):
-        cameras.makeSureCameraExists()
+        cameras.make_sure_camera_exists()
 
         # duplicate camera
         viewCameraObject = context.scene.camera
@@ -67,7 +67,7 @@ class CreateCameraOperator(bpy.types.Operator):
         return {"FINISHED"}
 
     def invoke(self, context, event):
-        self.name = cameras.genCameraName("ACON_Camera_")
+        self.name = cameras.gen_camera_name("ACON_Camera_")
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
 

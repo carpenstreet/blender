@@ -39,7 +39,7 @@ from .lib.tracker import tracker
 from .lib.remember_username import read_remembered_username
 
 
-def splitFilepath(filepath):
+def split_filepath(filepath):
     # Get basename without file extension
     dirname, basename = os.path.split(os.path.normpath(filepath))
 
@@ -49,8 +49,8 @@ def splitFilepath(filepath):
     return dirname, basename
 
 
-def numberingFilepath(filepath, ext):
-    dirname, basename = splitFilepath(filepath)
+def numbering_filepath(filepath, ext):
+    dirname, basename = split_filepath(filepath)
     basepath = os.path.join(dirname, basename)
 
     num_path = basepath
@@ -119,7 +119,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
             else:
                 data_to.objects.remove(obj)
 
-        materials_setup.applyAconToonStyle()
+        materials_setup.apply_ACON_toon_style()
 
         for area in context.screen.areas:
             if area.type == "VIEW_3D":
@@ -218,13 +218,13 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
         if bpy.data.is_saved:
             self.filepath = context.blend_data.filepath
-            dirname, basename = splitFilepath(self.filepath)
+            dirname, basename = split_filepath(self.filepath)
 
             bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
             self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
         else:
-            numbered_filepath, numbered_filename = numberingFilepath(
+            numbered_filepath, numbered_filename = numbering_filepath(
                 self.filepath, self.filename_ext
             )
 
@@ -248,7 +248,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         tracker.save_as()
 
-        numbered_filepath, numbered_filename = numberingFilepath(
+        numbered_filepath, numbered_filename = numbering_filepath(
             self.filepath, self.filename_ext
         )
 
@@ -303,8 +303,8 @@ class ApplyToonStyleOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        materials_setup.applyAconToonStyle()
-        scenes.loadScene(None, None)
+        materials_setup.apply_ACON_toon_style()
+        scenes.load_scene(None, None)
 
         return {"FINISHED"}
 

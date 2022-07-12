@@ -39,7 +39,7 @@ bl_info = {
 }
 
 
-def openDirectory(path):
+def open_directory(path):
 
     if platform.system() == "Windows":
 
@@ -67,7 +67,7 @@ class Acon3dCameraViewOperator(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        cameras.turnOnCameraView()
+        cameras.turn_on_camera_view()
 
         return {"FINISHED"}
 
@@ -111,8 +111,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
     def prepare_render(self):
-        render.setupBackgroundImagesCompositor()
-        render.matchObjectVisibility()
+        render.setup_background_images_compositor()
+        render.match_object_visibility()
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)
@@ -181,7 +181,7 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
                 )
 
                 if self.show_on_completion:
-                    openDirectory(self.filepath)
+                    open_directory(self.filepath)
 
                 return self.on_render_finish(context)
 
@@ -255,7 +255,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
                 )
 
                 if self.show_on_completion:
-                    openDirectory(self.filepath)
+                    open_directory(self.filepath)
 
                 return self.on_render_finish(context)
 
@@ -317,8 +317,8 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
     temp_scenes = []
 
     def prepare_render(self):
-        render.clearCompositor()
-        render.matchObjectVisibility()
+        render.clear_compositor()
+        render.match_object_visibility()
 
     def prepare_queue(self, context):
 
@@ -341,7 +341,7 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
     def on_render_finish(self, context):
 
         for mat in bpy.data.materials:
-            materials_handler.setMaterialParametersByType(mat)
+            materials_handler.set_material_parameters_by_type(mat)
 
         for scene in self.temp_scenes:
             bpy.data.scenes.remove(scene)
@@ -359,8 +359,8 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
     temp_scenes = []
 
     def prepare_render(self):
-        render.clearCompositor()
-        render.matchObjectVisibility()
+        render.clear_compositor()
+        render.match_object_visibility()
 
     def prepare_queue(self, context):
 
@@ -383,7 +383,7 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
     def on_render_finish(self, context):
 
         for mat in bpy.data.materials:
-            materials_handler.setMaterialParametersByType(mat)
+            materials_handler.set_material_parameters_by_type(mat)
 
         for scene in self.temp_scenes:
             bpy.data.scenes.remove(scene)
@@ -467,7 +467,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
 
         if len(self.render_queue) == 3:
 
-            render.clearCompositor()
+            render.clear_compositor()
 
         elif len(self.render_queue) == 2:
 
@@ -480,11 +480,11 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
             self.temp_image = bpy.data.images.load(image_path)
 
             for mat in bpy.data.materials:
-                materials_handler.setMaterialParametersByType(mat)
+                materials_handler.set_material_parameters_by_type(mat)
 
-            compNodes = render.clearCompositor()
-            render.setupBackgroundImagesCompositor(*compNodes)
-            render.setupSnipCompositor(
+            compNodes = render.clear_compositor()
+            render.setup_background_images_compositor(*compNodes)
+            render.setup_snip_compositor(
                 *compNodes, snip_layer=self.temp_layer, shade_image=self.temp_image
             )
 
@@ -494,9 +494,9 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
 
             bpy.data.collections.remove(self.temp_col)
             bpy.data.images.remove(self.temp_image)
-            render.setupBackgroundImagesCompositor()
+            render.setup_background_images_compositor()
 
-        render.matchObjectVisibility()
+        render.match_object_visibility()
 
     def prepare_queue(self, context):
         tracker.render_snip()

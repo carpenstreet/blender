@@ -23,7 +23,7 @@ from bpy.types import Collection, Object
 from typing import Any, List, Optional, Tuple, Union
 
 
-def handleLayerVisibilityOnSceneChange(oldScene, newScene):
+def handle_layer_visibility_on_scene_change(oldScene, newScene):
 
     if not oldScene or not newScene:
         print("Invalid oldScene / newScene given")
@@ -90,7 +90,7 @@ def group_navigate_up(
             selected_group_prop.current_group = selection.name
         except Exception as e:
             print(e)
-            return selectByGroup("TOP")
+            return select_by_group("TOP")
     # group-group-object의 구조를 가진 경우, UP을 실행해도
     # 여러번 눌러야 하는 경우가 있음. 그래서 while 문으로
     # 처리했지만, root group까지 이런 구조인 오브젝트들이
@@ -129,7 +129,7 @@ def group_navigate_down(
             bpy.data.collections[selected_group_prop.current_group],
         )
     if not selection:
-        return selectByGroup("BOTTOM")
+        return select_by_group("BOTTOM")
     slctd_objs = bpy.context.selected_objects.copy()
     if selection == "object":
         selected_group_prop.current_group = ""
@@ -195,7 +195,7 @@ def init_group_navigation(
     return selected_group_prop, root_ancester_collection, ordered_ancester_collections
 
 
-def selectByGroup(direction: str) -> None:
+def select_by_group(direction: str) -> None:
     if bpy.context.active_object is None:
         return
     init_val = init_group_navigation(direction)
@@ -233,7 +233,7 @@ def select_group_prop(name: str) -> None:
 
 
 @persistent
-def checkObjectSelectionChange(dummy):
+def check_object_selection_change(dummy):
 
     depsgraph = bpy.context.evaluated_depsgraph_get()
     if not depsgraph.id_type_updated("SCENE"):
@@ -247,7 +247,7 @@ def checkObjectSelectionChange(dummy):
         return
 
     if new_selected_objects_str:
-        selectByGroup(bpy.context.scene.ACON_selected_group.direction)
+        select_by_group(bpy.context.scene.ACON_selected_group.direction)
 
     ACON_prop.selected_objects_str = "".join(
         obj.name for obj in bpy.context.selected_objects

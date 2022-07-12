@@ -23,7 +23,7 @@ from . import materials_handler
 from .. import cameras
 
 
-def createOutlineNodeGroup():
+def create_outline_node_group():
 
     node_group = bpy.data.node_groups.new("ACON_nodeGroup_outline", "ShaderNodeTree")
 
@@ -163,7 +163,7 @@ def createOutlineNodeGroup():
     return node_group
 
 
-def createToonFaceNodeGroup():
+def create_toon_face_node_group():
 
     node_group = bpy.data.node_groups.new("ACON_nodeGroup_toonFace", "ShaderNodeTree")
 
@@ -257,11 +257,11 @@ def createToonFaceNodeGroup():
     return node_group
 
 
-def createAconMatNodeGroups():
+def create_ACON_mat_node_groups():
 
-    node_group_data_outline = createOutlineNodeGroup()
+    node_group_data_outline = create_outline_node_group()
 
-    node_group_data_toonFace = createToonFaceNodeGroup()
+    node_group_data_toonFace = create_toon_face_node_group()
 
     node_group = bpy.data.node_groups.new(
         "ACON_nodeGroup_combinedToon", "ShaderNodeTree"
@@ -427,22 +427,22 @@ def createAconMatNodeGroups():
 
     context = bpy.context
 
-    materials_handler.toggleToonEdge(None, context)
-    materials_handler.toggleToonFace(None, context)
-    materials_handler.toggleTexture(None, context)
-    materials_handler.toggleShading(None, context)
-    materials_handler.changeToonDepth(None, context)
-    materials_handler.changeImageAdjustBrightness(None, context)
-    materials_handler.changeImageAdjustContrast(None, context)
-    materials_handler.changeImageAdjustColor(None, context)
-    materials_handler.changeImageAdjustHue(None, context)
-    materials_handler.changeImageAdjustSaturation(None, context)
-    materials_handler.changeImageAdjustSaturation(None, context)
+    materials_handler.toggle_toon_edge(None, context)
+    materials_handler.toggle_toon_face(None, context)
+    materials_handler.toggle_texture(None, context)
+    materials_handler.toggle_shading(None, context)
+    materials_handler.change_toon_depth(None, context)
+    materials_handler.change_image_adjust_brightness(None, context)
+    materials_handler.change_image_adjust_contrast(None, context)
+    materials_handler.change_image_adjust_color(None, context)
+    materials_handler.change_image_adjust_hue(None, context)
+    materials_handler.change_image_adjust_saturation(None, context)
+    materials_handler.change_image_adjust_saturation(None, context)
 
     return node_group
 
 
-def removeAconMatNodeGroups():
+def remove_ACON_mat_node_groups():
 
     ACON_node_group_names = [
         "ACON_nodeGroup_outline",
@@ -457,10 +457,10 @@ def removeAconMatNodeGroups():
                 break
 
 
-def applyAconToonStyle():
+def apply_ACON_toon_style():
 
-    removeAconMatNodeGroups()
-    node_group_data_combined = createAconMatNodeGroups()
+    remove_ACON_mat_node_groups()
+    node_group_data_combined = create_ACON_mat_node_groups()
 
     for obj in bpy.data.objects:
 
@@ -536,14 +536,14 @@ def applyAconToonStyle():
 
             mat.node_tree.links.new(node_combinedToon.outputs[0], out_node.inputs[0])
 
-            materials_handler.setMaterialParametersByType(mat)
+            materials_handler.set_material_parameters_by_type(mat)
             override = SimpleNamespace()
             override_object = SimpleNamespace()
             override.object = override_object
             override_object.active_material = mat
-            materials_handler.toggleEachEdge(None, override)
-            materials_handler.toggleEachShading(None, override)
-            materials_handler.toggleEachShadow(None, override)
+            materials_handler.toggle_each_edge(None, override)
+            materials_handler.toggle_each_shading(None, override)
+            materials_handler.toggle_each_shadow(None, override)
 
             continue
 
@@ -595,13 +595,13 @@ def applyAconToonStyle():
             if "clear" in mat.name:
                 mat.ACON_prop.type = "Clear"
 
-        materials_handler.setMaterialParametersByType(mat)
+        materials_handler.set_material_parameters_by_type(mat)
         override = SimpleNamespace()
         override_object = SimpleNamespace()
         override.object = override_object
         override_object.active_material = mat
-        materials_handler.toggleEachEdge(None, override)
-        materials_handler.toggleEachShading(None, override)
-        materials_handler.toggleEachShadow(None, override)
+        materials_handler.toggle_each_edge(None, override)
+        materials_handler.toggle_each_shading(None, override)
+        materials_handler.toggle_each_shadow(None, override)
 
-    cameras.switchToRendredView()
+    cameras.switch_to_rendered_view()
