@@ -36,7 +36,7 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
-from .lib.remember_username import read_remembered_show_guide
+from .lib.remember_username import read_remembered_show_guide, remember_show_guide
 import pyautogui
 
 
@@ -87,6 +87,11 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
     bl_label = "OK"
 
     def execute(self, context):
+        # 토글 값 쿠키 파일로 저장
+        userInfo = bpy.data.meshes.get("ACON_userInfo")
+        prop = userInfo.ACON_prop
+        remember_show_guide(prop.show_guide)
+
         # 스플래시 이미지 바깥에서 더블클릭하면 splash가 한꺼번에 다 꺼짐
         window = bpy.context.window
         origianl_position = pyautogui.position()
