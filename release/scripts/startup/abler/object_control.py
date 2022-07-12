@@ -167,7 +167,9 @@ class Acon3dObjectPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
 
-        if context.selected_objects:
+        # context.selected_objects는 드래그로 선택된 개체, context.object는 개별 선택 개체
+        # 드래그로 선택해도 context.object=None일 수 있으므로 두 조건을 모두 확인
+        if context.selected_objects and context.object:
             row = col.row()
             row.prop(
                 context.object.ACON_prop,
@@ -201,7 +203,7 @@ class ObjectSubPanel(bpy.types.Panel):
         layout.use_property_split = True
         layout.use_property_decorate = True
 
-        if context.selected_objects:
+        if context.selected_objects and context.object:
             obj = context.object
             prop = obj.ACON_prop
 
@@ -225,7 +227,7 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
-        if context.selected_objects:
+        if context.selected_objects and context.object:
             obj = context.object
             prop = obj.ACON_prop
             layout = self.layout
