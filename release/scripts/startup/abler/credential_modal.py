@@ -473,15 +473,12 @@ def open_credential_modal(dummy):
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
 
-            # 튜토리얼 가이드 토글 값 받아와 띄우기
-            if read_remembered_show_guide():
-                bpy.ops.acon3d.tutorial_guide_popup()
-
     except:
         print("Failed to load cookies")
 
-    if userInfo.ACON_prop.login_status != "SUCCESS":
-        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
+    # 자동로그인 시 modal이 실행 안되고 있어서
+    # 자동로그인인 경우에도 modal 실행하도록 if문 제거
+    bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
     if prop.remember_username:
         prop.username = read_remembered_username()
