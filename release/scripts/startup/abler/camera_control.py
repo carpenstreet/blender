@@ -217,6 +217,19 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class FindBackgroundOperator(bpy.types.Operator):
+    """Open Image"""
+
+    bl_idname = "acon3d.background_image_find"
+    bl_label = "Find Background Image"
+    bl_translation_context = "*"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        print("A")
+        return {"FINISHED"}
+
+
 class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_view"
     bl_idname = "ACON3D_PT_background"
@@ -271,7 +284,8 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.template_ID(bg, "image", new="image.open")
+                    row.operator("acon3d.background_image_find", text="New")
+                    # row.template_ID(bg, "image", new="image.open")
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
@@ -296,6 +310,7 @@ classes = (
     DeleteCameraOperator,
     Acon3dDOFPanel,
     RemoveBackgroundOperator,
+    FindBackgroundOperator,
     Acon3dBackgroundPanel,
 )
 
