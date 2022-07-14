@@ -226,11 +226,13 @@ class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
-    # index: bpy.props.IntProperty(name="Index", default=0)
+    index: bpy.props.IntProperty(name="Index", default=0)
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
 
     def execute(self, context):
+        new_image = bpy.data.images.load(self.filepath)
         image = context.scene.camera.data.background_images[self.index]
+        image.image = new_image
         return {"FINISHED"}
 
 
@@ -288,7 +290,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.operator("acon3d.background_image_find", text="New")
+                    row.operator("acon3d.background_image_find", text="New").index = i
                     # row.template_ID(bg, "image", new="image.open")
                     row = box.row()
                     row.prop(bg, "alpha")
