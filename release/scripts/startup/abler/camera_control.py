@@ -271,8 +271,6 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.prop(bg, "source", expand=True)
-                    row = box.row()
                     row.template_ID(bg, "image", new="image.open")
                     row = box.row()
                     row.prop(bg, "alpha")
