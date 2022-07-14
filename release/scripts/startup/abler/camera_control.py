@@ -228,12 +228,19 @@ class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
 
     index: bpy.props.IntProperty(name="Index", default=0)
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+    filepath: bpy.props.StringProperty()
 
     def execute(self, context):
         new_image = bpy.data.images.load(self.filepath)
         image = context.scene.camera.data.background_images[self.index]
         image.image = new_image
         return {"FINISHED"}
+
+    def invoke(self, context, event):
+        path_abler = bpy.utils.preset_paths("abler")[0]
+        self.filepath = path_abler + "/Background_Image/"
+        wm = context.window_manager.fileselect_add(self)
+        return {"RUNNING_MODAL"}
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
