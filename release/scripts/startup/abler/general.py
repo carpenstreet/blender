@@ -127,11 +127,11 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
                     ctx["region"] = area.regions[-1]
                     bpy.ops.view3d.view_selected(ctx)
 
-            tracker.import_blend()
-
         except Exception as e:
             tracker.import_blend_fail()
             raise e
+        else:
+            tracker.import_blend()
 
         return {"FINISHED"}
 
@@ -167,17 +167,26 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        path = self.filepath
-        if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
-            return {"FINISHED"}
-        elif not os.path.isfile(path):
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="File not found",
-                message_1="Selected file does not exist",
-            )
-            return {"FINISHED"}
-        bpy.ops.wm.open_mainfile(filepath=path)
+        try:
+            path = self.filepath
+
+            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+                return {"FINISHED"}
+            elif not os.path.isfile(path):
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="File not found",
+                    message_1="Selected file does not exist",
+                )
+                tracker.file_open_fail()
+                return {"FINISHED"}
+
+            bpy.ops.wm.open_mainfile(filepath=path)
+
+        except:
+            tracker.file_open_fail()
+        else:
+            tracker.file_open()
 
         return {"FINISHED"}
 
@@ -237,11 +246,11 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
-            tracker.save()
-
         except Exception as e:
             tracker.save_fail()
             raise e
+        else:
+            tracker.save()
 
         return {"FINISHED"}
 
@@ -266,10 +275,11 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
             bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
-            tracker.save_as()
         except Exception as e:
             tracker.save_as_fail()
             raise e
+        else:
+            tracker.save_as()
 
         return {"FINISHED"}
 

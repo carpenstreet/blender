@@ -1,15 +1,5 @@
-from typing import Optional
 import bpy
-from .tracker import tracker
 from ..custom_properties import AconSceneProperty
-
-
-def tracker_file_open() -> Optional[bool]:
-
-    # tracking file_open
-    if bpy.data.filepath != "":
-        tracker.file_open()
-        return True
 
 
 def change_and_reset_value() -> None:

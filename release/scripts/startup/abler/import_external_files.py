@@ -84,11 +84,11 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
             # apply AconToonStyle
             materials_setup.apply_ACON_toon_style()
 
-            tracker.import_fbx()
-
         except Exception as e:
             tracker.import_fbx_fail()
             raise e
+        else:
+            tracker.import_fbx()
 
         return {"FINISHED"}
 
