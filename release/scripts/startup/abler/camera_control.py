@@ -33,6 +33,7 @@ bl_info = {
 
 import bpy
 from .lib import cameras
+from bpy_extras.io_utils import ImportHelper
 
 
 class CreateCameraOperator(bpy.types.Operator):
@@ -217,16 +218,19 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class FindBackgroundOperator(bpy.types.Operator):
+class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
     """Open Image"""
 
     bl_idname = "acon3d.background_image_find"
-    bl_label = "Find Background Image"
+    bl_label = "Open Image"
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
+    # index: bpy.props.IntProperty(name="Index", default=0)
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+
     def execute(self, context):
-        print("A")
+        image = context.scene.camera.data.background_images[self.index]
         return {"FINISHED"}
 
 
