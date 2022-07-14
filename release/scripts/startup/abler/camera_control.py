@@ -226,7 +226,7 @@ class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
-    index: bpy.props.IntProperty(name="Index", default=0)
+    index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
     filepath: bpy.props.StringProperty()
 
