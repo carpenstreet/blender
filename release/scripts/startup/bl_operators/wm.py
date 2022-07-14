@@ -3206,12 +3206,14 @@ class WM_MT_splash_tutorial(Menu):
         col2.operator("wm.splash_tutorial_2", text="Fly Mode")
         col3 = split.column()
         col3.operator_context = 'INVOKE_DEFAULT'
-        col3.operator("wm.splash_tutorial_3", text="Control")
+        col3.operator("wm.splash_tutorial_3", text="Scene Control")
+        for _ in range(4):
+            split.column()
         layout.separator()
 
         row = layout.row()
-        anchor = row.operator("wm.url_open", text="Go to the Guides(Notion)", icon='URL')
-        anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7' # TODO: URL 넣기
+        anchor = row.operator("wm.url_open", text="Go To Guide (Notion)", icon='URL')
+        anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7'
         layout.separator()
 
         row = layout.row()
@@ -3222,7 +3224,7 @@ class WM_MT_splash_tutorial(Menu):
         row = column.row()
         row.prop(userInfo.ACON_prop,"show_guide",text="",icon="CHECKBOX_HLT",emboss=False,invert_checkbox=True,)
         row.alignment = "RIGHT"
-        row.label(text="Show ABLER starts")
+        row.label(text="Show ABLER Starts")
         layout.separator()
         
 
