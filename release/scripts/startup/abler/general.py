@@ -75,58 +75,63 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        tracker.import_blend()
+        try:
+            for obj in bpy.data.objects:
+                obj.select_set(False)
 
-        for obj in bpy.data.objects:
-            obj.select_set(False)
+            FILEPATH = self.filepath
 
-        FILEPATH = self.filepath
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
 
-        col_layers = bpy.data.collections.get("Layers")
-        if not col_layers:
-            col_layers = bpy.data.collections.new("Layers")
-            context.scene.collection.children.link(col_layers)
+            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
+                data_to.collections = data_from.collections
+                data_to.objects = list(data_from.objects)
 
-        with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
-            data_to.collections = data_from.collections
-            data_to.objects = list(data_from.objects)
+            children_names = {}
 
-        children_names = {}
+            for coll in data_to.collections:
+                for child in coll.children.keys():
+                    children_names[child] = True
 
-        for coll in data_to.collections:
-            for child in coll.children.keys():
-                children_names[child] = True
+            for coll in data_to.collections:
 
-        for coll in data_to.collections:
+                if "ACON_col" in coll.name:
+                    data_to.collections.remove(coll)
+                    break
 
-            if "ACON_col" in coll.name:
-                data_to.collections.remove(coll)
-                break
+                found = any(coll.name == child for child in children_names)
+                if coll.name == "Layers" or (
+                    "Layers." in coll.name and len(coll.name) == 10
+                ):
+                    for coll_2 in coll.children:
+                        added_l_exclude = context.scene.l_exclude.add()
+                        added_l_exclude.name = coll_2.name
+                        added_l_exclude.value = True
+                        col_layers.children.link(coll_2)
 
-            found = any(coll.name == child for child in children_names)
-            if coll.name == "Layers" or (
-                "Layers." in coll.name and len(coll.name) == 10
-            ):
-                for coll_2 in coll.children:
-                    added_l_exclude = context.scene.l_exclude.add()
-                    added_l_exclude.name = coll_2.name
-                    added_l_exclude.value = True
-                    col_layers.children.link(coll_2)
+            for obj in data_to.objects:
+                if obj.type == "MESH":
+                    obj.select_set(True)
+                else:
+                    data_to.objects.remove(obj)
 
-        for obj in data_to.objects:
-            if obj.type == "MESH":
-                obj.select_set(True)
-            else:
-                data_to.objects.remove(obj)
+            materials_setup.apply_ACON_toon_style()
 
-        materials_setup.apply_ACON_toon_style()
+            for area in context.screen.areas:
+                if area.type == "VIEW_3D":
+                    ctx = bpy.context.copy()
+                    ctx["area"] = area
+                    ctx["region"] = area.regions[-1]
+                    bpy.ops.view3d.view_selected(ctx)
 
-        for area in context.screen.areas:
-            if area.type == "VIEW_3D":
-                ctx = bpy.context.copy()
-                ctx["area"] = area
-                ctx["region"] = area.regions[-1]
-                bpy.ops.view3d.view_selected(ctx)
+            tracker.import_blend()
+
+        except Exception as e:
+            tracker.import_blend_fail()
+            raise e
 
         return {"FINISHED"}
 
