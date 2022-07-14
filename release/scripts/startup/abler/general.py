@@ -219,24 +219,29 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
             return ExportHelper.invoke(self, context, event)
 
     def execute(self, context):
-        tracker.save()
+        try:
+            if bpy.data.is_saved:
+                self.filepath = context.blend_data.filepath
+                dirname, basename = split_filepath(self.filepath)
 
-        if bpy.data.is_saved:
-            self.filepath = context.blend_data.filepath
-            dirname, basename = split_filepath(self.filepath)
+                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
+            else:
+                numbered_filepath, numbered_filename = numbering_filepath(
+                    self.filepath, self.filename_ext
+                )
 
-        else:
-            numbered_filepath, numbered_filename = numbering_filepath(
-                self.filepath, self.filename_ext
-            )
+                self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+            tracker.save()
+
+        except Exception as e:
+            tracker.save_fail()
+            raise e
 
         return {"FINISHED"}
 
@@ -251,16 +256,20 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     filename_ext = ".blend"
 
     def execute(self, context):
-        tracker.save_as()
+        try:
+            numbered_filepath, numbered_filename = numbering_filepath(
+                self.filepath, self.filename_ext
+            )
 
-        numbered_filepath, numbered_filename = numbering_filepath(
-            self.filepath, self.filename_ext
-        )
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-        self.filepath = f"{numbered_filepath}{self.filename_ext}"
+            bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
-        bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
-        self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+            tracker.save_as()
+        except Exception as e:
+            tracker.save_as_fail()
+            raise e
 
         return {"FINISHED"}
 
