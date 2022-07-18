@@ -4093,7 +4093,7 @@ def km_object_mode(params):
     items.extend([
         *_template_items_proportional_editing(
             params, connected=False, toggle_data_path='tool_settings.use_proportional_edit_objects'),
-        *_template_items_select_actions(params, "object.select_all"),
+        *_template_items_select_actions(params, "acon3d.object_select_all"),
         ("acon3d.state_action", {"type": 'E', "value": 'PRESS'},
          {"properties": [("step", 0.25)]}),
         ("acon3d.state_action", {"type": 'E', "value": 'PRESS', "shift": True},
