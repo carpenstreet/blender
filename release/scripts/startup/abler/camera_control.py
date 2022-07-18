@@ -242,6 +242,14 @@ class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
         wm = context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
 
+    def draw(self, context):
+        space = context.space_data
+        params = space.params
+        params.display_type = "THUMBNAIL"
+        space.show_region_tool_props = False
+        space.show_region_ui = False
+        space.show_region_toolbar = False
+
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_view"
