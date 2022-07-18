@@ -218,10 +218,10 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
-    """Open Image"""
+class OpenBackgroundOperator(bpy.types.Operator, ImportHelper):
+    """Open Background Image"""
 
-    bl_idname = "acon3d.background_image_find"
+    bl_idname = "acon3d.background_image_open"
     bl_label = "Open Image"
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
@@ -243,8 +243,10 @@ class FindBackgroundOperator(bpy.types.Operator, ImportHelper):
         return {"RUNNING_MODAL"}
 
     def draw(self, context):
+        # FileBrowser UI 변경
         space = context.space_data
         params = space.params
+
         params.display_type = "THUMBNAIL"
         space.show_region_tool_props = False
         space.show_region_ui = False
@@ -305,8 +307,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.operator("acon3d.background_image_find", text="New").index = i
-                    # row.template_ID(bg, "image", new="image.open")
+                    row.operator("acon3d.background_image_open", text="Open").index = i
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
@@ -331,7 +332,7 @@ classes = (
     DeleteCameraOperator,
     Acon3dDOFPanel,
     RemoveBackgroundOperator,
-    FindBackgroundOperator,
+    OpenBackgroundOperator,
     Acon3dBackgroundPanel,
 )
 
