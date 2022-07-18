@@ -359,7 +359,12 @@ void WM_OT_splash_about(wmOperatorType *ot)
 }
 
 /*
+ * 아래는 wm_splash_tutorial_1/2/3를 만들기 위해 wm_splash를 생성하는 코드들을 복사함
+ * 각각 static ImBuf *wm_block_splash_image / static uiBlock *wm_block_create_splash /
+ static int wm_splash_invoke / void WM_OT_splash 를 순서대로 따라감
+ * wm.py의 WM_MT_splash_tutorial 클래스의 UI를 받아오기 때문에 1,2,3 UI가 동일함
  */
+
 static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
