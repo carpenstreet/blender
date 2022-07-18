@@ -242,7 +242,6 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
-            # 튜토리얼 가이드 토글 값 받아와 띄우기
             if read_remembered_show_guide():
                 bpy.ops.acon3d.tutorial_guide_popup()
 
