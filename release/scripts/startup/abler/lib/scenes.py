@@ -27,9 +27,7 @@ from .tracker import tracker
 
 
 def change_dof(self, context: Context) -> None:
-    use_dof = context.scene.ACON_prop.use_dof
-
-    if use_dof:
+    if use_dof := context.scene.ACON_prop.use_dof:
         tracker.depth_of_field_on()
     else:
         tracker.depth_of_field_off()
@@ -38,9 +36,7 @@ def change_dof(self, context: Context) -> None:
 
 
 def change_background_images(self, context: Context) -> None:
-    show_background_images = context.scene.ACON_prop.show_background_images
-
-    if show_background_images:
+    if show_background_images := context.scene.ACON_prop.show_background_images:
         tracker.background_images_on()
     else:
         tracker.background_images_off()
@@ -49,9 +45,7 @@ def change_background_images(self, context: Context) -> None:
 
 
 def change_bloom(self, context: Context) -> None:
-    use_bloom = context.scene.ACON_prop.use_bloom
-
-    if use_bloom:
+    if use_bloom := context.scene.ACON_prop.use_bloom:
         tracker.bloom_on()
     else:
         tracker.bloom_off()
