@@ -14,6 +14,7 @@ class EventKind(enum.Enum):
     login_auto = "Login Auto"
     logout = "Logout"
     file_open = "File Open"
+    file_open_fail = "File Open Fail"
     render_quick = "Render Quick"
     render_full = "Render Full"
     render_line = "Render Line"
@@ -21,7 +22,9 @@ class EventKind(enum.Enum):
     render_all_scenes = "Render All Scenes"
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
+    import_blend_fail = "Import *.blend Fail"
     import_fbx = "Import FBX"
+    import_fbx_fail = "Import FBX Fail"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
     scene_add = "Scene Add"
@@ -35,7 +38,9 @@ class EventKind(enum.Enum):
     bloom_on = "Bloom On"
     bloom_off = "Bloom Off"
     save = "save"
+    save_fail = "Save Fail"
     save_as = "save_as"
+    save_as_fail = "Save As Fail"
     group_navigate_bottom = "Group Navigate Bottom"
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
@@ -150,6 +155,9 @@ class Tracker(metaclass=ABCMeta):
     def file_open(self):
         self._track(EventKind.file_open.value)
 
+    def file_open_fail(self):
+        self._track(EventKind.file_open_fail.value)
+
     def render_quick(self):
         self._track(EventKind.render_quick.value)
 
@@ -171,8 +179,14 @@ class Tracker(metaclass=ABCMeta):
     def import_blend(self):
         self._track(EventKind.import_blend.value)
 
+    def import_blend_fail(self):
+        self._track(EventKind.import_blend_fail.value)
+
     def import_fbx(self):
         self._track(EventKind.import_fbx.value)
+
+    def import_fbx_fail(self):
+        self._track(EventKind.import_fbx_fail.value)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
@@ -216,8 +230,14 @@ class Tracker(metaclass=ABCMeta):
     def save(self):
         self._track(EventKind.save.value)
 
+    def save_fail(self):
+        self._track(EventKind.save_fail.value)
+
     def save_as(self):
         self._track(EventKind.save_as.value)
+
+    def save_as_fail(self):
+        self._track(EventKind.save_as_fail.value)
 
     def group_navigate_bottom(self):
         self._track(EventKind.group_navigate_bottom.value)

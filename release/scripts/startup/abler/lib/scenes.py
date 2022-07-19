@@ -27,30 +27,30 @@ from .tracker import tracker
 
 
 def change_dof(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.camera.data.dof.use_dof = prop.use_dof
-    if prop.use_dof:
+    if use_dof := context.scene.ACON_prop.use_dof:
         tracker.depth_of_field_on()
     else:
         tracker.depth_of_field_off()
 
+    context.scene.camera.data.dof.use_dof = use_dof
+
 
 def change_background_images(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.camera.data.show_background_images = prop.show_background_images
-    if prop.show_background_images:
+    if show_background_images := context.scene.ACON_prop.show_background_images:
         tracker.background_images_on()
     else:
         tracker.background_images_off()
 
+    context.scene.camera.data.show_background_images = show_background_images
+
 
 def change_bloom(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.eevee.use_bloom = prop.use_bloom
-    if prop.use_bloom:
+    if use_bloom := context.scene.ACON_prop.use_bloom:
         tracker.bloom_on()
     else:
         tracker.bloom_off()
+
+    context.scene.eevee.use_bloom = use_bloom
 
 
 def gen_scene_name(name: str, i: int = 1) -> str:
