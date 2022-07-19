@@ -30,7 +30,7 @@ import requests
 from bpy.app.handlers import persistent
 
 from .lib.async_task import AsyncTask
-from .lib.login import is_first_open
+from .lib.login import is_process_single
 from .lib.post_open import tracker_file_open
 from .lib.remember_username import (
     delete_remembered_username,
@@ -473,7 +473,7 @@ def open_credential_modal(dummy):
 
         responseData = response.json()
         if token := responseData["accessToken"]:
-            if not fileopen and is_first_open():
+            if not fileopen and is_process_single():
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
 
