@@ -22,6 +22,7 @@ from math import radians
 from .lib import scenes, cameras, shadow, objects, bloom, version
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
+from . import object_control
 
 
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
@@ -598,8 +599,8 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
     group_list: bpy.props.EnumProperty(
-        name="View",
-        items=objects.add_group_list_from_collection,
+        name="",
+        items=object_control.add_group_list_from_collection,
     )
 
     constraint_to_camera_rotation_z: bpy.props.BoolProperty(
