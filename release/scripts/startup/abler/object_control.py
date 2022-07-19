@@ -246,6 +246,42 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
             row.label(text="No selected object")
 
 
+# Camera, Sun 제외 전체 선택
+class ObjectAllSelectOperator(bpy.types.Operator):
+    """Select all objects"""
+
+    bl_idname = "acon3d.object_select_all"
+    bl_label = "Object All Select"
+    bl_translation_context = "*"
+    bl_options = {"REGISTER", "UNDO"}
+    action = ""
+
+    def invoke(self, context, event):
+        key_type = event.type
+        key_value = event.value
+
+        if (key_type == "A" and key_value == "DOUBLE_CLICK") or (
+            key_type == "ESC" and key_value == "PRESS"
+        ):
+            self.action = "DESELECT"
+        elif key_type == "I" and key_value == "PRESS":
+            self.action = "INVERT"
+        elif key_type == "A" and key_value == "PRESS":
+            self.action = "SELECT"
+
+        return self.execute(context)
+
+    def execute(self, context):
+        if self.action == "SELECT":
+            bpy.ops.object.select_by_type(extend=False, type="EMPTY")
+            bpy.ops.object.select_by_type(extend=True, type="MESH")
+        # INVERT 는 현재 사용되지 않음
+        elif self.action == "DESELECT" or self.action == "INVERT":
+            bpy.ops.object.select_all(action=self.action)
+
+        return {"FINISHED"}
+
+
 classes = (
     GroupNavigateUpOperator,
     GroupNavigateTopOperator,
@@ -256,6 +292,7 @@ classes = (
     Acon3dObjectPanel,
     ObjectSubPanel,
     Acon3dGroupNavigaionPanel,
+    ObjectAllSelectOperator,
 )
 
 
