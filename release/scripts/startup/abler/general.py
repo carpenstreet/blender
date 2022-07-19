@@ -37,7 +37,6 @@ from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
 from .lib.read_cookies import read_remembered_show_guide
-import pyautogui
 
 
 def splitFilepath(filepath):
@@ -89,11 +88,9 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
     def execute(self, context):
         # 스플래시 이미지 바깥에서 더블클릭하면 splash가 한꺼번에 다 꺼짐
         window = bpy.context.window
-        origianl_position = pyautogui.position()
         window.cursor_warp(50, 50)
 
-        pyautogui.click(clicks=2)
-        pyautogui.moveTo(origianl_position)
+        # TODO: pyautogui 안쓰고 한꺼번에 꺼지게 할 수 없나!
 
         return {"FINISHED"}
 
