@@ -1,5 +1,7 @@
 import os
 import bpy
+
+from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.remember_username import read_remembered_checkbox, read_remembered_username
 
@@ -47,6 +49,8 @@ class Acon3dLogoutOperator(bpy.types.Operator):
             bpy.ops.wm.splash("INVOKE_DEFAULT")
         else:
             print("No login session file")
+
+        tracker.logout()
 
         return {"FINISHED"}
 
