@@ -273,7 +273,9 @@ class ObjectAllSelectOperator(bpy.types.Operator):
 
     def execute(self, context):
         if self.action == "SELECT":
-            bpy.ops.object.select_by_type(False, type="MESH")
+            bpy.ops.object.select_by_type(extend=False, type="EMPTY")
+            bpy.ops.object.select_by_type(extend=True, type="MESH")
+
         # INVERT 는 현재 사용되지 않음
         elif self.action == "DESELECT" or self.action == "INVERT":
             bpy.ops.object.select_all(action=self.action)
