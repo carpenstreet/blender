@@ -15,8 +15,6 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-
-
 bl_info = {
     "name": "ACON3D Panel",
     "description": "",
@@ -29,8 +27,9 @@ bl_info = {
     "tracker_url": "",
     "category": "ACON3D",
 }
-import os
 
+import os
+from datetime import datetime, timedelta
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
@@ -157,7 +156,33 @@ class ToggleToolbarOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class FileOpenOperator(bpy.types.Operator, ImportHelper):
+class BaseFileOpenOperator:
+    filepath: bpy.props.StringProperty(name="text", default="")
+
+    def open_file(self):
+        try:
+            path = self.filepath
+
+            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+                return
+            elif not os.path.isfile(path):
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="File not found",
+                    message_1="Selected file does not exist",
+                )
+                tracker.file_open_fail()
+                return
+
+            bpy.ops.wm.open_mainfile(filepath=path)
+
+        except:
+            tracker.file_open_fail()
+        else:
+            tracker.file_open()
+
+
+class FileOpenOperator(bpy.types.Operator, ImportHelper, BaseFileOpenOperator):
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
@@ -167,27 +192,39 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        try:
-            path = self.filepath
+        self.open_file()
+        return {"FINISHED"}
 
-            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
-                return {"FINISHED"}
-            elif not os.path.isfile(path):
-                bpy.ops.acon3d.alert(
-                    "INVOKE_DEFAULT",
-                    title="File not found",
-                    message_1="Selected file does not exist",
-                )
-                tracker.file_open_fail()
-                return {"FINISHED"}
 
-            bpy.ops.wm.open_mainfile(filepath=path)
+class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
+    bl_idname = "acon3d.recent_file_open"
+    bl_label = ""
+    bl_translation_context = "*"
+    bl_description = "Hello"
 
-        except:
-            tracker.file_open_fail()
+    @classmethod
+    def description(cls, context, properties):
+        filepath = properties.filepath
+
+        modified_datetime = datetime.fromtimestamp(os.path.getmtime(filepath))
+        time_distance = datetime.today().date() - modified_datetime.date()
+
+        if time_distance == timedelta():
+            modified_time = modified_datetime.strftime("Today %H:%M")
+        elif time_distance == timedelta(days=1):
+            modified_time = modified_datetime.strftime("Yesterday %H:%M")
         else:
-            tracker.file_open()
+            modified_time = modified_datetime.strftime("%d %b %Y %H:%M")
 
+        modified_time = f"Modified: {modified_time}"
+
+        size = round(os.path.getsize(filepath) / 1000000.0, 1)
+        size = f"Size: {size} MB"
+
+        return f"{filepath}\n\n{modified_time}\n{size}"
+
+    def execute(self, context):
+        self.open_file()
         return {"FINISHED"}
 
 
@@ -339,6 +376,7 @@ classes = (
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
+    FileRecentOpenOperator,
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
