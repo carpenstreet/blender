@@ -3211,8 +3211,8 @@ class WM_MT_splash_tutorial(Menu):
         layout.separator()
 
         row = layout.row()
-        anchor = row.operator("wm.url_open", text="Go To Guide (Notion)", icon='URL')
-        anchor.url = 'https://www.notion.so/acon3d/ae6c0a608fd749b4a14b1cf98f058ff7'
+        anchor = row.operator("wm.url_open", text="Go To Guide", icon='URL')
+        anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
         layout.separator()
 
         row = layout.row()
