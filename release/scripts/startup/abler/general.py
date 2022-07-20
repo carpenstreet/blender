@@ -82,6 +82,8 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
 
 
 class AconTutorialGuideCloseOperator(bpy.types.Operator):
+    """Close Tutorial Guide"""
+
     bl_idname = "acon3d.tutorial_guide_close"
     bl_label = "OK"
 
@@ -91,6 +93,8 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
 
 
 class AconTutorialGuide1Operator(bpy.types.Operator):
+    """Mouse Mode"""
+
     bl_idname = "acon3d.tutorial_guide_1"
     bl_label = "Mouse Mode"
     bl_translation_context = "*"
@@ -102,6 +106,8 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
 
 class AconTutorialGuide2Operator(bpy.types.Operator):
+    """Fly Mode"""
+
     bl_idname = "acon3d.tutorial_guide_2"
     bl_label = "Fly Mode"
     bl_translation_context = "*"
@@ -113,6 +119,8 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
 
 class AconTutorialGuide3Operator(bpy.types.Operator):
+    """Scene Control"""
+
     bl_idname = "acon3d.tutorial_guide_3"
     bl_label = "Scene Control"
     bl_translation_context = "*"
