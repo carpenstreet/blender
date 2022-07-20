@@ -21,7 +21,7 @@ import bpy
 from bpy.types import Collection, Object, Camera
 
 
-def genCameraName(name: str, i: int = 1) -> str:
+def gen_camera_name(name: str, i: int = 1) -> str:
     found: Optional[bool] = None
     collection: Optional[Collection] = bpy.data.collections.get("ACON_col_cameras")
 
@@ -33,7 +33,7 @@ def genCameraName(name: str, i: int = 1) -> str:
                 found = True
                 break
 
-    return genCameraName(name, i + 1) if found else name + str(i)
+    return gen_camera_name(name, i + 1) if found else name + str(i)
 
 
 # items should be a global variable due to a bug in EnumProperty
@@ -49,8 +49,8 @@ def add_view_items_from_collection(self, context) -> List[Tuple[str, str, str]]:
     return items
 
 
-def goToCustomCamera(self, context) -> None:
-    makeSureCameraExists()
+def go_to_custom_camera(self, context) -> None:
+    make_sure_camera_exists()
     viewCamera: Camera = context.scene.camera
     targetCamera: Camera = bpy.data.objects[context.scene.ACON_prop.view]
     viewCamera.location[0] = targetCamera.location[0]
@@ -63,10 +63,10 @@ def goToCustomCamera(self, context) -> None:
     viewCamera.scale[0] = targetCamera.scale[0]
     viewCamera.scale[1] = targetCamera.scale[1]
     viewCamera.scale[2] = targetCamera.scale[2]
-    turnOnCameraView()
+    turn_on_camera_view()
 
 
-def makeSureCameraExists() -> None:
+def make_sure_camera_exists() -> None:
     # early out if scene camera exists
     if bpy.context.scene.camera:
         bpy.context.scene.camera.data.show_passepartout = False
@@ -93,10 +93,13 @@ def makeSureCameraExists() -> None:
     # set context camera
     bpy.context.scene.camera = camera_object
 
+    # View_Camera 오브젝트 활성화
+    bpy.context.view_layer.objects.active = camera_object
+
 
 # turn on camera view (set viewport to the current selected camera's view)
-def turnOnCameraView(center_camera: bool = True) -> None:
-    makeSureCameraExists()
+def turn_on_camera_view(center_camera: bool = True) -> None:
+    make_sure_camera_exists()
     # turn on camera view in the selected context(view pane)
     for screen in bpy.data.screens:
         for area in screen.areas:
@@ -109,15 +112,15 @@ def turnOnCameraView(center_camera: bool = True) -> None:
                 break
 
 
-def turnOffCameraView() -> None:
-    # turn onff camera view in the selected context(view pane)
+def turn_off_camera_view() -> None:
+    # turn off camera view in the selected context(view pane)
     for area in bpy.context.screen.areas:
         if area.type == "VIEW_3D":
             area.spaces[0].region_3d.view_perspective = "PERSP"
             break
 
 
-def switchToRendredView() -> None:
+def switch_to_rendered_view() -> None:
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
     for area in bpy.context.screen.areas:
         if area.type == "VIEW_3D":

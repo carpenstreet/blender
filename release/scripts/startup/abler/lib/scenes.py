@@ -27,38 +27,38 @@ from .tracker import tracker
 
 
 def change_dof(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.camera.data.dof.use_dof = prop.use_dof
-    if prop.use_dof:
+    if use_dof := context.scene.ACON_prop.use_dof:
         tracker.depth_of_field_on()
     else:
         tracker.depth_of_field_off()
 
+    context.scene.camera.data.dof.use_dof = use_dof
+
 
 def change_background_images(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.camera.data.show_background_images = prop.show_background_images
-    if prop.show_background_images:
+    if show_background_images := context.scene.ACON_prop.show_background_images:
         tracker.background_images_on()
     else:
         tracker.background_images_off()
 
+    context.scene.camera.data.show_background_images = show_background_images
+
 
 def change_bloom(self, context: Context) -> None:
-    prop = context.scene.ACON_prop
-    context.scene.eevee.use_bloom = prop.use_bloom
-    if prop.use_bloom:
+    if use_bloom := context.scene.ACON_prop.use_bloom:
         tracker.bloom_on()
     else:
         tracker.bloom_off()
 
+    context.scene.eevee.use_bloom = use_bloom
 
-def genSceneName(name: str, i: int = 1) -> str:
+
+def gen_scene_name(name: str, i: int = 1) -> str:
     combinedName: str = name + str(i)
 
     found = any(scene.name == combinedName for scene in bpy.data.scenes)
 
-    return genSceneName(name, i + 1) if found else combinedName
+    return gen_scene_name(name, i + 1) if found else combinedName
 
 
 def refresh_look_at_me() -> None:
@@ -89,7 +89,7 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     return scene_items
 
 
-def loadScene(self, context: Context) -> None:
+def load_scene(self, context: Context) -> None:
 
     if not context:
         context = bpy.context
@@ -101,31 +101,31 @@ def loadScene(self, context: Context) -> None:
     oldScene: Optional[Scene] = context.scene
     context.window.scene = newScene
 
-    materials_handler.toggleToonEdge(None, context)
-    materials_handler.changeLineProps(None, context)
-    materials_handler.toggleToonFace(None, context)
-    materials_handler.toggleTexture(None, context)
-    materials_handler.toggleShading(None, context)
-    materials_handler.changeToonDepth(None, context)
-    materials_handler.changeToonShadingBrightness(None, context)
-    materials_handler.changeImageAdjustBrightness(None, context)
-    materials_handler.changeImageAdjustContrast(None, context)
-    materials_handler.changeImageAdjustColor(None, context)
-    materials_handler.changeImageAdjustHue(None, context)
-    materials_handler.changeImageAdjustSaturation(None, context)
+    materials_handler.toggle_toon_edge(None, context)
+    materials_handler.change_line_props(None, context)
+    materials_handler.toggle_toon_face(None, context)
+    materials_handler.toggle_texture(None, context)
+    materials_handler.toggle_shading(None, context)
+    materials_handler.change_toon_depth(None, context)
+    materials_handler.change_toon_shading_brightness(None, context)
+    materials_handler.change_image_adjust_brightness(None, context)
+    materials_handler.change_image_adjust_contrast(None, context)
+    materials_handler.change_image_adjust_color(None, context)
+    materials_handler.change_image_adjust_hue(None, context)
+    materials_handler.change_image_adjust_saturation(None, context)
 
-    layers.handleLayerVisibilityOnSceneChange(oldScene, newScene)
+    layers.handle_layer_visibility_on_scene_change(oldScene, newScene)
 
-    shadow.toggleSun(None, context)
-    shadow.changeSunStrength(None, context)
-    shadow.toggleShadow(None, context)
-    shadow.changeSunRotation(None, context)
+    shadow.toggle_sun(None, context)
+    shadow.change_sun_strength(None, context)
+    shadow.toggle_shadow(None, context)
+    shadow.change_sun_rotation(None, context)
 
     # refresh look_at_me
     refresh_look_at_me()
 
 
-def createScene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
+def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
 
     new_scene = old_scene.copy()
     new_scene.name = name

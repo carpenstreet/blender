@@ -45,7 +45,7 @@ class GroupNavigateTopOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_top()
-        layers.selectByGroup("TOP")
+        layers.select_by_group("TOP")
         return {"FINISHED"}
 
 
@@ -58,7 +58,7 @@ class GroupNavigateUpOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_up()
-        layers.selectByGroup("UP")
+        layers.select_by_group("UP")
         return {"FINISHED"}
 
 
@@ -71,7 +71,7 @@ class GroupNavigateDownOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_down()
-        layers.selectByGroup("DOWN")
+        layers.select_by_group("DOWN")
         return {"FINISHED"}
 
 
@@ -84,7 +84,7 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
 
     def execute(self, context):
         tracker.group_navigate_bottom()
-        layers.selectByGroup("BOTTOM")
+        layers.select_by_group("BOTTOM")
         return {"FINISHED"}
 
 
@@ -167,7 +167,10 @@ class Acon3dObjectPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
 
-        if context.selected_objects:
+        # context.selected_objects는 드래그로 선택된 개체, context.object는 개별 선택 개체
+        # 드래그로 선택해도 context.object=None일 수 있으므로 두 조건을 모두 확인
+        # https://docs.blender.org/manual/en/3.0/scene_layout/object/selecting.html#selections-and-the-active-object
+        if context.selected_objects and context.object:
             row = col.row()
             row.prop(
                 context.object.ACON_prop,
@@ -201,7 +204,7 @@ class ObjectSubPanel(bpy.types.Panel):
         layout.use_property_split = True
         layout.use_property_decorate = True
 
-        if context.selected_objects:
+        if context.selected_objects and context.object:
             obj = context.object
             prop = obj.ACON_prop
 
@@ -225,7 +228,7 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
-        if context.selected_objects:
+        if context.selected_objects and context.object:
             obj = context.object
             prop = obj.ACON_prop
             layout = self.layout
@@ -243,6 +246,42 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
             row.label(text="No selected object")
 
 
+# Camera, Sun 제외 전체 선택
+class ObjectAllSelectOperator(bpy.types.Operator):
+    """Select all objects"""
+
+    bl_idname = "acon3d.object_select_all"
+    bl_label = "Object All Select"
+    bl_translation_context = "*"
+    bl_options = {"REGISTER", "UNDO"}
+    action = ""
+
+    def invoke(self, context, event):
+        key_type = event.type
+        key_value = event.value
+
+        if (key_type == "A" and key_value == "DOUBLE_CLICK") or (
+            key_type == "ESC" and key_value == "PRESS"
+        ):
+            self.action = "DESELECT"
+        elif key_type == "I" and key_value == "PRESS":
+            self.action = "INVERT"
+        elif key_type == "A" and key_value == "PRESS":
+            self.action = "SELECT"
+
+        return self.execute(context)
+
+    def execute(self, context):
+        if self.action == "SELECT":
+            bpy.ops.object.select_by_type(extend=False, type="EMPTY")
+            bpy.ops.object.select_by_type(extend=True, type="MESH")
+        # INVERT 는 현재 사용되지 않음
+        elif self.action == "DESELECT" or self.action == "INVERT":
+            bpy.ops.object.select_all(action=self.action)
+
+        return {"FINISHED"}
+
+
 classes = (
     GroupNavigateUpOperator,
     GroupNavigateTopOperator,
@@ -253,6 +292,7 @@ classes = (
     Acon3dObjectPanel,
     ObjectSubPanel,
     Acon3dGroupNavigaionPanel,
+    ObjectAllSelectOperator,
 )
 
 

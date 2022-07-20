@@ -1,5 +1,7 @@
 import os
 import bpy
+
+from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.remember_username import read_remembered_checkbox, read_remembered_username
 
@@ -12,7 +14,7 @@ class Acon3dToonStyleOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        materials_setup.applyAconToonStyle()
+        materials_setup.apply_ACON_toon_style()
         return {"FINISHED"}
 
 
@@ -47,6 +49,8 @@ class Acon3dLogoutOperator(bpy.types.Operator):
             bpy.ops.wm.splash("INVOKE_DEFAULT")
         else:
             print("No login session file")
+
+        tracker.logout()
 
         return {"FINISHED"}
 

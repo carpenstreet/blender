@@ -339,7 +339,7 @@ endif
 # -----------------------------------------------------------------------------
 # Build Blender
 all: .FORCE
-	@echo
+	@cd $(BLENDER_DIR)/launcher_qt ; make ; cd $(BLENDER_DIR)
 	@echo Configuring Blender in \"$(BUILD_DIR)\" ...
 
 #	# if test ! -f $(BUILD_DIR)/CMakeCache.txt ; then \
@@ -549,6 +549,9 @@ update_code: .FORCE
 
 acp: .FORCE
 	$(PYTHON) ./abler_dev_build.py
+
+deploy: .FORCE
+	sh ./release/darwin/ABLER_macOS_Release.sh
 
 format: .FORCE
 	PATH="../lib/${OS_NCASE}_${CPU}/llvm/bin/:../lib/${OS_NCASE}_centos7_${CPU}/llvm/bin/:../lib/${OS_NCASE}/llvm/bin/:$(PATH)" \

@@ -5,15 +5,14 @@ from . import cameras
 from .tracker import tracker
 
 
-def toggleConstraintToCamera(self, context):
-
-    cameras.makeSureCameraExists()
-
+def toggle_constraint_to_camera(self, context):
     obj = context.object
     if obj.ACON_prop.constraint_to_camera_rotation_z:
         tracker.look_at_me()
 
-    setConstraintToCameraByObject(obj, context)
+    cameras.make_sure_camera_exists()
+
+    set_constraint_to_camera_by_object(obj, context)
 
 
 # items should be a global variable due to a bug in EnumProperty
@@ -35,7 +34,7 @@ def add_group_list_from_collection(
     return items
 
 
-def setConstraintToCameraByObject(obj, context=None):
+def set_constraint_to_camera_by_object(obj, context=None):
 
     if not context:
         context = bpy.context
@@ -71,7 +70,7 @@ def step(edge0: tuple[float], edge1: tuple[float], x: float) -> tuple[float]:
     return tuple(edge0[i] + ((edge1[i] - edge0[i]) * x) for i in [0, 1, 2])
 
 
-def toggleUseState(self, context):
+def toggle_use_state(self, context):
 
     use_state = self.use_state
 
@@ -115,7 +114,7 @@ def toggleUseState(self, context):
                 prop.use_state = False
 
 
-def moveState(self, context):
+def move_state(self, context):
 
     state_slider = self.state_slider
 

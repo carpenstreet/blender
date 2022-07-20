@@ -16,7 +16,7 @@ class ConfigSelector:
         self.updater = os.path.join(
             self.home, "AppData\\Roaming\\Blender Foundation\\Blender\\2.96\\updater"
         )
-        self.launcher = os.path.join(self.updater, "AblerLauncher.exe")
+        self.launcher = os.path.join(self.updater, "AblerLauncher.exe --pre-release")
         self.config = os.path.join(self.updater, "config.ini")
         self.config_bak = os.path.join(self.updater, "config.ini.bak")
         self.config_data = []
@@ -108,10 +108,10 @@ class ConfigSelector:
         Auto update with args
         """
         if "abler" in args.update:
-            self.abler_ver = "0.0.1"
+            self.abler_ver = "0.0.0"
 
         if "launcher" in args.update:
-            self.launcher_ver = "0.0.1"
+            self.launcher_ver = "0.0.0"
 
 
 def main():
