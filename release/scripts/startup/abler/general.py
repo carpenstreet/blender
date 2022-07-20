@@ -200,7 +200,6 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
     bl_idname = "acon3d.recent_file_open"
     bl_label = ""
     bl_translation_context = "*"
-    bl_description = "Hello"
 
     @classmethod
     def description(cls, context, properties):
