@@ -66,10 +66,19 @@
 
 #include "wm.h"
 
+static uiBlock *last_tutorial_block = NULL;
+
 static void wm_block_close(bContext *C, void *arg_block, void *UNUSED(arg))
 {
   wmWindow *win = CTX_wm_window(C);
   UI_popup_block_close(C, win, arg_block);
+}
+
+static void wm_block_close_tutorial(bContext *C, void *arg_block, void *UNUSED(arg))
+{
+  wmWindow *win = CTX_wm_window(C);
+  UI_popup_block_close(C, win, arg_block);
+  last_tutorial_block = NULL;
 }
 
 static void wm_block_splash_add_label(uiBlock *block, const char *label, int x, int y)
@@ -414,6 +423,7 @@ static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *U
   const uiStyle *style = UI_style_get_dpi();
 
   uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+  last_tutorial_block = block;
 
   /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
    * with the OS when the splash shows, window clipping in this case gives
@@ -435,7 +445,7 @@ static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *U
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
 
-  UI_but_func_set(but, wm_block_close, block, NULL);
+  UI_but_func_set(but, wm_block_close_tutorial, block, NULL);
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
@@ -546,6 +556,7 @@ static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *U
   const uiStyle *style = UI_style_get_dpi();
 
   uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+  last_tutorial_block = block;
 
   /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
    * with the OS when the splash shows, window clipping in this case gives
@@ -567,7 +578,7 @@ static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *U
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
 
-  UI_but_func_set(but, wm_block_close, block, NULL);
+  UI_but_func_set(but, wm_block_close_tutorial, block, NULL);
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
@@ -678,6 +689,7 @@ static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *U
   const uiStyle *style = UI_style_get_dpi();
 
   uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+  last_tutorial_block = block;
 
   /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
    * with the OS when the splash shows, window clipping in this case gives
@@ -699,7 +711,7 @@ static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *U
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
 
-  UI_but_func_set(but, wm_block_close, block, NULL);
+  UI_but_func_set(but, wm_block_close_tutorial, block, NULL);
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
@@ -758,5 +770,23 @@ void WM_OT_splash_tutorial_3(wmOperatorType *ot)
   ot->description = "Open the tutorial screen";
 
   ot->invoke = wm_tutorial_invoke_3;
+  ot->poll = WM_operator_winactive;
+}
+
+static int wm_tutorial_close_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  if (last_tutorial_block != NULL) {
+    wm_block_close_tutorial(C, last_tutorial_block, NULL);
+  }
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_tutorial_close(wmOperatorType *ot)
+{
+  ot->name = "Close tutorial";
+  ot->idname = "WM_OT_splash_tutorial_close";
+  ot->description = "Close the tutorial screen";
+
+  ot->invoke = wm_tutorial_close_invoke;
   ot->poll = WM_operator_winactive;
 }

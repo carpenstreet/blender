@@ -86,8 +86,7 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
     bl_label = "OK"
 
     def execute(self, context):
-        bpy.ops.screen.screen_full_area()
-        bpy.ops.screen.back_to_previous()
+        bpy.ops.wm.splash_tutorial_close("INVOKE_DEFAULT")
         return {"CANCELLED"}
 
 
