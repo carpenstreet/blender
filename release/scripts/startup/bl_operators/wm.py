@@ -3219,7 +3219,7 @@ class WM_MT_splash_tutorial(Menu):
         layout.separator()
 
         row = layout.row()
-        row.operator("acon3d.close_by_double_click", text="OK")
+        row.operator("acon3d.tutorial_guide_close", text="OK")
         layout.separator()
 
         column = layout.column()

@@ -82,7 +82,7 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
 
 
 class AconTutorialGuideCloseOperator(bpy.types.Operator):
-    bl_idname = "acon3d.close_by_double_click"
+    bl_idname = "acon3d.tutorial_guide_close"
     bl_label = "OK"
 
     def execute(self, context):
