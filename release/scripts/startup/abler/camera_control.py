@@ -274,6 +274,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.operator("view3d.background_image_add", text="Add Image", text_ctxt="*")
+        layout.enabled = context.scene.ACON_prop.show_background_images
 
         camObj = context.scene.camera
         active = camObj and camObj.data.show_background_images
