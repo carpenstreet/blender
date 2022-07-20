@@ -3201,14 +3201,11 @@ class WM_MT_splash_tutorial(Menu):
 
         split = layout.split()
         col1 = split.column()
-        col1.operator_context = 'INVOKE_DEFAULT'
-        col1.operator("wm.splash_tutorial_1", text="Mouse Mode")
+        col1.operator("acon3d.tutorial_guide_1", text="Mouse Mode")
         col2 = split.column()
-        col2.operator_context = 'INVOKE_DEFAULT'
-        col2.operator("wm.splash_tutorial_2", text="Fly Mode")
+        col2.operator("acon3d.tutorial_guide_2", text="Fly Mode")
         col3 = split.column()
-        col3.operator_context = 'INVOKE_DEFAULT'
-        col3.operator("wm.splash_tutorial_3", text="Scene Control")
+        col3.operator("acon3d.tutorial_guide_3", text="Scene Control")
         for _ in range(4):
             split.column()
         layout.separator()

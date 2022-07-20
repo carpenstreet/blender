@@ -91,6 +91,39 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
         return {"CANCELLED"}
 
 
+class AconTutorialGuide1Operator(bpy.types.Operator):
+    bl_idname = "acon3d.tutorial_guide_1"
+    bl_label = "Mouse Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide2Operator(bpy.types.Operator):
+    bl_idname = "acon3d.tutorial_guide_2"
+    bl_label = "Fly Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_2("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide3Operator(bpy.types.Operator):
+    bl_idname = "acon3d.tutorial_guide_3"
+    bl_label = "Scene Control"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_3("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
 class ImportOperator(bpy.types.Operator, ImportHelper):
     """Import file according to the current settings"""
 
@@ -342,6 +375,9 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 classes = (
     AconTutorialGuidePopUpOperator,
     AconTutorialGuideCloseOperator,
+    AconTutorialGuide1Operator,
+    AconTutorialGuide2Operator,
+    AconTutorialGuide3Operator,
     Acon3dImportPanel,
     ToggleToolbarOperator,
     ImportOperator,
