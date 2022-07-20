@@ -2,8 +2,8 @@ import os
 import platform
 import shutil
 
-src_path = "./release/scripts/addons_abler"
-dest_path_ending = "2.96/scripts/addons_abler"
+src_path = "./release/scripts/addons_abler/io_skp"
+dest_path_ending = "2.96/scripts/addons_abler/io_skp"
 dest_path = ""
 
 
@@ -23,6 +23,6 @@ else:
     exit(1)
 try:
     copy_scripts(src_path, dest_path)
-    print("Successfully copied scripts from addons_abler")
+    print("Successfully copied scripts from addons_abler/io_skp")
 except Exception as e:
     raise e

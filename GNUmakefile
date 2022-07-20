@@ -550,8 +550,8 @@ update_code: .FORCE
 acp: .FORCE
 	$(PYTHON) ./abler_dev_build.py
 
-cvt: .FORCE
-	$(PYTHON) ./abler_converter.py
+skp: .FORCE
+	$(PYTHON) ./abler_skp_build.py
 
 format: .FORCE
 	PATH="../lib/${OS_NCASE}_${CPU}/llvm/bin/:../lib/${OS_NCASE}_centos7_${CPU}/llvm/bin/:../lib/${OS_NCASE}/llvm/bin/:$(PATH)" \
