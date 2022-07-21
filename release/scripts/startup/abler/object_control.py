@@ -131,6 +131,11 @@ class GroupNavigationManager:
 
 
 class ProgrammaticSelectionScope:
+    """
+    msgbus 콜백이 다음 이벤트 루프에 실행되는 문제가 있어서,
+    실행을 지연시키기 위하여 실행 블록을 잡아주는 클래스
+    """
+
     def __init__(self, manager: GroupNavigationManager):
         self._manager = manager
 
@@ -139,7 +144,6 @@ class ProgrammaticSelectionScope:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         def delayed():
-            """msgbus 콜백이 다음 이벤트 루프에 실행되는 문제가 있어서, 실행을 지연시킴"""
             self._manager._user_event_disabled = False
 
         bpy.app.timers.register(delayed, first_interval=0.01)
