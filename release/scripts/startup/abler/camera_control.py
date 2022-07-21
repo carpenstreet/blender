@@ -290,19 +290,9 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
 
-    def draw_header(self, context):
-        toggle_texture = context.scene.ACON_prop.toggle_texture
-
-        if context.scene.camera is not None and toggle_texture:
-            scene = context.scene
-            self.layout.prop(scene.ACON_prop, "show_background_images", text="")
-        else:
-            self.layout.active = False
-
     def draw(self, context):
         layout = self.layout
         layout.operator("view3d.background_image_add", text="Add Image", text_ctxt="*")
-        layout.enabled = context.scene.ACON_prop.show_background_images
 
         camObj = context.scene.camera
         active = camObj and camObj.data.show_background_images
@@ -311,9 +301,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
         layout.use_property_split = True
         layout.use_property_decorate = False
 
-        toggle_texture = context.scene.ACON_prop.toggle_texture
-
-        if context.scene.camera is not None and toggle_texture:
+        if context.scene.camera is not None:
             cam = context.scene.camera.data
 
             for i, bg in enumerate(cam.background_images):
