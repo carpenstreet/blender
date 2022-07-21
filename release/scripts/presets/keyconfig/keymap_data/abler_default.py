@@ -414,7 +414,7 @@ def km_window(params):
     items.extend([
         # File operations
         op_menu("TOPBAR_MT_file_new", {"type": 'N', "value": 'PRESS', "ctrl": True}),
-        op_menu("ACON3D_TOPBAR_MT_open_recent_files", {"type": 'O', "value": 'PRESS', "shift": True, "ctrl": True}),
+        op_menu("TOPBAR_MT_ACON3D_open_recent_files", {"type": 'O', "value": 'PRESS', "shift": True, "ctrl": True}),
         ("acon3d.file_open", {"type": 'O', "value": 'PRESS', "ctrl": True}, None),
         ("acon3d.save", {"type": 'S', "value": 'PRESS', "ctrl": True}, None),
         ("acon3d.save_as", {"type": 'S', "value": 'PRESS', "shift": True, "ctrl": True}, None),

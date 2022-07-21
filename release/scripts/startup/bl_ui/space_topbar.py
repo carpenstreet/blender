@@ -289,7 +289,7 @@ class TOPBAR_MT_file(Menu):
         layout.operator_context = 'INVOKE_AREA'
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
         layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
-        layout.menu("ACON3D_TOPBAR_MT_open_recent_files")
+        layout.menu("TOPBAR_MT_ACON3D_open_recent_files")
         layout.operator("wm.revert_mainfile")
         layout.menu("TOPBAR_MT_file_recover")
 
@@ -396,7 +396,7 @@ class TOPBAR_MT_file_new(Menu):
     def draw(self, context):
         TOPBAR_MT_file_new.draw_ex(self.layout, context)
 
-class ACON3D_TOPBAR_MT_open_recent_files(Menu):
+class TOPBAR_MT_ACON3D_open_recent_files(Menu):
     bl_label = "Open Recent"
 
     def draw(self, _context):
@@ -886,7 +886,7 @@ classes = (
     TOPBAR_MT_blender_system,
     TOPBAR_MT_file,
     TOPBAR_MT_file_new,
-    ACON3D_TOPBAR_MT_open_recent_files,
+    TOPBAR_MT_ACON3D_open_recent_files,
     TOPBAR_MT_file_recover,
     TOPBAR_MT_file_defaults,
     TOPBAR_MT_templates_more,
