@@ -218,11 +218,46 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class OpenBackgroundOperator(bpy.types.Operator, ImportHelper):
-    """Open Background Image"""
+class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
+    """Open Default Background Image"""
 
-    bl_idname = "acon3d.background_image_open"
-    bl_label = "Open Image"
+    bl_idname = "acon3d.default_background_image_open"
+    bl_label = "Default Image"
+    bl_translation_context = "*"
+    bl_options = {"REGISTER", "UNDO"}
+
+    index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+    filepath: bpy.props.StringProperty()
+
+    def execute(self, context):
+        new_image = bpy.data.images.load(self.filepath)
+        image = context.scene.camera.data.background_images[self.index]
+        image.image = new_image
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        path_abler = bpy.utils.preset_paths("abler")[0]
+        self.filepath = path_abler + "/Background_Image/"
+        wm = context.window_manager.fileselect_add(self)
+        return {"RUNNING_MODAL"}
+
+    def draw(self, context):
+        # FileBrowser UI 변경
+        space = context.space_data
+        params = space.params
+
+        params.display_type = "THUMBNAIL"
+        space.show_region_tool_props = False
+        space.show_region_ui = False
+        space.show_region_toolbar = False
+
+
+class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
+    """Open Custom Background Image"""
+
+    bl_idname = "acon3d.custom_background_image_open"
+    bl_label = "Custom Image"
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
@@ -308,7 +343,13 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.operator("acon3d.background_image_open", text="Open").index = i
+                    row.operator(
+                        "acon3d.default_background_image_open", text="Default Image"
+                    ).index = i
+                    row.operator(
+                        "acon3d.custom_background_image_open", text="Custom Image"
+                    ).index = i
+                    row.operator("")
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
@@ -333,7 +374,8 @@ classes = (
     DeleteCameraOperator,
     Acon3dDOFPanel,
     RemoveBackgroundOperator,
-    OpenBackgroundOperator,
+    OpenDefaultBackgroundOperator,
+    OpenCustomBackgroundOperator,
     Acon3dBackgroundPanel,
 )
 
