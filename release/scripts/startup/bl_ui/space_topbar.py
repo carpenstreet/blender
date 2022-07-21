@@ -404,13 +404,20 @@ class TOPBAR_MT_ACON3D_open_recent_files(Menu):
 
         history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
 
-        with open(history_path, "r") as f:
-            recent_filepaths = f.read().splitlines()
+        try:
+            with open(history_path, "r") as f:
+                recent_filepaths = f.read().splitlines()
+
+            if len(recent_filepaths) == 0:
+                raise
+        except:
+            layout.label(text='No Recent Files')
+            return
 
         for filepath in recent_filepaths:
             filename = os.path.basename(filepath)
-            layouts = layout.operator("acon3d.recent_file_open", text=filename, icon='FILE_BLEND')
-            layouts.filepath = filepath
+            sublayout = layout.operator("acon3d.recent_file_open", text=filename, icon='FILE_BLEND')
+            sublayout.filepath = filepath
 
 
 class TOPBAR_MT_file_recover(Menu):
