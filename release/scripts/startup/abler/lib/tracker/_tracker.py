@@ -5,6 +5,7 @@ from typing import Any, Optional
 import bpy
 
 from ._versioning import get_version
+from ._get_ip import user_ip
 
 
 class EventKind(enum.Enum):
@@ -13,6 +14,7 @@ class EventKind(enum.Enum):
     login_auto = "Login Auto"
     logout = "Logout"
     file_open = "File Open"
+    file_open_fail = "File Open Fail"
     render_quick = "Render Quick"
     render_full = "Render Full"
     render_line = "Render Line"
@@ -20,7 +22,9 @@ class EventKind(enum.Enum):
     render_all_scenes = "Render All Scenes"
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
+    import_blend_fail = "Import *.blend Fail"
     import_fbx = "Import FBX"
+    import_fbx_fail = "Import FBX Fail"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
     scene_add = "Scene Add"
@@ -34,7 +38,9 @@ class EventKind(enum.Enum):
     bloom_on = "Bloom On"
     bloom_off = "Bloom Off"
     save = "save"
+    save_fail = "Save Fail"
     save_as = "save_as"
+    save_as_fail = "Save As Fail"
     group_navigate_bottom = "Group Navigate Bottom"
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
@@ -84,6 +90,9 @@ class Tracker(metaclass=ABCMeta):
         else:
             self._default_properties["version"] = "development"
 
+        if user_ip is not None:
+            self._default_properties["ip"] = user_ip
+
     def turn_on(self):
         self._enabled = True
 
@@ -100,9 +109,9 @@ class Tracker(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _enqueue_email_update(self, email: str):
+    def _enqueue_profile_update(self, email: str, ip: str):
         """
-        Enqueue update of user email.
+        Enqueue update of user email and ip.
 
         Implementations must be asynchronous.
         """
@@ -128,9 +137,11 @@ class Tracker(metaclass=ABCMeta):
         else:
             return True
 
-    def login(self, email: str):
-        if self._track(EventKind.login.value):
-            self._enqueue_email_update(email)
+    def login(self):
+        self._track(EventKind.login.value)
+
+    def update_profile(self, email: str, ip: str):
+        self._enqueue_profile_update(email, ip)
 
     def login_fail(self, reason: str):
         self._track(EventKind.login_fail.value, {"reason": reason})
@@ -143,6 +154,9 @@ class Tracker(metaclass=ABCMeta):
 
     def file_open(self):
         self._track(EventKind.file_open.value)
+
+    def file_open_fail(self):
+        self._track(EventKind.file_open_fail.value)
 
     def render_quick(self):
         self._track(EventKind.render_quick.value)
@@ -165,8 +179,14 @@ class Tracker(metaclass=ABCMeta):
     def import_blend(self):
         self._track(EventKind.import_blend.value)
 
+    def import_blend_fail(self):
+        self._track(EventKind.import_blend_fail.value)
+
     def import_fbx(self):
         self._track(EventKind.import_fbx.value)
+
+    def import_fbx_fail(self):
+        self._track(EventKind.import_fbx_fail.value)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
@@ -181,9 +201,11 @@ class Tracker(metaclass=ABCMeta):
     def fly_mode(self):
         self._track(EventKind.fly_mode.value)
 
+    @accumulate()
     def use_state_on(self):
         self._track(EventKind.use_state_on.value)
 
+    @accumulate()
     def use_state_off(self):
         self._track(EventKind.use_state_off.value)
 
@@ -208,8 +230,14 @@ class Tracker(metaclass=ABCMeta):
     def save(self):
         self._track(EventKind.save.value)
 
+    def save_fail(self):
+        self._track(EventKind.save_fail.value)
+
     def save_as(self):
         self._track(EventKind.save_as.value)
+
+    def save_as_fail(self):
+        self._track(EventKind.save_as_fail.value)
 
     def group_navigate_bottom(self):
         self._track(EventKind.group_navigate_bottom.value)
@@ -232,7 +260,7 @@ class DummyTracker(Tracker):
     def _enqueue_event(self, event_name: str, properties: dict[str, Any]):
         pass
 
-    def _enqueue_email_update(self, email: str):
+    def _enqueue_profile_update(self, email: str, ip: str):
         pass
 
 
@@ -245,6 +273,6 @@ class AggregateTracker(Tracker):
         for t in self.trackers:
             t._enqueue_event(event_name, properties)
 
-    def _enqueue_email_update(self, email: str):
+    def _enqueue_profile_update(self, email: str, ip: str):
         for t in self.trackers:
-            t._enqueue_email_update(email)
+            t._enqueue_profile_update(email, ip)

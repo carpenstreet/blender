@@ -48,40 +48,47 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
     def execute(self, context):
-        tracker.import_fbx()
+        try:
+            for obj in bpy.data.objects:
+                obj.select_set(False)
 
-        for obj in bpy.data.objects:
-            obj.select_set(False)
+            FILEPATH = self.filepath
 
-        FILEPATH = self.filepath
+            filename = os.path.basename(FILEPATH)
+            col_imported = bpy.data.collections.new(
+                "[FBX] " + filename.replace(".fbx", "")
+            )
 
-        filename = os.path.basename(FILEPATH)
-        col_imported = bpy.data.collections.new("[FBX] " + filename.replace(".fbx", ""))
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
 
-        col_layers = bpy.data.collections.get("Layers")
-        if not col_layers:
-            col_layers = bpy.data.collections.new("Layers")
-            context.scene.collection.children.link(col_layers)
+            bpy.ops.import_scene.fbx(filepath=FILEPATH)
+            for obj in bpy.context.selected_objects:
+                if obj.name in bpy.context.scene.collection.objects:
+                    bpy.context.scene.collection.objects.unlink(obj)
+                for c in bpy.data.collections:
+                    if obj.name in c.objects:
+                        c.objects.unlink(obj)
+                col_imported.objects.link(obj)
 
-        bpy.ops.import_scene.fbx(filepath=FILEPATH)
-        for obj in bpy.context.selected_objects:
-            if obj.name in bpy.context.scene.collection.objects:
-                bpy.context.scene.collection.objects.unlink(obj)
-            for c in bpy.data.collections:
-                if obj.name in c.objects:
-                    c.objects.unlink(obj)
-            col_imported.objects.link(obj)
+            # put col_imported in l_exclude
+            col_layers.children.link(col_imported)
+            added_l_exclude = context.scene.l_exclude.add()
+            added_l_exclude.name = col_imported.name
+            added_l_exclude.value = True
 
-        # put col_imported in l_exclude
-        col_layers.children.link(col_imported)
-        added_l_exclude = context.scene.l_exclude.add()
-        added_l_exclude.name = col_imported.name
-        added_l_exclude.value = True
+            # create group
+            bpy.ops.acon3d.create_group()
+            # apply AconToonStyle
+            materials_setup.apply_ACON_toon_style()
 
-        # create group
-        bpy.ops.acon3d.create_group()
-        # apply AconToonStyle
-        materials_setup.applyAconToonStyle()
+        except Exception as e:
+            tracker.import_fbx_fail()
+            raise e
+        else:
+            tracker.import_fbx()
 
         return {"FINISHED"}
 

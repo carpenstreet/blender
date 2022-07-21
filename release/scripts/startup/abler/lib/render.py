@@ -20,12 +20,12 @@
 import bpy
 
 
-def setupSnipCompositor(
+def setup_snip_compositor(
     node_left=None, node_right=None, snip_layer=None, shade_image=None
 ):
 
     if not node_left or not node_right:
-        node_left, node_right = clearCompositor()
+        node_left, node_right = clear_compositor()
 
     context = bpy.context
     scene = context.scene
@@ -42,10 +42,10 @@ def setupSnipCompositor(
     tree.links.new(node_setAlpha.outputs[0], node_right)
 
 
-def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None):
+def setup_background_images_compositor(node_left=None, node_right=None, scene=None):
 
     if not node_left or not node_right:
-        node_left, node_right = clearCompositor()
+        node_left, node_right = clear_compositor()
 
     context = bpy.context
     if not scene:
@@ -140,7 +140,7 @@ def setupBackgroundImagesCompositor(node_left=None, node_right=None, scene=None)
             node_right = node_alphaOver.inputs[1]
 
 
-def clearCompositor(scene=None):
+def clear_compositor(scene=None):
 
     context = bpy.context
 
@@ -165,7 +165,7 @@ def clearCompositor(scene=None):
     return node_left, node_right
 
 
-def matchObjectVisibility():
+def match_object_visibility():
 
     for l_prop in bpy.context.scene.l_exclude:
         if layer := bpy.data.collections.get(l_prop.name):

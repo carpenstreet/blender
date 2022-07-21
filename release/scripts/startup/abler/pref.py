@@ -46,12 +46,12 @@ def load_handler(dummy):
     tracker.turn_off()
     try:
         init_setting(None)
-        cameras.makeSureCameraExists()
-        cameras.switchToRendredView()
-        cameras.turnOnCameraView(False)
-        shadow.setupClearShadow()
-        render.setupBackgroundImagesCompositor()
-        materials_setup.applyAconToonStyle()
+        cameras.make_sure_camera_exists()
+        cameras.switch_to_rendered_view()
+        cameras.turn_on_camera_view(False)
+        shadow.setup_clear_shadow()
+        render.setup_background_images_compositor()
+        materials_setup.apply_ACON_toon_style()
         for scene in bpy.data.scenes:
             scene.view_settings.view_transform = "Standard"
         # 키맵이 ABLER로 세팅되어있는지 확인하고, 아닐 경우 세팅을 바로잡아줌
@@ -76,14 +76,14 @@ def save_pre_handler(dummy):
     override_scene.ACON_prop = override_ACON_prop
     override_ACON_prop.toggle_toon_edge = False
     override_ACON_prop.toggle_toon_face = False
-    materials_handler.toggleToonEdge(None, override)
-    materials_handler.toggleToonFace(None, override)
+    materials_handler.toggle_toon_edge(None, override)
+    materials_handler.toggle_toon_face(None, override)
 
 
 @persistent
 def save_post_handler(dummy):
-    materials_handler.toggleToonEdge(None, None)
-    materials_handler.toggleToonFace(None, None)
+    materials_handler.toggle_toon_edge(None, None)
+    materials_handler.toggle_toon_face(None, None)
     for scene in bpy.data.scenes:
         scene.view_settings.view_transform = "Standard"
 

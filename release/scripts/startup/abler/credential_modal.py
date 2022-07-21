@@ -30,10 +30,11 @@ import requests
 from bpy.app.handlers import persistent
 
 from .lib.async_task import AsyncTask
-from .lib.login import is_first_open
-from .lib.post_open import tracker_file_open
+from .lib.login import is_process_single
 from .lib.read_cookies import *
+
 from .lib.tracker import tracker
+from .lib.tracker._get_ip import user_ip
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -358,7 +359,9 @@ class LoginTask(AsyncTask):
         )
 
     def _on_success(self):
-        tracker.login(self.username)
+
+        tracker.login()
+        tracker.update_profile(self.username, user_ip)
 
         prop = self.prop
         path = bpy.utils.resource_path("USER")
@@ -439,8 +442,6 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 @persistent
 def open_credential_modal(dummy):
-    fileopen = tracker_file_open()
-
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
@@ -462,13 +463,14 @@ def open_credential_modal(dummy):
 
         with open(path_cookiesFile, "rb") as cookiesFile:
             cookies = pickle.load(cookiesFile)
+
         response = requests.get(
             "https://api-v2.acon3d.com/auth/acon3d/refresh", cookies=cookies
         )
 
         responseData = response.json()
         if token := responseData["accessToken"]:
-            if not fileopen and is_first_open():
+            if is_process_single():
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
 

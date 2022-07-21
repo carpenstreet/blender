@@ -39,7 +39,7 @@ from .lib.tracker import tracker
 from .lib.read_cookies import read_remembered_show_guide
 
 
-def splitFilepath(filepath):
+def split_filepath(filepath):
     # Get basename without file extension
     dirname, basename = os.path.split(os.path.normpath(filepath))
 
@@ -49,8 +49,8 @@ def splitFilepath(filepath):
     return dirname, basename
 
 
-def numberingFilepath(filepath, ext):
-    dirname, basename = splitFilepath(filepath)
+def numbering_filepath(filepath, ext):
+    dirname, basename = split_filepath(filepath)
     basepath = os.path.join(dirname, basename)
 
     num_path = basepath
@@ -141,58 +141,63 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        tracker.import_blend()
+        try:
+            for obj in bpy.data.objects:
+                obj.select_set(False)
 
-        for obj in bpy.data.objects:
-            obj.select_set(False)
+            FILEPATH = self.filepath
 
-        FILEPATH = self.filepath
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
 
-        col_layers = bpy.data.collections.get("Layers")
-        if not col_layers:
-            col_layers = bpy.data.collections.new("Layers")
-            context.scene.collection.children.link(col_layers)
+            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
+                data_to.collections = data_from.collections
+                data_to.objects = list(data_from.objects)
 
-        with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
-            data_to.collections = data_from.collections
-            data_to.objects = list(data_from.objects)
+            children_names = {}
 
-        children_names = {}
+            for coll in data_to.collections:
+                for child in coll.children.keys():
+                    children_names[child] = True
 
-        for coll in data_to.collections:
-            for child in coll.children.keys():
-                children_names[child] = True
+            for coll in data_to.collections:
 
-        for coll in data_to.collections:
+                if "ACON_col" in coll.name:
+                    data_to.collections.remove(coll)
+                    break
 
-            if "ACON_col" in coll.name:
-                data_to.collections.remove(coll)
-                break
+                found = any(coll.name == child for child in children_names)
+                if coll.name == "Layers" or (
+                    "Layers." in coll.name and len(coll.name) == 10
+                ):
+                    for coll_2 in coll.children:
+                        added_l_exclude = context.scene.l_exclude.add()
+                        added_l_exclude.name = coll_2.name
+                        added_l_exclude.value = True
+                        col_layers.children.link(coll_2)
 
-            found = any(coll.name == child for child in children_names)
-            if coll.name == "Layers" or (
-                "Layers." in coll.name and len(coll.name) == 10
-            ):
-                for coll_2 in coll.children:
-                    added_l_exclude = context.scene.l_exclude.add()
-                    added_l_exclude.name = coll_2.name
-                    added_l_exclude.value = True
-                    col_layers.children.link(coll_2)
+            for obj in data_to.objects:
+                if obj.type == "MESH":
+                    obj.select_set(True)
+                else:
+                    data_to.objects.remove(obj)
 
-        for obj in data_to.objects:
-            if obj.type == "MESH":
-                obj.select_set(True)
-            else:
-                data_to.objects.remove(obj)
+            materials_setup.apply_ACON_toon_style()
 
-        materials_setup.applyAconToonStyle()
+            for area in context.screen.areas:
+                if area.type == "VIEW_3D":
+                    ctx = bpy.context.copy()
+                    ctx["area"] = area
+                    ctx["region"] = area.regions[-1]
+                    bpy.ops.view3d.view_selected(ctx)
 
-        for area in context.screen.areas:
-            if area.type == "VIEW_3D":
-                ctx = bpy.context.copy()
-                ctx["area"] = area
-                ctx["region"] = area.regions[-1]
-                bpy.ops.view3d.view_selected(ctx)
+        except Exception as e:
+            tracker.import_blend_fail()
+            raise e
+        else:
+            tracker.import_blend()
 
         return {"FINISHED"}
 
@@ -228,17 +233,26 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        path = self.filepath
-        if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
-            return {"FINISHED"}
-        elif not os.path.isfile(path):
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="File not found",
-                message_1="Selected file does not exist",
-            )
-            return {"FINISHED"}
-        bpy.ops.wm.open_mainfile(filepath=path)
+        try:
+            path = self.filepath
+
+            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+                return {"FINISHED"}
+            elif not os.path.isfile(path):
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="File not found",
+                    message_1="Selected file does not exist",
+                )
+                tracker.file_open_fail()
+                return {"FINISHED"}
+
+            bpy.ops.wm.open_mainfile(filepath=path)
+
+        except:
+            tracker.file_open_fail()
+        else:
+            tracker.file_open()
 
         return {"FINISHED"}
 
@@ -280,24 +294,29 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
             return ExportHelper.invoke(self, context, event)
 
     def execute(self, context):
-        tracker.save()
+        try:
+            if bpy.data.is_saved:
+                self.filepath = context.blend_data.filepath
+                dirname, basename = split_filepath(self.filepath)
 
-        if bpy.data.is_saved:
-            self.filepath = context.blend_data.filepath
-            dirname, basename = splitFilepath(self.filepath)
+                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
+            else:
+                numbered_filepath, numbered_filename = numbering_filepath(
+                    self.filepath, self.filename_ext
+                )
 
+                self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+
+        except Exception as e:
+            tracker.save_fail()
+            raise e
         else:
-            numbered_filepath, numbered_filename = numberingFilepath(
-                self.filepath, self.filename_ext
-            )
-
-            self.filepath = f"{numbered_filepath}{self.filename_ext}"
-
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+            tracker.save()
 
         return {"FINISHED"}
 
@@ -312,16 +331,21 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     filename_ext = ".blend"
 
     def execute(self, context):
-        tracker.save_as()
+        try:
+            numbered_filepath, numbered_filename = numbering_filepath(
+                self.filepath, self.filename_ext
+            )
 
-        numbered_filepath, numbered_filename = numberingFilepath(
-            self.filepath, self.filename_ext
-        )
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-        self.filepath = f"{numbered_filepath}{self.filename_ext}"
+            bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
-        bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
-        self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+        except Exception as e:
+            tracker.save_as_fail()
+            raise e
+        else:
+            tracker.save_as()
 
         return {"FINISHED"}
 
@@ -373,8 +397,8 @@ class ApplyToonStyleOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        materials_setup.applyAconToonStyle()
-        scenes.loadScene(None, None)
+        materials_setup.apply_ACON_toon_style()
+        scenes.load_scene(None, None)
 
         return {"FINISHED"}
 

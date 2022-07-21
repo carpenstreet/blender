@@ -63,12 +63,12 @@ class CreateSceneOperator(bpy.types.Operator):
         tracker.scene_add()
 
         old_scene = context.scene
-        new_scene = scenes.createScene(old_scene, self.preset, self.name)
+        new_scene = scenes.create_scene(old_scene, self.preset, self.name)
         context.window_manager.ACON_prop.scene = new_scene.name
         return {"FINISHED"}
 
     def invoke(self, context, event):
-        self.name = scenes.genSceneName("ACON_Scene_")
+        self.name = scenes.gen_scene_name("ACON_Scene_")
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
 
@@ -102,7 +102,7 @@ class DeleteSceneOperator(bpy.types.Operator):
         length = len(scenesList)
         nextScene = scenesList[min(i, length - 1)]
 
-        # Updating `scene` value invoke `loadScene` function which compares current
+        # Updating `scene` value invoke `load_scene` function which compares current
         # scene and target scene. So it should happen before removing scene.
         context.window_manager.ACON_prop.scene = nextScene.name
 

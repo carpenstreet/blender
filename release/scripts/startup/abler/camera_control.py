@@ -33,6 +33,7 @@ bl_info = {
 
 import bpy
 from .lib import cameras
+from bpy_extras.io_utils import ImportHelper
 
 
 class CreateCameraOperator(bpy.types.Operator):
@@ -45,7 +46,7 @@ class CreateCameraOperator(bpy.types.Operator):
     name: bpy.props.StringProperty(name="Name")
 
     def execute(self, context):
-        cameras.makeSureCameraExists()
+        cameras.make_sure_camera_exists()
 
         # duplicate camera
         viewCameraObject = context.scene.camera
@@ -67,7 +68,7 @@ class CreateCameraOperator(bpy.types.Operator):
         return {"FINISHED"}
 
     def invoke(self, context, event):
-        self.name = cameras.genCameraName("ACON_Camera_")
+        self.name = cameras.gen_camera_name("ACON_Camera_")
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
 
@@ -217,6 +218,41 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class OpenBackgroundOperator(bpy.types.Operator, ImportHelper):
+    """Open Background Image"""
+
+    bl_idname = "acon3d.background_image_open"
+    bl_label = "Open Image"
+    bl_translation_context = "*"
+    bl_options = {"REGISTER", "UNDO"}
+
+    index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+    filepath: bpy.props.StringProperty()
+
+    def execute(self, context):
+        new_image = bpy.data.images.load(self.filepath)
+        image = context.scene.camera.data.background_images[self.index]
+        image.image = new_image
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        path_abler = bpy.utils.preset_paths("abler")[0]
+        self.filepath = path_abler + "/Background_Image/"
+        wm = context.window_manager.fileselect_add(self)
+        return {"RUNNING_MODAL"}
+
+    def draw(self, context):
+        # FileBrowser UI 변경
+        space = context.space_data
+        params = space.params
+
+        params.display_type = "THUMBNAIL"
+        space.show_region_tool_props = False
+        space.show_region_ui = False
+        space.show_region_toolbar = False
+
+
 class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_view"
     bl_idname = "ACON3D_PT_background"
@@ -238,6 +274,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.operator("view3d.background_image_add", text="Add Image", text_ctxt="*")
+        layout.enabled = context.scene.ACON_prop.show_background_images
 
         camObj = context.scene.camera
         active = camObj and camObj.data.show_background_images
@@ -271,9 +308,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 if bg.show_expanded:
                     row = box.row()
-                    row.prop(bg, "source", expand=True)
-                    row = box.row()
-                    row.template_ID(bg, "image", new="image.open")
+                    row.operator("acon3d.background_image_open", text="Open").index = i
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
@@ -298,6 +333,7 @@ classes = (
     DeleteCameraOperator,
     Acon3dDOFPanel,
     RemoveBackgroundOperator,
+    OpenBackgroundOperator,
     Acon3dBackgroundPanel,
 )
 
