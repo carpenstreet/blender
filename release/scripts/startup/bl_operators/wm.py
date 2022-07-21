@@ -3189,6 +3189,44 @@ class WM_MT_splash_about(Menu):
         col.operator("wm.url_open", text="License", icon='URL').url = "https://www.blender.org/about/license/"
 
 
+class WM_MT_splash_tutorial(Menu):
+    bl_label = "Tutorial"
+
+    def draw(self, context):
+
+        userInfo = bpy.data.meshes.get("ACON_userInfo")
+
+        layout = self.layout
+        layout.operator_context = 'EXEC_DEFAULT'
+
+        split = layout.split()
+        col1 = split.column()
+        col1.operator("acon3d.tutorial_guide_1", text="Mouse Mode")
+        col2 = split.column()
+        col2.operator("acon3d.tutorial_guide_2", text="Fly Mode")
+        col3 = split.column()
+        col3.operator("acon3d.tutorial_guide_3", text="Scene Control")
+        for _ in range(4):
+            split.column()
+        layout.separator()
+
+        row = layout.row()
+        anchor = row.operator("wm.url_open", text="Go To Guide", icon='URL')
+        anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
+        layout.separator()
+
+        row = layout.row()
+        row.operator("acon3d.tutorial_guide_close", text="OK")
+        layout.separator()
+
+        column = layout.column()
+        row = column.row()
+        row.prop(userInfo.ACON_prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
+        row.alignment = "RIGHT"
+        row.label(text="Show ABLER Starts")
+        layout.separator()
+        
+
 class WM_OT_drop_blend_file(Operator):
     bl_idname = "wm.drop_blend_file"
     bl_label = "Handle dropped .blend file"
@@ -3267,4 +3305,5 @@ classes = (
     WM_MT_splash_quick_setup,
     WM_MT_splash,
     WM_MT_splash_about,
+    WM_MT_splash_tutorial,
 )

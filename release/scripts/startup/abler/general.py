@@ -36,7 +36,7 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
-from .lib.remember_username import read_remembered_username
+from .lib.read_cookies import read_remembered_show_guide
 
 
 def split_filepath(filepath):
@@ -63,6 +63,72 @@ def numbering_filepath(filepath, ext):
         number += 1
 
     return num_path, num_name
+
+
+class AconTutorialGuidePopUpOperator(bpy.types.Operator):
+    """Show Tutorial Guide"""
+
+    bl_idname = "acon3d.tutorial_guide_popup"
+    bl_label = "Show Tutorial Guide"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        userInfo = bpy.data.meshes.get("ACON_userInfo")
+        prop = userInfo.ACON_prop
+        prop.show_guide = read_remembered_show_guide()
+
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuideCloseOperator(bpy.types.Operator):
+    """Close Tutorial Guide"""
+
+    bl_idname = "acon3d.tutorial_guide_close"
+    bl_label = "OK"
+
+    def execute(self, context):
+        bpy.ops.wm.splash_tutorial_close("INVOKE_DEFAULT")
+        return {"CANCELLED"}
+
+
+class AconTutorialGuide1Operator(bpy.types.Operator):
+    """Mouse Mode"""
+
+    bl_idname = "acon3d.tutorial_guide_1"
+    bl_label = "Mouse Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide2Operator(bpy.types.Operator):
+    """Fly Mode"""
+
+    bl_idname = "acon3d.tutorial_guide_2"
+    bl_label = "Fly Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_2("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide3Operator(bpy.types.Operator):
+    """Scene Control"""
+
+    bl_idname = "acon3d.tutorial_guide_3"
+    bl_label = "Scene Control"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_3("INVOKE_DEFAULT")
+        return {"FINISHED"}
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -300,6 +366,10 @@ class Acon3dImportPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
+        row.operator("acon3d.tutorial_guide_popup")
+
+        row = layout.row()
+        row.scale_y = 1.0
         row.operator("acon3d.file_open")
         row.operator("acon3d.import_blend", text="Import")
 
@@ -334,6 +404,11 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 
 classes = (
+    AconTutorialGuidePopUpOperator,
+    AconTutorialGuideCloseOperator,
+    AconTutorialGuide1Operator,
+    AconTutorialGuide2Operator,
+    AconTutorialGuide3Operator,
     Acon3dImportPanel,
     ToggleToolbarOperator,
     ImportOperator,
