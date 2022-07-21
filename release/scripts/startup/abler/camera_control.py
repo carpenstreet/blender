@@ -304,7 +304,10 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
         if context.scene.camera is not None:
             cam = context.scene.camera.data
 
-            for i, bg in enumerate(cam.background_images):
+            l = len(cam.background_images)
+            for i, bg in enumerate(reversed(cam.background_images)):
+                count = l - i - 1
+
                 box = layout.box()
                 row = box.row(align=True)
                 row.prop(bg, "show_expanded", text="", emboss=False)
@@ -320,16 +323,16 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
 
                 row.operator(
                     "acon3d.background_image_remove", text="", emboss=False, icon="X"
-                ).index = i
+                ).index = count
 
                 if bg.show_expanded:
                     row = box.row()
                     row.operator(
                         "acon3d.default_background_image_open", text="Default Image"
-                    ).index = i
+                    ).index = count
                     row.operator(
                         "acon3d.custom_background_image_open", text="Custom Image"
-                    ).index = i
+                    ).index = count
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
