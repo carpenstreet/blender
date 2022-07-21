@@ -242,7 +242,9 @@ class BaseFileOpenOperator:
                 tracker.file_open_fail()
                 return
 
-            bpy.ops.wm.open_mainfile(filepath=path)
+            bpy.ops.wm.open_mainfile(
+                "INVOKE_DEFAULT", filepath=path, display_file_selector=False
+            )
 
         except:
             tracker.file_open_fail()
