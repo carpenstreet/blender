@@ -263,7 +263,6 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
 
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
-    filepath: bpy.props.StringProperty()
 
     def execute(self, context):
         new_image = bpy.data.images.load(self.filepath)
@@ -271,21 +270,15 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
         image.image = new_image
         return {"FINISHED"}
 
-    def invoke(self, context, event):
-        path_abler = bpy.utils.preset_paths("abler")[0]
-        self.filepath = path_abler + "/Background_Image/"
-        wm = context.window_manager.fileselect_add(self)
-        return {"RUNNING_MODAL"}
-
     def draw(self, context):
         # FileBrowser UI 변경
         space = context.space_data
         params = space.params
 
         params.display_type = "THUMBNAIL"
+        params.sort_method = "FILE_SORT_TIME"
+        params.use_sort_invert = True
         space.show_region_tool_props = False
-        space.show_region_ui = False
-        space.show_region_toolbar = False
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
@@ -349,7 +342,6 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
                     row.operator(
                         "acon3d.custom_background_image_open", text="Custom Image"
                     ).index = i
-                    row.operator("")
                     row = box.row()
                     row.prop(bg, "alpha")
                     row = box.row()
