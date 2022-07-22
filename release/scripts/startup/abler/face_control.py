@@ -104,7 +104,9 @@ class MaterialPanel(bpy.types.Panel):
             # Breadcrumb을 그려줌
             row = layout.row()
             col = row.column()
-            col.scale_x = 0.7
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
             col.label(text=obj.name, icon="OBJECT_DATA")
             col = row.column()
             col.label(text="", icon="RIGHTARROW")
