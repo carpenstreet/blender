@@ -52,11 +52,14 @@ def hide_adjust_last_operation_panel():
 
 
 def add_dummy_background_image():
-    # 배경이미지 토글을 열었을 때 패널이 이미 존재하게 하기 위해
-    # 빈 배경이미지를 하나 추가
+    # 배경이미지 토글을 열었을 때 패널이 이미 존재하게 하기 위해 빈 배경이미지를 하나 추가
     for area in bpy.context.screen.areas:
         if area.type == "VIEW_3D":
+            # 마우스 위치가 VIEW_3D가 아닌경우 poll()에러가 뜨므로 override해서 현재 가리키고 있는 위치를 조작
+            # https://blender.stackexchange.com/questions/6101/poll-failed-context-incorrect-example-bpy-ops-view3d-background-image-add
             override = bpy.context.copy()
             override["area"] = area
             bpy.ops.view3d.background_image_add(override, name="", filepath="")
             break
+
+    bpy.context.scene.camera.data.show_background_images = True
