@@ -295,14 +295,12 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
         layout.operator("view3d.background_image_add", text="Add Image", text_ctxt="*")
 
         camObj = context.scene.camera
-        active = camObj and camObj.data.show_background_images
 
-        layout.active = active
         layout.use_property_split = True
         layout.use_property_decorate = False
 
-        if context.scene.camera is not None:
-            cam = context.scene.camera.data
+        if camObj is not None:
+            cam = camObj.data
 
             l = len(cam.background_images)
             for i, bg in enumerate(reversed(cam.background_images)):
