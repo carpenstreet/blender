@@ -300,10 +300,10 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
         layout.use_property_decorate = False
 
         if camObj is not None:
-            cam = camObj.data
+            background_images = camObj.data.background_images
 
-            l = len(cam.background_images)
-            for i, bg in enumerate(reversed(cam.background_images)):
+            l = len(background_images)
+            for i, bg in enumerate(reversed(background_images)):
                 count = l - i - 1
 
                 box = layout.box()
