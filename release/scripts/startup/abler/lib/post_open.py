@@ -49,3 +49,14 @@ def hide_adjust_last_operation_panel():
             for space in area.spaces:
                 if space.type == "VIEW_3D":
                     space.show_region_hud = False
+
+
+def add_dummy_background_image():
+    # 배경이미지 토글을 열었을 때 패널이 이미 존재하게 하기 위해
+    # 빈 배경이미지를 하나 추가
+    for area in bpy.context.screen.areas:
+        if area.type == "VIEW_3D":
+            override = bpy.context.copy()
+            override["area"] = area
+            bpy.ops.view3d.background_image_add(override, name="", filepath="")
+            break
