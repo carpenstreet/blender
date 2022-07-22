@@ -70,24 +70,6 @@ class GroupNavigationManager:
     def __repr__(self):
         return repr(self._selection_undo_stack)
 
-    def install_handler(self):
-        subscribe_to = bpy.types.LayerObjects, "active"
-
-        bpy.msgbus.subscribe_rna(
-            key=subscribe_to,
-            owner=self,
-            args=(),
-            notify=lambda: self.on_active_object_changed())
-
-    def uninstall_handler(self):
-        bpy.msgbus.clear_by_owner(self)
-
-    def on_active_object_changed(self):
-        if self._user_event_disabled:
-            return
-        self._selection_undo_stack.clear()
-        select_active_and_descendants()
-
     def go_top(self):
         obj = bpy.context.active_object
         if obj.parent:
