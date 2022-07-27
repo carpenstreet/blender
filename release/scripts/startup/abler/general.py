@@ -243,7 +243,7 @@ class BaseFileOpenOperator:
                 return
 
             bpy.ops.wm.open_mainfile(
-                "INVOKE_DEFAULT", filepath=path, display_file_selector=False
+                "INVOKE_DEFAULT", True, filepath=path, display_file_selector=False
             )
 
         except:
@@ -381,7 +381,9 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
 
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-            bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+            bpy.ops.wm.save_as_mainfile(
+                {"dict": "override"}, True, filepath=self.filepath
+            )
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
