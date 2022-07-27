@@ -334,9 +334,7 @@ class LoginTask(AsyncTask):
             raise GodoServerError(response_godo)
 
         try:
-            success_msg = response_godo.json()["message"]
-            if success_msg != "success":
-                raise GodoBadRequest(response_godo)
+            response_godo.json()
         # username/password 틀렸을 때는 200 상태코드로
         # 일반 텍스트 형식의 한국어 에러 메시지가 오고 있음 -> JSONDecodeError 발생
         except JSONDecodeError:
