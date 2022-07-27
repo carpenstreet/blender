@@ -224,6 +224,23 @@ class ToggleToolbarOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+def delete_path_from_recent_files(target_path):
+    history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
+
+    try:
+        with open(history_path) as fin:
+            recent_filepaths_except_target = [
+                path for path in fin.read().splitlines() if path != target_path
+            ]
+
+        with open(history_path, "wt") as fout:
+            fout.write("\n".join(recent_filepaths_except_target))
+
+    except Exception as e:
+        print(e)
+        return
+
+
 class BaseFileOpenOperator:
     filepath: bpy.props.StringProperty(name="text", default="")
 
@@ -239,6 +256,7 @@ class BaseFileOpenOperator:
                     title="File not found",
                     message_1="Selected file does not exist",
                 )
+                delete_path_from_recent_files(path)
                 tracker.file_open_fail()
                 return
 
