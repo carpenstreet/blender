@@ -360,7 +360,9 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 self.filepath = context.blend_data.filepath
                 dirname, basename = split_filepath(self.filepath)
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, True, filepath=self.filepath
+                )
                 self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
             else:
@@ -370,7 +372,9 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
                 self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, True, filepath=self.filepath
+                )
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
