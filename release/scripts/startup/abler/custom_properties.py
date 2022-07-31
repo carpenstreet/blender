@@ -21,6 +21,7 @@ import bpy
 from math import radians
 from .lib import scenes, cameras, shadow, objects
 from .lib.materials import materials_handler
+from .lib.read_cookies import *
 
 
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
@@ -464,6 +465,10 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     login_status: bpy.props.StringProperty(
         name="Login Status",
         description="Login Status",
+    )
+
+    show_guide: bpy.props.BoolProperty(
+        name="Show Guide", default=True, update=remember_show_guide
     )
 
 

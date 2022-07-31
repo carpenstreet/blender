@@ -3,7 +3,7 @@ import bpy
 
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
-from .lib.remember_username import read_remembered_checkbox, read_remembered_username
+from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):

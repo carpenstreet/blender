@@ -31,12 +31,8 @@ from bpy.app.handlers import persistent
 
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
-from .lib.remember_username import (
-    delete_remembered_username,
-    read_remembered_checkbox,
-    remember_username,
-    read_remembered_username,
-)
+from .lib.read_cookies import *
+
 from .lib.tracker import tracker
 from .lib.tracker._get_ip import user_ip
 
@@ -247,6 +243,9 @@ class Acon3dModalOperator(bpy.types.Operator):
                 return result & 0xFF
 
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
+            if read_remembered_show_guide():
+                bpy.ops.acon3d.tutorial_guide_popup()
+
             return {"FINISHED"}
 
         if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
@@ -335,9 +334,7 @@ class LoginTask(AsyncTask):
             raise GodoServerError(response_godo)
 
         try:
-            success_msg = response_godo.json()["message"]
-            if success_msg != "success":
-                raise GodoBadRequest(response_godo)
+            response_godo.json()
         # username/password 틀렸을 때는 200 상태코드로
         # 일반 텍스트 형식의 한국어 에러 메시지가 오고 있음 -> JSONDecodeError 발생
         except JSONDecodeError:
@@ -478,8 +475,9 @@ def open_credential_modal(dummy):
     except:
         print("Failed to load cookies")
 
-    if userInfo.ACON_prop.login_status != "SUCCESS":
-        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
+    # 자동로그인 시 modal이 실행 안되고 있어서
+    # 자동로그인인 경우에도 modal 실행하도록 if문 제거
+    bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
     if prop.remember_username:
         prop.username = read_remembered_username()

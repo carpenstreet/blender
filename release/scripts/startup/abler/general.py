@@ -31,12 +31,13 @@ bl_info = {
 }
 import os
 
+from datetime import datetime, timedelta
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
-from .lib.remember_username import read_remembered_username
+from .lib.read_cookies import read_remembered_show_guide
 
 
 def split_filepath(filepath):
@@ -63,6 +64,72 @@ def numbering_filepath(filepath, ext):
         number += 1
 
     return num_path, num_name
+
+
+class AconTutorialGuidePopUpOperator(bpy.types.Operator):
+    """Show Tutorial Guide"""
+
+    bl_idname = "acon3d.tutorial_guide_popup"
+    bl_label = "Show Tutorial Guide"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        userInfo = bpy.data.meshes.get("ACON_userInfo")
+        prop = userInfo.ACON_prop
+        prop.show_guide = read_remembered_show_guide()
+
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuideCloseOperator(bpy.types.Operator):
+    """Close Tutorial Guide"""
+
+    bl_idname = "acon3d.tutorial_guide_close"
+    bl_label = "OK"
+
+    def execute(self, context):
+        bpy.ops.wm.splash_tutorial_close("INVOKE_DEFAULT")
+        return {"CANCELLED"}
+
+
+class AconTutorialGuide1Operator(bpy.types.Operator):
+    """Mouse Mode"""
+
+    bl_idname = "acon3d.tutorial_guide_1"
+    bl_label = "Mouse Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide2Operator(bpy.types.Operator):
+    """Fly Mode"""
+
+    bl_idname = "acon3d.tutorial_guide_2"
+    bl_label = "Fly Mode"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_2("INVOKE_DEFAULT")
+        return {"FINISHED"}
+
+
+class AconTutorialGuide3Operator(bpy.types.Operator):
+    """Scene Control"""
+
+    bl_idname = "acon3d.tutorial_guide_3"
+    bl_label = "Scene Control"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.acon3d.tutorial_guide_close()
+        bpy.ops.wm.splash_tutorial_3("INVOKE_DEFAULT")
+        return {"FINISHED"}
 
 
 class ImportOperator(bpy.types.Operator, ImportHelper):
@@ -157,7 +224,53 @@ class ToggleToolbarOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class FileOpenOperator(bpy.types.Operator, ImportHelper):
+def delete_path_from_recent_files(target_path):
+    history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
+
+    try:
+        with open(history_path) as fin:
+            recent_filepaths_except_target = [
+                path for path in fin.read().splitlines() if path != target_path
+            ]
+
+        with open(history_path, "wt") as fout:
+            fout.write("\n".join(recent_filepaths_except_target))
+
+    except Exception as e:
+        print(e)
+        return
+
+
+class BaseFileOpenOperator:
+    filepath: bpy.props.StringProperty(name="text", default="")
+
+    def open_file(self):
+        try:
+            path = self.filepath
+
+            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+                return
+            elif not os.path.isfile(path):
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="File not found",
+                    message_1="Selected file does not exist",
+                )
+                delete_path_from_recent_files(path)
+                tracker.file_open_fail()
+                return
+
+            bpy.ops.wm.open_mainfile(
+                "INVOKE_DEFAULT", True, filepath=path, display_file_selector=False
+            )
+
+        except:
+            tracker.file_open_fail()
+        else:
+            tracker.file_open()
+
+
+class FileOpenOperator(bpy.types.Operator, ImportHelper, BaseFileOpenOperator):
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
@@ -167,27 +280,41 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        try:
-            path = self.filepath
+        self.open_file()
+        return {"FINISHED"}
 
-            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
-                return {"FINISHED"}
-            elif not os.path.isfile(path):
-                bpy.ops.acon3d.alert(
-                    "INVOKE_DEFAULT",
-                    title="File not found",
-                    message_1="Selected file does not exist",
-                )
-                tracker.file_open_fail()
-                return {"FINISHED"}
 
-            bpy.ops.wm.open_mainfile(filepath=path)
+class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
+    bl_idname = "acon3d.recent_file_open"
+    bl_label = ""
+    bl_translation_context = "*"
 
-        except:
-            tracker.file_open_fail()
+    @classmethod
+    def description(cls, context, properties):
+        filepath = properties.filepath
+
+        if not os.path.isfile(filepath):
+            return f"{filepath}\n\nFile Not Found"
+
+        modified_datetime = datetime.fromtimestamp(os.path.getmtime(filepath))
+        time_distance = datetime.today().date() - modified_datetime.date()
+
+        if time_distance == timedelta():
+            modified_time = modified_datetime.strftime("Today %H:%M")
+        elif time_distance == timedelta(days=1):
+            modified_time = modified_datetime.strftime("Yesterday %H:%M")
         else:
-            tracker.file_open()
+            modified_time = modified_datetime.strftime("%d %b %Y %H:%M")
 
+        modified_time = f"Modified: {modified_time}"
+
+        size = round(os.path.getsize(filepath) / 1000000.0, 1)
+        size = f"Size: {size} MB"
+
+        return f"{filepath}\n\n{modified_time}\n{size}"
+
+    def execute(self, context):
+        self.open_file()
         return {"FINISHED"}
 
 
@@ -233,7 +360,9 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 self.filepath = context.blend_data.filepath
                 dirname, basename = split_filepath(self.filepath)
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, True, filepath=self.filepath
+                )
                 self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
             else:
@@ -243,7 +372,9 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
                 self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, True, filepath=self.filepath
+                )
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
@@ -272,7 +403,9 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
 
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-            bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
+            bpy.ops.wm.save_as_mainfile(
+                {"dict": "override"}, True, filepath=self.filepath
+            )
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
@@ -297,6 +430,10 @@ class Acon3dImportPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
+
+        row = layout.row()
+        row.scale_y = 1.0
+        row.operator("acon3d.tutorial_guide_popup")
 
         row = layout.row()
         row.scale_y = 1.0
@@ -334,11 +471,17 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 
 classes = (
+    AconTutorialGuidePopUpOperator,
+    AconTutorialGuideCloseOperator,
+    AconTutorialGuide1Operator,
+    AconTutorialGuide2Operator,
+    AconTutorialGuide3Operator,
     Acon3dImportPanel,
     ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
+    FileRecentOpenOperator,
     FlyOperator,
     SaveOperator,
     SaveAsOperator,

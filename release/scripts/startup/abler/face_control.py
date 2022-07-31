@@ -99,9 +99,21 @@ class MaterialPanel(bpy.types.Panel):
         layout = self.layout
         obj = context.object
 
-        row = layout.row()
 
         if obj:
+            # Breadcrumb을 그려줌
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text=obj.name, icon="OBJECT_DATA")
+            col = row.column()
+            col.label(text="", icon="RIGHTARROW")
+            col = row.column()
+            col.label(text=obj.active_material.name, icon="MATERIAL")
+            # MATERIAL_UL_List을 그려주는 부분
+            row = layout.row()
             col = row.column()
             col.scale_x = 3
             col.separator()
