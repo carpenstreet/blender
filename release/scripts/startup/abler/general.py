@@ -224,12 +224,12 @@ class ToggleToolbarOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-def update_recent_files(target_path, mode):
+def update_recent_files(target_path, is_add=False):
     """
     Update Recent Files in User Resources
 
     target_path: path to update
-    mode: 'pop' or 'push'
+    is_add: if True, add target_path to first of the recent files list
     """
 
     history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
@@ -240,10 +240,10 @@ def update_recent_files(target_path, mode):
                 path for path in fin.read().splitlines() if path != target_path
             ]
 
-        if mode == "push":
+        if is_add:
             recent_filepaths_except_target.insert(0, target_path)
 
-            if len(recent_filepaths_except_target) == 10:
+            if len(recent_filepaths_except_target) > 10:
                 recent_filepaths_except_target.pop()
 
         with open(history_path, "wt") as fout:
@@ -269,14 +269,14 @@ class BaseFileOpenOperator:
                     title="File not found",
                     message_1="Selected file does not exist",
                 )
-                update_recent_files(path, mode="pop")
+                update_recent_files(path)
                 tracker.file_open_fail()
                 return
 
             bpy.ops.wm.open_mainfile(
                 "INVOKE_DEFAULT", filepath=path, display_file_selector=False
             )
-            update_recent_files(path, mode="push")
+            update_recent_files(path, is_add=True)
 
         except:
             tracker.file_open_fail()
@@ -375,7 +375,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 dirname, basename = split_filepath(self.filepath)
 
                 bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-                update_recent_files(self.filepath, mode="push")
+                update_recent_files(self.filepath, is_add=True)
                 self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
             else:
@@ -386,7 +386,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
                 bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-                update_recent_files(self.filepath, mode="push")
+                update_recent_files(self.filepath, is_add=True)
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
@@ -416,7 +416,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
             bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
-            update_recent_files(self.filepath, mode="push")
+            update_recent_files(self.filepath, is_add=True)
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
