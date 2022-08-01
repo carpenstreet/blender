@@ -233,11 +233,11 @@ class Acon3dBloomPanel(bpy.types.Panel):
         layout.active = props.use_bloom
         col = layout.column()
         col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
-        col.prop(props, "bloom_knee")
-        col.prop(props, "bloom_radius")
+        col.prop(prop, "bloom_knee", text="Knee", slider=True)
+        col.prop(prop, "bloom_radius", text="Radius", slider=True)
         col.prop(props, "bloom_color")
-        col.prop(props, "bloom_intensity")
-        col.prop(props, "bloom_clamp")
+        col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
+        col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 
 
 classes = (
