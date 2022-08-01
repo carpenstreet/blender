@@ -244,7 +244,7 @@ def update_recent_files(target_path, is_add=False):
             recent_filepaths_except_target.insert(0, target_path)
 
             if len(recent_filepaths_except_target) > 10:
-                recent_filepaths_except_target.pop()
+                recent_filepaths_except_target = recent_filepaths_except_target[:10]
 
         with open(history_path, "wt") as fout:
             fout.write("\n".join(recent_filepaths_except_target))
