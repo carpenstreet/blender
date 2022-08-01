@@ -100,7 +100,7 @@ class MaterialPanel(bpy.types.Panel):
         obj = context.object
 
 
-        if obj and len(context.selected_objects) > 0:
+        if obj and context.selected_objects:
             # Breadcrumb을 그려줌
             row = layout.row()
             col = row.column()
