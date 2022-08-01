@@ -224,13 +224,15 @@ class Acon3dBloomPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
 
         scene = context.scene
         props = scene.eevee
+        prop = scene.ACON_prop
 
         layout.active = props.use_bloom
         col = layout.column()
-        col.prop(props, "bloom_threshold")
+        col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
         col.prop(props, "bloom_knee")
         col.prop(props, "bloom_radius")
         col.prop(props, "bloom_color")
