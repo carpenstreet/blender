@@ -100,7 +100,7 @@ class MaterialPanel(bpy.types.Panel):
         obj = context.object
 
 
-        if obj:
+        if obj and context.selected_objects:
             # Breadcrumb을 그려줌
             row = layout.row()
             col = row.column()
@@ -139,6 +139,13 @@ class MaterialPanel(bpy.types.Panel):
                 row.prop(mat.ACON_prop, "toggle_shading")
                 row = box.row()
                 row.prop(mat.ACON_prop, "toggle_edge")
+        else:
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text="No selected object")
 
 
 class Acon3dFacePanel(bpy.types.Panel):
