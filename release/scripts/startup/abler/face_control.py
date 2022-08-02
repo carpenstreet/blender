@@ -100,7 +100,7 @@ class MaterialPanel(bpy.types.Panel):
         obj = context.object
 
 
-        if obj:
+        if obj and context.selected_objects:
             # Breadcrumb을 그려줌
             row = layout.row()
             col = row.column()
@@ -139,6 +139,13 @@ class MaterialPanel(bpy.types.Panel):
                 row.prop(mat.ACON_prop, "toggle_shading")
                 row = box.row()
                 row.prop(mat.ACON_prop, "toggle_edge")
+        else:
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text="No selected object")
 
 
 class Acon3dFacePanel(bpy.types.Panel):
@@ -224,18 +231,20 @@ class Acon3dBloomPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
 
         scene = context.scene
-        props = scene.eevee
+        eevee_prop = scene.eevee
+        prop = scene.ACON_prop
 
-        layout.active = props.use_bloom
+        layout.active = eevee_prop.use_bloom
         col = layout.column()
-        col.prop(props, "bloom_threshold")
-        col.prop(props, "bloom_knee")
-        col.prop(props, "bloom_radius")
-        col.prop(props, "bloom_color")
-        col.prop(props, "bloom_intensity")
-        col.prop(props, "bloom_clamp")
+        col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
+        col.prop(prop, "bloom_knee", text="Knee", slider=True)
+        col.prop(prop, "bloom_radius", text="Radius", slider=True)
+        col.prop(eevee_prop, "bloom_color")
+        col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
+        col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 
 
 classes = (
