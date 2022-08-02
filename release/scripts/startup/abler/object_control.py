@@ -214,8 +214,12 @@ class ObjectSubPanel(bpy.types.Panel):
             row.prop(prop, "state_slider", slider=True)
             row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
         else:
-            row = layout.row(align=True)
-            row.label(text="No selected object")
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text="No selected object")
 
 
 class Acon3dGroupNavigaionPanel(bpy.types.Panel):
@@ -228,11 +232,11 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
     bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
+        layout = self.layout
+
         if context.selected_objects and context.object:
             obj = context.object
             prop = obj.ACON_prop
-            layout = self.layout
-
             row = layout.row(align=True)
             row.enabled = "Groups" in context.collection.children.keys()
             row.prop(prop, "group_list", text="")
@@ -241,9 +245,12 @@ class Acon3dGroupNavigaionPanel(bpy.types.Panel):
             row.operator("acon3d.group_navigate_down", text="", icon="TRIA_DOWN")
             row.operator("acon3d.group_navigate_bottom", text="", icon="TRIA_DOWN_BAR")
         else:
-            layout = self.layout
-            row = layout.row(align=True)
-            row.label(text="No selected object")
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text="No selected object")
 
 
 # Camera, Sun 제외 전체 선택

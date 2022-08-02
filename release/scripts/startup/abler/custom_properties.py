@@ -19,7 +19,7 @@
 
 import bpy
 from math import radians
-from .lib import scenes, cameras, shadow, objects
+from .lib import scenes, cameras, shadow, objects, bloom
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
 
@@ -391,6 +391,51 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         description="Create a shining effect with high luminance pixels",
         default=True,
         update=scenes.change_bloom,
+    )
+
+    bloom_threshold: bpy.props.FloatProperty(
+        name="",
+        description="Filters out pixels under this level of brightness",
+        default=1.0,
+        min=0,
+        max=10.0,
+        update=bloom.change_bloom_threshold,
+    )
+
+    bloom_knee: bpy.props.FloatProperty(
+        name="",
+        description="Makes transition between under/over-threshold gradual",
+        default=0.5,
+        min=0,
+        max=1.0,
+        update=bloom.change_bloom_knee,
+    )
+
+    bloom_radius: bpy.props.FloatProperty(
+        name="",
+        description="Bloom spread distance",
+        default=4.0,
+        min=0,
+        max=10.0,
+        update=bloom.change_bloom_radius,
+    )
+
+    bloom_intensity: bpy.props.FloatProperty(
+        name="",
+        description="Blend factor",
+        default=0.05,
+        min=0,
+        max=1.0,
+        update=bloom.change_bloom_intensity,
+    )
+
+    bloom_clamp: bpy.props.FloatProperty(
+        name="",
+        description="Maximum intensity a bloom pixel can have (0 to disabled)",
+        default=0,
+        min=0,
+        max=1000.0,
+        update=bloom.change_bloom_clamp,
     )
 
 
