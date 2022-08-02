@@ -3057,7 +3057,9 @@ bool ui_but_string_eval_number(bContext *C, const uiBut *but, const char *str, d
 {
   // string literal이 들어가는 경우를 방지하기 위해서 아래와 같은 for loop를 추가함
   for (int i = 0; i < strlen(str); i++) {
-    if (!isdigit(str[i]) && str[i] != '.' && str[i] != '-' && str[i] != '+') {
+    char digit = str[i];
+    // -가 literal의 처음에 들어가는 경우를 제외하고는 다 false 처라하기 위해서 다음과 같이 처리함
+    if ((!isdigit(digit) && digit != '.' && digit != '-' && digit != '+') || (i > 0 && digit == '-')) {
       return false;
     }
   }
@@ -3067,11 +3069,9 @@ bool ui_but_string_eval_number(bContext *C, const uiBut *but, const char *str, d
   }
   // "--003"와 같은 케이스가 "-3"으로 들어가기 위해서 아래 내용을 적음
   bool isNegative = false;
+  // added while loop to strip leading '-' characters in str
   if (str[0] == '-'){
     isNegative = true;
-  }
-  // added while loop to strip leading '-' characters in str
-  while (str[0] == '-'){
     str++;
   }
   // added while loop to strip leading zeros in str
