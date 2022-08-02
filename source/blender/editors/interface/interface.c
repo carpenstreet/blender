@@ -3055,13 +3055,35 @@ static bool ui_number_from_string_percentage(bContext *C, const char *str, doubl
 
 bool ui_but_string_eval_number(bContext *C, const uiBut *but, const char *str, double *r_value)
 {
+  // string literal이 들어가는 경우를 방지하기 위해서 아래와 같은 for loop를 추가함
+  for (int i = 0; i < strlen(str); i++) {
+    if (!isdigit(str[i]) && str[i] != '.' && str[i] != '-' && str[i] != '+') {
+      return false;
+    }
+  }
   if (str[0] == '\0') {
     *r_value = 0.0;
     return true;
   }
+  // "--003"와 같은 케이스가 "-3"으로 들어가기 위해서 아래 내용을 적음
+  bool isNegative = false;
+  if (str[0] == '-'){
+    isNegative = true;
+  }
+  // added while loop to strip leading '-' characters in str
+  while (str[0] == '-'){
+    str++;
+  }
   // added while loop to strip leading zeros in str
   while (str[0] == '0'){
-    str = str + 1;
+    str++;
+  }
+  // 음수인 경우에는 현재 str의 앞에 -를 붙여준다
+  char* str_new = malloc(strlen(str) + 1);
+  if (isNegative){
+    strcpy(str_new, "-");
+    strcat(str_new, str);
+    str = str_new;
   }
 
   PropertySubType subtype = PROP_NONE;
