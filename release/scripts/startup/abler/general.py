@@ -196,7 +196,7 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
         except Exception as e:
             tracker.import_blend_fail()
-            self.report({"ERROR"}, message=str(e))
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
         else:
             tracker.import_blend()
 
