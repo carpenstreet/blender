@@ -243,7 +243,14 @@ class Acon3dModalOperator(bpy.types.Operator):
                 shift_state = (result & 0xFF00) >> 8
                 return result & 0xFF
 
-        if userInfo and userInfo.ACON_prop.login_status == "SUCCESS":
+        splash_closing = event.type in (
+            "LEFTMOUSE",
+            "MIDDLEMOUSE",
+            "RIGHTMOUSE",
+            "ESC",
+            "ENTER",
+        )
+        if userInfo and userInfo.ACON_prop.login_status == "SUCCESS" and splash_closing:
             if read_remembered_show_guide():
                 bpy.ops.acon3d.tutorial_guide_popup()
 
