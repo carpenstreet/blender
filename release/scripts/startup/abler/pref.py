@@ -39,6 +39,7 @@ def init_setting(dummy):
     prefs_view.show_developer_ui = False
     prefs_view.show_tooltips_python = False
     prefs_paths.use_load_ui = False
+    prefs_paths.save_version = 0
 
 
 @persistent
