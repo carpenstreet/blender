@@ -248,6 +248,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
         params = space.params
 
         params.display_type = "THUMBNAIL"
+        params.display_size = "LARGE"
         space.show_region_tool_props = False
         space.show_region_ui = False
         space.show_region_toolbar = False
@@ -277,6 +278,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
         params = space.params
 
         params.display_type = "THUMBNAIL"
+        params.display_size = "LARGE"
         params.sort_method = "FILE_SORT_TIME"
         params.use_sort_invert = True
         space.show_region_tool_props = False

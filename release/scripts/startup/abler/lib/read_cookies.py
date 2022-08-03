@@ -39,7 +39,7 @@ def remember_show_guide(self, context) -> None:
 
 def read_remembered_show_guide() -> bool:
     if not os.path.isfile(path_cookies_tutorial_guide):
-        return False
+        return True
     with open(path_cookies_tutorial_guide, "rb") as fr:
         data = pickle.load(fr)
     return data
