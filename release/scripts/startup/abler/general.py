@@ -276,9 +276,9 @@ class BaseFileOpenOperator:
             )
             update_recent_files(path, is_add=True)
 
-        except:
+        except Exception as e:
             tracker.file_open_fail()
-            self.report({"ERROR"}, "Please check file extension(.blend)")
+            self.report({"ERROR"}, message=str(e))
         else:
             tracker.file_open()
 
