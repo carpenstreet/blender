@@ -268,7 +268,9 @@ class BaseFileOpenOperator:
             update_recent_files(path, is_add=True)
 
         except Exception as e:
+            update_recent_files(path)
             tracker.file_open_fail()
+
             self.report({"ERROR"}, message=str(e))
         else:
             tracker.file_open()
