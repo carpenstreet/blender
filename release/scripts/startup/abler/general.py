@@ -278,6 +278,7 @@ class BaseFileOpenOperator:
 
         except:
             tracker.file_open_fail()
+            self.report({"ERROR"}, "Please check file extension(.blend)")
         else:
             tracker.file_open()
 
