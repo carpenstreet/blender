@@ -235,6 +235,9 @@ def update_recent_files(target_path, is_add=False):
     history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
 
     try:
+        # create history_path if not exists
+        open(history_path, "a").close()
+
         with open(history_path) as fin:
             recent_filepaths_except_target = [
                 path for path in fin.read().splitlines() if path != target_path
