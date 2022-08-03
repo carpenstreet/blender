@@ -137,6 +137,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
 class Acon3dNoticeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice"
     bl_label = ""
+    bl_description = "ABLER Service Notice"
     title: bpy.props.StringProperty(name="Title")
     content: bpy.props.StringProperty(name="Content", description="content")
     link: bpy.props.StringProperty(name="Link", description="link")
@@ -431,6 +432,14 @@ class Acon3dAnchorOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     href: bpy.props.StringProperty(name="href", description="href")
+    description_text: bpy.props.StringProperty(name="description_text", description="description_text")
+
+    @classmethod
+    def description(cls, context, properties):
+        if properties.description_text:
+            return bpy.app.translations.pgettext(properties.description_text)
+        else:
+            return None
 
     def execute(self, context):
         webbrowser.open(self.href)
