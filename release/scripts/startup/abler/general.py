@@ -261,23 +261,17 @@ class BaseFileOpenOperator:
 
             if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
                 return
-            elif not os.path.isfile(path):
-                bpy.ops.acon3d.alert(
-                    "INVOKE_DEFAULT",
-                    title="File not found",
-                    message_1="Selected file does not exist",
-                )
-                update_recent_files(path)
-                tracker.file_open_fail()
-                return
 
             bpy.ops.wm.open_mainfile(
                 "INVOKE_DEFAULT", filepath=path, display_file_selector=False
             )
             update_recent_files(path, is_add=True)
 
-        except:
+        except Exception as e:
+            update_recent_files(path)
             tracker.file_open_fail()
+
+            self.report({"ERROR"}, message=str(e))
         else:
             tracker.file_open()
 
