@@ -245,7 +245,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
     filepath: bpy.props.StringProperty()
 
     def execute(self, context):
-        if not is_valid_extension(self.filepath, (".png", ".jpg")):
+        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
@@ -284,7 +284,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
 
     def execute(self, context):
-        if not is_valid_extension(self.filepath, (".png", ".jpg")):
+        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
