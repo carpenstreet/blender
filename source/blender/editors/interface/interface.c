@@ -3059,10 +3059,6 @@ bool ui_but_string_eval_number(bContext *C, const uiBut *but, const char *str, d
     *r_value = 0.0;
     return true;
   }
-  // added while loop to strip leading zeros in str
-  while (str[0] == '0'){
-    str = str + 1;
-  }
 
   PropertySubType subtype = PROP_NONE;
   if (but->rnaprop) {

@@ -248,7 +248,7 @@ class Acon3dModalOperator(bpy.types.Operator):
             "MIDDLEMOUSE",
             "RIGHTMOUSE",
             "ESC",
-            "ENTER",
+            "RET",
         )
         if userInfo and userInfo.ACON_prop.login_status == "SUCCESS" and splash_closing:
             if read_remembered_show_guide():

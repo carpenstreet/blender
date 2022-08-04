@@ -15,7 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-
+import os
 
 bl_info = {
     "name": "ACON3D Panel",
@@ -211,11 +211,27 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         # self.index를 유저가 마음대로 바꿀 수 있는 패널로 인해 try/except로 감쌈
         try:
             image = context.scene.camera.data.background_images[self.index]
+            if image.image:
+                bpy.data.images.remove(image.image)
             image.image = None
             bpy.context.scene.camera.data.background_images.remove(image)
         except:
             pass
         return {"FINISHED"}
+
+
+def is_valid_extension(target_path, accepted):
+    _, ext = os.path.splitext(target_path)
+
+    if ext.lower() not in accepted:
+        bpy.ops.acon3d.alert(
+            "INVOKE_DEFAULT",
+            title="Check Background Image File",
+            message_1="Failed to load background image file:",
+            message_2=f"{target_path}",
+        )
+        return False
+    return True
 
 
 class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
@@ -231,8 +247,13 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
     filepath: bpy.props.StringProperty()
 
     def execute(self, context):
+        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
+            return {"FINISHED"}
+
         new_image = bpy.data.images.load(self.filepath)
         image = context.scene.camera.data.background_images[self.index]
+        if image.image:
+            bpy.data.images.remove(image.image)
         image.image = new_image
         return {"FINISHED"}
 
@@ -267,8 +288,13 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
 
     def execute(self, context):
+        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
+            return {"FINISHED"}
+
         new_image = bpy.data.images.load(self.filepath)
         image = context.scene.camera.data.background_images[self.index]
+        if image.image:
+            bpy.data.images.remove(image.image)
         image.image = new_image
         return {"FINISHED"}
 
