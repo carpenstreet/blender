@@ -262,7 +262,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
-    image_extension = "*.png;*.jpg;*psd"
+    image_extension = "*.png;*.jpg;"
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
 
