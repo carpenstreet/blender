@@ -21,6 +21,7 @@ import ctypes
 import os
 import pickle
 import platform
+import sys
 import textwrap
 import webbrowser
 from json import JSONDecodeError
@@ -250,7 +251,13 @@ class Acon3dModalOperator(bpy.types.Operator):
             "ESC",
             "RET",
         )
-        if userInfo and userInfo.ACON_prop.login_status == "SUCCESS" and splash_closing:
+        is_blend_open: bool = False
+        for arg in sys.argv:
+            if arg.lower().endswith(".blend"):
+                is_blend_open = True
+                break
+
+        if userInfo and userInfo.ACON_prop.login_status == "SUCCESS" and (splash_closing or is_blend_open):
             if read_remembered_show_guide():
                 bpy.ops.acon3d.tutorial_guide_popup()
 
