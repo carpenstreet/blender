@@ -251,9 +251,9 @@ class Acon3dModalOperator(bpy.types.Operator):
             "ESC",
             "RET",
         )
-        is_blend_open = False
+        is_blend_open: bool = False
         for arg in sys.argv:
-            if ".blend" in arg:
+            if arg.lower().endswith(".blend"):
                 is_blend_open = True
                 break
 
