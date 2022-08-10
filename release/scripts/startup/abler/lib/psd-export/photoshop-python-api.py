@@ -1,13 +1,17 @@
 from photoshop import Session
 import photoshop.api as psi
 import os
+from PIL import Image
 
 dir_path = "C:/Users/master/Desktop/Coni's room"
 file_lst = os.listdir(dir_path)
 
+im = Image.open(dir_path + "/" + file_lst[0], 'r')
+width, height = im.size
+
 psd_file = dir_path + "/" + os.path.basename(dir_path) + ".psd"
 app = psi.Application()
-doc = app.documents.add(4800,2700)
+doc = app.documents.add(width, height)
 doc.saveAs(psd_file, psi.PhotoshopSaveOptions(), True)
 doc.close()
 
