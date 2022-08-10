@@ -4,7 +4,7 @@ import os
 dir_path = "C:/Users/master/Downloads/Coni's room"
 file_lst = os.listdir(dir_path)
 
-psd_file = dir_path + "/" + "Coni.psd"
+psd_file = dir_path + "/" + os.path.basename(dir_path)
 
 try:
     with Session(action="new_document", auto_close=True) as ps:
