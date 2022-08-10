@@ -939,6 +939,10 @@ static void ui_apply_but_undo(uiBut *but)
       str_len_clip = strlen(str);
     }
 
+    const char* rna_id = RNA_property_identifier(but->rnaprop);
+    if (strcmp(rna_id, "password") || strcmp(rna_id, "password_shown") || strcmp(rna_id, "username")){
+      skip_undo = true;
+    }
     /* Optionally override undo when undo system doesn't support storing properties. */
     if (but->rnapoin.owner_id) {
       /* Exception for renaming ID data, we always need undo pushes in this case,
