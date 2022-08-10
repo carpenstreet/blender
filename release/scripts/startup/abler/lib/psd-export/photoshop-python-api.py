@@ -1,36 +1,23 @@
-# import photoshop.api as ps
-
-# app = ps.Application()
-# doc = app.documents.add()
-# new_doc = doc.artLayers.add()
-# text_color = ps.SolidColor()
-# text_color.rgb.red = 0
-# text_color.rgb.green = 255
-# text_color.rgb.blue = 0
-# new_text_layer = new_doc
-# new_text_layer.kind = ps.LayerKind.TextLayer
-# new_text_layer.textItem.contents = 'Hello, World!'
-# new_text_layer.textItem.position = [160, 167]
-# new_text_layer.textItem.size = 40
-# new_text_layer.textItem.color = text_color
-# options = ps.JPEGSaveOptions(quality=5)
-# # # save to jpg
-# jpg = 'd:/hello_world.jpg'
-# doc.saveAs(jpg, options, asCopy=True)
-# app.doJavaScript(f'alert("save to jpg: {jpg}")')
-
-## Import Image As Layer
 from photoshop import Session
+import os
 
-with Session(action="new_document") as ps:
-    desc = ps.ActionDescriptor
-    event_id = ps.app.charIDToTypeID("Plc ")  # `Plc` need one space in here.
+dir_path = "C:/Users/master/Downloads/Coni's room"
+file_lst = os.listdir(dir_path)
 
-    desc.putPath(ps.app.charIDToTypeID("null"), "C:/Users/master/Downloads/Coni's room/Coni's room.png")
-    ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
+psd_file = dir_path + "/" + "Coni.psd"
 
-    desc.putPath(ps.app.charIDToTypeID("null"), "C:/Users/master/Downloads/Coni's room/Coni's room_line.png")
-    ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
+try:
+    with Session(action="new_document", auto_close=True) as ps:
+        desc = ps.ActionDescriptor
+        event_id = ps.app.charIDToTypeID("Plc ")  # `Plc` need one space in here.
 
-    desc.putPath(ps.app.charIDToTypeID("null"), "C:/Users/master/Downloads/Coni's room/Coni's room_line_shadow.png")
-    ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
+        for file in reversed(file_lst):
+            file_path = dir_path + "/" + file
+            desc.putPath(ps.app.charIDToTypeID("null"), file_path)
+            ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
+        
+        ps.active_document.saveAs(psd_file, ps.PhotoshopSaveOptions(), True)
+
+except Exception as e:
+    raise e
+
