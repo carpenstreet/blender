@@ -15,18 +15,18 @@ doc = app.documents.add(width, height)
 doc.saveAs(psd_file, psi.PhotoshopSaveOptions(), True)
 doc.close()
 
-# try:
-with Session(psd_file, action="open",auto_close=True) as ps:
-    desc = ps.ActionDescriptor
-    event_id = ps.app.charIDToTypeID("Plc ")  # `Plc` need one space in here.
+try:
+    with Session(psd_file, action="open",auto_close=True) as ps:
+        desc = ps.ActionDescriptor
+        event_id = ps.app.charIDToTypeID("Plc ")  # `Plc` need one space in here.
 
-    for file in reversed(file_lst):
-        file_path = dir_path + "/" + file
-        desc.putPath(ps.app.charIDToTypeID("null"), file_path)
-        ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
-        
-        ps.active_document.save()
+        for file in reversed(file_lst):
+            file_path = dir_path + "/" + file
+            desc.putPath(ps.app.charIDToTypeID("null"), file_path)
+            ps.app.executeAction(ps.app.charIDToTypeID("Plc "), desc)
+            
+            ps.active_document.save()
 
-# except Exception as e:
-#     raise e
+except Exception as e:
+    raise e
 
