@@ -10,12 +10,12 @@ im = Image.open(dir_path + "/" + file_lst[0], 'r')
 width, height = im.size
 
 psd_file = dir_path + "/" + os.path.basename(dir_path) + ".psd"
-app = psi.Application()
-doc = app.documents.add(width, height)
-doc.saveAs(psd_file, psi.PhotoshopSaveOptions(), True)
-doc.close()
-
 try:
+    app = psi.Application()
+    doc = app.documents.add(width, height)
+    doc.saveAs(psd_file, psi.PhotoshopSaveOptions(), True)
+    doc.close()
+
     with Session(psd_file, action="open",auto_close=True) as ps:
         desc = ps.ActionDescriptor
         event_id = ps.app.charIDToTypeID("Plc ")  # `Plc` need one space in here.
