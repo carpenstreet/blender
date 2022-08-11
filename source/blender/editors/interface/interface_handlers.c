@@ -544,7 +544,7 @@ static CurveProfile but_copypaste_profile = {0};
 static bool but_copypaste_profile_alive = false;
 
 /** \} */
-
+const char *SkipIdentifierKeywords[] = {"password", "password_shown", "username"};
 /* -------------------------------------------------------------------- */
 /** \name UI Queries
  * \{ */
@@ -939,6 +939,13 @@ static void ui_apply_but_undo(uiBut *but)
       str_len_clip = strlen(str);
     }
 
+    const char* rna_id = RNA_property_identifier(but->rnaprop);
+    for (int i = 0; i < sizeof(SkipIdentifierKeywords) / sizeof(SkipIdentifierKeywords[0]); i++) {
+      if (strcmp(rna_id, SkipIdentifierKeywords[i])) {
+        skip_undo = true;
+        break;
+      }
+    }
     /* Optionally override undo when undo system doesn't support storing properties. */
     if (but->rnapoin.owner_id) {
       /* Exception for renaming ID data, we always need undo pushes in this case,
