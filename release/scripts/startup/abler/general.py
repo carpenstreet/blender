@@ -143,6 +143,17 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         try:
+            path = self.filepath
+            if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
+                return {"FINISHED"}
+            elif not os.path.isfile(path):
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="File not found",
+                    message_1="Selected file does not exist",
+                )
+                return {"FINISHED"}
+
             for obj in bpy.data.objects:
                 obj.select_set(False)
 
