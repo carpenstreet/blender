@@ -266,9 +266,6 @@ class BaseFileOpenOperator:
         try:
             path = self.filepath
 
-            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
-                return
-
             bpy.ops.wm.open_mainfile(
                 "INVOKE_DEFAULT", filepath=path, display_file_selector=False
             )
