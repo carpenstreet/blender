@@ -602,6 +602,13 @@ class Acon3dRenderPanel(bpy.types.Panel):
             row.operator("acon3d.render_all", text="Render All Scenes")
             row.operator("acon3d.render_snip", text="Snip Render")
 
+            theme = context.preferences.themes[0]
+            ui = theme.user_interface
+            row = layout.row()
+            row.prop(ui, "transparent_checker_primary")
+            row = layout.row()
+            row.prop(ui, "transparent_checker_secondary")
+
 
 classes = (
     Acon3dCameraViewOperator,
