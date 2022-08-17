@@ -423,8 +423,8 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class Acon3dImportPanel(bpy.types.Panel):
-    bl_idname = "ACON3D_PT_import"
+class Acon3dGeneralPanel(bpy.types.Panel):
+    bl_idname = "ACON3D_PT_general"
     bl_label = "General"
     bl_category = "ACON3D"
     bl_space_type = "VIEW_3D"
@@ -482,7 +482,7 @@ classes = (
     AconTutorialGuide1Operator,
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
-    Acon3dImportPanel,
+    Acon3dGeneralPanel,
     ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
