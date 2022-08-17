@@ -49,7 +49,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
     def execute(self, context):
-        if AconImportHelper.execute(self, context) is not None:
+        if not AconImportHelper.check_path(self):
             return {"FINISHED"}
         try:
             for obj in bpy.data.objects:
