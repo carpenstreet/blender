@@ -144,7 +144,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     def execute(self, context):
         try:
-            if not AconImportHelper.check_path(self):
+            if not self.check_path():
                 return {"FINISHED"}
 
             for obj in bpy.data.objects:
@@ -290,7 +290,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        if not AconImportHelper.check_path(self):
+        if not self.check_path():
             return {"FINISHED"}
         self.open_file()
         return {"FINISHED"}
