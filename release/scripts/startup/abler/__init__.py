@@ -52,7 +52,6 @@ from . import pref
 from . import operators
 from .lib.tracker import tracker
 
-
 # =========================================================================
 # Registration:
 # =========================================================================
@@ -89,14 +88,9 @@ def register():
             print(f"ABLER: Failed to register {item.__name__}\n" + str(e))
 
 
+# unregister가 사용되지 않아서 아래와 같이 pass 처리함
 def unregister():
-    for item in importedLibrary.reverse():
-        if not isinstance(item, ModuleType):
-            continue
-        try:
-            item.register()
-        except Exception as e:
-            print(f"ABLER: Failed to unregister {item.__name__}\n" + str(e))
+    pass
 
 
 if __name__ == "__main__":
