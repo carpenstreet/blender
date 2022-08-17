@@ -203,7 +203,7 @@ def _template_space_region_type_toggle(*, toolbar_key=None, sidebar_key=None):
     return items
 
 
-def _template_items_select_actions(params, operator, has_properties=True):
+def _template_items_select_actions(params, operator):
     if not params.use_select_all_toggle:
         return [
             (operator, {"type": 'A', "value": 'PRESS'}, {"properties": [("action", 'SELECT')]}),
