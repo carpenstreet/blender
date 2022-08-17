@@ -193,8 +193,7 @@ def _template_space_region_type_toggle(*, toolbar_key=None, sidebar_key=None):
     items = []
     if toolbar_key is not None:
         items.append(
-            ("acon3d.context_toggle", toolbar_key,
-             {"properties": [("data_path", 'space_data.show_region_toolbar')]})
+            ("acon3d.context_toggle", toolbar_key, None)
         )
     if sidebar_key is not None:
         items.append(
@@ -204,7 +203,7 @@ def _template_space_region_type_toggle(*, toolbar_key=None, sidebar_key=None):
     return items
 
 
-def _template_items_select_actions(params, operator):
+def _template_items_select_actions(params, operator, has_properties=True):
     if not params.use_select_all_toggle:
         return [
             (operator, {"type": 'A', "value": 'PRESS'}, {"properties": [("action", 'SELECT')]}),
@@ -224,6 +223,30 @@ def _template_items_select_actions(params, operator):
             (operator, {"type": 'A', "value": 'PRESS'}, {"properties": [("action", 'TOGGLE')]}),
             (operator, {"type": 'A', "value": 'PRESS', "alt": True}, {"properties": [("action", 'DESELECT')]}),
             (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, {"properties": [("action", 'INVERT')]}),
+        ]
+
+
+# 위 함수에서 properties 만 빠진 상태, 커스텀 오퍼레이터에서 불필요한 properties 가 들어가는 것을 방지하기 위해 분리
+def _template_items_select_actions_without_properties(params, operator):
+    if not params.use_select_all_toggle:
+        return [
+            (operator, {"type": 'A', "value": 'PRESS'}, None),
+            # (operator, {"type": 'A', "value": 'PRESS', "alt": True}, None),
+            (operator, {"type": 'ESC', "value": 'PRESS'}, None),
+            (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, None),
+            (operator, {"type": 'A', "value": 'DOUBLE_CLICK'}, None),
+        ]
+    elif params.legacy:
+        # Alt+A is for playback in legacy keymap.
+        return [
+            (operator, {"type": 'A', "value": 'PRESS'}, None),
+            (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, None),
+        ]
+    else:
+        return [
+            (operator, {"type": 'A', "value": 'PRESS'}, None),
+            (operator, {"type": 'A', "value": 'PRESS', "alt": True}, None),
+            (operator, {"type": 'I', "value": 'PRESS', "ctrl": True}, None),
         ]
 
 
@@ -527,10 +550,8 @@ def km_screen(params):
         ("ed.undo", {"type": 'Z', "value": 'PRESS', "ctrl": True, "repeat": True}, None),
         ("ed.redo", {"type": 'Z', "value": 'PRESS', "shift": True, "ctrl": True, "repeat": True}, None),
         # Render
-        ("acon3d.render_full", {"type": 'F12', "value": 'PRESS'},
-         {"properties": [("use_viewport", True)]}),
-        ("acon3d.render_quick", {"type": 'F12', "value": 'PRESS', "ctrl": True},
-         {"properties": [("animation", True), ("use_viewport", True)]}),
+        ("acon3d.render_full", {"type": 'F12', "value": 'PRESS'}, None),
+        ("acon3d.render_quick", {"type": 'F12', "value": 'PRESS', "ctrl": True}, None),
         ("render.view_cancel", {"type": 'ESC', "value": 'PRESS'}, None),
         ("render.view_show", {"type": 'F11', "value": 'PRESS'}, None),
         ("render.play_rendered_anim", {"type": 'F11', "value": 'PRESS', "ctrl": True}, None),
@@ -2013,8 +2034,7 @@ def km_file_browser_main(params):
     )
 
     items.extend([
-        ("file.execute", {"type": 'LEFTMOUSE', "value": 'DOUBLE_CLICK'},
-         {"properties": [("need_active", True)]}),
+        ("file.execute", {"type": 'LEFTMOUSE', "value": 'DOUBLE_CLICK'}, None),
         # Both .execute and .select are needed here. The former only works if
         # there's a file operator (i.e. not in regular editor mode) but is
         # needed to load files. The latter makes selection work if there's no
@@ -4093,7 +4113,7 @@ def km_object_mode(params):
     items.extend([
         *_template_items_proportional_editing(
             params, connected=False, toggle_data_path='tool_settings.use_proportional_edit_objects'),
-        *_template_items_select_actions(params, "acon3d.object_select_all"),
+        *_template_items_select_actions_without_properties(params, "acon3d.object_select_all"),
         ("acon3d.state_action", {"type": 'E', "value": 'PRESS'},
          {"properties": [("step", 0.25)]}),
         ("acon3d.state_action", {"type": 'E', "value": 'PRESS', "shift": True},
@@ -4479,8 +4499,7 @@ def km_sculpt(params):
 
     items.extend([
         # Transfer Sculpt Mode (release to avoid conflict with grease pencil drawing).
-        ("object.transfer_mode", {"type": 'D', "value": 'RELEASE'},
-         {"properties": [("use_eyedropper", False)]}),
+        ("object.transfer_mode", {"type": 'D', "value": 'RELEASE'}, None),
         # Brush strokes
         ("sculpt.brush_stroke", {"type": 'LEFTMOUSE', "value": 'PRESS'},
          {"properties": [("mode", 'NORMAL')]}),
