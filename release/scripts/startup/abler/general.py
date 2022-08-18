@@ -38,6 +38,7 @@ from .lib import scenes
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
 from .lib.read_cookies import read_remembered_show_guide
+from .lib.import_file import AconImportHelper
 
 
 def split_filepath(filepath):
@@ -132,7 +133,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class ImportOperator(bpy.types.Operator, ImportHelper):
+class ImportOperator(bpy.types.Operator, AconImportHelper):
     """Import file according to the current settings"""
 
     bl_idname = "acon3d.import_blend"
@@ -143,6 +144,9 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         try:
+            if not self.check_path():
+                return {"FINISHED"}
+
             for obj in bpy.data.objects:
                 obj.select_set(False)
 
@@ -262,9 +266,6 @@ class BaseFileOpenOperator:
         try:
             path = self.filepath
 
-            if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
-                return
-
             bpy.ops.wm.open_mainfile(
                 "INVOKE_DEFAULT", filepath=path, display_file_selector=False
             )
@@ -279,7 +280,7 @@ class BaseFileOpenOperator:
             tracker.file_open()
 
 
-class FileOpenOperator(bpy.types.Operator, ImportHelper, BaseFileOpenOperator):
+class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperator):
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
@@ -289,6 +290,8 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper, BaseFileOpenOperator):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
+        if not self.check_path():
+            return {"FINISHED"}
         self.open_file()
         return {"FINISHED"}
 

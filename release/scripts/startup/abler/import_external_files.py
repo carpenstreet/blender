@@ -36,9 +36,10 @@ import bpy
 from bpy_extras.io_utils import ImportHelper
 from .lib.materials import materials_setup
 from .lib.tracker import tracker
+from .lib.import_file import AconImportHelper
 
 
-class ImportFBXOperator(bpy.types.Operator, ImportHelper):
+class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
     """Import FBX file according to the current settings"""
 
     bl_idname = "acon3d.import_fbx"
@@ -48,6 +49,8 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
     def execute(self, context):
+        if not self.check_path():
+            return {"FINISHED"}
         try:
             for obj in bpy.data.objects:
                 obj.select_set(False)
