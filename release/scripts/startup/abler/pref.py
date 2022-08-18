@@ -14,6 +14,7 @@ def init_setting(dummy):
     prefs = bpy.context.preferences
     prefs_sys = prefs.system
     prefs_view = prefs.view
+    prefs_input = prefs.inputs
     prefs_paths = prefs.filepaths
 
     if "--background" not in sys.argv and "-b" not in sys.argv:
@@ -40,6 +41,7 @@ def init_setting(dummy):
     prefs_view.show_tooltips_python = False
     prefs_paths.use_load_ui = False
     prefs_paths.save_version = 0
+    prefs_input.use_zoom_to_mouse = True
 
 
 @persistent
