@@ -604,7 +604,7 @@ class Acon3dRenderPanel(bpy.types.Panel):
 
             row = layout.row()
             prop = context.scene.ACON_prop
-            row.prop(prop, "background_color", text="background_color")
+            row.prop(prop, "background_color", text="Background Color")
 
 
 classes = (
