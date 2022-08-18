@@ -396,6 +396,32 @@ def change_image_adjust_saturation(self, context: Context) -> None:
     inputs[1].default_value = value
 
 
+def change_exposure(self, context: Context) -> None:
+    if not context:
+        context = bpy.context
+
+    if not self:
+        self = context.scene.ACON_prop
+
+    prop: PropertyGroup = context.scene.ACON_prop
+    exposure: FloatProperty = prop.exposure
+
+    context.scene.view_settings.exposure = exposure
+
+
+def change_gamma(self, context: Context) -> None:
+    if not context:
+        context = bpy.context
+
+    if not self:
+        self = context.scene.ACON_prop
+
+    prop: PropertyGroup = context.scene.ACON_prop
+    gamma: FloatProperty = prop.gamma
+
+    context.scene.view_settings.gamma = gamma
+
+
 def change_line_props(self, context: Context) -> None:
     if not context:
         context = bpy.context
