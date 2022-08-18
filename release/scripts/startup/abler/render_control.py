@@ -602,11 +602,9 @@ class Acon3dRenderPanel(bpy.types.Panel):
             row.operator("acon3d.render_all", text="Render All Scenes")
             row.operator("acon3d.render_snip", text="Snip Render")
 
-            ui = context.preferences.themes[0].user_interface
             row = layout.row()
-            row.prop(ui, "transparent_checker_primary", text="Background Color")
-
-            ui.transparent_checker_secondary = ui.transparent_checker_primary
+            prop = context.scene.ACON_prop
+            row.prop(prop, "background_color", text="background_color")
 
 
 classes = (

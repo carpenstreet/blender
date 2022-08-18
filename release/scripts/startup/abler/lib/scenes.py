@@ -77,6 +77,14 @@ def refresh_look_at_me() -> None:
     context.view_layer.objects.active = prev_active_object
 
 
+def change_background_color(self, context: Context) -> None:
+    background_color = context.scene.ACON_prop.background_color
+
+    ui = context.preferences.themes[0].user_interface
+    ui.transparent_checker_primary = background_color
+    ui.transparent_checker_secondary = background_color
+
+
 # scene_items should be a global variable due to a bug in EnumProperty
 scene_items: List[Tuple[str, str, str]] = []
 
