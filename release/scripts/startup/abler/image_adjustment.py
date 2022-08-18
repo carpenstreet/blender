@@ -117,11 +117,33 @@ class Acon3dHueSaturationPanel(bpy.types.Panel):
         layout.prop(prop, "image_adjust_saturation", text="Saturation", slider=True)
 
 
+class Acon3dExposurePanel(bpy.types.Panel):
+    bl_label = "Exposure"
+    bl_idname = "ACON3D_PT_image_sub_exposure"
+    bl_parent_id = "ACON3D_PT_image_adjustment"
+    bl_category = "ACON3D"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_options = {"DEFAULT_CLOSED"}
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        layout.prop(prop, "exposure", text="Exposure", slider=True)
+        layout.prop(prop, "gamma", text="Gamma", slider=True)
+
+
 classes = (
     Acon3dImageAdjustmentPanel,
     Acon3dBrightnessContrastPanel,
     Acon3dColorBalancePanel,
     Acon3dHueSaturationPanel,
+    Acon3dExposurePanel,
 )
 
 
