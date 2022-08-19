@@ -39,6 +39,7 @@ def init_setting(dummy):
     prefs_view.show_navigate_ui = False
     prefs_view.show_developer_ui = False
     prefs_view.show_tooltips_python = False
+    prefs_view.color_picker_type = "SQUARE_SV"
     prefs_paths.use_load_ui = False
     prefs_paths.save_version = 0
     prefs_input.use_zoom_to_mouse = True

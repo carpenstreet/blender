@@ -1,5 +1,6 @@
 import bpy
 from ..custom_properties import AconSceneProperty
+import mathutils
 
 
 def change_and_reset_value() -> None:
@@ -13,6 +14,10 @@ def change_and_reset_value() -> None:
         if type(original_value) == float or type(original_value) == int:
             setattr(bpy.context.scene.ACON_prop, property, original_value)
         elif type(original_value) == bool:
+            setattr(bpy.context.scene.ACON_prop, property, original_value)
+
+        # background_color property 업데이트
+        elif type(original_value) == mathutils.Color:
             setattr(bpy.context.scene.ACON_prop, property, original_value)
 
         # string을 뺀 이유 : EnumProperty에 없는 값을 넣어주면 error가 뜸.

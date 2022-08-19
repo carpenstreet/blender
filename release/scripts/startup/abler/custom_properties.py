@@ -460,6 +460,16 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=bloom.change_bloom_clamp,
     )
 
+    background_color: bpy.props.FloatVectorProperty(
+        name="",
+        description="Change background color",
+        subtype="COLOR",
+        default=(1.0, 1.0, 1.0),
+        min=0.0,
+        max=1.0,
+        update=scenes.change_background_color,
+    )
+
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod
