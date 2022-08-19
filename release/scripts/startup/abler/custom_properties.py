@@ -367,6 +367,28 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=materials_handler.change_image_adjust_saturation,
     )
 
+    exposure: bpy.props.FloatProperty(
+        # name="Exposure",
+        name="",
+        description="Adjust the overall exposure and light up indoor space along with gamma (range: -10 ~ 10)",
+        subtype="FACTOR",
+        default=0.0,
+        min=-10,
+        max=10,
+        update=materials_handler.change_exposure,
+    )
+
+    gamma: bpy.props.FloatProperty(
+        # name="Gamma",
+        name="",
+        description="Adjust the overall gamma value and light up indoor space along with exposure (range: 0 ~ 5)",
+        subtype="FACTOR",
+        default=1.0,
+        min=0,
+        max=5,
+        update=materials_handler.change_gamma,
+    )
+
     selected_objects_str: bpy.props.StringProperty(name="Selected Objects")
 
     use_dof: bpy.props.BoolProperty(
