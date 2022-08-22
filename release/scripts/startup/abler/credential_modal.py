@@ -257,7 +257,11 @@ class Acon3dModalOperator(bpy.types.Operator):
                 is_blend_open = True
                 break
 
-        if userInfo and userInfo.ACON_prop.login_status == "SUCCESS" and (splash_closing or is_blend_open):
+        if (
+            userInfo
+            and userInfo.ACON_prop.login_status == "SUCCESS"
+            and (splash_closing or is_blend_open)
+        ):
             if read_remembered_show_guide():
                 bpy.ops.acon3d.tutorial_guide_popup()
 
@@ -446,7 +450,9 @@ class Acon3dAnchorOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     href: bpy.props.StringProperty(name="href", description="href")
-    description_text: bpy.props.StringProperty(name="description_text", description="description_text")
+    description_text: bpy.props.StringProperty(
+        name="description_text", description="description_text"
+    )
 
     @classmethod
     def description(cls, context, properties):

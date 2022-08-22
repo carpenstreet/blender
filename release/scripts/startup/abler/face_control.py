@@ -99,7 +99,6 @@ class MaterialPanel(bpy.types.Panel):
         layout = self.layout
         obj = context.object
 
-
         if obj and context.selected_objects:
             # Breadcrumb을 그려줌
             row = layout.row()
