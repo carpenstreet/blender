@@ -83,20 +83,18 @@ def compare_version():
     server_ver = StrictVersion(get_server_version(url)[1])
 
     if len(sys.argv) > 1:
-        if local_ver >= server_ver:
-            # TODO: 에이블러 계속 실행하는 것으로 바뀌주기
-            print("업데이트 불필요")
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="title 1",
-                message_1="test 1",
-            )
-        else:
+        if local_ver < server_ver:
             # TODO: 에이블러 실행 시 업데이트 팝업 노출
             print("업데이트 필요")
-            bpy.ops.acon3d.alert(
+            bpy.ops.acon3d.alert_update(
                 "INVOKE_DEFAULT",
-                title="title 2",
-                message_1="test 2",
+                title="제목: 업데이트 필요함",
+                message="에이블러 새로운 버전이 있으니, 업데이트 하십시오.",
             )
-
+        else:
+            # TODO: 에이블러 계속 실행하는 것으로 바뀌주기
+            bpy.ops.acon3d.alert_update(
+                "INVOKE_DEFAULT",
+                title="제목: 업데이트 필요없음",
+                message="에이블러 최신 버전입니다.",
+            )

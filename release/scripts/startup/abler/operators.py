@@ -55,9 +55,64 @@ class Acon3dLogoutOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class Acon3dAlertUpdateOperator(bpy.types.Operator):
+    bl_idname = "acon3d.alert_update"
+    bl_label = ""
+
+    title: bpy.props.StringProperty(name="Title")
+    message: bpy.props.StringProperty(name="Message")
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+    def modal(self, context, event):
+        # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기
+        print("modal 함수 확인")
+
+        if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
+            print("마우스 클릭 이벤트 발생")
+
+            bpy.ops.acon3d.alert_update(
+                "INVOKE_DEFAULT",
+                title="제목: 업데이트 필요없음",
+                message="에이블러 최신 버전입니다.",
+            )
+
+        return {"RUNNING_MODAL"}
+
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        row.scale_y = 1.5
+        row.label(text=self.title)
+
+        row = layout.row()
+        row.scale_y = 2.0
+        row.label(text=self.message)
+
+        row = layout.row()
+        row.scale_y = 1.0
+        anchor = row.operator("acon3d.abler_update", text="업데이트 하기", icon="FUND")
+
+
+class Acon3dAblerUpdateOperator(bpy.types.Operator):
+    bl_idname = "acon3d.abler_update"
+    bl_label = ""
+
+    def execute(self, context):
+        print("test")
+        return {"FINISHED"}
+
+
 classes = (
     Acon3dToonStyleOperator,
     Acon3dLogoutOperator,
+    Acon3dAlertUpdateOperator,
+    Acon3dAblerUpdateOperator,
 )
 
 
