@@ -39,9 +39,9 @@ def get_local_version():
             line = line.strip("\n")
 
             if "launcher" in line:
-                launcher_ver = line.split("=")[-1]
+                launcher_ver = line.split("=")[-1].strip()
             elif "installed" in line:
-                abler_ver = line.split("=")[-1]
+                abler_ver = line.split("=")[-1].strip()
 
     return [launcher_ver, abler_ver]
 
