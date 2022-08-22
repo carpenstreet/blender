@@ -84,17 +84,17 @@ def compare_version():
 
     if len(sys.argv) > 1:
         if local_ver < server_ver:
-            # TODO: 에이블러 실행 시 업데이트 팝업 노출
-            print("업데이트 필요")
             bpy.ops.acon3d.alert_update(
                 "INVOKE_DEFAULT",
-                title="제목: 업데이트 필요함",
-                message="에이블러 새로운 버전이 있으니, 업데이트 하십시오.",
+                title="에이블러 업데이트 안내",
+                message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
+                message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다."
             )
         else:
-            # TODO: 에이블러 계속 실행하는 것으로 바뀌주기
+            # TODO: 현재 테스트 중이기 때문에, 에이블러 계속 실행하는 것으로 바뀌주기
             bpy.ops.acon3d.alert_update(
                 "INVOKE_DEFAULT",
-                title="제목: 업데이트 필요없음",
-                message="에이블러 최신 버전입니다.",
+                title="에이블러 업데이트 안내",
+                message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
+                message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다."
             )

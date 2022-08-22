@@ -5,7 +5,7 @@ import subprocess
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
-from .lib.version import get_config
+from .lib.version import get_config, compare_version
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -62,7 +62,8 @@ class Acon3dAlertUpdateOperator(bpy.types.Operator):
     bl_label = ""
 
     title: bpy.props.StringProperty(name="Title")
-    message: bpy.props.StringProperty(name="Message")
+    message_1: bpy.props.StringProperty(name="Message")
+    message_2: bpy.props.StringProperty(name="Message")
 
     def execute(self, context):
         return {"FINISHED"}
@@ -84,7 +85,7 @@ class Acon3dAlertUpdateOperator(bpy.types.Operator):
 
     def invoke(self, context, event):
         wm = context.window_manager
-        return wm.invoke_props_dialog(self)
+        return wm.invoke_props_dialog(self, width=500)
 
     def draw(self, context):
         layout = self.layout
@@ -94,11 +95,15 @@ class Acon3dAlertUpdateOperator(bpy.types.Operator):
 
         row = layout.row()
         row.scale_y = 2.0
-        row.label(text=self.message)
+        row.label(text=self.message_1)
+
+        row = layout.row()
+        row.scale_y = 2.0
+        row.label(text=self.message_2)
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("acon3d.abler_update", text="업데이트 하기", icon="FUND")
+        anchor = row.operator("acon3d.abler_update", text="Yes", icon="FUND")
 
 
 class Acon3dAblerUpdateOperator(bpy.types.Operator):
@@ -108,8 +113,9 @@ class Acon3dAblerUpdateOperator(bpy.types.Operator):
     def execute(self, context):
         launcher, config = get_config()
 
-        bpy.ops.wm.quit_blender()
-        subprocess.call(launcher)
+        # bpy.ops.wm.quit_blender()
+        # subprocess.call(launcher)
+        print("test")
 
         return {"FINISHED"}
 
