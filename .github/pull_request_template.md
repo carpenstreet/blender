@@ -1,5 +1,12 @@
-This repository is only used as a mirror of git.blender.org. Blender development happens on
-https://developer.blender.org.
+## 관련 노션 링크
+[노션 링크](URL추가)
 
-To get started with contributing code, please see:
-https://wiki.blender.org/wiki/Process/Contributing_Code
+## 발제/내용
+
+- 
+
+## 대응
+
+### 어떤 조치를 취했나요?
+
+- 
