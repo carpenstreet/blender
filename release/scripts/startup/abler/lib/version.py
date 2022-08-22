@@ -2,53 +2,54 @@ import os
 import pathlib
 import sys
 import requests
+import subprocess
+
+
+# GitHub Repo의 URL 세팅
+url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
 
 
 def get_config():
     home = pathlib.Path.home()
     updater = None
+    launcher = None
 
     if sys.platform == "win32":
         updater = os.path.join(
             home, "AppData/Roaming/Blender Foundation/Blender/2.96/updater"
         )
+        launcher = os.path.join(updater, "AblerLauncher.exe")
     elif sys.platform == "darwin":
-        updater = os.path.join(
-            home, "Library/Application Support/Blender/2.96/updater"
-        )
+        updater = os.path.join(home, "Library/Application Support/Blender/2.96/updater")
 
-    launcher = os.path.join(updater, "AblerLauncher.exe")
     config = os.path.join(updater, "config.ini")
 
-    return config
+    return launcher, config
 
 
-def get_config_version(config):
-    abler_ver = None
+def get_local_version():
     launcher_ver = None
+    abler_ver = None
+    launcher, config = get_config()
 
     with open(config, "r") as f:
         for line in f.readlines():
             line = line.strip("\n")
 
-            if "installed" in line:
-                abler_ver = line.split(" ")[-1]
-            elif "launcher" in line:
-                launcher_ver = line.split(" ")[-1]
+            if "launcher" in line:
+                launcher_ver = line.split("=")[-1]
+            elif "installed" in line:
+                abler_ver = line.split("=")[-1]
 
-    print(f"[config.ini]")
-    print(f"ABLER    ver : {abler_ver}")
-    print(f"Launcher ver : {launcher_ver}")
+    return [launcher_ver, abler_ver]
 
 
-def get_server_version():
+def get_server_version(url):
     # Pre-Release 고려하지 않고 url 정보 받아오기
-
-    """GitHub Repo의 URL 세팅"""
-    url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
     req = None
     is_release = None
-    version_tag = None
+    launcher_ver = None
+    abler_ver = None
 
     try:
         req = requests.get(url).json()
@@ -65,15 +66,21 @@ def get_server_version():
             filename = target.split("/")[-1]
             version_tag = filename.split("_")[-1][1:-4]
 
-            # print(f"Version tag: {version_tag}")
-
             if "Launcher" in target:
-                print(f"Launcher version: {version_tag}")
+                launcher_ver = version_tag
             elif "Release" in target:
-                print(f"ABLER version: {version_tag}")
+                abler_ver = version_tag
+
+    return [launcher_ver, abler_ver]
 
 
+def compare_version(local, server):
+    print(f"launcher version: {local[0]} vs {server[0]}")
+    print(f"abler version: {local[1]} vs {server[1]}")
+    launcher, config = get_config()
+
+    if local[0] >= server[0] or local[1] >= server[1]:
+        subprocess.call(launcher)
 
 
-get_config_version(get_config())
-get_server_version()
+compare_version(get_local_version(), get_server_version(url))
