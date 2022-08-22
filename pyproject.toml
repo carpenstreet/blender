@@ -1,3 +1,3 @@
 [tool.black]
 # https://stackoverflow.com/questions/1240275/how-to-negate-specific-word-in-regex
-force-exclude = '^(?!.*/(abler|launcher_abler)/).*$'
+force-exclude = '^(?!.*/(abler|launcher_abler)).*$'
