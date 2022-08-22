@@ -1,9 +1,11 @@
 import os
 import bpy
+import subprocess
 
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
+from .lib.version import get_config
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -104,7 +106,11 @@ class Acon3dAblerUpdateOperator(bpy.types.Operator):
     bl_label = ""
 
     def execute(self, context):
-        print("test")
+        launcher, config = get_config()
+
+        bpy.ops.wm.quit_blender()
+        subprocess.call(launcher)
+
         return {"FINISHED"}
 
 
