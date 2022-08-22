@@ -3,6 +3,8 @@ import pathlib
 import sys
 import requests
 import subprocess
+import bpy
+from distutils.version import StrictVersion
 
 
 # GitHub Repo의 URL 세팅
@@ -74,13 +76,27 @@ def get_server_version(url):
     return [launcher_ver, abler_ver]
 
 
-def compare_version(local, server):
-    print(f"launcher version: {local[0]} vs {server[0]}")
-    print(f"abler version: {local[1]} vs {server[1]}")
+def compare_version():
+    # 에이블러 버전만 비교하기
     launcher, config = get_config()
+    local_ver = StrictVersion(get_local_version()[1])
+    server_ver = StrictVersion(get_server_version(url)[1])
 
-    if local[0] >= server[0] or local[1] >= server[1]:
-        subprocess.call(launcher)
+    if len(sys.argv) > 1:
+        if local_ver >= server_ver:
+            # TODO: 에이블러 계속 실행하는 것으로 바뀌주기
+            print("업데이트 불필요")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="title 1",
+                message_1="test 1",
+            )
+        else:
+            # TODO: 에이블러 실행 시 업데이트 팝업 노출
+            print("업데이트 필요")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="title 2",
+                message_1="test 2",
+            )
 
-
-compare_version(get_local_version(), get_server_version(url))
