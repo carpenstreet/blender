@@ -7,8 +7,6 @@ from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
 from .lib.version import get_config, compare_version
 
-from launcher_abler import privilege_helper
-
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
     """Iterate all materials and change them into toon style"""
@@ -114,15 +112,8 @@ class Acon3dAblerUpdateOperator(bpy.types.Operator):
 
     def execute(self, context):
         launcher, config = get_config()
-
-        # bpy.ops.wm.quit_blender()
-        # subprocess.call(launcher)
-        print("test")
-
-        if privilege_helper.isUserAdmin():
-            _ = privilege_helper.runas_shell_user(
-                launcher
-            )  # pid와 tid를 리턴함
+        bpy.ops.wm.quit_blender()
+        subprocess.call(launcher, shell=True)
 
         return {"FINISHED"}
 
