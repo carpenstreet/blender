@@ -57,31 +57,18 @@ class Acon3dLogoutOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dAlertUpdateOperator(bpy.types.Operator):
-    bl_idname = "acon3d.alert_update"
+class Acon3dUpdateAlertOperator(bpy.types.Operator):
+    bl_idname = "acon3d.update_alert"
     bl_label = ""
+    bl_translation_context = "*"
 
     title: bpy.props.StringProperty(name="Title")
     message_1: bpy.props.StringProperty(name="Message")
     message_2: bpy.props.StringProperty(name="Message")
 
+    # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기
     def execute(self, context):
         return {"FINISHED"}
-
-    def modal(self, context, event):
-        # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기
-        print("modal 함수 확인")
-
-        if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
-            print("마우스 클릭 이벤트 발생")
-
-            bpy.ops.acon3d.alert_update(
-                "INVOKE_DEFAULT",
-                title="제목: 업데이트 필요없음",
-                message="에이블러 최신 버전입니다.",
-            )
-
-        return {"RUNNING_MODAL"}
 
     def invoke(self, context, event):
         wm = context.window_manager
@@ -90,7 +77,7 @@ class Acon3dAlertUpdateOperator(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.scale_y = 1.5
+        row.scale_y = 3.0
         row.label(text=self.title)
 
         row = layout.row()
@@ -103,16 +90,19 @@ class Acon3dAlertUpdateOperator(bpy.types.Operator):
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("acon3d.abler_update", text="Yes", icon="FUND")
+        anchor = row.operator("acon3d.update_abler", text="Yes", icon="FUND")
 
 
-class Acon3dAblerUpdateOperator(bpy.types.Operator):
-    bl_idname = "acon3d.abler_update"
+class Acon3dUpdateAblerOperator(bpy.types.Operator):
+    bl_idname = "acon3d.update_abler"
     bl_label = ""
+    bl_translation_context = "*"
 
     def execute(self, context):
         launcher, config = get_config()
         bpy.ops.wm.quit_blender()
+
+        # 관리자 권한이 필요한 프로그램을 실행하는 옵션
         subprocess.call(launcher, shell=True)
 
         return {"FINISHED"}
@@ -121,8 +111,8 @@ class Acon3dAblerUpdateOperator(bpy.types.Operator):
 classes = (
     Acon3dToonStyleOperator,
     Acon3dLogoutOperator,
-    Acon3dAlertUpdateOperator,
-    Acon3dAblerUpdateOperator,
+    Acon3dUpdateAlertOperator,
+    Acon3dUpdateAblerOperator,
 )
 
 

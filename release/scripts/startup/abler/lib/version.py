@@ -17,6 +17,7 @@ def get_config():
     launcher = None
 
     if sys.platform == "win32":
+        # Pre-Release 고려하지 않고 런처 받아오기
         updater = os.path.join(
             home, "AppData/Roaming/Blender Foundation/Blender/2.96/updater"
         )
@@ -56,12 +57,12 @@ def get_server_version(url):
     try:
         req = requests.get(url).json()
     except Exception as e:
-        print(f"Error: {e}")
+        pass
 
     try:
         is_release = req["message"] != "Not Found"
     except Exception as e:
-        print(f"Release found")
+        pass
     finally:
         for asset in req["assets"]:
             target = asset["browser_download_url"]
@@ -82,19 +83,10 @@ def compare_version():
     local_ver = StrictVersion(get_local_version()[1])
     server_ver = StrictVersion(get_server_version(url)[1])
 
-    if len(sys.argv) > 1:
-        if local_ver < server_ver:
-            bpy.ops.acon3d.alert_update(
-                "INVOKE_DEFAULT",
-                title="에이블러 업데이트 안내",
-                message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
-                message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다.",
-            )
-        else:
-            # TODO: 현재 테스트 중이기 때문에, 에이블러 계속 실행하는 것으로 바뀌주기
-            bpy.ops.acon3d.alert_update(
-                "INVOKE_DEFAULT",
-                title="에이블러 업데이트 안내",
-                message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
-                message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다.",
-            )
+    if len(sys.argv) > 1 and local_ver < server_ver:
+        bpy.ops.acon3d.update_alert(
+            "INVOKE_DEFAULT",
+            title="에이블러 업데이트 안내",
+            message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
+            message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다.",
+        )
