@@ -86,7 +86,7 @@ def compare_version():
     if len(sys.argv) > 1 and local_ver < server_ver:
         bpy.ops.acon3d.update_alert(
             "INVOKE_DEFAULT",
-            title="에이블러 업데이트 안내",
-            message_1="최신 버전의 에이블러가 있습니다. 업데이트 하시겠습니까?",
-            message_2="이전 버전의 에이블러 사용 시, 일부 기능이 작동하지 않을 수 있습니다.",
+            title="Latest version found for ABLER. Do you want to update?",
+            message_1="When using an older version of ABLER, some features may not work properly.",
+            message_2="If you click the OK button, you can close the pop-up and use ABLER with the current version.",
         )

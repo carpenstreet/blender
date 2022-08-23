@@ -77,25 +77,26 @@ class Acon3dUpdateAlertOperator(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.scale_y = 3.0
+        row.scale_y = 1.5
         row.label(text=self.title)
 
         row = layout.row()
-        row.scale_y = 2.0
+        row.scale_y = 1.5
         row.label(text=self.message_1)
 
         row = layout.row()
-        row.scale_y = 2.0
+        row.scale_y = 1.5
         row.label(text=self.message_2)
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("acon3d.update_abler", text="Yes", icon="FUND")
+        anchor = row.operator("acon3d.update_abler", text="Update ABLER")
 
 
 class Acon3dUpdateAblerOperator(bpy.types.Operator):
     bl_idname = "acon3d.update_abler"
     bl_label = ""
+    bl_description = "Update ABLER with ABLER Launcher"
     bl_translation_context = "*"
 
     def execute(self, context):
