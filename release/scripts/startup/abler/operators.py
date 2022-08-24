@@ -5,7 +5,7 @@ import subprocess
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
-from .lib.version import get_config, compare_version
+from .lib.version import get_config
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -62,9 +62,9 @@ class Acon3dUpdateAlertOperator(bpy.types.Operator):
     bl_label = ""
     bl_translation_context = "*"
 
-    title: bpy.props.StringProperty(name="Title")
-    message_1: bpy.props.StringProperty(name="Message")
-    message_2: bpy.props.StringProperty(name="Message")
+    title = "Latest version found for ABLER. Do you want to update?"
+    message_1 = "When using an older version of ABLER, some features may not work properly."
+    message_2 = "If you click the OK button, you can close the pop-up and use ABLER with the current version."
 
     # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기
     def execute(self, context):

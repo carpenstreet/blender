@@ -69,7 +69,7 @@ def load_handler(dummy):
         post_open.update_layers()
         post_open.hide_adjust_last_operation_panel()
         post_open.add_dummy_background_image()
-        version.compare_version()
+        version.show_update_alert()
     finally:
         tracker.turn_on()
 

@@ -77,16 +77,11 @@ def get_server_version(url):
     return [launcher_ver, abler_ver]
 
 
-def compare_version():
+def show_update_alert():
     # 에이블러 버전만 비교하기
     launcher, config = get_config()
     local_ver = StrictVersion(get_local_version()[1])
     server_ver = StrictVersion(get_server_version(url)[1])
 
     if len(sys.argv) > 1 and local_ver < server_ver:
-        bpy.ops.acon3d.update_alert(
-            "INVOKE_DEFAULT",
-            title="Latest version found for ABLER. Do you want to update?",
-            message_1="When using an older version of ABLER, some features may not work properly.",
-            message_2="If you click the OK button, you can close the pop-up and use ABLER with the current version.",
-        )
+        bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
