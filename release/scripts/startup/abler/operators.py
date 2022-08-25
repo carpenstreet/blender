@@ -5,7 +5,7 @@ import subprocess
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
-from .lib.version import get_config
+from .lib.version import get_launcher
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -100,7 +100,7 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        launcher, config = get_config()
+        launcher = get_launcher()
         bpy.ops.wm.quit_blender()
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션

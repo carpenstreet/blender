@@ -2,8 +2,8 @@ import os
 import pathlib
 import sys
 import requests
-import subprocess
 import bpy
+import configparser
 from distutils.version import StrictVersion
 
 
@@ -11,47 +11,38 @@ from distutils.version import StrictVersion
 url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
 
 
-def get_config():
+def set_updater():
     home = pathlib.Path.home()
     updater = None
-    launcher = None
 
     if sys.platform == "win32":
         # Pre-Release 고려하지 않고 런처 받아오기
         updater = os.path.join(
             home, "AppData/Roaming/Blender Foundation/Blender/2.96/updater"
         )
-        launcher = os.path.join(updater, "AblerLauncher.exe")
     elif sys.platform == "darwin":
         updater = os.path.join(home, "Library/Application Support/Blender/2.96/updater")
 
-    config = os.path.join(updater, "config.ini")
+    return updater
 
-    return launcher, config
+
+def get_launcher():
+    launcher = os.path.join(set_updater(), "AblerLauncher.exe")
+    return launcher
 
 
 def get_local_version():
-    launcher_ver = None
-    abler_ver = None
-    launcher, config = get_config()
+    config = configparser.ConfigParser()
+    config.read(os.path.join(set_updater(), 'config.ini'))
+    abler_ver = config['main']['launcher']
 
-    with open(config, "r") as f:
-        for line in f.readlines():
-            line = line.strip("\n")
-
-            if "launcher" in line:
-                launcher_ver = line.split("=")[-1].strip()
-            elif "installed" in line:
-                abler_ver = line.split("=")[-1].strip()
-
-    return [launcher_ver, abler_ver]
+    return abler_ver
 
 
 def get_server_version(url):
     # Pre-Release 고려하지 않고 url 정보 받아오기
     req = None
     is_release = None
-    launcher_ver = None
     abler_ver = None
 
     try:
@@ -69,19 +60,16 @@ def get_server_version(url):
             filename = target.split("/")[-1]
             version_tag = filename.split("_")[-1][1:-4]
 
-            if "Launcher" in target:
-                launcher_ver = version_tag
-            elif "Release" in target:
+            if "Release" in target:
                 abler_ver = version_tag
 
-    return [launcher_ver, abler_ver]
+    return abler_ver
 
 
 def show_update_alert():
     # 에이블러 버전만 비교하기
-    launcher, config = get_config()
-    local_ver = StrictVersion(get_local_version()[1])
-    server_ver = StrictVersion(get_server_version(url)[1])
+    local_ver = StrictVersion(get_local_version())
+    server_ver = StrictVersion(get_server_version(url))
 
     if len(sys.argv) > 1 and local_ver < server_ver:
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
