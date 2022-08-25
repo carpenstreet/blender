@@ -63,7 +63,9 @@ class Acon3dUpdateAlertOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     title = "Latest version found for ABLER. Do you want to update?"
-    message_1 = "When using an older version of ABLER, some features may not work properly."
+    message_1 = (
+        "When using an older version of ABLER, some features may not work properly."
+    )
     message_2 = "If you click the OK button, you can close the pop-up and use ABLER with the current version."
 
     # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기

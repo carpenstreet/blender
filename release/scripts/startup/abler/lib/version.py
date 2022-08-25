@@ -33,8 +33,12 @@ def get_launcher():
 
 def get_local_version():
     config = configparser.ConfigParser()
-    config.read(os.path.join(set_updater(), 'config.ini'))
-    abler_ver = config['main']['launcher']
+    config.read(os.path.join(set_updater(), "config.ini"))
+    abler_ver = config["main"]["installed"]
+
+    # config.ini에 installed 정보가 없을 때 버전 처리
+    if abler_ver is (None or ""):
+        abler_ver = "0.0.0"
 
     return abler_ver
 
@@ -50,11 +54,9 @@ def get_server_version(url):
     except Exception as e:
         pass
 
-    try:
-        is_release = req["message"] != "Not Found"
-    except Exception as e:
-        pass
-    finally:
+    if ("message" in req.keys()) and (req["message"] == "Not Found"):
+        print("Release Not Found.")
+    elif "assets" in req.keys():
         for asset in req["assets"]:
             target = asset["browser_download_url"]
             filename = target.split("/")[-1]
@@ -62,6 +64,8 @@ def get_server_version(url):
 
             if "Release" in target:
                 abler_ver = version_tag
+    else:
+        print("GitHub API URL Error.")
 
     return abler_ver
 
@@ -71,5 +75,5 @@ def show_update_alert():
     local_ver = StrictVersion(get_local_version())
     server_ver = StrictVersion(get_server_version(url))
 
-    if len(sys.argv) > 1 and local_ver < server_ver:
+    if (len(sys.argv) > 1) and (local_ver < server_ver):
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
