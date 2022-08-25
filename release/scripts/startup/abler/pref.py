@@ -8,6 +8,7 @@ from bpy.app.handlers import persistent
 from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
+from .lib import version
 
 
 def init_setting(dummy):
@@ -70,6 +71,7 @@ def load_handler(dummy):
         post_open.update_layers()
         post_open.hide_adjust_last_operation_panel()
         post_open.add_dummy_background_image()
+        version.show_update_alert()
     finally:
         tracker.turn_on()
 
