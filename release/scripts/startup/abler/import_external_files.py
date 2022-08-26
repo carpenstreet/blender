@@ -72,11 +72,11 @@ class ImportFBXOperator(bpy.types.Operator, ImportHelper):
                     c.objects.unlink(obj)
             col_imported.objects.link(obj)
 
-        # put col_imported in l_exclude
+        # put col_imported in layer_infos
         col_layers.children.link(col_imported)
-        added_l_exclude = context.scene.l_exclude.add()
-        added_l_exclude.name = col_imported.name
-        added_l_exclude.value = True
+        added_layer_info = context.scene.layer_infos.add()
+        added_layer_info.name = col_imported.name
+        added_layer_info.value = True
 
         # create group
         bpy.ops.acon3d.create_group()

@@ -19,6 +19,9 @@
 
 import bpy
 from math import radians
+
+from bpy.types import Object
+
 from .lib import scenes, cameras, shadow, objects
 from .lib.materials import materials_handler
 from . import object_control
@@ -43,36 +46,71 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
     )
 
 
-class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
+class CollectionLayerProperties(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
-        bpy.types.Scene.l_exclude = bpy.props.CollectionProperty(
-            type=CollectionLayerExcludeProperties
+        bpy.types.Scene.layer_infos = bpy.props.CollectionProperty(
+            type=CollectionLayerProperties
         )
 
     @classmethod
     def unregister(cls):
-        del bpy.types.Scene.l_exclude
+        del bpy.types.Scene.layer_infos
 
     def updateLayerVis(self, context):
+        layer_infos = bpy.context.scene.layer_infos
         target_layer = bpy.data.collections[self.name]
-        for objs in target_layer.objects:
-            belonging_col_names = {
-                collection.name for collection in objs.users_collection
-            }
-            should_show = all(
-                layer.value
-                for layer in bpy.context.scene.l_exclude
-                if layer.name in belonging_col_names
-            )
+        visited = []
 
-            objs.hide_viewport = not should_show
-            objs.hide_render = not should_show
+        def update_objects(obj: Object):
+            if obj.name in visited:
+                return
+            visited.append(obj.name)
+
+            parent_layers = list(filter(None, obj.ACON_prop.parent_layers.split("/")))
+            if parent_layers:
+                target_value = True
+
+                for info in layer_infos:
+                    if info.name in parent_layers and not info.value:
+                        target_value = False
+                        break
+
+                obj.hide_viewport = not target_value
+                obj.hide_render = not target_value
+
+            for o in obj.children:
+                update_objects(o)
+
+        for obj in target_layer.objects:
+            update_objects(obj)
 
     def updateLayerLock(self, context):
+        layer_infos = bpy.context.scene.layer_infos
         target_layer = bpy.data.collections[self.name]
-        for objs in target_layer.objects:
-            objs.hide_select = self.lock
+        visited = []
+
+        def update_objects(obj: Object):
+            if obj.name in visited:
+                return
+            visited.append(obj.name)
+
+            parent_layers = list(filter(None, obj.ACON_prop.parent_layers.split("/")))
+            if parent_layers:
+                target_lock = False
+
+                for info in layer_infos:
+                    if info.name in parent_layers and info.lock:
+                        target_lock = True
+                        break
+
+                obj.hide_select = target_lock
+
+            for o in obj.children:
+                update_objects(o)
+
+        for obj in target_layer.objects:
+            update_objects(obj)
 
     name: bpy.props.StringProperty(name="Layer Name", default="")
 
@@ -486,11 +524,15 @@ class AconObjectStateProperty(bpy.types.PropertyGroup):
 class AconObjectProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
+        print("registering")
         bpy.types.Object.ACON_prop = bpy.props.PointerProperty(type=AconObjectProperty)
 
     @classmethod
     def unregister(cls):
+        print("unregistering...")
         del bpy.types.Object.ACON_prop
+
+    parent_layers: bpy.props.StringProperty()
 
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
@@ -536,7 +578,7 @@ class AconObjectProperty(bpy.types.PropertyGroup):
 
 classes = (
     AconWindowManagerProperty,
-    CollectionLayerExcludeProperties,
+    CollectionLayerProperties,
     AconSceneSelectedGroupProperty,
     AconSceneProperty,
     AconMaterialProperty,

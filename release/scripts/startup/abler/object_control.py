@@ -45,7 +45,9 @@ def select_active_and_descendants():
 items: List[Tuple[str, str, str]] = []
 
 
-def add_group_list_from_collection(self, context: bpy.context) -> List[Tuple[str, str, str]]:
+def add_group_list_from_collection(
+    self, context: bpy.context
+) -> List[Tuple[str, str, str]]:
     items.clear()
     draft_selection = manager.selection_undo_stack.copy()
     obj = context.active_object
@@ -56,7 +58,9 @@ def add_group_list_from_collection(self, context: bpy.context) -> List[Tuple[str
     items.append((obj.name, obj.name, "", icon_str, 0))
     if obj.parent:
         while obj.parent.parent:
-            icon_str = "OUTLINER_OB_MESH" if obj.parent.type == "MESH" else "OUTLINER_OB_EMPTY"
+            icon_str = (
+                "OUTLINER_OB_MESH" if obj.parent.type == "MESH" else "OUTLINER_OB_EMPTY"
+            )
             items.append((obj.parent.name, obj.parent.name, "", icon_str, 0))
             obj = obj.parent
 

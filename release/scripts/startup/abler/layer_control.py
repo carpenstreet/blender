@@ -136,12 +136,12 @@ class Acon3dLayerPanel(bpy.types.Panel):
                 findex += 1
                 continue
 
-            l_exclude = bpy.context.scene.l_exclude
+            layer_infos = bpy.context.scene.layer_infos
 
-            if findex > len(l_exclude) - 1:
+            if findex > len(layer_infos) - 1:
                 break
 
-            target = l_exclude[findex]
+            target = layer_infos[findex]
 
             icon = "OUTLINER_COLLECTION"
             icon_vis = "HIDE_OFF" if target.value else "HIDE_ON"

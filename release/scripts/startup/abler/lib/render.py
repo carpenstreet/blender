@@ -18,6 +18,7 @@
 
 
 import bpy
+from bpy.types import Object
 
 
 def setupSnipCompositor(
@@ -166,12 +167,17 @@ def clearCompositor(scene=None):
 
 
 def matchObjectVisibility():
+    def update_info(obj: Object, value):
+        obj.hide_viewport = not value
+        obj.hide_render = not value
 
-    for l_prop in bpy.context.scene.l_exclude:
+        for o in obj.children:
+            update_info(o, l_prop)
+
+    for l_prop in bpy.context.scene.layer_infos:
         if layer := bpy.data.collections.get(l_prop.name):
-            for objs in layer.objects:
-                objs.hide_viewport = not (l_prop.value)
-                objs.hide_render = not (l_prop.value)
+            for obj in layer.objects:
+                update_info(obj, l_prop.value)
 
     for obj in bpy.data.objects:
         if obj.hide_get():
