@@ -40,16 +40,16 @@ def update_layers():
     context = bpy.context
     view_layer = context.view_layer
 
-    if not context.scene.l_exclude:
+    if not context.scene.layer_infos:
         if "Layers" in view_layer.layer_collection.children:
             for child in bpy.data.collections["Layers"].children:
-                added_l_exclude = context.scene.l_exclude.add()
-                added_l_exclude.name = child.name
-                added_l_exclude.value = True
+                added_layer_info = context.scene.layer_infos.add()
+                added_layer_info.name = child.name
+                added_layer_info.value = True
         else:
             # "Layers" 컬렉션이 없으면 에이블러 전용 파일이 아니므로
-            # l_exclude를 지워서 Layer Control 패널을 비활성화시킴
-            bpy.context.scene.l_exclude.clear()
+            # layer_infos를 지워서 Layer Control 패널을 비활성화시킴
+            bpy.context.scene.layer_infos.clear()
 
 
 def hide_adjust_last_operation_panel():

@@ -108,9 +108,9 @@ class ImportOperator(bpy.types.Operator, ImportHelper):
                 "Layers." in coll.name and len(coll.name) == 10
             ):
                 for coll_2 in coll.children:
-                    added_l_exclude = context.scene.l_exclude.add()
-                    added_l_exclude.name = coll_2.name
-                    added_l_exclude.value = True
+                    added_layer_info = context.scene.layer_infos.add()
+                    added_layer_info.name = coll_2.name
+                    added_layer_info.value = True
                     col_layers.children.link(coll_2)
 
         for obj in data_to.objects:
@@ -163,7 +163,7 @@ class FileOpenOperator(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         path = self.filepath
-        if path.endswith('/') or path.endswith('\\') or path.endswith('//'):
+        if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
             return {"FINISHED"}
         elif not os.path.isfile(path):
             bpy.ops.acon3d.alert(

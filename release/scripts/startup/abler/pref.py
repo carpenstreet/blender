@@ -56,7 +56,9 @@ def load_handler(dummy):
             scene.view_settings.view_transform = "Standard"
         # 키맵이 ABLER로 세팅되어있는지 확인하고, 아닐 경우 세팅을 바로잡아줌
         if bpy.context.preferences.keymap.active_keyconfig != "ABLER":
-            abler_keymap_path: str = os.path.join(bpy.utils.script_paths()[1], "presets", "keyconfig", "ABLER.py")
+            abler_keymap_path: str = os.path.join(
+                bpy.utils.script_paths()[1], "presets", "keyconfig", "ABLER.py"
+            )
             bpy.ops.preferences.keyconfig_activate(filepath=abler_keymap_path)
         scenes.refresh_look_at_me()
         post_open.change_and_reset_value()
