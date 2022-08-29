@@ -175,6 +175,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                         added_l_exclude.name = coll_2.name
                         added_l_exclude.value = True
                         col_layers.children.link(coll_2)
+                        print(coll_2)
 
             for obj in data_to.objects:
                 if obj.type == "MESH":
@@ -193,7 +194,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
         except Exception as e:
             tracker.import_blend_fail()
-            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            # self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            raise e
         else:
             tracker.import_blend()
 
