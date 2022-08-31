@@ -143,6 +143,16 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
+        # TODO: 현재 상태의 콜렉션 받아오기
+        layers = []
+        layers_same = []
+
+        print("\n기존 파일의 콜렉션 출력")
+        for coll in bpy.data.collections:
+            layers.append(coll.name)
+        print(layers)
+
+
         try:
             if not self.check_path():
                 return {"FINISHED"}
@@ -163,9 +173,12 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
-                print("\ncoll (0)")
+                print("\ncoll (1)")
                 for coll in data_to.collections:
                     print(coll)
+
+                    if coll in layers:
+                        layers_same.append(coll)
 
             print("\ncoll (2)")
             for coll in data_to.collections:
