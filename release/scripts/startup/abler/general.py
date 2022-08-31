@@ -157,12 +157,19 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 col_layers = bpy.data.collections.new("Layers")
                 context.scene.collection.children.link(col_layers)
 
+            print("\nFILEPATH")
+            print(FILEPATH)
             with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
-            for coll in data_to.collections:
+                print("\ncoll (0)")
+                for coll in data_to.collections:
+                    print(coll)
 
+            print("\ncoll (2)")
+            for coll in data_to.collections:
+                print(coll.name)
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -170,13 +177,15 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
+                    print("\ncoll (3)")
                     for coll_2 in coll.children:
+                        print(coll_2.name)
                         added_l_exclude = context.scene.l_exclude.add()
                         added_l_exclude.name = coll_2.name
                         added_l_exclude.value = True
                         col_layers.children.link(coll_2)
-                        print(coll_2)
 
+            print("\nhere")
             for obj in data_to.objects:
                 if obj.type == "MESH":
                     obj.select_set(True)
