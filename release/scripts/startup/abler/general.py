@@ -143,16 +143,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        # TODO: 현재 상태의 콜렉션 받아오기
-        layers = []
-        layers_same = []
-
-        print("\n기존 파일의 콜렉션 출력")
-        for coll in bpy.data.collections:
-            layers.append(coll.name)
-        print(layers)
-
-
         try:
             if not self.check_path():
                 return {"FINISHED"}
@@ -167,22 +157,11 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 col_layers = bpy.data.collections.new("Layers")
                 context.scene.collection.children.link(col_layers)
 
-            print("\nFILEPATH")
-            print(FILEPATH)
             with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
-                print("\ncoll (1)")
-                for coll in data_to.collections:
-                    print(coll)
-
-                    if coll in layers:
-                        layers_same.append(coll)
-
-            print("\ncoll (2)")
             for coll in data_to.collections:
-                print(coll.name)
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -190,15 +169,19 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
-                    print("\ncoll (3)")
                     for coll_2 in coll.children:
-                        print(coll_2.name)
+                        # 중복된 Collection Layer명에는 ".001"부터 넘버링됨
+                        # ".001"이 추가될 때마다 처리를 해주면, ".001" 넘버링만으로도 중복 체크 가능
+                        if ".001" in coll_2.name:
+                            for obj in bpy.data.collections[coll_2.name].all_objects:
+                                bpy.data.collections[coll_2.name].objects.unlink(obj)
+                                bpy.data.collections[coll_2.name[:-4]].objects.link(obj)
+
                         added_l_exclude = context.scene.l_exclude.add()
                         added_l_exclude.name = coll_2.name
                         added_l_exclude.value = True
                         col_layers.children.link(coll_2)
 
-            print("\nhere")
             for obj in data_to.objects:
                 if obj.type == "MESH":
                     obj.select_set(True)
