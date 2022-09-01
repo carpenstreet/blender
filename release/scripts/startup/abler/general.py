@@ -161,6 +161,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
+            print("")
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
@@ -169,18 +170,30 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
+                    print(f"coll.name: {coll.name}")
                     for coll_2 in coll.children:
+                        print(f"coll_2.name: {coll_2.name}")
                         # 중복된 Collection Layer명에는 ".001"부터 넘버링됨
                         # ".001"이 추가될 때마다 처리를 해주면, ".001" 넘버링만으로도 중복 체크 가능
                         if ".001" in coll_2.name:
-                            for obj in bpy.data.collections[coll_2.name].all_objects:
+                            print(f"coll_2.name.001: {coll_2.name}")
+                            for obj in bpy.data.collections[coll_2.name].objects:
+                                print(obj.name)
                                 bpy.data.collections[coll_2.name].objects.unlink(obj)
                                 bpy.data.collections[coll_2.name[:-4]].objects.link(obj)
+                            coll_3 = bpy.data.collections[coll_2.name[:-4]]
+                            bpy.data.collections.remove(coll_2)
 
-                        added_l_exclude = context.scene.l_exclude.add()
-                        added_l_exclude.name = coll_2.name
-                        added_l_exclude.value = True
-                        col_layers.children.link(coll_2)
+                            # added_l_exclude = context.scene.l_exclude.add()
+                            # added_l_exclude.name = coll_3.name
+                            # added_l_exclude.value = True
+
+                        else:
+                            added_l_exclude = context.scene.l_exclude.add()
+                            added_l_exclude.name = coll_2.name
+                            added_l_exclude.value = True
+                            col_layers.children.link(coll_2)
+
 
             for obj in data_to.objects:
                 if obj.type == "MESH":
