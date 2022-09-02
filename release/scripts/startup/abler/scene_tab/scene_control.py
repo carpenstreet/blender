@@ -34,6 +34,27 @@ bl_info = {
 import bpy
 from ..lib import scenes
 from ..lib.tracker import tracker
+from bpy.types import PropertyGroup
+from bpy.props import (
+    CollectionProperty,
+    IntProperty,
+    BoolProperty,
+    StringProperty,
+    PointerProperty,
+)
+
+
+class CUSTOM_UL_List(bpy.types.UIList):
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname
+    ):
+        scene = data
+        ob = item
+        # print(data, item, active_data, active_propname)
+
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
+
+            layout.prop(ob, "name", text="", emboss=False, icon_value=layout.icon(ob))
 
 
 class CreateSceneOperator(bpy.types.Operator):
@@ -136,11 +157,47 @@ class Acon3dScenesPanel(bpy.types.Panel):
         row.operator("acon3d.create_scene", text="", icon="ADD")
         row.operator("acon3d.delete_scene", text="", icon="REMOVE")
 
+        # MATERIAL_UL_List을 그려주는 부분
+        # row = layout.row()
+        # scene = context.scene
+        # obj = context.object
+
+        # row.template_list(
+        #     "CUSTOM_UL_List",
+        #     "",
+        #     scene,
+        #     "objects",
+        #     scene,
+        #     "",
+        #     rows=2,
+        # )
+        # row.template_list(
+        #     "CUSTOM_UL_List",
+        #     "",
+        #     obj,
+        #     "material_slots",
+        #     obj,
+        #     "active_material_index",
+        #     rows=2,
+        # )
+        scn = context.scene
+        layout = self.layout
+        col = layout.column()
+        col.template_list(
+            "CUSTOM_UL_List",
+            "",
+            scn,
+            "objects",
+            scn,
+            "active_object_index",
+        )
+
 
 classes = (
     CreateSceneOperator,
     DeleteSceneOperator,
     Acon3dScenesPanel,
+    CUSTOM_UL_List,
 )
 
 
@@ -149,6 +206,8 @@ def register():
 
     for cls in classes:
         register_class(cls)
+
+    bpy.types.Scene.active_object_index = IntProperty()
 
 
 def unregister():
