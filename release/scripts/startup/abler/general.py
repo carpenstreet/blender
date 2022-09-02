@@ -140,6 +140,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     bl_label = "Import"
     bl_translation_context = "*"
 
+    collections = []
+    collections_duplicate = []
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
@@ -157,21 +159,21 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 col_layers = bpy.data.collections.new("Layers")
                 context.scene.collection.children.link(col_layers)
 
+            print("")
+            print("Open ops.로 오픈한 파일의 collection 출력")
+            for coll in bpy.data.collections:
+                print(f"0) coll.name - open: {coll.name}")
+
             with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
             print("")
-            print("data_to.collections 출력")
+            print("Import ops.로 파일 데이터 load 후, 불러온 파일의 collection 출력")
             for coll in data_to.collections:
-                # print(f"0) coll.name: {coll.name}")
-                pass
+                print(f"1) coll.name - import: {coll.name}")
 
-            print("")
-            remove_list = []
             for coll in data_to.collections:
-                # print(f"1) coll: {coll}")
-
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -179,20 +181,26 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
-                    print(f"2) coll.name: {coll.name}")
+                    print("")
+                    print("Collection이 Layers이면, 내부 collection 처리")
+
                     for coll_2 in coll.children:
-                        print(f"3) coll_2.name: {coll_2.name}")
-                        # 중복된 Collection Layer명에는 ".001"부터 넘버링됨
-                        # ".001"이 추가될 때마다 처리를 해주면, ".001" 넘버링만으로도 중복 체크 가능
+                        print("")
+                        print(f"2) coll.name - Layers.children: {coll_2.name}")
+
+                        # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
+                        # ".001"이 추가될 때마다 오브젝트 처리하고 삭제해주면 ".001" 넘버링만으로 중복 체크 가능
                         if ".001" in coll_2.name:
-                            print(f"4) 중복 처리")
-                            for obj in bpy.data.collections[coll_2.name].objects:
-                                # print(obj.name)
-                                bpy.data.collections[coll_2.name].objects.unlink(obj)
-                                bpy.data.collections[coll_2.name[:-4]].objects.link(obj)
-                            # bpy.data.collections.remove(coll_2)
-                            print("콜렉션 지울 예정")
-                            remove_list.append(coll_2.name)
+                            print("")
+                            print(f"3) 중복된 레이어의 오브젝트 처리")
+                            for coll_obj in bpy.data.collections[coll_2.name].objects:
+                                bpy.data.collections[coll_2.name].objects.unlink(coll_obj)
+                                bpy.data.collections[coll_2.name[:-4]].objects.link(coll_obj)
+                            self.collections_duplicate.append(coll_2.name)
+
+                        # TODO: 같은 파일 import 처리
+                        # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
+                        # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
 
                         else:
                             print("5) 중복 처리 아님")
@@ -201,9 +209,17 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                             added_l_exclude.value = True
                             col_layers.children.link(coll_2)
 
-            for name in remove_list:
-                coll = bpy.data.collections.get(name)
+            print("")
+            print("중복된 레이어 이름 리스트 확인")
+            for coll_name in self.collections_duplicate:
+                print(coll_name)
+
+            print("")
+            for coll_name in self.collections_duplicate:
+                print(f"6) coll.name - duplicate: {coll_name}")
+                coll = bpy.data.collections.get(coll_name)
                 bpy.data.collections.remove(coll)
+                self.collections_duplicate.remove(coll_name)
 
 
             for obj in data_to.objects:
