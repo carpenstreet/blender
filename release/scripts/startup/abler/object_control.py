@@ -222,7 +222,7 @@ class ObjectSubPanel(bpy.types.Panel):
             col.label(text="No selected object")
 
 
-class Acon3dGroupNavigaionPanel(bpy.types.Panel):
+class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Object_Main"
     bl_idname = "ACON_PT_Group_Navigation"
     bl_label = "Group Navigation"
@@ -298,7 +298,7 @@ classes = (
     Acon3dStateUpdateOperator,
     Acon3dObjectPanel,
     ObjectSubPanel,
-    Acon3dGroupNavigaionPanel,
+    Acon3dGroupNavigationPanel,
     ObjectAllSelectOperator,
 )
 
