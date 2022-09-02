@@ -146,6 +146,7 @@
 #include "wm_window.h"
 
 #include "CLG_log.h"
+#include "intern/ABLER_py.h"
 
 static RecentFile *wm_file_history_find(const char *filepath);
 static void wm_history_file_free(RecentFile *recent);
@@ -1747,7 +1748,8 @@ static bool wm_file_write(bContext *C,
                           int fileflags,
                           eBLO_WritePathRemap remap_mode,
                           bool use_save_as_copy,
-                          ReportList *reports)
+                          ReportList *reports,
+                          bool need_update)
 {
   Main *bmain = CTX_data_main(C);
   int len;
@@ -1869,8 +1871,8 @@ static bool wm_file_write(bContext *C,
                          .thumb = thumb,
                      },
                      reports)) {
-    const bool do_history_file_update = (G.background == false) &&
-                                        (CTX_wm_manager(C)->op_undo_depth == 0);
+    const bool do_history_file_update = need_update || ((G.background == false) &&
+                                        (CTX_wm_manager(C)->op_undo_depth == 0));
 
     if (use_save_as_copy == false) {
       G.relbase_valid = 1;
@@ -2686,12 +2688,14 @@ static int wm_open_mainfile__open(bContext *C, wmOperator *op)
   BKE_report_print_level_set(op->reports, RPT_WARNING);
 
   if (success) {
+      tracker_open();
     if (G.fileflags & G_FILE_NO_UI) {
       ED_outliner_select_sync_from_all_tag(C);
     }
     ED_view3d_local_collections_reset(C, (G.fileflags & G_FILE_NO_UI) != 0);
     return OPERATOR_FINISHED;
   }
+  tracker_open_fail();
   return OPERATOR_CANCELLED;
 }
 
@@ -3123,7 +3127,9 @@ static int wm_save_as_mainfile_exec(bContext *C, wmOperator *op)
   /* set compression flag */
   SET_FLAG_FROM_TEST(fileflags, RNA_boolean_get(op->ptr, "compress"), G_FILE_COMPRESS);
 
-  const bool ok = wm_file_write(C, path, fileflags, remap_mode, use_save_as_copy, op->reports);
+  const bool need_update = RNA_boolean_get(op->ptr, "need_update");
+
+  const bool ok = wm_file_write(C, path, fileflags, remap_mode, use_save_as_copy, op->reports, need_update);
 
   if ((op->flag & OP_IS_INVOKE) == 0) {
     /* OP_IS_INVOKE is set when the operator is called from the GUI.
@@ -3214,6 +3220,14 @@ void WM_OT_save_as_mainfile(wmOperatorType *ot)
       "Save Copy",
       "Save a copy of the actual working state but does not make saved file active");
   RNA_def_property_flag(prop, PROP_SKIP_SAVE);
+
+  // ABLER Custom Property
+  RNA_def_boolean(
+      ot->srna,
+      "need_update",
+      false,
+      "Need Update",
+      "Update recent files if true");
 }
 
 static int wm_save_mainfile_invoke(bContext *C, wmOperator *op, const wmEvent *UNUSED(event))
@@ -3280,6 +3294,14 @@ void WM_OT_save_mainfile(wmOperatorType *ot)
 
   prop = RNA_def_boolean(ot->srna, "exit", false, "Exit", "Exit Blender after saving");
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+
+  // ABLER Custom Property
+  RNA_def_boolean(
+      ot->srna,
+      "need_update",
+      false,
+      "Need Update",
+      "Update recent files if true");
 }
 
 /** \} */

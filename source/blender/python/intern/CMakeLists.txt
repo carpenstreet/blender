@@ -129,6 +129,9 @@ set(SRC
   ../BPY_extern_clog.h
   ../BPY_extern_python.h
   ../BPY_extern_run.h
+
+  ABLER_py.h
+  ABLER_py.c
 )
 
 set(LIB

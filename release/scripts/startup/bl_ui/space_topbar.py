@@ -289,7 +289,7 @@ class TOPBAR_MT_file(Menu):
         layout.operator_context = 'INVOKE_AREA'
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
         layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
-        layout.menu("TOPBAR_MT_ACON3D_open_recent_files")
+        layout.menu("TOPBAR_MT_file_open_recent")
         layout.operator("wm.revert_mainfile")
         layout.menu("TOPBAR_MT_file_recover")
 
@@ -395,29 +395,6 @@ class TOPBAR_MT_file_new(Menu):
 
     def draw(self, context):
         TOPBAR_MT_file_new.draw_ex(self.layout, context)
-
-class TOPBAR_MT_ACON3D_open_recent_files(Menu):
-    bl_label = "Open Recent"
-
-    def draw(self, _context):
-        layout = self.layout
-
-        history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
-
-        try:
-            with open(history_path, "r") as f:
-                recent_filepaths = f.read().splitlines()
-
-            if len(recent_filepaths) == 0:
-                raise
-        except:
-            layout.label(text='No Recent Files')
-            return
-
-        for filepath in recent_filepaths:
-            filename = os.path.basename(filepath)
-            sublayout = layout.operator("acon3d.recent_file_open", text=filename, icon='FILE_BLEND')
-            sublayout.filepath = filepath
 
 
 class TOPBAR_MT_file_recover(Menu):
@@ -893,7 +870,6 @@ classes = (
     TOPBAR_MT_blender_system,
     TOPBAR_MT_file,
     TOPBAR_MT_file_new,
-    TOPBAR_MT_ACON3D_open_recent_files,
     TOPBAR_MT_file_recover,
     TOPBAR_MT_file_defaults,
     TOPBAR_MT_templates_more,

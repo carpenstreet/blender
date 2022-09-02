@@ -228,106 +228,18 @@ class ToggleToolbarOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-def update_recent_files(target_path, is_add=False):
-    """
-    Update Recent Files in User Resources
-
-    target_path: path to update
-    is_add: if True, add target_path to first of the recent files list
-    """
-
-    history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
-
-    try:
-        # create history_path if not exists
-        open(history_path, "a").close()
-
-        with open(history_path) as fin:
-            recent_filepaths_except_target = [
-                path for path in fin.read().splitlines() if path != target_path
-            ]
-
-        if is_add:
-            recent_filepaths_except_target.insert(0, target_path)
-            recent_filepaths_except_target = recent_filepaths_except_target[:10]
-
-        with open(history_path, "wt") as fout:
-            fout.write("\n".join(recent_filepaths_except_target))
-
-    except Exception as e:
-        print(e)
-        return
-
-
-class BaseFileOpenOperator:
-    filepath: bpy.props.StringProperty(name="text", default="")
-
-    def open_file(self):
-        try:
-            path = self.filepath
-
-            bpy.ops.wm.open_mainfile(
-                "INVOKE_DEFAULT", filepath=path, display_file_selector=False
-            )
-            update_recent_files(path, is_add=True)
-
-        except Exception as e:
-            update_recent_files(path)
-            tracker.file_open_fail()
-
-            self.report({"ERROR"}, message=str(e))
-        else:
-            tracker.file_open()
-
-
-class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperator):
+class FileOpenOperator(bpy.types.Operator):
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
     bl_label = "File Open"
     bl_translation_context = "*"
 
-    filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
-
     def execute(self, context):
-        if not self.check_path():
-            return {"FINISHED"}
-        self.open_file()
-        return {"FINISHED"}
-
-
-class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
-    bl_idname = "acon3d.recent_file_open"
-    bl_label = ""
-    bl_translation_context = "*"
-
-    @classmethod
-    def description(cls, context, properties):
-        filepath = properties.filepath
-
-        if not os.path.isfile(filepath):
-            return f"{filepath}\n\nFile Not Found"
-
-        modified_datetime = datetime.fromtimestamp(os.path.getmtime(filepath))
-        time_distance = datetime.today().date() - modified_datetime.date()
-
-        if time_distance == timedelta():
-            modified_time = modified_datetime.strftime("Today %H:%M")
-        elif time_distance == timedelta(days=1):
-            modified_time = modified_datetime.strftime("Yesterday %H:%M")
-        else:
-            modified_time = modified_datetime.strftime("%d %b %Y %H:%M")
-
-        modified_time = f"Modified: {modified_time}"
-
-        size = round(os.path.getsize(filepath) / 1000000.0, 1)
-        size = f"Size: {size} MB"
-
-        return f"{filepath}\n\n{modified_time}\n{size}"
-
-    def execute(self, context):
-        self.open_file()
-        return {"FINISHED"}
+        return bpy.ops.wm.open_mainfile(
+            "INVOKE_DEFAULT",
+            display_file_selector=True,
+        )
 
 
 class FlyOperator(bpy.types.Operator):
@@ -372,8 +284,10 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 self.filepath = context.blend_data.filepath
                 dirname, basename = split_filepath(self.filepath)
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-                update_recent_files(self.filepath, is_add=True)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, filepath=self.filepath, need_update=True
+                )
+
                 self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
 
             else:
@@ -383,8 +297,10 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
                 self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-                update_recent_files(self.filepath, is_add=True)
+                bpy.ops.wm.save_mainfile(
+                    {"dict": "override"}, filepath=self.filepath, need_update=True
+                )
+
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
@@ -413,8 +329,10 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
 
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
-            bpy.ops.wm.save_as_mainfile({"dict": "override"}, filepath=self.filepath)
-            update_recent_files(self.filepath, is_add=True)
+            bpy.ops.wm.save_as_mainfile(
+                {"dict": "override"}, filepath=self.filepath, need_update=True
+            )
+
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
 
         except Exception as e:
@@ -490,7 +408,6 @@ classes = (
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
-    FileRecentOpenOperator,
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
