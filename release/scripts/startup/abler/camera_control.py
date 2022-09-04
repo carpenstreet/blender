@@ -33,7 +33,7 @@ bl_info = {
 
 import bpy
 from .lib import cameras
-from bpy_extras.io_utils import ImportHelper
+from .lib.import_file import AconImportHelper
 
 
 class CreateCameraOperator(bpy.types.Operator):
@@ -234,7 +234,7 @@ def is_valid_extension(target_path, accepted):
     return True
 
 
-class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
+class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
     """Open Default Background Image"""
 
     bl_idname = "acon3d.default_background_image_open"
@@ -247,7 +247,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
     filepath: bpy.props.StringProperty()
 
     def execute(self, context):
-        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
+        if not self.check_path() or not is_valid_extension(self.filepath, [".png", ".jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
@@ -275,7 +275,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, ImportHelper):
         space.show_region_toolbar = False
 
 
-class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
+class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
     """Open Custom Background Image"""
 
     bl_idname = "acon3d.custom_background_image_open"
@@ -288,7 +288,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, ImportHelper):
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
 
     def execute(self, context):
-        if not is_valid_extension(self.filepath, [".png", ".jpg"]):
+        if not self.check_path() or not is_valid_extension(self.filepath, [".png", ".jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
