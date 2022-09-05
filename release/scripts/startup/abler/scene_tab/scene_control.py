@@ -161,14 +161,11 @@ class Acon3dScenesPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row(align=True)
-        row.prop(context.window_manager.ACON_prop, "scene", text="")
-        row.operator("acon3d.create_scene", text="", icon="ADD")
-        row.operator("acon3d.delete_scene", text="", icon="REMOVE")
+        row = layout.row()
+        # row.prop(context.window_manager.ACON_prop, "scene", text="")
 
         # Scene_UL_List을 그려주는 부분
-        layout = self.layout
-        col = layout.column()
+        col = row.column()
         col.template_list(
             "Scene_UL_List",
             "",
@@ -177,6 +174,9 @@ class Acon3dScenesPanel(bpy.types.Panel):
             context.window_manager.ACON_prop,
             "active_scene_index",
         )
+        col = row.column()
+        col.operator("acon3d.create_scene", text="", icon="ADD")
+        col.operator("acon3d.delete_scene", text="", icon="REMOVE")
 
 
 classes = (
