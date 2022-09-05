@@ -115,9 +115,15 @@ class DeleteSceneOperator(bpy.types.Operator):
         return len(bpy.data.scenes) > 1
 
     def execute(self, context):
+        prop = bpy.context.window_manager.ACON_prop
 
-        scene = context.scene
+        scene = prop.scene_col[prop.active_scene_index]
         scenesList = [*bpy.data.scenes]
+
+        # bpy.data.scenes와 scene_col 순서가 달라 scene.name을 대조해 삭제
+        for item in scenesList:
+            if item.name == scene.name:
+                scene = item
 
         i = scenesList.index(scene)
         scenesList.remove(scene)
@@ -128,15 +134,8 @@ class DeleteSceneOperator(bpy.types.Operator):
         # scene and target scene. So it should happen before removing scene.
         context.window_manager.ACON_prop.scene = nextScene.name
 
-        # scene_col 삭제
-        # bpy.data.scenes와 scene_col 순서가 달라 scene.name을 대조해 삭제
-        scene_col = bpy.context.window_manager.ACON_prop.scene_col
-        for i, item in enumerate(scene_col):
-            if item.name == scene.name:
-                scene_col.remove(i)
-                break
-
         bpy.data.scenes.remove(scene)
+        prop.scene_col.remove(prop.active_scene_index)
 
         # Why set `scene` value again? Because `remove(scene)` occurs funny bug
         # that sets `scene` value to 1 when `nextScene` is the first element of
