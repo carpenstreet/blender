@@ -82,6 +82,11 @@ class CreateSceneOperator(bpy.types.Operator):
         old_scene = context.scene
         new_scene = scenes.create_scene(old_scene, self.preset, self.name)
         context.window_manager.ACON_prop.scene = new_scene.name
+
+        # scene_col 추가
+        new_scene_col = bpy.context.window_manager.ACON_prop.scene_col.add()
+        new_scene_col.name = new_scene.name
+
         return {"FINISHED"}
 
     def invoke(self, context, event):
