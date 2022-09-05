@@ -184,6 +184,10 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         cameras.switch_to_rendered_view()
         cameras.turn_on_camera_view(False)
 
+    # scene_col 추가
+    new_scene_col = bpy.context.window_manager.ACON_prop.scene_col.add()
+    new_scene_col.name = new_scene.name
+
     prop = new_scene.ACON_prop
 
     if type == "Indoor Daytime":
