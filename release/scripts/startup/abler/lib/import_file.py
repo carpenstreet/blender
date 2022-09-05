@@ -10,6 +10,11 @@ class AconImportHelper(ImportHelper):
         """
         path = self.filepath
         if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="File not found",
+                message_1="File Select Error. No selected file.",
+            )
             return False
         elif not os.path.isfile(path):
             bpy.ops.acon3d.alert(
