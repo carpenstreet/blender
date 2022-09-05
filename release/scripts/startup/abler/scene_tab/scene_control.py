@@ -44,7 +44,7 @@ from bpy.props import (
 )
 
 
-class CUSTOM_UL_List(bpy.types.UIList):
+class Scene_UL_List(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
@@ -157,51 +157,24 @@ class Acon3dScenesPanel(bpy.types.Panel):
         row.operator("acon3d.create_scene", text="", icon="ADD")
         row.operator("acon3d.delete_scene", text="", icon="REMOVE")
 
-        # MATERIAL_UL_List을 그려주는 부분
-        # row = layout.row()
-        # scene = context.scene
-        # obj = context.object
-        scn = context.scene
+        # Scene_UL_List을 그려주는 부분
         layout = self.layout
         col = layout.column()
         col.template_list(
-            "CUSTOM_UL_List",
+            "Scene_UL_List",
             "",
-            scn,
-            "objects",
-            scn,
-            "active_object_index",
+            context.window_manager.ACON_prop,
+            "scene_col",
+            context.window_manager.ACON_prop,
+            "active_scene_index",
         )
-        # col.template_list(
-        #     "CUSTOM_UL_List",
-        #     "",
-        #     context.window_manager.ACON_prop,
-        #     "scene",
-        #     context.window_manager.ACON_prop,
-        #     "active_object_index",
-        # )
-        # col.template_list(
-        #     "CUSTOM_UL_List",
-        #     "",
-        #     bpy.data,
-        #     "scene",
-        #     bpy.data,
-        #     "1",
-        # )
-        scene = context.scene
-        col.template_list("CUSTOM_UL_List", "", scene, "my_list", scene, "list_index")
-
-
-class ListItem(PropertyGroup):
-    name: StringProperty(name="Set Name", override={"LIBRARY_OVERRIDABLE"})
 
 
 classes = (
     CreateSceneOperator,
     DeleteSceneOperator,
     Acon3dScenesPanel,
-    CUSTOM_UL_List,
-    ListItem,
+    Scene_UL_List,
 )
 
 
@@ -210,16 +183,6 @@ def register():
 
     for cls in classes:
         register_class(cls)
-
-    bpy.types.Scene.active_object_index = IntProperty()
-    bpy.types.WindowManager.active_object_index = IntProperty()
-    bpy.types.Scene.my_list = bpy.props.CollectionProperty(type=ListItem)
-    bpy.types.Scene.list_index = IntProperty(
-        name="Active Selection Set",
-        description="Index of the currently active selection set",
-        default=0,
-        override={"LIBRARY_OVERRIDABLE"},
-    )
 
 
 def unregister():
