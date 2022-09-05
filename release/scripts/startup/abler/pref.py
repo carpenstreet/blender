@@ -86,6 +86,8 @@ def delayed_load_handler():
         post_open.update_layers()
         post_open.hide_adjust_last_operation_panel()
         post_open.add_dummy_background_image()
+        version.show_update_alert()
+        scenes.add_scene_items_to_collection()
     finally:
         tracker.turn_on()
 

@@ -99,10 +99,26 @@ def change_background_color(self, context: Context) -> None:
 scene_items: List[Tuple[str, str, str]] = []
 
 
+def add_scene_items_to_collection():
+    """scene_col에 bpy.data.scenes 항목 넣어주기"""
+
+    for scene in bpy.data.scenes:
+        new_scene = bpy.context.window_manager.ACON_prop.scene_col.add()
+        new_scene.name = scene.name
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
         scene_items.append((scene.name, scene.name, ""))
+
+    # print(scene_items)
+
+    # print("A!")
+
+    # # scene 목록을 scene_col에도 넣어주기
+    # if collection := bpy.context.window_manager.ACON_prop.scene_col:
+    #     collection.add()
 
     return scene_items
 
