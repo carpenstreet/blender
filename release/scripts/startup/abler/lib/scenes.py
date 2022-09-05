@@ -102,6 +102,7 @@ scene_items: List[Tuple[str, str, str]] = []
 def add_scene_items_to_collection():
     """scene_col에 bpy.data.scenes 항목 넣어주기"""
 
+    bpy.context.window_manager.ACON_prop.scene_col.clear()
     for scene in bpy.data.scenes:
         new_scene = bpy.context.window_manager.ACON_prop.scene_col.add()
         new_scene.name = scene.name
