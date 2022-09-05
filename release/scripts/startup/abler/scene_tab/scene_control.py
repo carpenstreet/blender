@@ -48,13 +48,9 @@ class Scene_UL_List(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
-        scene = data
-        ob = item
-        # print(data, item, active_data, active_propname)
 
         if self.layout_type in {"DEFAULT", "COMPACT"}:
-
-            layout.prop(ob, "name", text="", emboss=False, icon_value=layout.icon(ob))
+            layout.label(text=item.name, icon="FILE")
 
 
 class CreateSceneOperator(bpy.types.Operator):
