@@ -113,14 +113,6 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     for scene in bpy.data.scenes:
         scene_items.append((scene.name, scene.name, ""))
 
-    # print(scene_items)
-
-    # print("A!")
-
-    # # scene 목록을 scene_col에도 넣어주기
-    # if collection := bpy.context.window_manager.ACON_prop.scene_col:
-    #     collection.add()
-
     return scene_items
 
 
