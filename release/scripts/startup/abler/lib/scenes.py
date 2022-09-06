@@ -146,6 +146,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
 
     else:
         cam2 = bpy.data.cameras.new("View Camera")
+        cam2.lens = 30
         obj2 = bpy.data.objects.new("View Camera", cam2)
         obj2.location = (4.7063, 7.6888, 1.9738)
         obj2.rotation_euler = (radians(90), radians(0), radians(-212))
