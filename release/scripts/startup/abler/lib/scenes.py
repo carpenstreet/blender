@@ -63,6 +63,7 @@ def gen_scene_name(name: str, i: int = 1) -> str:
 
 
 def refresh_look_at_me() -> None:
+
     context = bpy.context
     prev_active_object = context.active_object
 
@@ -98,6 +99,7 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
 
 
 def load_scene(self, context: Context) -> None:
+
     if not context:
         context = bpy.context
 
@@ -133,6 +135,7 @@ def load_scene(self, context: Context) -> None:
 
 
 def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
+
     new_scene = old_scene.copy()
     new_scene.name = name
     if old_scene.camera:
