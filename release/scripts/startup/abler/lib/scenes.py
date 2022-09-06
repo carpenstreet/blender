@@ -24,6 +24,7 @@ from . import shadow, layers, objects
 from .materials import materials_handler
 from math import radians
 from .tracker import tracker
+from . import cameras
 
 
 def change_dof(self, context: Context) -> None:
@@ -62,7 +63,6 @@ def gen_scene_name(name: str, i: int = 1) -> str:
 
 
 def refresh_look_at_me() -> None:
-
     context = bpy.context
     prev_active_object = context.active_object
 
@@ -98,7 +98,6 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
 
 
 def load_scene(self, context: Context) -> None:
-
     if not context:
         context = bpy.context
 
@@ -134,23 +133,30 @@ def load_scene(self, context: Context) -> None:
 
 
 def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
-
     new_scene = old_scene.copy()
     new_scene.name = name
+    if old_scene.camera:
+        new_scene.camera = old_scene.camera.copy()
+        new_scene.camera.data = old_scene.camera.data.copy()
+        new_scene.collection.objects.link(new_scene.camera)
+        try:
+            new_scene.collection.objects.unlink(old_scene.camera)
+        except:
+            print("Failed to unlink camera from old scene.")
 
-    new_scene.camera = old_scene.camera.copy()
-    new_scene.camera.data = old_scene.camera.data.copy()
-    new_scene.collection.objects.link(new_scene.camera)
-
-    try:
-        new_scene.collection.objects.unlink(old_scene.camera)
-    except:
-        print("Failed to unlink camera from old scene.")
+    else:
+        cam2 = bpy.data.cameras.new("View Camera")
+        obj2 = bpy.data.objects.new("View Camera", cam2)
+        obj2.location = (4.7063, 7.6888, 1.9738)
+        obj2.rotation_euler = (radians(90), radians(0), radians(-212))
+        new_scene.collection.objects.link(obj2)
+        new_scene.camera = obj2
+        cameras.switch_to_rendered_view()
+        cameras.turn_on_camera_view(False)
 
     prop = new_scene.ACON_prop
 
     if type == "Indoor Daytime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -184,7 +190,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Indoor Sunset":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -218,7 +223,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Indoor Nighttime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -252,7 +256,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Daytime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -286,7 +289,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Sunset":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -320,7 +322,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Nighttime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
