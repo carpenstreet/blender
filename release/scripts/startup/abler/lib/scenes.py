@@ -108,6 +108,21 @@ def add_scene_items_to_collection():
         new_scene.name = scene.name
 
 
+def load_scene_by_index(self, context: Context) -> None:
+    if not context:
+        context = bpy.context
+
+    if not self:
+        self = context.window_manager.ACON_prop
+
+    scene_col = self.scene_col
+    active_scene_index = self.active_scene_index
+
+    # EnumProperty인 self.scene을 select scene으로 변경
+    self.scene = scene_col[active_scene_index].name
+    load_scene(self, context)
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
