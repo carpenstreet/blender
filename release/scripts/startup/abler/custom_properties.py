@@ -29,6 +29,8 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
         name="Scene_Item", description="Scene_Item", default=""
     )
 
+    index: bpy.props.IntProperty()
+
 
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
