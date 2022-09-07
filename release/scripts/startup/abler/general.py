@@ -285,7 +285,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 dirname, basename = split_filepath(self.filepath)
 
                 bpy.ops.wm.save_mainfile(
-                    {"dict": "override"}, filepath=self.filepath, need_update=True
+                    {"dict": "override"}, filepath=self.filepath, update_history=True
                 )
 
                 self.report({"INFO"}, f'Saved "{basename}{self.filename_ext}"')
@@ -298,7 +298,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
                 bpy.ops.wm.save_mainfile(
-                    {"dict": "override"}, filepath=self.filepath, need_update=True
+                    {"dict": "override"}, filepath=self.filepath, update_history=True
                 )
 
                 self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
@@ -330,7 +330,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
             self.filepath = f"{numbered_filepath}{self.filename_ext}"
 
             bpy.ops.wm.save_as_mainfile(
-                {"dict": "override"}, filepath=self.filepath, need_update=True
+                {"dict": "override"}, filepath=self.filepath, update_history=True
             )
 
             self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')

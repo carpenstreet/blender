@@ -3,7 +3,12 @@
 //
 #include <Python.h>
 #include "ABLER_py.h"
-#include <unistd.h>
+
+#ifdef WIN32
+#   include <direct.h>
+#else
+#   include <unistd.h>
+#endif
 
 #define FILE_MAX 1024
 
@@ -12,12 +17,18 @@ static void call_abler_function(char* file_path, char* file_name, char* function
     const PyGILState_STATE gilstate = PyGILState_Ensure();
 
     char cwd[FILE_MAX];
+
+#if defined(WIN32)
+    wchar_t wText[MAX_PATH];
+    _wgetcwd(path, MAX_PATH);
+#else
     getcwd(cwd, sizeof(cwd));
     strcat(cwd, file_path);
 
     const size_t size = strlen(cwd) + 1;
     wchar_t wText[size];
     mbstowcs(wText, cwd, size);
+#endif
 
     PySys_SetPath(wText);
 

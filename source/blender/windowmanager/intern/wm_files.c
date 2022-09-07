@@ -1749,7 +1749,7 @@ static bool wm_file_write(bContext *C,
                           eBLO_WritePathRemap remap_mode,
                           bool use_save_as_copy,
                           ReportList *reports,
-                          bool need_update)
+                          bool update_history)
 {
   Main *bmain = CTX_data_main(C);
   int len;
@@ -1871,7 +1871,7 @@ static bool wm_file_write(bContext *C,
                          .thumb = thumb,
                      },
                      reports)) {
-    const bool do_history_file_update = need_update || ((G.background == false) &&
+    const bool do_history_file_update = update_history || ((G.background == false) &&
                                         (CTX_wm_manager(C)->op_undo_depth == 0));
 
     if (use_save_as_copy == false) {
@@ -3127,9 +3127,9 @@ static int wm_save_as_mainfile_exec(bContext *C, wmOperator *op)
   /* set compression flag */
   SET_FLAG_FROM_TEST(fileflags, RNA_boolean_get(op->ptr, "compress"), G_FILE_COMPRESS);
 
-  const bool need_update = RNA_boolean_get(op->ptr, "need_update");
+  const bool update_history = RNA_boolean_get(op->ptr, "update_history");
 
-  const bool ok = wm_file_write(C, path, fileflags, remap_mode, use_save_as_copy, op->reports, need_update);
+  const bool ok = wm_file_write(C, path, fileflags, remap_mode, use_save_as_copy, op->reports, update_history);
 
   if ((op->flag & OP_IS_INVOKE) == 0) {
     /* OP_IS_INVOKE is set when the operator is called from the GUI.
@@ -3224,7 +3224,7 @@ void WM_OT_save_as_mainfile(wmOperatorType *ot)
   // ABLER Custom Property
   RNA_def_boolean(
       ot->srna,
-      "need_update",
+      "update_history",
       false,
       "Need Update",
       "Update recent files if true");
@@ -3298,7 +3298,7 @@ void WM_OT_save_mainfile(wmOperatorType *ot)
   // ABLER Custom Property
   RNA_def_boolean(
       ot->srna,
-      "need_update",
+      "update_history",
       false,
       "Need Update",
       "Update recent files if true");
