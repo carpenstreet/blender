@@ -161,19 +161,12 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
-            children_names = {}
-
-            for coll in data_to.collections:
-                for child in coll.children.keys():
-                    children_names[child] = True
-
             for coll in data_to.collections:
 
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
 
-                found = any(coll.name == child for child in children_names)
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
