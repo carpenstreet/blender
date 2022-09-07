@@ -183,8 +183,12 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                         # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
                         if "Layer0" in coll_2.name:
                             for coll_obj in bpy.data.collections[coll_2.name].objects:
-                                bpy.data.collections[coll_2.name].objects.unlink(coll_obj)
-                                bpy.data.collections[coll_2.name[:-4]].objects.link(coll_obj)
+                                bpy.data.collections[coll_2.name].objects.unlink(
+                                    coll_obj
+                                )
+                                bpy.data.collections[coll_2.name[:-4]].objects.link(
+                                    coll_obj
+                                )
                             self.duplicate_layer.append(coll_2.name)
 
                         # TODO: 같은 파일 import 처리
@@ -217,10 +221,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                     ctx["region"] = area.regions[-1]
                     bpy.ops.view3d.view_selected(ctx)
 
+        # TODO: 에러 세분화 필요
         except Exception as e:
             tracker.import_blend_fail()
-            # self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
-            raise e
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
         else:
             tracker.import_blend()
 
