@@ -140,8 +140,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     bl_label = "Import"
     bl_translation_context = "*"
 
-    collections = []
-    collections_duplicate = []
+    duplicate_layer = []
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
@@ -158,11 +157,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             if not col_layers:
                 col_layers = bpy.data.collections.new("Layers")
                 context.scene.collection.children.link(col_layers)
-
-            print("")
-            print("Open ops.로 오픈한 파일의 collection 출력")
-            for coll in bpy.data.collections:
-                print(f"0) coll.name - open: {coll.name}")
 
             with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
                 data_to.collections = data_from.collections
@@ -181,46 +175,32 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
-                    print("")
-                    print("Collection이 Layers이면, 내부 collection 처리")
-
                     for coll_2 in coll.children:
                         print("")
                         print(f"2) coll.name - Layers.children: {coll_2.name}")
 
                         # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
-                        # ".001"이 추가될 때마다 오브젝트 처리하고 삭제해주면 ".001" 넘버링만으로 중복 체크 가능
-                        if ".001" in coll_2.name:
-                            print("")
-                            print(f"3) 중복된 레이어의 오브젝트 처리")
+                        # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
+                        if "Layer0" in coll_2.name:
                             for coll_obj in bpy.data.collections[coll_2.name].objects:
                                 bpy.data.collections[coll_2.name].objects.unlink(coll_obj)
                                 bpy.data.collections[coll_2.name[:-4]].objects.link(coll_obj)
-                            self.collections_duplicate.append(coll_2.name)
+                            self.duplicate_layer.append(coll_2.name)
 
                         # TODO: 같은 파일 import 처리
                         # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
                         # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
 
                         else:
-                            print("5) 중복 처리 아님")
                             added_l_exclude = context.scene.l_exclude.add()
                             added_l_exclude.name = coll_2.name
                             added_l_exclude.value = True
                             col_layers.children.link(coll_2)
 
-            print("")
-            print("중복된 레이어 이름 리스트 확인")
-            for coll_name in self.collections_duplicate:
-                print(coll_name)
-
-            print("")
-            for coll_name in self.collections_duplicate:
-                print(f"6) coll.name - duplicate: {coll_name}")
+            # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
+            for coll_name in self.duplicate_layer:
                 coll = bpy.data.collections.get(coll_name)
                 bpy.data.collections.remove(coll)
-                self.collections_duplicate.remove(coll_name)
-
 
             for obj in data_to.objects:
                 if obj.type == "MESH":
