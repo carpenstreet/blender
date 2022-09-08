@@ -148,6 +148,19 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             if not self.check_path():
                 return {"FINISHED"}
 
+            # TODO: 같은 파일 import 처리
+            # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
+            # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
+
+            print(f"bpy.data.filepath로 잡히는 file: {bpy.data.filepath}")
+            print(f"self.filepath로 잡히는 file: {self.filepath}")
+            file_current = bpy.data.filepath
+            file_open = self.filepath
+            if (not file_current) or (file_current == file_open):
+                print("Import 예외")
+                print("같은 파일로 처리 안함")
+                return {"FINISHED"}
+
             for obj in bpy.data.objects:
                 obj.select_set(False)
 
@@ -185,10 +198,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                                     coll_obj
                                 )
                             self.duplicate_layer.append(coll_2.name)
-
-                        # TODO: 같은 파일 import 처리
-                        # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
-                        # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
 
                         else:
                             added_l_exclude = context.scene.l_exclude.add()
