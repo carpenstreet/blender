@@ -162,11 +162,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
-            print("")
-            print("Import ops.로 파일 데이터 load 후, 불러온 파일의 collection 출력")
-            for coll in data_to.collections:
-                print(f"1) coll.name - import: {coll.name}")
-
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
@@ -176,9 +171,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
                     for coll_2 in coll.children:
-                        print("")
-                        print(f"2) coll.name - Layers.children: {coll_2.name}")
-
                         # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
                         if "Layer0" in coll_2.name:
