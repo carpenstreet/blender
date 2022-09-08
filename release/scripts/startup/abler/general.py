@@ -174,6 +174,9 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                         # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
                         if "Layer0" in coll_2.name:
+                            print("")
+                            print(f"coll_2.name: {coll_2.name}")
+                            print(f"coll_2.name[coll_2.name[:-4]]: {coll_2.name[:-4]}")
                             for coll_obj in bpy.data.collections[coll_2.name].objects:
                                 bpy.data.collections[coll_2.name].objects.unlink(
                                     coll_obj
@@ -194,9 +197,15 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                             col_layers.children.link(coll_2)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
+            print("")
+            print(f"self.duplicate_layer: {self.duplicate_layer}")
             for coll_name in self.duplicate_layer:
+                print(f"coll_name in self.duplicate_layer: {coll_name}")
                 coll = bpy.data.collections.get(coll_name)
                 bpy.data.collections.remove(coll)
+            print("")
+
+            self.duplicate_layer.clear()
 
             for obj in data_to.objects:
                 if obj.type == "MESH":
@@ -216,7 +225,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         # TODO: 에러 세분화 필요
         except Exception as e:
             tracker.import_blend_fail()
-            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            # self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            raise e
         else:
             tracker.import_blend()
 
