@@ -1,55 +1,74 @@
-//
-// Created by 장종원 on 2022/08/30.
-//
-#include <Python.h>
 #include "ABLER_py.h"
+#include <Python.h>
 
 #ifdef WIN32
-#   include <direct.h>
+#  include <direct.h>
 #else
-#   include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #define FILE_MAX 1024
 
-// file_path root - blender
-static void call_abler_function(char* file_path, char* file_name, char* function_name) {
-    const PyGILState_STATE gilstate = PyGILState_Ensure();
+static void call_abler_function(wchar_t *w_cwd, char* file_name, char* function_name) {
+  PyGILState_STATE gilstate = PyGILState_Ensure();
 
-    char cwd[FILE_MAX];
+  PySys_SetPath(w_cwd);
+  PyObject *module = NULL, *result = NULL;
+
+  module = PyImport_ImportModule(file_name);
+  if (module) {
+    result = PyObject_CallMethod(module, function_name, NULL);
+  }
+
+  if (PyErr_Occurred()) {
+    PyErr_Print();
+  }
+
+  Py_DECREF(result);
+  Py_DECREF(module);
+  PyGILState_Release(gilstate);
+}
 
 #if defined(WIN32)
-    wchar_t wText[MAX_PATH];
-    _wgetcwd(path, MAX_PATH);
+void get_directory(wchar_t *dest, wchar_t *w_file_path) {
+  _wgetcwd(dest, FILE_MAX);
+  wcscat(dest, w_file_path);
+}
 #else
-    getcwd(cwd, sizeof(cwd));
-    strcat(cwd, file_path);
+void get_directory(wchar_t *dest, char *file_path) {
+  char cwd[FILE_MAX];
+  getcwd(cwd, sizeof(cwd));
+  strcat(cwd, file_path);
 
-    const size_t size = strlen(cwd) + 1;
-    wchar_t wText[size];
-    mbstowcs(wText, cwd, size);
+  const size_t size = strlen(cwd) + 1;
+  mbstowcs(dest, cwd, size);
+}
 #endif
 
-    PySys_SetPath(wText);
 
-    PyObject *module = NULL, *result = NULL;
-    module = PyImport_ImportModule(file_name);
-    if (module) {
-        result = PyObject_CallMethod(module, function_name, NULL);
-    }
+void tracker_open_fail(void)
+{
+  wchar_t w_cwd[FILE_MAX];
+#if defined(WIN32)
+  get_directory(w_cwd, L"\\release\\scripts\\startup\\abler");
+#else
+  get_directory(w_cwd, "/release/scripts/startup/abler");
+#endif
 
-    PyErr_Print();
-
-    Py_DECREF(result);
-    Py_DECREF(module);
-
-    PyGILState_Release(gilstate);
+  call_abler_function(
+      w_cwd, "tracker_functions", "tracker_file_open_fail");
 }
 
-void tracker_open_fail(void) {
-    call_abler_function("/release/scripts/startup/abler", "tracker_functions", "tracker_file_open_fail");
-}
 
-void tracker_open(void) {
-    call_abler_function("/release/scripts/startup/abler", "tracker_functions", "tracker_file_open");
+void tracker_open(void)
+{
+  wchar_t w_cwd[FILE_MAX];
+#if defined(WIN32)
+  get_directory(w_cwd, L"\\release\\scripts\\startup\\abler");
+#else
+  get_directory(w_cwd, "/release/scripts/startup/abler");
+#endif
+
+  call_abler_function(
+      w_cwd, "tracker_functions", "tracker_file_open");
 }
