@@ -140,23 +140,21 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     bl_label = "Import"
     bl_translation_context = "*"
 
-    duplicate_layer = []
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
+    duplicate_layer = []
+    view_layer_obj = []
 
     def execute(self, context):
         try:
             if not self.check_path():
                 return {"FINISHED"}
 
-            # TODO: 같은 파일 import 처리
-            # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
-            # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
-            print(f"bpy.data.filepath로 잡히는 file: {bpy.data.filepath}")
-            print(f"self.filepath로 잡히는 file: {self.filepath}")
-            file_current = bpy.data.filepath
-            file_open = self.filepath
+            # Blender에서 File Open과 같은 파일을 import 하면 Layer와 Object 이름에 ".001"이 넘버링 하지 않음
+            # 그래서 중복 처리를 하지 않고 있어, 예외 경우로 구분하고 메세지 알림 띄워주기
+            filepath_curr = bpy.data.filepath
+            filepath = self.filepath
 
-            if file_current == file_open:
+            if filepath_curr == filepath:
                 bpy.ops.acon3d.alert(
                     "INVOKE_DEFAULT",
                     title="Import 예외",
@@ -167,23 +165,14 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             for obj in bpy.data.objects:
                 obj.select_set(False)
 
-            FILEPATH = self.filepath
+            coll_layers = bpy.data.collections.get("Layers")
+            if not coll_layers:
+                coll_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(coll_layers)
 
-            col_layers = bpy.data.collections.get("Layers")
-            if not col_layers:
-                col_layers = bpy.data.collections.new("Layers")
-                context.scene.collection.children.link(col_layers)
-
-            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
+            with bpy.data.libraries.load(filepath) as (data_from, data_to):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
-
-            # Note: data_to에서 object.name을 확인해서 중복 처리 전후로 오브젝트 목록 비교해보기
-            print("")
-            for obj in data_from.objects:
-                print(f"from: {obj}")
-            for obj in data_to.objects:
-                print(f"to: {obj.name}")
 
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
@@ -193,53 +182,37 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
-                    for coll_2 in coll.children:
-                        # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
-                        # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
-                        if "Layer0." in coll_2.name:
-                            print("")
-                            print(f"coll_2.name: {coll_2.name}")
-                            print(f"coll_2.name[coll_2.name[:-4]]: {coll_2.name[:-4]}")
-                            for coll_obj in bpy.data.collections[coll_2.name].objects:
-                                bpy.data.collections[coll_2.name].objects.unlink(
+                    for coll_child in coll.children:
+                        # File Open과 다른 파일을 import 할 때, Layer와 Object 이름이 중복되면 ".001"부터 넘버링됨
+                        # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
+                        if "Layer0." in coll_child.name:
+                            for coll_obj in bpy.data.collections[coll_child.name].objects:
+                                bpy.data.collections[coll_child.name].objects.unlink(
                                     coll_obj
                                 )
                                 bpy.data.collections["Layer0"].objects.link(coll_obj)
-                            self.duplicate_layer.append(coll_2.name)
+                            self.duplicate_layer.append(coll_child.name)
 
                         else:
                             added_l_exclude = context.scene.l_exclude.add()
-                            added_l_exclude.name = coll_2.name
+                            added_l_exclude.name = coll_child.name
                             added_l_exclude.value = True
-                            col_layers.children.link(coll_2)
+                            coll_layers.children.link(coll_child)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
-            print("")
-            print(f"self.duplicate_layer: {self.duplicate_layer}")
             for coll_name in self.duplicate_layer:
-                print(f"coll_name in self.duplicate_layer: {coll_name}")
                 coll = bpy.data.collections.get(coll_name)
                 bpy.data.collections.remove(coll)
-            print("")
-
             self.duplicate_layer.clear()
 
-            # Note: bpy.context.view_layer의 데이터 가져오기
-            view_layer = []
+            # View Layer에 포함된 오브젝트 가져오기
             for obj in context.view_layer.objects:
-                view_layer.append(obj.name)
-            print(view_layer)
+                self.view_layer_obj.append(obj.name)
 
             for obj in data_to.objects:
-                if obj.type == "MESH":
-                    print(f"obj.type == 'MESH': {obj.name}")
-                    if obj.name in view_layer:
-                        obj.select_set(True)
-                    # obj.select_set(True)
-                    else:
-                        data_to.objects.remove(obj)
+                if (obj.type == "MESH") and (obj.name in self.view_layer_obj):
+                    obj.select_set(True)
                 else:
-                    print(f"else: {obj.name}")
                     data_to.objects.remove(obj)
 
             materials_setup.apply_ACON_toon_style()
@@ -254,8 +227,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         # TODO: 에러 세분화 필요
         except Exception as e:
             tracker.import_blend_fail()
-            # self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
-            raise e
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
         else:
             tracker.import_blend()
 
