@@ -175,6 +175,14 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 data_to.collections = data_from.collections
                 data_to.objects = list(data_from.objects)
 
+            # Note: data_to에서 object.name을 확인해서 중복 처리 전후로 오브젝트 목록 비교해보기
+            print("")
+            for obj in data_from.objects:
+                print(f"from: {obj}")
+            for obj in data_to.objects:
+                print(f"to: {obj.name}")
+
+
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
@@ -216,10 +224,22 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
             self.duplicate_layer.clear()
 
+            # Note: bpy.context.view_layer의 데이터 가져오기
+            view_layer = []
+            for obj in context.view_layer.objects:
+                view_layer.append(obj.name)
+            print(view_layer)
+
             for obj in data_to.objects:
                 if obj.type == "MESH":
-                    obj.select_set(True)
+                    print(f"obj.type == 'MESH': {obj.name}")
+                    if obj.name in view_layer:
+                        obj.select_set(True)
+                    # obj.select_set(True)
+                    else:
+                        data_to.objects.remove(obj)
                 else:
+                    print(f"else: {obj.name}")
                     data_to.objects.remove(obj)
 
             materials_setup.apply_ACON_toon_style()
