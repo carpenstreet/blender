@@ -151,14 +151,17 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             # TODO: 같은 파일 import 처리
             # file open과 같은 파일을 import 할 때는 layer 이름에 ".001" 넘버링이 되지 않음
             # 그래서 같은 레이어끼리 오브젝트 처리를 해야함
-
             print(f"bpy.data.filepath로 잡히는 file: {bpy.data.filepath}")
             print(f"self.filepath로 잡히는 file: {self.filepath}")
             file_current = bpy.data.filepath
             file_open = self.filepath
-            if (not file_current) or (file_current == file_open):
-                print("Import 예외")
-                print("같은 파일로 처리 안함")
+
+            if file_current == file_open:
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="Import 예외",
+                    message_1="Import 예외가 발생함.",
+                )
                 return {"FINISHED"}
 
             for obj in bpy.data.objects:
@@ -182,7 +185,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             for obj in data_to.objects:
                 print(f"to: {obj.name}")
 
-
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
@@ -194,7 +196,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                     for coll_2 in coll.children:
                         # file open과 다른 파일을 import 할 때는 layer 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001를 아웃라이너에서 삭제하기 위해 Layer0.001에 있는 오브젝트를 Layer0로 이동
-                        if "Layer0" in coll_2.name:
+                        if "Layer0." in coll_2.name:
                             print("")
                             print(f"coll_2.name: {coll_2.name}")
                             print(f"coll_2.name[coll_2.name[:-4]]: {coll_2.name[:-4]}")
@@ -202,9 +204,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                                 bpy.data.collections[coll_2.name].objects.unlink(
                                     coll_obj
                                 )
-                                bpy.data.collections[coll_2.name[:-4]].objects.link(
-                                    coll_obj
-                                )
+                                bpy.data.collections["Layer0"].objects.link(coll_obj)
                             self.duplicate_layer.append(coll_2.name)
 
                         else:
