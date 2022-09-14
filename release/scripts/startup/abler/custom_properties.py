@@ -42,6 +42,10 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         update=scenes.load_scene,
     )
 
+    show_guide: bpy.props.BoolProperty(
+        name="Show Guide", default=True, update=remember_show_guide
+    )
+
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     @classmethod
@@ -542,10 +546,6 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     login_status: bpy.props.StringProperty(
         name="Login Status",
         description="Login Status",
-    )
-
-    show_guide: bpy.props.BoolProperty(
-        name="Show Guide", default=True, update=remember_show_guide
     )
 
 
