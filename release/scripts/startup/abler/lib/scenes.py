@@ -24,6 +24,7 @@ from . import shadow, layers, objects
 from .materials import materials_handler
 from math import radians
 from .tracker import tracker
+from . import cameras
 
 
 def change_dof(self, context: Context) -> None:
@@ -137,15 +138,26 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
 
     new_scene = old_scene.copy()
     new_scene.name = name
+    if old_scene.camera:
+        new_scene.camera = old_scene.camera.copy()
+        new_scene.camera.data = old_scene.camera.data.copy()
+        new_scene.collection.objects.link(new_scene.camera)
+        try:
+            new_scene.collection.objects.unlink(old_scene.camera)
+        except:
+            print("Failed to unlink camera from old scene.")
 
-    new_scene.camera = old_scene.camera.copy()
-    new_scene.camera.data = old_scene.camera.data.copy()
-    new_scene.collection.objects.link(new_scene.camera)
-
-    try:
-        new_scene.collection.objects.unlink(old_scene.camera)
-    except:
-        print("Failed to unlink camera from old scene.")
+    else:
+        cam = bpy.data.cameras.new("View Camera")
+        cam.lens = 30
+        cam.show_passepartout = False
+        obj = bpy.data.objects.new("View Camera", cam)
+        obj.location = (4.7063, 7.6888, 1.9738)
+        obj.rotation_euler = (radians(90), radians(0), radians(-212))
+        new_scene.collection.objects.link(obj)
+        new_scene.camera = obj
+        cameras.switch_to_rendered_view()
+        cameras.turn_on_camera_view(False)
 
     prop = new_scene.ACON_prop
 
