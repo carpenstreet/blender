@@ -16,26 +16,36 @@ static void call_abler_function(wchar_t *w_cwd, char* file_name, char* function_
   PyObject *module = NULL, *result = NULL;
 
   module = PyImport_ImportModule(file_name);
-  if (module) {
-    result = PyObject_CallMethod(module, function_name, NULL);
+  if (!module) {
+    PyGILState_Release(gilstate);
+    return;
   }
+
+  result = PyObject_CallMethod(module, function_name, NULL);
+
+  printf("result before ref count: %ld\n", result->ob_refcnt);
+  printf("module before ref count: %ld\n", module->ob_refcnt);
+
+  Py_DECREF(result);
+  Py_DECREF(module);
+
+  printf("result ref count: %ld\n", result->ob_refcnt);
+  printf("module ref count: %ld\n", module->ob_refcnt);
 
   if (PyErr_Occurred()) {
     PyErr_Print();
   }
 
-  Py_DECREF(result);
-  Py_DECREF(module);
   PyGILState_Release(gilstate);
 }
 
 #if defined(WIN32)
-void get_directory(wchar_t *dest, wchar_t *w_file_path) {
+static void get_directory(wchar_t *dest, wchar_t *w_file_path) {
   _wgetcwd(dest, FILE_MAX);
   wcscat(dest, w_file_path);
 }
 #else
-void get_directory(wchar_t *dest, char *file_path) {
+static void get_directory(wchar_t *dest, char *file_path) {
   char cwd[FILE_MAX];
   getcwd(cwd, sizeof(cwd));
   strcat(cwd, file_path);

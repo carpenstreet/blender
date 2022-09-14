@@ -2671,6 +2671,7 @@ static int wm_open_mainfile__select_file_path(bContext *C, wmOperator *op)
 
 static int wm_open_mainfile__open(bContext *C, wmOperator *op)
 {
+  printf("File Open!\n");
   char filepath[FILE_MAX];
   bool success;
 

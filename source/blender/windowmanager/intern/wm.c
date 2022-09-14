@@ -636,6 +636,7 @@ void WM_main(bContext *C)
 {
   /* Single refresh before handling events.
    * This ensures we don't run operators before the depsgraph has been evaluated. */
+  printf("WM_MAIN!\n");
   wm_event_do_refresh_wm_and_depsgraph(C);
 
   while (1) {
