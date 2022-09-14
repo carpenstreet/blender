@@ -12,7 +12,12 @@
 static void call_abler_function(wchar_t *w_cwd, char* file_name, char* function_name) {
   PyGILState_STATE gilstate = PyGILState_Ensure();
 
+//  PyObject *sys_path = PySys_GetObject("path");
+//  PyList_Append(sys_path, PyUnicode_FromWideChar(w_cwd, -1));
+//  Py_DECREF(sys_path);
+
   PySys_SetPath(w_cwd);
+
   PyObject *module = NULL, *result = NULL;
 
   module = PyImport_ImportModule(file_name);
