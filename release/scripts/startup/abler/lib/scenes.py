@@ -67,6 +67,7 @@ def refresh_look_at_me() -> None:
     context = bpy.context
     prev_active_object = context.active_object
 
+    bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
     for obj in bpy.data.objects:
         if obj.ACON_prop.constraint_to_camera_rotation_z:
