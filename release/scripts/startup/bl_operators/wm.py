@@ -3196,8 +3196,6 @@ class WM_MT_splash_tutorial(Menu):
 
     def draw(self, context):
 
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
-
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
@@ -3223,7 +3221,8 @@ class WM_MT_splash_tutorial(Menu):
 
         column = layout.column()
         row = column.row()
-        row.prop(userInfo.ACON_prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
+        prop = context.window_manager.ACON_prop
+        row.prop(prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
         row.alignment = "RIGHT"
         row.label(text="Show ABLER Starts")
         layout.separator()
