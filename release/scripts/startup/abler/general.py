@@ -208,6 +208,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             # View Layer에 포함된 오브젝트 가져오기
             for obj in context.view_layer.objects:
                 self.view_layer_obj.append(obj.name)
+            self.view_layer_obj.clear()
 
             for obj in data_to.objects:
                 if (obj.type == "MESH") and (obj.name in self.view_layer_obj):
