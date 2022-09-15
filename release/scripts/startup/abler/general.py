@@ -157,8 +157,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             if filepath_curr == filepath:
                 bpy.ops.acon3d.alert(
                     "INVOKE_DEFAULT",
-                    title="Import 예외",
-                    message_1="Import 예외가 발생함.",
+                    title="Import Failure",
+                    message_1="Cannot import exact same file from same directory.",
                 )
                 return {"FINISHED"}
 
