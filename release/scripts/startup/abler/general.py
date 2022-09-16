@@ -150,7 +150,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             if not self.check_path():
                 return {"FINISHED"}
 
-            # Blender에서 File Open과 같은 파일을 import 하면 Layer와 Object 이름에 ".001"이 넘버링 하지 않음
+            # Blender에서 File Open과 같은 파일을 import하면 Collection과 Mesh Object 이름에 ".001"이 넘버링 하지 않음
             # 그래서 중복 처리를 하지 않고 있어, 예외 경우로 구분하고 메세지 알림 띄워주기
             filepath_curr = bpy.data.filepath
             filepath = self.filepath
@@ -180,7 +180,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
                     for coll_child in coll.children:
-                        # File Open과 다른 파일을 import 할 때, Layer와 Object 이름이 중복되면 ".001"부터 넘버링됨
+                        # File Open과 다른 파일을 import 할 때, Collection과 Mesh Object 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
                         if "Layer0." in coll_child.name:
                             for coll_obj in bpy.data.collections[coll_child.name].objects:
@@ -202,7 +202,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 bpy.data.collections.remove(coll)
             self.duplicate_layer.clear()
 
-            # View Layer에 포함된 오브젝트 가져오기
+            # View Layer에 포함된 오브젝트만 가져오기
             for obj in context.view_layer.objects:
                 self.view_layer_obj.append(obj.name)
             self.view_layer_obj.clear()
