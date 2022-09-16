@@ -142,7 +142,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
     duplicate_layer = []
-    ImportError = False
+
+    class SameFileImportError(Exception):
+        def __init__(self):
+            super(SameFileImportError, self).__init__()
 
     def execute(self, context):
         try:
@@ -155,8 +158,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             filepath = self.filepath
 
             if filepath_curr == filepath:
-                self.ImportError = True
-                raise
+                raise self.SameFileImportError
 
             for obj in bpy.data.objects:
                 obj.select_set(False)
@@ -219,16 +221,16 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                     bpy.ops.view3d.view_selected(ctx)
 
         # TODO: 에러 세분화 필요
+        except self.SameFileImportError:
+            tracker.import_blend_fail()
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import exact same file from same directory.",
+            )
         except Exception as e:
             tracker.import_blend_fail()
-            if self.ImportError:
-                bpy.ops.acon3d.alert(
-                    "INVOKE_DEFAULT",
-                    title="Import Failure",
-                    message_1="Cannot import exact same file from same directory.",
-                )
-            else:
-                self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
         else:
             tracker.import_blend()
 
