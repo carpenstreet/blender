@@ -145,7 +145,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     class SameFileImportError(Exception):
         def __init__(self):
-            super(SameFileImportError, self).__init__()
+            super().__init__()
 
     def execute(self, context):
         try:
@@ -155,24 +155,25 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             # Blender에서 File Open과 같은 파일을 import하면 Collection과 Mesh Object 이름에 ".001"이 넘버링 하지 않음
             # 그래서 중복 처리를 하지 않고 있어, 예외 경우로 구분하고 메세지 알림 띄워주기
             filepath_curr = bpy.data.filepath
-            filepath = self.filepath
+            FILEPATH = self.filepath
 
-            if filepath_curr == filepath:
+            if filepath_curr == FILEPATH:
                 raise self.SameFileImportError
 
             for obj in bpy.data.objects:
                 obj.select_set(False)
 
-            coll_layers = bpy.data.collections.get("Layers")
-            if not coll_layers:
-                coll_layers = bpy.data.collections.new("Layers")
-                context.scene.collection.children.link(coll_layers)
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
 
-            with bpy.data.libraries.load(filepath) as (data_from, data_to):
+            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
                 data_to.collections = data_from.collections
-                data_to.objects = data_from.objects
+                data_to.objects = list(data_from.objects)
 
             for coll in data_to.collections:
+
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -180,24 +181,22 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 if coll.name == "Layers" or (
                     "Layers." in coll.name and len(coll.name) == 10
                 ):
-                    for coll_child in coll.children:
+                    for coll_2 in coll.children:
                         # File Open과 다른 파일을 import 할 때, Collection과 Mesh Object 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
-                        if "Layer0." in coll_child.name:
-                            for coll_obj in bpy.data.collections[
-                                coll_child.name
-                            ].objects:
-                                bpy.data.collections[coll_child.name].objects.unlink(
+                        if "Layer0." in coll_2.name:
+                            for coll_obj in bpy.data.collections[coll_2.name].objects:
+                                bpy.data.collections[coll_2.name].objects.unlink(
                                     coll_obj
                                 )
                                 bpy.data.collections["Layer0"].objects.link(coll_obj)
-                            self.duplicate_layer.append(coll_child.name)
+                            self.duplicate_layer.append(coll_2.name)
 
                         else:
                             added_l_exclude = context.scene.l_exclude.add()
-                            added_l_exclude.name = coll_child.name
+                            added_l_exclude.name = coll_2.name
                             added_l_exclude.value = True
-                            coll_layers.children.link(coll_child)
+                            col_layers.children.link(coll_2)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
             for coll_name in self.duplicate_layer:
