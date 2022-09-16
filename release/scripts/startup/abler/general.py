@@ -142,7 +142,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
     duplicate_layer = []
-    view_layer_obj = []
     ImportError = False
 
     def execute(self, context):
@@ -169,7 +168,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
             with bpy.data.libraries.load(filepath) as (data_from, data_to):
                 data_to.collections = data_from.collections
-                data_to.objects = list(data_from.objects)
+                data_to.objects = data_from.objects
 
             for coll in data_to.collections:
                 if "ACON_col" in coll.name:
@@ -183,7 +182,9 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                         # File Open과 다른 파일을 import 할 때, Collection과 Mesh Object 이름이 중복되면 ".001"부터 넘버링됨
                         # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
                         if "Layer0." in coll_child.name:
-                            for coll_obj in bpy.data.collections[coll_child.name].objects:
+                            for coll_obj in bpy.data.collections[
+                                coll_child.name
+                            ].objects:
                                 bpy.data.collections[coll_child.name].objects.unlink(
                                     coll_obj
                                 )
@@ -202,15 +203,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                 bpy.data.collections.remove(coll)
             self.duplicate_layer.clear()
 
-            # View Layer에 포함된 오브젝트만 가져오기
-            for obj in context.view_layer.objects:
-                self.view_layer_obj.append(obj.name)
-            self.view_layer_obj.clear()
-
             for obj in data_to.objects:
-                if (obj.type == "MESH") and (obj.name in self.view_layer_obj):
-                    obj.select_set(True)
-                else:
+                # View Layer에 없는 Mesh Object들의 select_set(True) 에러가 나고 있었음
+                # 이런 오브젝트들은 선택되지 않아도 무방하여 해당 작업을 제거함
+                if obj.type != "MESH":
                     data_to.objects.remove(obj)
 
             materials_setup.apply_ACON_toon_style()
