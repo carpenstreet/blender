@@ -221,7 +221,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
         # TODO: 에러 세분화 필요
         except self.SameFileImportError:
-            tracker.import_blend_fail()
+            tracker.import_same_blend_fail()
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
                 title="Import Failure",
