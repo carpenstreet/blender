@@ -141,7 +141,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
-    duplicate_layer = []
 
     class SameFileImportError(Exception):
         def __init__(self):
@@ -190,7 +189,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                                     coll_obj
                                 )
                                 bpy.data.collections["Layer0"].objects.link(coll_obj)
-                            self.duplicate_layer.append(coll_2.name)
 
                         else:
                             added_l_exclude = context.scene.l_exclude.add()
@@ -199,14 +197,13 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                             col_layers.children.link(coll_2)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
-            for coll_name in self.duplicate_layer:
-                coll = bpy.data.collections.get(coll_name)
-                bpy.data.collections.remove(coll)
-            self.duplicate_layer.clear()
+            for coll in data_to.collections:
+                if "Layer0." in coll.name:
+                    bpy.data.collections.remove(coll)
 
+            # View Layer에 없는 Mesh Object들의 select_set(True) 에러가 나고 있었음
+            # 이런 오브젝트들은 선택되지 않아도 무방하여 해당 작업을 제거함
             for obj in data_to.objects:
-                # View Layer에 없는 Mesh Object들의 select_set(True) 에러가 나고 있었음
-                # 이런 오브젝트들은 선택되지 않아도 무방하여 해당 작업을 제거함
                 if obj.type != "MESH":
                     data_to.objects.remove(obj)
 
