@@ -29,7 +29,7 @@ def init_setting(dummy):
             init_screen.show_gizmo_object_translate = True
             init_screen.show_gizmo_object_rotate = True
             init_screen.show_gizmo_object_scale = True
-            init_screen.show_gizmo_navigate = False
+            init_screen.show_gizmo_navigate = True
             init_screen.show_gizmo_tool = True
             init_screen.show_gizmo_context = True
 
