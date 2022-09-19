@@ -313,8 +313,9 @@ class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
 
 
 class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
-
-    temp_scenes = []
+    def __init__(self):
+        super().__init__()
+        self.temp_scenes = []
 
     def prepare_render(self):
         render.clear_compositor()
@@ -344,9 +345,8 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
             materials_handler.set_material_parameters_by_type(mat)
 
         for scene in self.temp_scenes:
+            print(scene.name)
             bpy.data.scenes.remove(scene)
-
-        self.temp_scenes.clear()
 
         # set initial_scene
         bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
@@ -404,6 +404,7 @@ class Acon3dRenderShadowOperator(Acon3dRenderTempSceneFileOperator):
     bl_translation_context = "*"
 
     def __init__(self):
+        super().__init__()
         scene = bpy.context.scene
         self.filepath = f"{scene.name}_shadow{self.filename_ext}"
 
@@ -430,6 +431,7 @@ class Acon3dRenderLineOperator(Acon3dRenderTempSceneFileOperator):
     bl_translation_context = "*"
 
     def __init__(self):
+        super().__init__()
         scene = bpy.context.scene
         self.filepath = f"{scene.name}_line{self.filename_ext}"
 
