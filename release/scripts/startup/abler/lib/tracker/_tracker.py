@@ -23,6 +23,7 @@ class EventKind(enum.Enum):
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
     import_blend_fail = "Import *.blend Fail"
+    import_same_blend_fail = "Import Same *.blend Fail"
     import_fbx = "Import FBX"
     import_fbx_fail = "Import FBX Fail"
     toggle_toolbar = "Toggle Toolbar"
@@ -181,6 +182,9 @@ class Tracker(metaclass=ABCMeta):
 
     def import_blend_fail(self):
         self._track(EventKind.import_blend_fail.value)
+
+    def import_same_blend_fail(self):
+        self._track(EventKind.import_same_blend_fail)
 
     def import_fbx(self):
         self._track(EventKind.import_fbx.value)
