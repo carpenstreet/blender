@@ -345,7 +345,6 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
             materials_handler.set_material_parameters_by_type(mat)
 
         for scene in self.temp_scenes:
-            print(scene.name)
             bpy.data.scenes.remove(scene)
 
         # set initial_scene
