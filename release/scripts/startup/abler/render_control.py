@@ -91,7 +91,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
         self.rendering = True
 
     def post_render(self, dummy, dum):
-        if not self.render_queue:
+        if self.render_queue:
             self.render_queue.pop(0)
             self.rendering = False
 
