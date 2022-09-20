@@ -355,8 +355,9 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
 
 
 class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
-
-    temp_scenes = []
+    def __init__(self):
+        super().__init__()
+        self.temp_scenes = []
 
     def prepare_render(self):
         render.clear_compositor()
@@ -387,8 +388,6 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
 
         for scene in self.temp_scenes:
             bpy.data.scenes.remove(scene)
-
-        self.temp_scenes.clear()
 
         # set initial_scene
         bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
@@ -457,9 +456,11 @@ class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
     bl_label = "Snip Render"
     bl_translation_context = "*"
 
-    temp_layer = None
-    temp_col = None
-    temp_image = None
+    def __init__(self):
+        super().__init__()
+        self.temp_layer = None
+        self.temp_col = None
+        self.temp_image = None
 
     @classmethod
     def poll(self, context):
