@@ -81,6 +81,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     )
 
     def __init__(self):
+        super().__init__()
         self.write_still = True
         self.render_queue = []
         self.rendering = False
@@ -147,7 +148,8 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
     # Render Type : Quick, Full, Line, Shadow
 
     def __init__(self):
-        super().__init__()
+        Acon3dRenderOperator.__init__(self)
+        ExportHelper.__init__(self)
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
@@ -220,7 +222,8 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
     # Render Type : All Scene, Snip
 
     def __init__(self):
-        super().__init__()
+        Acon3dRenderOperator.__init__(self)
+        ImportHelper.__init__(self)
         # Get basename without file extension
         self.filepath = bpy.context.blend_data.filepath
 
