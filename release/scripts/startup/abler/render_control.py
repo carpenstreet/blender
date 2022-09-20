@@ -79,13 +79,15 @@ class Acon3dRenderOperator(bpy.types.Operator):
     show_on_completion: bpy.props.BoolProperty(
         name="Show in folder on completion", default=True
     )
-    write_still = True
-    render_queue = []
-    rendering = False
-    render_canceled = False
-    timer_event = None
-    initial_scene = None
-    initial_display_type = None
+
+    def __init__(self):
+        self.write_still = True
+        self.render_queue = []
+        self.rendering = False
+        self.render_canceled = False
+        self.timer_event = None
+        self.initial_scene = None
+        self.initial_display_type = None
 
     def pre_render(self, dummy, dum):
         self.rendering = True
@@ -145,6 +147,7 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
     # Render Type : Quick, Full, Line, Shadow
 
     def __init__(self):
+        super().__init__()
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
@@ -217,6 +220,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
     # Render Type : All Scene, Snip
 
     def __init__(self):
+        super().__init__()
         # Get basename without file extension
         self.filepath = bpy.context.blend_data.filepath
 
