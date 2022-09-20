@@ -1859,7 +1859,7 @@ void VIEW3D_OT_move(wmOperatorType *ot)
 
   /* identifiers */
   ot->name = "Pan View";
-  ot->description = "Move the view";
+  ot->description = "Click and drag to move the view";
   ot->idname = "VIEW3D_OT_move";
 
   /* api callbacks */
@@ -2418,7 +2418,7 @@ void VIEW3D_OT_zoom(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Zoom View";
-  ot->description = "Zoom in/out in the view";
+  ot->description = "Click and drag to zoom in/out in the view";
   ot->idname = "VIEW3D_OT_zoom";
 
   /* api callbacks */
