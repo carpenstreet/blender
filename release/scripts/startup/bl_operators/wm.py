@@ -3127,7 +3127,19 @@ class WM_MT_splash(Menu):
                     but.link = ""
                     but.link_name = ""
             layout.separator()
-        layout.label(text=abler_version())
+
+        split = layout.split()
+        col1 = split.column()
+        col1.label(text=abler_version())
+
+        col2 = split.column()
+        col2.label(text="config.ini 정보 들어갈 예정")
+
+        from abler.lib.version import get_local_version
+        config_ver = get_local_version()
+        col2.label(text=config_ver)
+
+        # layout.label(text=abler_version())
         layout.separator()
 
 
