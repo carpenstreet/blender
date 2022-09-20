@@ -6,7 +6,6 @@ import bpy
 import configparser
 from distutils.version import StrictVersion
 
-
 # GitHub Repo의 URL 세팅
 url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
 
@@ -33,11 +32,14 @@ def get_launcher():
 
 def get_local_version():
     config = configparser.ConfigParser()
-    config.read(os.path.join(set_updater(), "config.ini"))
-    abler_ver = config["main"]["installed"]
+    if os.path.isfile(os.path.join(set_updater(), "config.ini")):
+        config.read(os.path.join(set_updater(), "config.ini"))
+        abler_ver = config["main"]["installed"]
+    else:
+        abler_ver = "0.0.0"
 
     # config.ini에 installed 정보가 없을 때 버전 처리
-    if abler_ver is (None or ""):
+    if abler_ver == (None or ""):
         abler_ver = "0.0.0"
 
     return abler_ver

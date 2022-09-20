@@ -3128,18 +3128,15 @@ class WM_MT_splash(Menu):
                     but.link_name = ""
             layout.separator()
 
-        split = layout.split()
-        col1 = split.column()
-        col1.label(text=abler_version())
-
-        col2 = split.column()
-        col2.label(text="config.ini 정보 들어갈 예정")
-
         from abler.lib.version import get_local_version
         config_ver = get_local_version()
-        col2.label(text=config_ver)
 
-        # layout.label(text=abler_version())
+        split = layout.split()
+        col1 = split.column()
+        # col1.label(text=abler_version()) # 원래 쓰던 코드 아카이빙을 위해서 주석으로 만듬
+        # config.ini가 없을 경우 0.0.0으로 표시
+        col1.label(text=f"release/v{config_ver}")  # 현재 사용중인 코드
+
         layout.separator()
 
 
