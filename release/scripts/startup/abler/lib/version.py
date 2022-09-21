@@ -5,6 +5,7 @@ import requests
 import bpy
 import configparser
 from distutils.version import StrictVersion
+from typing import Optional
 
 # GitHub Repo의 URL 세팅
 url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
@@ -45,7 +46,7 @@ def get_local_version():
     return abler_ver
 
 
-def get_server_version(url):
+def get_server_version(url) -> Optional[str]:
     # Pre-Release 고려하지 않고 url 정보 받아오기
     req = None
     is_release = None
@@ -54,7 +55,7 @@ def get_server_version(url):
     try:
         req = requests.get(url, timeout=5).json()
     except Exception as e:
-        pass
+        return None
 
     if ("message" in req.keys()) and (req["message"] == "Not Found"):
         print("Release Not Found.")
@@ -74,8 +75,12 @@ def get_server_version(url):
 
 def show_update_alert():
     # 에이블러 버전만 비교하기
+    server_ver_str = get_server_version(url)
+    if not server_ver_str:
+        return False
+
     local_ver = StrictVersion(get_local_version())
-    server_ver = StrictVersion(get_server_version(url))
+    server_ver = StrictVersion(server_ver_str)
 
     if (len(sys.argv) > 1) and (local_ver < server_ver):
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
