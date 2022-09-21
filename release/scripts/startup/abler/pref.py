@@ -8,7 +8,7 @@ from bpy.app.handlers import persistent
 from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
-from .lib import version
+from .lib.version import update_file_version
 
 
 def init_setting(dummy):
@@ -46,9 +46,14 @@ def init_setting(dummy):
     prefs_input.use_zoom_to_mouse = True
 
 
+def hide_header(dummy):
+    bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
+
+
 @persistent
 def load_handler(dummy):
     tracker.turn_off()
+    hide_header(None)
     try:
         init_setting(None)
         cameras.make_sure_camera_exists()
@@ -71,7 +76,6 @@ def load_handler(dummy):
         post_open.update_layers()
         post_open.hide_adjust_last_operation_panel()
         post_open.add_dummy_background_image()
-        version.show_update_alert()
     finally:
         tracker.turn_on()
 
@@ -87,6 +91,7 @@ def save_pre_handler(dummy):
     override_ACON_prop.toggle_toon_face = False
     materials_handler.toggle_toon_edge(None, override)
     materials_handler.toggle_toon_face(None, override)
+    update_file_version()
 
 
 @persistent

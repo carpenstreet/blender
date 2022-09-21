@@ -790,3 +790,111 @@ void WM_OT_splash_tutorial_close(wmOperatorType *ot)
   ot->invoke = wm_tutorial_close_invoke;
   ot->poll = WM_operator_winactive;
 }
+
+/*
+ * 공용 경고 팝업
+ */
+
+static uiBlock *splash_modal_block = NULL;
+static uiBlock *wm_block_create_splash_modal(bContext *C, ARegion *region, void *UNUSED(arg))
+{
+  const uiStyle *style = UI_style_get_dpi();
+
+  uiBlock *block = UI_block_begin(C, region, "splash", UI_EMBOSS);
+  splash_modal_block = block;
+
+  /* note on UI_BLOCK_NO_WIN_CLIP, the window size is not always synchronized
+   * with the OS when the splash shows, window clipping in this case gives
+   * ugly results and clipping the splash isn't useful anyway, just disable it T32938. */
+  UI_block_flag_enable(block, UI_BLOCK_LOOP | UI_BLOCK_KEEP_OPEN | UI_BLOCK_NO_WIN_CLIP);
+  UI_block_theme_style_set(block, UI_BLOCK_THEME_STYLE_POPUP);
+
+  const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
+  int splash_width = text_points_max * 45 * U.dpi_fac;
+  CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
+  splash_width *= 2;
+
+  const int layout_margin_x = U.dpi_fac * 26;
+  uiLayout *layout = UI_block_layout(block,
+                                     UI_LAYOUT_VERTICAL,
+                                     UI_LAYOUT_PANEL,
+                                     layout_margin_x,
+                                     0,
+                                     splash_width - (layout_margin_x * 2),
+                                     U.dpi_fac * 110,
+                                     0,
+                                     style);
+
+  MenuType *mt;
+  char userpref[FILE_MAX];
+  const char *const cfgdir = BKE_appdir_folder_id(BLENDER_USER_CONFIG, NULL);
+
+  if (cfgdir) {
+    BLI_path_join(userpref, sizeof(userpref), cfgdir, BLENDER_USERPREF_FILE, NULL);
+  }
+
+  /* Draw setup screen if no preferences have been saved yet. */
+  if (!BLI_exists(userpref)) {
+    // call WM_OT_save_userpref to automatically save the default setting
+    WM_operator_name_call(C, "WM_OT_save_userpref", WM_OP_EXEC_DEFAULT, NULL);
+    // mt = WM_menutype_find("WM_MT_splash_quick_setup", true);
+    mt = WM_menutype_find("WM_MT_splash_modal", true);
+
+    /* The UI_BLOCK_QUICK_SETUP flag prevents the button text from being left-aligned,
+       as it is for all menus due to the UI_BLOCK_LOOP flag, see in 'ui_def_but'. */
+    // UI_block_flag_enable(block, UI_BLOCK_QUICK_SETUP);
+  }
+  else {
+    mt = WM_menutype_find("WM_MT_splash_modal", true);
+  }
+
+  if (mt) {
+    UI_menutype_draw(C, mt, layout);
+  }
+
+  UI_block_bounds_set_centered(block, 0);
+
+  return block;
+}
+
+static int wm_splash_modal_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  UI_popup_block_invoke(C, wm_block_create_splash_modal, NULL, NULL);
+
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_modal(wmOperatorType *ot)
+{
+  ot->name = "Version Warning";
+  ot->idname = "WM_OT_splash_modal";
+  ot->description = "Open Version Warning";
+
+  ot->invoke = wm_splash_modal_invoke;
+  ot->poll = WM_operator_winactive;
+}
+
+static void wm_block_close_blocking_modal(bContext *C, void *arg_block, void *UNUSED(arg))
+{
+  wmWindow *win = CTX_wm_window(C);
+  UI_popup_block_close(C, win, arg_block);
+  splash_modal_block = NULL;
+}
+
+static int wm_splash_modal_close_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+{
+  if (splash_modal_block != NULL) {
+    wm_block_close_blocking_modal(C, splash_modal_block, NULL);
+  }
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_splash_modal_close(wmOperatorType *ot)
+{
+  ot->name = "Close modal";
+  ot->idname = "WM_OT_splash_modal_close";
+  ot->description = "Close the splash_modal screen";
+
+  ot->invoke = wm_splash_modal_close_invoke;
+  ot->poll = WM_operator_winactive;
+}
