@@ -4070,7 +4070,7 @@ void VIEW3D_OT_view_axis(wmOperatorType *ot)
 
   /* identifiers */
   ot->name = "View Axis";
-  ot->description = "Use a preset viewpoint";
+  ot->description = "Show viewpoint of selected axis";
   ot->idname = "VIEW3D_OT_view_axis";
 
   /* api callbacks */

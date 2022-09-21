@@ -1107,20 +1107,22 @@ static uiTooltipData *ui_tooltip_data_from_gizmo(bContext *C, wmGizmo *gz)
         }
 
         /* Shortcut */
-        {
-          IDProperty *prop = gzop->ptr.data;
-          char buf[128];
-          if (WM_key_event_operator_string(
-                  C, gzop->type->idname, WM_OP_INVOKE_DEFAULT, prop, true, buf, ARRAY_SIZE(buf))) {
-            uiTooltipField *field = text_field_add(data,
-                                                   &(uiTooltipFormat){
-                                                       .style = UI_TIP_STYLE_NORMAL,
-                                                       .color_id = UI_TIP_LC_VALUE,
-                                                       .is_pad = true,
-                                                   });
-            field->text = BLI_sprintfN(TIP_("Shortcut: %s"), buf);
-          }
-        }
+        // 기획에 따라 Gizmo tooltip에서 shortcut 부분을 UI에서 지우기 위해 주석 처리함.
+        //        {
+        //          IDProperty *prop = gzop->ptr.data;
+        //          char buf[128];
+        //          if (WM_key_event_operator_string(
+        //                  C, gzop->type->idname, WM_OP_INVOKE_DEFAULT, prop, true, buf,
+        //                  ARRAY_SIZE(buf))) {
+        //            uiTooltipField *field = text_field_add(data,
+        //                                                   &(uiTooltipFormat){
+        //                                                       .style = UI_TIP_STYLE_NORMAL,
+        //                                                       .color_id = UI_TIP_LC_VALUE,
+        //                                                       .is_pad = true,
+        //                                                   });
+        //            field->text = BLI_sprintfN(TIP_("Shortcut: %s"), buf);
+        //          }
+        //        }
       }
     }
   }
