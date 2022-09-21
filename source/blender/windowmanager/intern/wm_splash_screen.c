@@ -812,9 +812,7 @@ static uiBlock *wm_block_create_splash_modal(bContext *C, ARegion *region, void 
   const int text_points_max = MAX2(style->widget.points, style->widgetlabel.points);
   int splash_width = text_points_max * 45 * U.dpi_fac;
   CLAMP_MAX(splash_width, CTX_wm_window(C)->sizex * 0.7f);
-  int splash_height;
   splash_width *= 2;
-  splash_height *= 2;
 
   const int layout_margin_x = U.dpi_fac * 26;
   uiLayout *layout = UI_block_layout(block,
