@@ -14,7 +14,7 @@ user_path = bpy.utils.resource_path("USER")
 low_version_warning_hidden_path = os.path.join(user_path, "lvwh")
 
 
-def set_updater():
+def set_updater() -> str:
     home = pathlib.Path.home()
     updater = None
 
@@ -25,16 +25,18 @@ def set_updater():
         )
     elif sys.platform == "darwin":
         updater = os.path.join(home, "Library/Application Support/Blender/2.96/updater")
+    else:
+        raise Exception("Unsupported platform")
 
     return updater
 
 
-def get_launcher():
+def get_launcher() -> str:
     launcher = os.path.join(set_updater(), "AblerLauncher.exe")
     return launcher
 
 
-def get_local_version():
+def get_local_version() -> str:
     config = configparser.ConfigParser()
     if os.path.isfile(os.path.join(set_updater(), "config.ini")):
         config.read(os.path.join(set_updater(), "config.ini"))
@@ -76,7 +78,7 @@ def get_server_version(url) -> Optional[str]:
     return abler_ver
 
 
-def has_server_update():
+def has_server_update() -> bool:
     # 에이블러 버전만 비교하기
     server_ver_str = get_server_version(url)
     if not server_ver_str:
@@ -107,7 +109,7 @@ class FileVersionCheckResult:
     HIGHER_FILE_VERSION = 3
 
 
-def check_file_version():
+def check_file_version() -> FileVersionCheckResult:
     local_version = get_local_version()
     if file_version := get_file_version():
         sfv = StrictVersion(file_version)
