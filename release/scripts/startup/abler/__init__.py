@@ -75,9 +75,9 @@ importedLibrary = [
     warning_modal,
 ]
 if "--background" not in sys.argv and "-b" not in sys.argv:
-    from . import credential_modal
+    from . import startup_flow
 
-    importedLibrary.append(credential_modal)
+    importedLibrary.append(startup_flow)
 
 
 def register():
