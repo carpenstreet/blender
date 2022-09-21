@@ -52,7 +52,7 @@ def get_server_version(url):
     abler_ver = None
 
     try:
-        req = requests.get(url).json()
+        req = requests.get(url, timeout=5).json()
     except Exception as e:
         pass
 
