@@ -3797,6 +3797,8 @@ void wm_operatortypes_register(void)
   WM_operatortype_append(WM_OT_splash_tutorial_2);
   WM_operatortype_append(WM_OT_splash_tutorial_3);
   WM_operatortype_append(WM_OT_splash_tutorial_close);
+  WM_operatortype_append(WM_OT_splash_modal);
+  WM_operatortype_append(WM_OT_splash_modal_close);
   WM_operatortype_append(WM_OT_search_menu);
   WM_operatortype_append(WM_OT_search_operator);
   WM_operatortype_append(WM_OT_call_menu);
