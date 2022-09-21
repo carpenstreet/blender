@@ -350,9 +350,7 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
 
         self.temp_scenes.clear()
 
-        # set initial_scene
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-
+        super().on_render_finish(context)
         return {"FINISHED"}
 
 
@@ -392,9 +390,7 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
 
         self.temp_scenes.clear()
 
-        # set initial_scene
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-
+        super().on_render_finish(context)
         return {"FINISHED"}
 
 
