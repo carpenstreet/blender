@@ -76,7 +76,7 @@ def get_server_version(url) -> Optional[str]:
     return abler_ver
 
 
-def show_update_alert():
+def has_server_update():
     # 에이블러 버전만 비교하기
     server_ver_str = get_server_version(url)
     if not server_ver_str:
@@ -85,8 +85,9 @@ def show_update_alert():
     local_ver = StrictVersion(get_local_version())
     server_ver = StrictVersion(server_ver_str)
 
-    if (len(sys.argv) > 1) and (local_ver < server_ver):
-        bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
+    if local_ver < server_ver:
+        return True
+
 
 def get_file_version() -> Optional[str]:
     """

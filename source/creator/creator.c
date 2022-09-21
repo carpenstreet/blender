@@ -552,9 +552,10 @@ int main(int argc,
     WM_exit(C);
   }
   else {
-    if (!G.file_loaded) {
+    // NOTE: 커맨드라인 인자 혹은 더블클릭을 통해 파일을 열 때에도 스플래시 흐름을 타도록 주석 처리
+    // if (!G.file_loaded) {
       WM_init_splash(C);
-    }
+    // }
     WM_main(C);
   }
 #endif /* WITH_PYTHON_MODULE */

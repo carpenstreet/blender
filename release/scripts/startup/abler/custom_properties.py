@@ -19,7 +19,7 @@
 
 import bpy
 from math import radians
-from .lib import scenes, cameras, shadow, objects, bloom
+from .lib import scenes, cameras, shadow, objects, bloom, version
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
 
@@ -40,6 +40,13 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         description="Change scene",
         items=scenes.add_scene_items,
         update=scenes.load_scene,
+    )
+
+    hide_low_version_warning: bpy.props.BoolProperty(
+        name="Hide Low Version Warning",
+        description="Don’t show this message again.",
+        default=False,
+        update=version.remember_low_version_warning_visibility,
     )
 
 

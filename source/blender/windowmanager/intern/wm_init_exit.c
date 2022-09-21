@@ -385,7 +385,9 @@ void WM_init_splash(bContext *C)
 
     if (wm->windows.first) {
       CTX_wm_window_set(C, wm->windows.first);
-      WM_operator_name_call(C, "WM_OT_splash", WM_OP_INVOKE_DEFAULT, NULL);
+      // 스플래시로 시작하는 대신 자체 시작 과정을 거치도록 수정됨
+      // WM_operator_name_call(C, "WM_OT_splash", WM_OP_INVOKE_DEFAULT, NULL);
+      WM_operator_name_call(C, "acon3d.startup_flow", WM_OP_INVOKE_DEFAULT, NULL);
       CTX_wm_window_set(C, prevwin);
     }
   }
