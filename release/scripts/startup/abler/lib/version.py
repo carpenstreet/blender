@@ -11,7 +11,7 @@ from enum import Enum
 # GitHub Repo의 URL 세팅
 url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
 user_path = bpy.utils.resource_path("USER")
-low_version_warning_visibility_path = os.path.join(user_path, "lvwh")
+low_version_warning_hidden_path = os.path.join(user_path, "lvwh")
 
 
 def set_updater():
@@ -134,18 +134,18 @@ def update_file_version():
 
 def read_low_version_warning_hidden() -> bool:
     try:
-        with open(low_version_warning_visibility_path, "r") as f:
+        with open(low_version_warning_hidden_path, "r") as f:
             return f.read().strip() == get_local_version()
     except:
         return False
 
 
-def remember_low_version_warning_visibility(self, context):
+def remember_low_version_warning_hidden(self, context):
     try:
         if context.window_manager.ACON_prop.hide_low_version_warning:
-            with open(low_version_warning_visibility_path, "w") as f:
+            with open(low_version_warning_hidden_path, "w") as f:
                 f.write(get_local_version())
         else:
-            os.remove(low_version_warning_visibility_path)
+            os.remove(low_version_warning_hidden_path)
     except:
         pass
