@@ -50,6 +50,7 @@ from . import render_control
 from . import import_external_files
 from . import pref
 from . import operators
+from . import warning_modal
 from .lib.tracker import tracker
 
 # =========================================================================
@@ -71,11 +72,12 @@ importedLibrary = [
     import_external_files,
     pref,
     operators,
+    warning_modal,
 ]
 if "--background" not in sys.argv and "-b" not in sys.argv:
-    from . import credential_modal
+    from . import startup_flow
 
-    importedLibrary.append(credential_modal)
+    importedLibrary.append(startup_flow)
 
 
 def register():

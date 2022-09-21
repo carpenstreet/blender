@@ -19,7 +19,7 @@
 
 import bpy
 from math import radians
-from .lib import scenes, cameras, shadow, objects, bloom
+from .lib import scenes, cameras, shadow, objects, bloom, version
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
 
@@ -40,6 +40,13 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         description="Change scene",
         items=scenes.add_scene_items,
         update=scenes.load_scene,
+    )
+
+    hide_low_version_warning: bpy.props.BoolProperty(
+        name="Hide Low Version Warning",
+        description="Don’t show this message again.",
+        default=False,
+        update=version.remember_low_version_warning_hidden,
     )
 
 
@@ -507,6 +514,21 @@ class AconMaterialProperty(bpy.types.PropertyGroup):
     )
 
 
+class AconMetadataProperty(bpy.types.PropertyGroup):
+    @classmethod
+    def register(cls):
+        # TODO: 만약 text 안 쓰고 다른 걸 쓸거라면 fake user 체크 필요
+        bpy.types.Text.ACON_metadata = bpy.props.PointerProperty(
+            type=AconMetadataProperty
+        )
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Text.ACON_metadata
+
+    file_version: bpy.props.StringProperty(name="File Version")
+
+
 class AconMeshProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -625,6 +647,7 @@ classes = (
     AconObjectGroupProperty,
     AconObjectStateProperty,
     AconObjectProperty,
+    AconMetadataProperty,
 )
 
 

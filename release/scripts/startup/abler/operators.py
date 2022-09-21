@@ -1,11 +1,9 @@
 import os
 import bpy
-import subprocess
 
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
-from .lib.version import get_launcher
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -57,65 +55,9 @@ class Acon3dLogoutOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dUpdateAlertOperator(bpy.types.Operator):
-    bl_idname = "acon3d.update_alert"
-    bl_label = ""
-    bl_translation_context = "*"
-
-    title = "Latest version found for ABLER. Do you want to update?"
-    message_1 = (
-        "When using an older version of ABLER, some features may not work properly."
-    )
-    message_2 = "If you click the OK button, you can close the pop-up and use ABLER with the current version."
-
-    # TODO: Alert 팝업이 아닌 곳을 클릭했을 때, 팝업 꺼지지 않게 하기
-    def execute(self, context):
-        return {"FINISHED"}
-
-    def invoke(self, context, event):
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self, width=500)
-
-    def draw(self, context):
-        layout = self.layout
-        row = layout.row()
-        row.scale_y = 1.5
-        row.label(text=self.title)
-
-        row = layout.row()
-        row.scale_y = 1.5
-        row.label(text=self.message_1)
-
-        row = layout.row()
-        row.scale_y = 1.5
-        row.label(text=self.message_2)
-
-        row = layout.row()
-        row.scale_y = 1.0
-        anchor = row.operator("acon3d.update_abler", text="Update ABLER")
-
-
-class Acon3dUpdateAblerOperator(bpy.types.Operator):
-    bl_idname = "acon3d.update_abler"
-    bl_label = ""
-    bl_description = "Update ABLER with ABLER Launcher"
-    bl_translation_context = "*"
-
-    def execute(self, context):
-        launcher = get_launcher()
-        bpy.ops.wm.quit_blender()
-
-        # 관리자 권한이 필요한 프로그램을 실행하는 옵션
-        subprocess.call(launcher, shell=True)
-
-        return {"FINISHED"}
-
-
 classes = (
     Acon3dToonStyleOperator,
     Acon3dLogoutOperator,
-    Acon3dUpdateAlertOperator,
-    Acon3dUpdateAblerOperator,
 )
 
 
