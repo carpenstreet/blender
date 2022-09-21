@@ -187,28 +187,26 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
 
             elif self.rendering is False:
 
-                qitem = self.render_queue[0]
-
-                # Update filename
-                if qitem.name != self.basename:
-                    qitem.name = self.basename
-
-                base_filepath = os.path.join(self.dirname, qitem.name)
-                file_format = qitem.render.image_settings.file_format
+                base_filepath = os.path.join(self.dirname, self.basename)
+                file_format = self.filename_ext
                 numbered_filepath = base_filepath
                 number = 2
 
-                while os.path.isfile(f"{numbered_filepath}.{file_format}"):
+                while os.path.isfile(f"{numbered_filepath}{file_format}"):
                     numbered_filepath = f"{base_filepath} ({number})"
                     number += 1
 
-                qitem.render.filepath = numbered_filepath
-                self.filepath = f"{numbered_filepath}{self.filename_ext}"
-                context.window_manager.ACON_prop.scene = qitem.name
+                context.scene.render.filepath = numbered_filepath
+                self.filepath = f"{numbered_filepath}{file_format}"
+
+                for obj in context.selected_objects:
+                    obj.select_set(False)
 
                 self.prepare_render()
 
                 bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
+
+                # bpy.data.scenes.remove(qitem, do_unlink=True)
 
         return {"PASS_THROUGH"}
 
