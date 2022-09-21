@@ -507,6 +507,21 @@ class AconMaterialProperty(bpy.types.PropertyGroup):
     )
 
 
+class AconMetadataProperty(bpy.types.PropertyGroup):
+    @classmethod
+    def register(cls):
+        # TODO: 만약 text 안 쓰고 다른 걸 쓸거라면 fake user 체크 필요
+        bpy.types.Text.ACON_metadata = bpy.props.PointerProperty(
+            type=AconMetadataProperty
+        )
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Text.ACON_metadata
+
+    file_version: bpy.props.StringProperty(name="File Version")
+
+
 class AconMeshProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -625,6 +640,7 @@ classes = (
     AconObjectGroupProperty,
     AconObjectStateProperty,
     AconObjectProperty,
+    AconMetadataProperty,
 )
 
 

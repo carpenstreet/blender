@@ -8,7 +8,7 @@ from bpy.app.handlers import persistent
 from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
-from .lib import version
+from .lib.version import update_file_version
 
 
 def init_setting(dummy):
@@ -87,6 +87,7 @@ def save_pre_handler(dummy):
     override_ACON_prop.toggle_toon_face = False
     materials_handler.toggle_toon_edge(None, override)
     materials_handler.toggle_toon_face(None, override)
+    update_file_version()
 
 
 @persistent
