@@ -321,6 +321,10 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
     def prepare_queue(self, context):
 
         scene = context.scene.copy()
+
+        # 현재 씬을 복사한 씬으로 적용
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
+
         self.render_queue.append(scene)
         self.temp_scenes.append(scene)
 
