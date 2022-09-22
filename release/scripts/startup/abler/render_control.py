@@ -589,9 +589,12 @@ class Acon3dRenderPanel(bpy.types.Panel):
             row.operator("acon3d.render_all", text="Render All Scenes")
             row.operator("acon3d.render_snip", text="Snip Render")
 
-            row = layout.row()
-            prop = context.scene.ACON_prop
-            row.prop(prop, "background_color", text="Background Color")
+            # 변경한 뷰포트 색이 같이 렌더되는 기능과 함께 들어가기로 논의되었습니다.
+            # 그 전까지 주석처리 해두겠습니다.
+            # 해당 이슈 링크: https://www.notion.so/acon3d/Issue-37_-af9ca441b3c44e858097418fb6dc811c
+            # row = layout.row()
+            # prop = context.scene.ACON_prop
+            # row.prop(prop, "background_color", text="Background Color")
 
 
 classes = (
