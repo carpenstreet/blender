@@ -106,7 +106,7 @@ def start_check_file_version():
     elif is_first_run:
         start_check_server_version()
     else:
-        open_credential_modal()
+        start_authentication()
 
 
 def start_check_server_version():
@@ -115,7 +115,7 @@ def start_check_server_version():
     if has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
-        open_credential_modal()
+        start_authentication()
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -438,7 +438,7 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 
 @persistent
-def open_credential_modal():
+def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
@@ -509,7 +509,7 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
         main.label(text="")
 
     def after_close(self, context, event):
-        open_credential_modal()
+        start_authentication()
 
 
 class Acon3dUpdateAblerOperator(bpy.types.Operator):
