@@ -24,7 +24,6 @@ import platform
 import sys
 import textwrap
 import webbrowser
-import psutil
 from json import JSONDecodeError
 
 import bpy
