@@ -58,6 +58,20 @@ def open_directory(path):
         print("Linux")
 
 
+def check_file_numbering(self, context):
+    base_filepath = os.path.join(self.dirname, self.basename)
+    file_format = self.filename_ext
+    numbered_filepath = base_filepath
+    number = 2
+
+    while os.path.isfile(f"{numbered_filepath}{file_format}"):
+        numbered_filepath = f"{base_filepath} ({number})"
+        number += 1
+
+    context.scene.render.filepath = numbered_filepath
+    self.filepath = f"{numbered_filepath}{file_format}"
+
+
 class Acon3dCameraViewOperator(bpy.types.Operator):
     """Fit render region to viewport"""
 
@@ -187,24 +201,7 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
 
             elif self.rendering is False:
 
-                qitem = self.render_queue[0]
-
-                # Update filename
-                if qitem.name != self.basename:
-                    qitem.name = self.basename
-
-                base_filepath = os.path.join(self.dirname, qitem.name)
-                file_format = qitem.render.image_settings.file_format
-                numbered_filepath = base_filepath
-                number = 2
-
-                while os.path.isfile(f"{numbered_filepath}.{file_format}"):
-                    numbered_filepath = f"{base_filepath} ({number})"
-                    number += 1
-
-                qitem.render.filepath = numbered_filepath
-                self.filepath = f"{numbered_filepath}{self.filename_ext}"
-                context.window_manager.ACON_prop.scene = qitem.name
+                check_file_numbering(self, context)
 
                 self.prepare_render()
 
@@ -323,6 +320,10 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
     def prepare_queue(self, context):
 
         scene = context.scene.copy()
+
+        # 현재 씬을 복사한 씬으로 적용
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
+
         self.render_queue.append(scene)
         self.temp_scenes.append(scene)
 
@@ -348,9 +349,7 @@ class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
 
         self.temp_scenes.clear()
 
-        # set initial_scene
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-
+        super().on_render_finish(context)
         return {"FINISHED"}
 
 
@@ -390,9 +389,7 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
 
         self.temp_scenes.clear()
 
-        # set initial_scene
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-
+        super().on_render_finish(context)
         return {"FINISHED"}
 
 
@@ -544,17 +541,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
     def prepare_queue(self, context):
         # File name duplicate check
 
-        base_filepath = os.path.join(self.dirname, self.basename)
-        file_format = self.filename_ext
-        numbered_filepath = base_filepath
-        number = 2
-
-        while os.path.isfile(f"{numbered_filepath}{file_format}"):
-            numbered_filepath = f"{base_filepath} ({number})"
-            number += 1
-
-        context.scene.render.filepath = numbered_filepath
-        self.filepath = f"{numbered_filepath}{file_format}"
+        check_file_numbering(self, context)
 
         for obj in context.selected_objects:
             obj.select_set(False)
