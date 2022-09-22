@@ -24,6 +24,7 @@ import platform
 import sys
 import textwrap
 import webbrowser
+import psutil
 from json import JSONDecodeError
 
 import bpy
@@ -519,10 +520,10 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
 
     def execute(self, context):
         launcher = get_launcher()
-        bpy.ops.wm.quit_blender()
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
-        subprocess.call(launcher, shell=True)
+        subprocess.Popen(launcher, shell=True)
+        bpy.ops.wm.quit_blender()
 
         return {"FINISHED"}
 
