@@ -566,7 +566,6 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
         )
         row.label(text="Don’t show this message again.")
 
-        col.operator("acon3d.update_abler", text="Update ABLER")
         col.operator("acon3d.close_blocking_modal", text="Close")
         row.label(text="")
 
