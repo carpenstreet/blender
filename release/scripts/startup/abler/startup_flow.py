@@ -105,6 +105,8 @@ def start_check_file_version():
         bpy.ops.acon3d.low_file_version_warning("INVOKE_DEFAULT")
     elif is_first_run:
         start_check_server_version()
+    else:
+        start_authentication()
 
 
 def start_check_server_version():
@@ -113,7 +115,7 @@ def start_check_server_version():
     if has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
-        open_credential_modal()
+        start_authentication()
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -436,7 +438,7 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 
 @persistent
-def open_credential_modal():
+def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
@@ -472,12 +474,11 @@ def open_credential_modal():
     except:
         print("Failed to load cookies")
 
-    # 자동로그인 시 modal이 실행 안되고 있어서
-    # 자동로그인인 경우에도 modal 실행하도록 if문 제거
-    bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
-
     if prop.remember_username:
         prop.username = read_remembered_username()
+
+    if is_first_run:
+        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
 
 class Acon3dUpdateAlertOperator(BlockingModalOperator):
@@ -508,7 +509,7 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
         main.label(text="")
 
     def after_close(self, context, event):
-        open_credential_modal()
+        start_authentication()
 
 
 class Acon3dUpdateAblerOperator(bpy.types.Operator):
