@@ -296,18 +296,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             lambda throwaway=0, entry=self.entry: self.download(entry, dir_name=dir_)
         )
 
-    def setup_test_ui(self) -> None:
-        """Update Launcher 버튼 활성화 UI"""
-        print("111")
-        self.btn_update_launcher.hide()
-        print("222")
-        self.btn_update.show()
-        print("333")
-        self.btn_execute.hide()
-        print("444")
-        self.btn_update.setDisabled(False)
-        print("555")
-
     def setup_execute_ui(self) -> None:
         """Run ABLER 버튼 활성화 UI"""
 
@@ -324,9 +312,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def download(self, entry: dict, dir_name: str) -> None:
         """ABLER/Launcher 최신 릴리즈 다운로드"""
-
-        print("")
-        print("download 함수 들어옴")
 
         temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
 
@@ -345,10 +330,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         logger.info(f"Starting download thread for {url}{version}")
 
-        proc = count_process("blender")
-
-        if proc == 0:
-            print("실제 다운로드 하는 곳. 여기 들어오면 안됨.")
+        if count_process("blender") == 0:
             self.setup_download_ui(entry, dir_name)
 
             self.exec_dir_name = os.path.join(dir_name, "")
@@ -366,20 +348,17 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 thread.finishedCL.connect(self.done_launcher)
 
             thread.start()
+
         else:
-            self.btn_update.setDisabled(True)
-            # print(f"counter_process: {count_process('blender')}")
-            print(f"proc: {proc}")
+            if os.path.isdir(temp_name):
+                shutil.rmtree(temp_name)
+
+            # TODO: 유저 flow는 알림이 떴을 때, 배경은 흐리게 (blur) 하는 것이 좋음
             QtWidgets.QMessageBox.information(
                 self,
                 "테스트",
                 "내용",
             )
-            self.setup_test_ui()
-            if os.path.isdir(temp_name):
-                shutil.rmtree(temp_name)
-            print("DDDDDDDDDDDD")
-            return
 
     def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""
