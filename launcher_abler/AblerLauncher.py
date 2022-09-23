@@ -356,9 +356,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             # TODO: 유저 flow는 알림이 떴을 때, 배경은 흐리게 (blur) 하는 것이 좋음
             QtWidgets.QMessageBox.information(
                 self,
-                "테스트",
-                "내용",
+                "title",
+                "Currently ABLER is running.\nPlease close all ABLER before update.",
             )
+            # QtWidgets.QMessageBox.close(self, "A", "B")
 
     def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""
