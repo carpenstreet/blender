@@ -12,8 +12,8 @@ class AconImportHelper(ImportHelper):
         if not os.path.isfile(path):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
-                title="File not found",
-                message_1="File Select Error. No selected file.",
+                title="File Select Error",
+                message_1="No selected file.",
             )
             return False
         else:
