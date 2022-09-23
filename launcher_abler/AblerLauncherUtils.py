@@ -68,7 +68,7 @@ def hbytes(num) -> str:
     return "%3.1f%s" % (num, " TB")
 
 
-def count_process(proc) -> int:
+def process_count(proc) -> int:
     """현재 실행되고 있는 프로세스의 개수를 세기"""
 
     proc_list = [p.name() for p in psutil.process_iter()]

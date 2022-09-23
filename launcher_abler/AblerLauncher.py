@@ -330,7 +330,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         logger.info(f"Starting download thread for {url}{version}")
 
-        if count_process("blender") == 0:
+        if process_count("blender") == 0:
             self.setup_download_ui(entry, dir_name)
 
             self.exec_dir_name = os.path.join(dir_name, "")
@@ -358,8 +358,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self,
                 "title",
                 "Currently ABLER is running.\nPlease close all ABLER before update.",
+                QtWidgets.QMessageBox.Close,
             )
-            # QtWidgets.QMessageBox.close(self, "A", "B")
 
     def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""
