@@ -1,5 +1,6 @@
 import pathlib
 import sys
+import psutil
 from enum import Enum, auto
 
 
@@ -62,6 +63,12 @@ def hbytes(num) -> str:
             return "%3.1f%s" % (num, x)
         num /= 1024.0
     return "%3.1f%s" % (num, " TB")
+
+
+def count_process(proc) -> int:
+    proc_list = [p.name() for p in psutil.process_iter()]
+    proc_count = sum(i.startswith(proc) for i in proc_list)
+    return proc_count
 
 
 class StateUI(Enum):
