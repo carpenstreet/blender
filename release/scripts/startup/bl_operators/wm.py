@@ -3132,7 +3132,7 @@ class WM_MT_splash(Menu):
         config_ver = get_local_version()
 
         # layout.label(text=abler_version()) # 원래 쓰던 코드 아카이빙을 위해서 주석으로 만듬
-        layout.label(text=f"release/v{config_ver}")  # 현재 사용중인 코드
+        layout.label(text=f"v{config_ver}")  # 현재 사용중인 코드
 
         layout.separator()
 
