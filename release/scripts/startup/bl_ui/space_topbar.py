@@ -288,7 +288,7 @@ class TOPBAR_MT_file(Menu):
 
         layout.operator_context = 'INVOKE_AREA'
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
-        layout.operator("acon3d.file_open", text="Open", icon='FILE_FOLDER')
+        layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
         layout.menu("TOPBAR_MT_ACON3D_open_recent_files")
         layout.operator("wm.revert_mainfile")
         layout.menu("TOPBAR_MT_file_recover")
