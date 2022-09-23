@@ -535,6 +535,7 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
     def draw_modal(self, layout):
         tr = bpy.app.translations.pgettext
         file_version = get_file_version() or "< 0.2.6"
+        client_version = get_local_version()
 
         padding_size = 0.01
         content_size = 1.0 - 2 * padding_size
@@ -553,7 +554,9 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
             ).replace("$(fileVer)", file_version)
         )
         col.label(
-            text="When using an older version of ABLER, some features may not work properly."
+            text=tr(
+                "If you save in the current version ($(clientVer)), you will not be able to load this file from older version of ABLER."
+            ).replace("$(clientVer)", client_version)
         )
 
         row = col.row()
