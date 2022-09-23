@@ -22,7 +22,8 @@ if len(sys.argv) > 1:
 
 def set_url() -> str:
     """GitHub Repo의 URL 세팅"""
-    url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
+    # url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
+    url = "https://cms.abler3d.biz/abler_update_info"
 
     if pre_rel:
         url = "https://api.github.com/repos/ACON3D/blender/releases"
