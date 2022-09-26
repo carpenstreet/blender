@@ -148,10 +148,10 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
             print("Failed to unlink camera from old scene.")
 
     else:
-        cam = bpy.data.cameras.new("View Camera")
+        cam = bpy.data.cameras.new("View_Camera")
         cam.lens = 30
         cam.show_passepartout = False
-        obj = bpy.data.objects.new("View Camera", cam)
+        obj = bpy.data.objects.new("View_Camera", cam)
         obj.location = (4.7063, 7.6888, 1.9738)
         obj.rotation_euler = (radians(90), radians(0), radians(-212))
         new_scene.collection.objects.link(obj)
