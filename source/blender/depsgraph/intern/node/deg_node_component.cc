@@ -223,7 +223,9 @@ void ComponentNode::clear_operations()
     operations_map->clear();
   }
   for (OperationNode *op_node : operations) {
-    delete op_node;
+    if (op_node != nullptr){
+      delete op_node;
+    }
   }
   operations.clear();
 }

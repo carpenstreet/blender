@@ -9,18 +9,11 @@ class AconImportHelper(ImportHelper):
         :return: 파일이 아니거나 파일이 없을 경우 False를 반환, 존재하고 파일일 경우 True를 반환
         """
         path = self.filepath
-        if path.endswith("/") or path.endswith("\\") or path.endswith("//"):
+        if not os.path.isfile(path):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
-                title="File not found",
-                message_1="File Select Error. No selected file.",
-            )
-            return False
-        elif not os.path.isfile(path):
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="File not found",
-                message_1="Selected file does not exist",
+                title="File Select Error",
+                message_1="No selected file.",
             )
             return False
         else:
