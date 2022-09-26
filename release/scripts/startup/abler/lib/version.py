@@ -9,7 +9,7 @@ from typing import Optional
 from enum import Enum
 
 # GitHub Repo의 URL 세팅
-url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
+url = "https://cms.abler3d.biz/abler_update_info"
 user_path = bpy.utils.resource_path("USER")
 low_version_warning_hidden_path = os.path.join(user_path, "lvwh")
 
