@@ -66,6 +66,15 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
+import requests
+
+try:
+    request = requests.get("https://google.com", timeout=5)
+    print("Connected to the Internet")
+except (requests.ConnectionError, requests.Timeout) as exception:
+    print("No Internet connection.")
+
+
 class WorkerThread(QtCore.QThread):
     """Does all the actual work in the background, informs GUI about status"""
 
