@@ -66,27 +66,24 @@ def go_to_custom_camera(self, context) -> None:
     turn_on_camera_view()
 
 
+# ACON 카메라 유무와 관계없이 View_Camera 가 존재하는지 체크, 없으면 만듦
 def make_sure_camera_exists() -> None:
     # early out if scene camera exists
     if bpy.context.scene.camera:
         bpy.context.scene.camera.data.show_passepartout = False
         return
 
-    # get camera to set to context
-    camera_object: Optional[Object] = bpy.data.objects.get("View_Camera")
-
     # create camera if View_Camera does not exist
-    if not camera_object or camera_object.type != "CAMERA":
-        camera_data: Camera = bpy.data.cameras.new("View_Camera")
-        camera_object: Object = bpy.data.objects.new("View_Camera", camera_data)
-        camera_object.location[0] = 7.35889
-        camera_object.location[1] = -6.92579
-        camera_object.location[2] = 4.9583
-        camera_object.rotation_mode = "XYZ"
-        camera_object.rotation_euler[0] = 1.109319
-        camera_object.rotation_euler[1] = 0
-        camera_object.rotation_euler[2] = 0.814928
-        bpy.context.scene.collection.objects.link(camera_object)
+    camera_data: Camera = bpy.data.cameras.new("View_Camera")
+    camera_object: Object = bpy.data.objects.new("View_Camera", camera_data)
+    camera_object.location[0] = 7.35889
+    camera_object.location[1] = -6.92579
+    camera_object.location[2] = 4.9583
+    camera_object.rotation_mode = "XYZ"
+    camera_object.rotation_euler[0] = 1.109319
+    camera_object.rotation_euler[1] = 0
+    camera_object.rotation_euler[2] = 0.814928
+    bpy.context.scene.collection.objects.link(camera_object)
 
     camera_object.data.show_passepartout = False
 
