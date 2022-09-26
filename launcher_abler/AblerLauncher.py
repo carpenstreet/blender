@@ -356,8 +356,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             # TODO: 유저 flow는 알림이 떴을 때, 배경은 흐리게 (blur) 하는 것이 좋음
             QtWidgets.QMessageBox.information(
                 self,
-                "title",
-                "Currently ABLER is running.\nPlease close all ABLER before update.",
+                "ABLER Updater",
+                "Currently ABLER(or Blender) is running.\nPlease close all ABLER and Blender before update.",
                 QtWidgets.QMessageBox.Close,
             )
 

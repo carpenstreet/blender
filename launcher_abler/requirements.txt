@@ -13,3 +13,4 @@ QtPy==2.0.1
 requests==2.27.1
 shiboken2==5.15.2.1
 urllib3==1.26.9
+psutil==5.9.2
