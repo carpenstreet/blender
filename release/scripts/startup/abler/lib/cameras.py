@@ -66,7 +66,6 @@ def go_to_custom_camera(self, context) -> None:
     turn_on_camera_view()
 
 
-# ACON 카메라 유무와 관계없이 View_Camera 가 존재하는지 체크, 없으면 만듦
 def make_sure_camera_exists() -> None:
     # early out if scene camera exists
     if bpy.context.scene.camera:
