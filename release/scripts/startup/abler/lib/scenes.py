@@ -70,7 +70,7 @@ def refresh_look_at_me() -> None:
     # 일단 GPU와 RAM의 사용량이 많아서 뭔가 delay가 생기는 경우에 해당 크래시가 나는 것으로 보임
     # 그래서 일단 deselect를 확보된 자원들을 이용해서 사용하도록 아래와 같이 안전하게 처리함.
     try:
-        if context.selected_objects and len(context.selected_objects) >0:
+        if context.selected_objects and len(context.selected_objects) > 0:
             for obj in context.selected_objects:
                 obj.select_set(False)
     except Exception as e:
