@@ -7,7 +7,6 @@ from typing import Tuple, Optional
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import *
-from PySide2 import QtWidgets, QtCore, QtGui
 
 
 if sys.platform == "win32":
@@ -40,15 +39,12 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
-    # print(f"> url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_
     )
-    print(f"get_req_from_url 이후 확인하는 state_ui: {state_ui}")
 
     if state_ui == StateUI.error:
-        print("check state_ui")
         return state_ui, finallist
 
     if not is_release:
@@ -92,25 +88,15 @@ def get_req_from_url(
 
     try:
         req = requests.get(url).json()
-
     except Exception as e:
-        print(f"bool(req): {bool(req)}")
-        # print(e)
         # self.statusBar().showMessage(
         #     "Error reaching server - check your internet connection"
         # )
         # logger.error(e)
         # self.frm_start.show()
-        print("메세지 박스 직전")
-        # self.statusBar().showMessage(
-        #     "qwer"
-        # )
-        print("메세지 박스 직후")
+        logger.error(e)
         state_ui = StateUI.error
-        print(f"exception에서 state_ui: {state_ui}")
-        # return state_ui, finallist
 
-    print("exception 이후 실행되는 부분")
     is_release = True
 
     # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
@@ -121,19 +107,11 @@ def get_req_from_url(
         # 따라서 len(req) == 0 이고, is_release를 False로 업데이트
         is_release = False if len(req) == 0 else is_release
 
-    print("여기까지 도달하는지 확인")
     try:
         is_release = req["message"] != "Not Found"
-        print("Part A")
     except Exception as e:
         logger.debug("Release found")
-        print("Part B")
 
-    print("check_launcher 끝날때 변수 체크")
-    print(f"is_release: {is_release}")
-    print(f"req: {req}")
-    print(f"state_ui: {state_ui}")
-    print(f"launcher_installed: {launcher_installed}")
     return is_release, req, state_ui, launcher_installed
 
 

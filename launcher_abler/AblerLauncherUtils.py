@@ -77,13 +77,14 @@ def process_count(proc) -> int:
     return proc_count
 
 
-# def network_connection():
-#     try:
-#         request = requests.get(set_url(), timeout=5)
-#         return True
-#     except (requests.ConnectionError, requests.Timeout) as exception:
-#         QtWidgets.
-#         return False
+def get_network_connection() -> bool:
+    """네트워크 연결 상태를 bool 타입으로 return"""
+
+    try:
+        request = requests.get(set_url(), timeout=5)
+        return True
+    except (requests.ConnectionError, requests.Timeout) as exception:
+        return False
 
 
 class StateUI(Enum):
