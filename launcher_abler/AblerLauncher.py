@@ -330,23 +330,36 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         logger.info(f"Starting download thread for {url}{version}")
 
-        self.setup_download_ui(entry, dir_name)
+        if process_count("blender") == 0:
+            self.setup_download_ui(entry, dir_name)
 
-        self.exec_dir_name = os.path.join(dir_name, "")
-        filename = temp_name + entry["filename"]
+            self.exec_dir_name = os.path.join(dir_name, "")
+            filename = temp_name + entry["filename"]
 
-        thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
-        thread.update.connect(self.updatepb)
-        thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy)
-        thread.finishedCP.connect(self.cleanup)
+            thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
+            thread.update.connect(self.updatepb)
+            thread.finishedDL.connect(self.extraction)
+            thread.finishedEX.connect(self.finalcopy)
+            thread.finishedCP.connect(self.cleanup)
 
-        if dir_name == dir_:
-            thread.finishedCL.connect(self.done_abler)
+            if dir_name == dir_:
+                thread.finishedCL.connect(self.done_abler)
+            else:
+                thread.finishedCL.connect(self.done_launcher)
+
+            thread.start()
+
         else:
-            thread.finishedCL.connect(self.done_launcher)
+            if os.path.isdir(temp_name):
+                shutil.rmtree(temp_name)
 
-        thread.start()
+            # TODO: 유저 flow는 알림이 떴을 때, 배경은 흐리게 (blur) 하는 것이 좋음
+            QtWidgets.QMessageBox.information(
+                self,
+                "ABLER Updater",
+                "Currently ABLER(or Blender) is running.\nPlease close all ABLER and Blender before update.",
+                QtWidgets.QMessageBox.Close,
+            )
 
     def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""

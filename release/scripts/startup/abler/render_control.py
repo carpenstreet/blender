@@ -580,7 +580,7 @@ class Acon3dRenderPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("acon3d.render_quick", text="Quick Render", text_ctxt="*")
 
-        if any(obj.type == "CAMERA" for obj in bpy.data.objects):
+        if bpy.context.scene.camera:
             row.operator("acon3d.render_full", text="Full Render")
             row = layout.row()
             row.operator("acon3d.render_line", text="Line Render")
