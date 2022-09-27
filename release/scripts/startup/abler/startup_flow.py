@@ -252,6 +252,8 @@ class Acon3dModalOperator(BlockingModalOperator):
             "ESC",
             "RET",
         )
+        if event.type == "WINDOW_DEACTIVATE":
+            return False
 
         if (
             userInfo
