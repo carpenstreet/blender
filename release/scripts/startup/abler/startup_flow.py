@@ -110,9 +110,7 @@ def start_check_file_version():
 
 
 def start_check_server_version():
-    if not is_first_run:
-        return
-    if has_server_update():
+    if is_first_run and has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
         start_authentication()
