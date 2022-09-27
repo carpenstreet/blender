@@ -1,6 +1,7 @@
 import pathlib
 import sys
 import psutil
+import requests
 from enum import Enum, auto
 
 
@@ -74,6 +75,15 @@ def process_count(proc) -> int:
     proc_list = [p.name() for p in psutil.process_iter()]
     proc_count = sum(i.startswith(proc) for i in proc_list)
     return proc_count
+
+
+# def network_connection():
+#     try:
+#         request = requests.get(set_url(), timeout=5)
+#         return True
+#     except (requests.ConnectionError, requests.Timeout) as exception:
+#         QtWidgets.
+#         return False
 
 
 class StateUI(Enum):

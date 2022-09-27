@@ -7,6 +7,7 @@ from typing import Tuple, Optional
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import *
+from PySide2 import QtWidgets, QtCore, QtGui
 
 
 if sys.platform == "win32":
@@ -39,13 +40,14 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
-    print(f"> url : {url}")
+    # print(f"> url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_
     )
 
     if state_ui == StateUI.error:
+        print("check state_ui")
         return state_ui, finallist
 
     if not is_release:
@@ -89,14 +91,16 @@ def get_req_from_url(
 
     try:
         req = requests.get(url).json()
+        print(bool(req))
     except Exception as e:
+        print(e)
         # self.statusBar().showMessage(
         #     "Error reaching server - check your internet connection"
         # )
         # logger.error(e)
         # self.frm_start.show()
-        logger.error(e)
         state_ui = StateUI.error
+        print(state_ui)
 
     is_release = True
 

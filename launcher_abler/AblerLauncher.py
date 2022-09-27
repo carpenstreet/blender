@@ -29,6 +29,7 @@ import sys
 import urllib.parse
 import urllib.request
 import time
+import requests
 from distutils.dir_util import copy_tree
 from AblerLauncherUtils import *
 from enum import Enum
@@ -66,13 +67,12 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-import requests
 
-try:
-    request = requests.get("https://google.com", timeout=5)
-    print("Connected to the Internet")
-except (requests.ConnectionError, requests.Timeout) as exception:
-    print("No Internet connection.")
+# try:
+#     request = requests.get(set_url(), timeout=5)
+#     print("Connected to the Internet")
+# except (requests.ConnectionError, requests.Timeout) as exception:
+#     print("No Internet connection.")
 
 
 class WorkerThread(QtCore.QThread):
@@ -161,13 +161,28 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.setup_config()
         self.setup_init_ui()
 
+        # if network_connection():
+        #     print("network connection")
+        # else:
+        #     QtWidgets.QMessageBox.information(
+        #         self,
+        #         "Title",
+        #         "Contents",
+        #     )
+        #     return
+
         try:
             import UpdateLauncher
             import UpdateAbler
 
+            # request = requests.get(set_url(), timeout=5)
+
+
             state_ui, finallist = UpdateLauncher.check_launcher(
                 dir_, self.launcher_installed
             )
+            print("aaaa")
+            print(state_ui)
 
             if finallist:
                 self.entry = finallist[0]
@@ -175,6 +190,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
             # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
             state_ui = None if state_ui == StateUI.empty_repo else state_ui
+            print(state_ui)
 
             if not state_ui:
                 state_ui, finallist = UpdateAbler.check_abler(
