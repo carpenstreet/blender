@@ -145,6 +145,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.launcher_installed = ""
         self.lastcheck = ""
         self.entry = {}
+        self.network_check = get_network_connection()
         global dir_
         global launcherdir_
 
@@ -156,7 +157,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             import UpdateLauncher
             import UpdateAbler
 
-            if get_network_connection():
+            if self.network_check:
                 state_ui, finallist = UpdateLauncher.check_launcher(
                     dir_, self.launcher_installed
                 )
@@ -307,7 +308,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.show()
 
         if sys.platform == "win32":
-            if get_network_connection():
+            if self.network_check:
                 self.btn_execute.clicked.connect(self.exec_windows)
             else:
                 self.btn_execute.clicked.connect(self.exec_no_network)
