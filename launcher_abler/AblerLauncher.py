@@ -176,37 +176,62 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             import UpdateAbler
 
             # request = requests.get(set_url(), timeout=5)
+            self.flag = None
+            try:
+                req = requests.get(set_url(), timeout=5)
+                self.flag = True
+                print("Connected to the Internet")
+            except (requests.ConnectionError, requests.Timeout) as exception:
+                print("No Internet connection.")
+                state_ui = StateUI.error
+                self.flag = False
+
+                # return
 
 
-            state_ui, finallist = UpdateLauncher.check_launcher(
-                dir_, self.launcher_installed
-            )
-            print("aaaa")
-            print(state_ui)
+            if self.flag == False:
+                print("여기서부터 인터넷 연결 안됨")
+                self.setup_execute_ui()
 
-            if finallist:
-                self.entry = finallist[0]
-            self.parse_launcher_state(state_ui)
-
-            # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-            state_ui = None if state_ui == StateUI.empty_repo else state_ui
-            print(state_ui)
-
-            if not state_ui:
-                state_ui, finallist = UpdateAbler.check_abler(
-                    dir_, self.installedversion
+            else:
+                print("check_launcher 직전")
+                state_ui, finallist = UpdateLauncher.check_launcher(
+                    dir_, self.launcher_installed
                 )
+                print("check_launcher 이후 실행되는 부분")
+
+                print(f"try/except 끝나고 state_ui: {state_ui}")
+
+                print(finallist)
                 if finallist:
+                    print("Break")
                     self.entry = finallist[0]
-                self.parse_abler_state(state_ui)
+                print("Break")
+                self.parse_launcher_state(state_ui)
+
+                # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
+                state_ui = None if state_ui == StateUI.empty_repo else state_ui
+                print(state_ui)
+
+                if not state_ui:
+                    state_ui, finallist = UpdateAbler.check_abler(
+                        dir_, self.installedversion
+                    )
+                    if finallist:
+                        self.entry = finallist[0]
+                    self.parse_abler_state(state_ui)
 
         except Exception as e:
             logger.error(e)
+            print("여기 에러 로그 잡히는지 확인")
 
     def parse_launcher_state(self, state_ui: Enum) -> None:
         """Launcher 버전 확인 후 상태 결정"""
 
+        print("Break")
+
         if state_ui == StateUI.error:
+            print("여기 가는지 확인")
             self.statusBar().showMessage(
                 "Error reaching server - check your internet connection"
             )
@@ -329,7 +354,12 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.show()
 
         if sys.platform == "win32":
-            self.btn_execute.clicked.connect(self.exec_windows)
+            if self.flag == False:
+                print("실행 버튼까지는 들어옴")
+                self.btn_execute.clicked.connect(self.network)
+            else:
+                print("실행 버튼에서 else")
+                self.btn_execute.clicked.connect(self.exec_windows)
         elif sys.platform == "darwin":
             self.btn_execute.clicked.connect(self.exec_osx)
         elif sys.platform == "linux":
@@ -556,6 +586,14 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(100)
         self.lbl_task.setText("Finished")
         self.btn_Quit.setEnabled(True)
+
+
+    def network(self) -> None:
+        QtWidgets.QMessageBox.information(
+            self,
+            "a",
+            "b",
+        )
 
     def exec_windows(self) -> None:
         """window에서 ABLER 실행"""
