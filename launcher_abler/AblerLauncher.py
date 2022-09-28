@@ -337,7 +337,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.setup_download_ui(entry, dir_name)
 
         self.exec_dir_name = os.path.join(dir_name, "")
-        filename = temp_name + entry["filename"]
+        filename = temp_name / entry["filename"]
 
         thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
         thread.update.connect(self.updatepb)
