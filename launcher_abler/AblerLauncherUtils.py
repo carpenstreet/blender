@@ -83,7 +83,7 @@ def get_network_connection() -> bool:
     try:
         request = requests.get(set_url(), timeout=5)
         return True
-    except (requests.ConnectionError, requests.Timeout) as exception:
+    except (requests.ConnectionError, requests.ConnectTimeout) as exception:
         return False
 
 

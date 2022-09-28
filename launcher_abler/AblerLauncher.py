@@ -545,7 +545,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtWidgets.QMessageBox.information(
             self,
             "ABLER Launcher",
-            "ABLER requires internet connectivity. Please check internet connection and try again.",
+            "ABLER requires internet connection. Please check internet connection and try again.",
             QtWidgets.QMessageBox.Close,
         )
 
