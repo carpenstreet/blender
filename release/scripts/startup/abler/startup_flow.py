@@ -523,6 +523,14 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
         subprocess.Popen(launcher, shell=True)
+
+        import psutil
+        proc_list = [p.name() for p in psutil.process_iter()]
+        proc_count = sum(i.startswith("AblerLauncher") for i in proc_list)
+        while not proc_count >= 1:
+            proc_list = [p.name() for p in psutil.process_iter()]
+            proc_count = sum(i.startswith("AblerLauncher") for i in proc_list)
+
         bpy.ops.wm.quit_blender()
 
         return {"FINISHED"}
