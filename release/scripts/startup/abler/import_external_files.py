@@ -50,7 +50,6 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
     def execute(self, context):
         if not self.check_path(extension="fbx"):
-            print("A")
             return {"FINISHED"}
         try:
             for obj in bpy.data.objects:
