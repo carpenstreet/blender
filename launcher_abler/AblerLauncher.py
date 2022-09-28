@@ -145,6 +145,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.launcher_installed = ""
         self.lastcheck = ""
         self.entry = {}
+        self.network_check = get_network_connection()
         global dir_
         global launcherdir_
 
@@ -156,24 +157,27 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             import UpdateLauncher
             import UpdateAbler
 
-            state_ui, finallist = UpdateLauncher.check_launcher(
-                dir_, self.launcher_installed
-            )
-
-            if finallist:
-                self.entry = finallist[0]
-            self.parse_launcher_state(state_ui)
-
-            # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-            state_ui = None if state_ui == StateUI.empty_repo else state_ui
-
-            if not state_ui:
-                state_ui, finallist = UpdateAbler.check_abler(
-                    dir_, self.installedversion
+            if self.network_check:
+                state_ui, finallist = UpdateLauncher.check_launcher(
+                    dir_, self.launcher_installed
                 )
+
                 if finallist:
                     self.entry = finallist[0]
-                self.parse_abler_state(state_ui)
+                self.parse_launcher_state(state_ui)
+
+                # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
+                state_ui = None if state_ui == StateUI.empty_repo else state_ui
+
+                if not state_ui:
+                    state_ui, finallist = UpdateAbler.check_abler(
+                        dir_, self.installedversion
+                    )
+                    if finallist:
+                        self.entry = finallist[0]
+                    self.parse_abler_state(state_ui)
+            else:
+                self.setup_execute_ui()
 
         except Exception as e:
             logger.error(e)
@@ -304,7 +308,10 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.show()
 
         if sys.platform == "win32":
-            self.btn_execute.clicked.connect(self.exec_windows)
+            if self.network_check:
+                self.btn_execute.clicked.connect(self.exec_windows)
+            else:
+                self.btn_execute.clicked.connect(self.exec_no_network)
         elif sys.platform == "darwin":
             self.btn_execute.clicked.connect(self.exec_osx)
         elif sys.platform == "linux":
@@ -334,23 +341,38 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         logger.info(f"Starting download thread for {url}{version}")
 
-        self.setup_download_ui(entry, dir_name)
+        if process_count("blender") == 0:
+            self.setup_download_ui(entry, dir_name)
 
-        self.exec_dir_name = os.path.join(dir_name, "")
-        filename = temp_name / entry["filename"]
+            self.exec_dir_name = os.path.join(dir_name, "")
+            filename = temp_name / entry["filename"]
+            self.exec_dir_name = os.path.join(dir_name, "")
+            filename = temp_name + entry["filename"]
 
-        thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
-        thread.update.connect(self.updatepb)
-        thread.finishedDL.connect(self.extraction)
-        thread.finishedEX.connect(self.finalcopy)
-        thread.finishedCP.connect(self.cleanup)
+            thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
+            thread.update.connect(self.updatepb)
+            thread.finishedDL.connect(self.extraction)
+            thread.finishedEX.connect(self.finalcopy)
+            thread.finishedCP.connect(self.cleanup)
 
-        if dir_name == dir_:
-            thread.finishedCL.connect(self.done_abler)
+            if dir_name == dir_:
+                thread.finishedCL.connect(self.done_abler)
+            else:
+                thread.finishedCL.connect(self.done_launcher)
+
+            thread.start()
+
         else:
-            thread.finishedCL.connect(self.done_launcher)
+            if os.path.isdir(temp_name):
+                shutil.rmtree(temp_name)
 
-        thread.start()
+            # TODO: 유저 flow는 알림이 떴을 때, 배경은 흐리게 (blur) 하는 것이 좋음
+            QtWidgets.QMessageBox.information(
+                self,
+                "ABLER Updater",
+                "Currently ABLER(or Blender) is running.\nPlease close all ABLER and Blender before update.",
+                QtWidgets.QMessageBox.Close,
+            )
 
     def updatepb(self, percent: int) -> None:
         """다운로드 진행상황 바 표시"""
@@ -522,6 +544,16 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.progressBar.setValue(100)
         self.lbl_task.setText("Finished")
         self.btn_Quit.setEnabled(True)
+
+    def exec_no_network(self) -> None:
+        """네트워크에 연결되어 있지 않을 때, QMessageBox만 띄워주기"""
+
+        QtWidgets.QMessageBox.information(
+            self,
+            "ABLER Launcher",
+            "ABLER requires internet connection. Please check internet connection and try again.",
+            QtWidgets.QMessageBox.Close,
+        )
 
     def exec_windows(self) -> None:
         """window에서 ABLER 실행"""
