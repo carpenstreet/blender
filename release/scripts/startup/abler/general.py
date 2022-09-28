@@ -148,7 +148,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     def execute(self, context):
         try:
-            if not self.check_path():
+            if not self.check_path(extension=".blend"):
                 return {"FINISHED"}
 
             # Blender에서 File Open과 같은 파일을 import하면 Collection과 Mesh Object 이름에 ".001"이 넘버링 하지 않음
@@ -316,7 +316,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
     def execute(self, context):
-        if not self.check_path():
+        if not self.check_path(extension=".blend"):
             return {"FINISHED"}
         self.open_file()
         return {"FINISHED"}
