@@ -4,6 +4,7 @@ import sys
 import requests
 import bpy
 import configparser
+import psutil
 from distutils.version import StrictVersion
 from typing import Optional
 from enum import Enum
@@ -35,6 +36,14 @@ def set_updater() -> str:
 def get_launcher() -> str:
     launcher = os.path.join(set_updater(), "AblerLauncher.exe")
     return launcher
+
+
+def get_launcher_process(proc) -> int:
+    """현재 실행되고 있는 프로세스의 개수를 세기"""
+
+    proc_list = [p.name() for p in psutil.process_iter()]
+    proc_count = sum(i.startswith(proc) for i in proc_list)
+    return proc_count
 
 
 def get_local_version() -> str:

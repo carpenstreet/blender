@@ -47,6 +47,7 @@ from .lib.version import (
     get_file_version,
     get_local_version,
     read_low_version_warning_hidden,
+    get_launcher_process,
 )
 
 
@@ -524,12 +525,14 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
         subprocess.Popen(launcher, shell=True)
 
-        import psutil
-        proc_list = [p.name() for p in psutil.process_iter()]
-        proc_count = sum(i.startswith("AblerLauncher") for i in proc_list)
-        while not proc_count >= 1:
-            proc_list = [p.name() for p in psutil.process_iter()]
-            proc_count = sum(i.startswith("AblerLauncher") for i in proc_list)
+        # AblerLauncer.exe가 실행되면 ABLER 종료
+        if sys.platform == "win32":
+            while not (proc_count := get_launcher_process("AblerLauncher")) >= 1:
+                proc_count = get_launcher_process("AblerLauncher")
+        elif sys.platform == "darwin":
+            pass
+        else:
+            raise Exception("Unsupported platform")
 
         bpy.ops.wm.quit_blender()
 
