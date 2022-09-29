@@ -23,6 +23,7 @@ import pickle
 import platform
 import sys
 import textwrap
+import time
 import webbrowser
 from json import JSONDecodeError
 
@@ -47,7 +48,7 @@ from .lib.version import (
     get_file_version,
     get_local_version,
     read_low_version_warning_hidden,
-    get_launcher_process,
+    get_launcher_process_count,
 )
 
 
@@ -527,10 +528,10 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
 
         # AblerLauncer.exe가 실행되면 ABLER 종료
         if sys.platform == "win32":
-            while not (proc_count := get_launcher_process("AblerLauncher")) >= 1:
-                proc_count = get_launcher_process("AblerLauncher")
+            while get_launcher_process_count("AblerLauncher") < 1:
+                time.sleep(1)
         elif sys.platform == "darwin":
-            pass
+            raise NotImplementedError("Not implemented yet for %s." % sys.platform)
         else:
             raise Exception("Unsupported platform")
 

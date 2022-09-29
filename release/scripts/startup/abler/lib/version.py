@@ -38,7 +38,7 @@ def get_launcher() -> str:
     return launcher
 
 
-def get_launcher_process(proc) -> int:
+def get_launcher_process_count(proc) -> int:
     """현재 실행되고 있는 프로세스의 개수를 세기"""
 
     proc_list = [p.name() for p in psutil.process_iter()]
