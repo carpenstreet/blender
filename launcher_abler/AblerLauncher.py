@@ -320,7 +320,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def download(self, entry: dict, dir_name: str) -> None:
         """ABLER/Launcher 최신 릴리즈 다운로드"""
 
-        temp_name = "./blendertemp" if dir_name == dir_ else "./launchertemp"
+        temp_name = (
+            get_datadir() / "Blender/2.96/updater/blendertemp"
+            if dir_name == dir_
+            else get_datadir() / "Blender/2.96/updater/launchertemp"
+        )
 
         url = entry["url"]
         version = entry["version"]
@@ -341,7 +345,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.setup_download_ui(entry, dir_name)
 
             self.exec_dir_name = os.path.join(dir_name, "")
-            filename = temp_name + entry["filename"]
+            filename = temp_name / entry["filename"]
 
             thread = WorkerThread(url, filename, self.exec_dir_name, temp_name)
             thread.update.connect(self.updatepb)
