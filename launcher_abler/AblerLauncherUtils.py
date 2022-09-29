@@ -1,6 +1,7 @@
 import pathlib
 import sys
 import psutil
+import requests
 from enum import Enum, auto
 
 
@@ -74,6 +75,16 @@ def process_count(proc) -> int:
     proc_list = [p.name() for p in psutil.process_iter()]
     proc_count = sum(i.startswith(proc) for i in proc_list)
     return proc_count
+
+
+def get_network_connection() -> bool:
+    """네트워크 연결 상태를 bool 타입으로 return"""
+
+    try:
+        request = requests.get(set_url(), timeout=5)
+        return True
+    except (requests.ConnectionError, requests.ConnectTimeout) as exception:
+        return False
 
 
 class StateUI(Enum):
