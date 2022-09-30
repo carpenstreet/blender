@@ -52,6 +52,16 @@ def hide_header(dummy):
 
 @persistent
 def load_handler(dummy):
+    """
+    Scene 초기화 시 발생하는 크래시를 회피하기 위한 부분
+    관련 이슈:
+    https://www.notion.so/acon3d/Issue-0039_-244e83d84c21436a87f84cb38ef1173b
+    https://www.notion.so/acon3d/Issue-0058-fd84882296d24fd7b46808e37679dc47
+    """
+    bpy.app.timers.register(delayed_load_handler)
+
+
+def delayed_load_handler():
     tracker.turn_off()
     hide_header(None)
     try:
