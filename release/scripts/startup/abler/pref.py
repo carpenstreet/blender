@@ -24,6 +24,7 @@ def init_setting(dummy):
             init_screen.shading.type = "RENDERED"
             init_screen.show_region_header = True
             init_screen.show_region_tool_header = False
+            init_screen.show_region_toolbar = True
             init_screen.show_gizmo = True
             init_screen.show_gizmo_object_translate = True
             init_screen.show_gizmo_object_rotate = True
