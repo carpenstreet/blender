@@ -2808,7 +2808,7 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
         'OBJECT': [
             *_tools_default,
             None,
-            _tools_view3d_add,
+            # _tools_view3d_add,
         ],
         'POSE': [
             *_tools_default,
