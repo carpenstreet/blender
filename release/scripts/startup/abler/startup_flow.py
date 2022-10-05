@@ -527,7 +527,7 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
         launcher_process = subprocess.Popen(launcher, shell=True)
         is_launcher_open = True
 
-        # AblerLauncer.exe가 실행되면 ABLER 종료
+        # AblerLauncher.exe가 실행되면 ABLER 종료
         if sys.platform == "win32":
             while get_launcher_process_count("AblerLauncher") < 1:
                 time.sleep(1)
