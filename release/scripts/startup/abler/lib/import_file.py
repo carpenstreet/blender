@@ -6,7 +6,7 @@ from bpy_extras.io_utils import ImportHelper
 class AconImportHelper(ImportHelper):
     def check_path(self, accepted: list[str]) -> bool:
         """
-        :param accepted: 하용할 extension 리스트
+        :param accepted: 허용할 extension 리스트
 
         :return: accepted 에 파일의 확장자가 없는 경우,
             파일 형식이 아닌 경우, 파일이 없는 경우 False 반환,
