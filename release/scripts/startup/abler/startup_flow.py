@@ -524,18 +524,26 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
         launcher = get_launcher()
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
-        subprocess.Popen(launcher, shell=True)
+        launcher_process = subprocess.Popen(launcher, shell=True)
+        is_launcher_open = True
 
-        # AblerLauncer.exe가 실행되면 ABLER 종료
+        # AblerLauncher.exe가 실행되면 ABLER 종료
         if sys.platform == "win32":
             while get_launcher_process_count("AblerLauncher") < 1:
                 time.sleep(1)
+
+                # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
+                # 실행되면 None이 아닌 값을 return
+                if launcher_process.poll() is not None:
+                    is_launcher_open = False
+                    break
         elif sys.platform == "darwin":
             raise NotImplementedError("Not implemented yet for %s." % sys.platform)
         else:
             raise Exception("Unsupported platform")
 
-        bpy.ops.wm.quit_blender()
+        if is_launcher_open:
+            bpy.ops.wm.quit_blender()
 
         return {"FINISHED"}
 
