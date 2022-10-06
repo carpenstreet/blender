@@ -809,21 +809,30 @@ class VIEW3D_HT_header(Header):
             draw_depressed = shading.show_xray_wireframe
         else:
             draw_depressed = shading.show_xray
-        row.operator(
-            "view3d.toggle_xray",
-            text="",
-            icon='XRAY',
-            depress=draw_depressed,
-        )
 
-        row = layout.row(align=True)
-        row.prop(shading, "type", text="", expand=True)
-        sub = row.row(align=True)
-        # TODO, currently render shading type ignores mesh two-side, until it's supported
-        # show the shading popover which shows double-sided option.
+        # HIDE: Toggle X-Ray
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row.operator(
+                "view3d.toggle_xray",
+                text="",
+                icon='XRAY',
+                depress=draw_depressed,
+            )
 
-        # sub.enabled = shading.type != 'RENDERED'
-        sub.popover(panel="VIEW3D_PT_shading", text="")
+        # HIDE: Viewport Shading
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            row.prop(shading, "type", text="", expand=True)
+            sub = row.row(align=True)
+            # TODO, currently render shading type ignores mesh two-side, until it's supported
+            # show the shading popover which shows double-sided option.
+
+            # sub.enabled = shading.type != 'RENDERED'
+            sub.popover(panel="VIEW3D_PT_shading", text="")
 
 
 class VIEW3D_MT_editor_menus(Menu):
