@@ -762,29 +762,41 @@ class VIEW3D_HT_header(Header):
             layout.separator_spacer()
 
         # Viewport Settings
-        layout.popover(
-            panel="VIEW3D_PT_object_type_visibility",
-            icon_value=view.icon_from_show_object_viewport,
-            text="",
-        )
+        # HIDE: View Object Types
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            layout.popover(
+                panel="VIEW3D_PT_object_type_visibility",
+                icon_value=view.icon_from_show_object_viewport,
+                text="",
+            )
 
         # Gizmo toggle & popover.
-        row = layout.row(align=True)
-        # FIXME: place-holder icon.
-        row.prop(view, "show_gizmo", text="", toggle=True, icon='GIZMO')
-        sub = row.row(align=True)
-        sub.active = view.show_gizmo
-        sub.popover(
-            panel="VIEW3D_PT_gizmo_display",
-            text="",
-        )
+        # HIDE: Show Gizmo
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            # FIXME: place-holder icon.
+            row.prop(view, "show_gizmo", text="", toggle=True, icon='GIZMO')
+            sub = row.row(align=True)
+            sub.active = view.show_gizmo
+            sub.popover(
+                panel="VIEW3D_PT_gizmo_display",
+                text="",
+            )
 
         # Overlay toggle & popover.
-        row = layout.row(align=True)
-        row.prop(overlay, "show_overlays", icon='OVERLAY', text="")
-        sub = row.row(align=True)
-        sub.active = overlay.show_overlays
-        sub.popover(panel="VIEW3D_PT_overlay", text="")
+        # HIDE: Show Overlays
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            row.prop(overlay, "show_overlays", icon='OVERLAY', text="")
+            sub = row.row(align=True)
+            sub.active = overlay.show_overlays
+            sub.popover(panel="VIEW3D_PT_overlay", text="")
 
         row = layout.row()
         row.active = (object_mode == 'EDIT') or (shading.type in {'WIREFRAME', 'SOLID'})
