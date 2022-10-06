@@ -81,6 +81,7 @@ def delayed_load_handler():
             )
             bpy.ops.preferences.keyconfig_activate(filepath=abler_keymap_path)
         scenes.refresh_look_at_me()
+        scenes.snap_to_face()
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()
