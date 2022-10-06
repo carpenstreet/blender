@@ -503,7 +503,8 @@ class VIEW3D_HT_header(Header):
         scene = context.scene
 
         # Orientation
-        if object_mode in {'OBJECT', 'EDIT', 'EDIT_GPENCIL'} or has_pose_mode:
+        # HIDE: Transformation orientation in 'OBJECT'
+        if object_mode in {'EDIT', 'EDIT_GPENCIL'} or has_pose_mode:
             orient_slot = scene.transform_orientation_slots[0]
             row = layout.row(align=True)
 
@@ -515,10 +516,15 @@ class VIEW3D_HT_header(Header):
                 text="",
                 panel="VIEW3D_PT_transform_orientations",
             )
+        elif object_mode == 'OBJECT':
+            pass
 
         # Pivot
-        if object_mode in {'OBJECT', 'EDIT', 'EDIT_GPENCIL', 'SCULPT_GPENCIL'} or has_pose_mode:
+        # HIDE: Transform Pivot Point in 'OBJECT'
+        if object_mode in {'EDIT', 'EDIT_GPENCIL', 'SCULPT_GPENCIL'} or has_pose_mode:
             layout.prop(tool_settings, "transform_pivot_point", text="", icon_only=True)
+        elif object_mode == 'OBJECT':
+            pass
 
         # Snap
         show_snap = False
@@ -563,7 +569,8 @@ class VIEW3D_HT_header(Header):
             )
 
         # Proportional editing
-        if object_mode in {'EDIT', 'PARTICLE_EDIT', 'SCULPT_GPENCIL', 'EDIT_GPENCIL', 'OBJECT'}:
+        # HIDE: Proportional Editing Objects, Falloff in 'OBJECT'
+        if object_mode in {'EDIT', 'PARTICLE_EDIT', 'SCULPT_GPENCIL', 'EDIT_GPENCIL'}:
             row = layout.row(align=True)
             kw = {}
             if object_mode == 'OBJECT':
@@ -591,6 +598,8 @@ class VIEW3D_HT_header(Header):
                 icon_only=True,
                 panel="VIEW3D_PT_proportional_edit",
             )
+        elif object_mode == 'OBJECT':
+            pass
 
     def draw(self, context):
         layout = self.layout
