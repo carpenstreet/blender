@@ -99,8 +99,10 @@ def save_post_handler(dummy):
 
 def grid_on_when_selected(dummy):
     show_grid = len(bpy.context.selected_objects) > 0
-    bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_ortho_grid = show_grid
-    bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_floor = show_grid
+    if "ACON3D" in bpy.data.screens.keys() and len(bpy.data.screens["ACON3D"].areas) > 0 and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0:
+        viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
+        viewport_overlay.show_ortho_grid = show_grid
+        viewport_overlay.show_floor = show_grid
 
 
 def register():
