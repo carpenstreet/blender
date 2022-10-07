@@ -97,7 +97,6 @@ def save_post_handler(dummy):
         scene.view_settings.view_transform = "Standard"
 
 
-@persistent
 def grid_on_when_selected(dummy):
     show_grid = len(bpy.context.selected_objects) > 0
     bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_ortho_grid = show_grid
