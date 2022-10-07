@@ -112,14 +112,24 @@ def save_post_handler(dummy):
         scene.view_settings.view_transform = "Standard"
 
 
+def grid_on_when_selected(dummy):
+    show_grid = len(bpy.context.selected_objects) > 0
+    if "ACON3D" in bpy.data.screens.keys() and len(bpy.data.screens["ACON3D"].areas) > 0 and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0:
+        viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
+        viewport_overlay.show_ortho_grid = show_grid
+        viewport_overlay.show_floor = show_grid
+
+
 def register():
     bpy.app.handlers.load_factory_startup_post.append(init_setting)
     bpy.app.handlers.load_post.append(load_handler)
     bpy.app.handlers.save_pre.append(save_pre_handler)
     bpy.app.handlers.save_post.append(save_post_handler)
+    bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)
