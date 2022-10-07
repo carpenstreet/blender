@@ -29,19 +29,26 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
         print("Invalid oldScene / newScene given")
         return
 
-    for i, oldProp in enumerate(oldScene.l_exclude):
-        newProp = newScene.l_exclude[i]
+    def update_info(obj: Object, is_value_equal: bool, is_lock_equal: bool):
+        if not is_value_equal:
+            obj.hide_viewport = not (newInfo.value)
+            obj.hide_render = not (newInfo.value)
+        if not is_lock_equal:
+            obj.hide_select = newInfo.lock
 
-        if oldProp.value is not newProp.value:
-            target_layer = bpy.data.collections[newProp.name]
-            for objs in target_layer.objects:
-                objs.hide_viewport = not (newProp.value)
-                objs.hide_render = not (newProp.value)
+        for o in obj.children:
+            update_info(o, is_value_equal, is_lock_equal)
 
-        if oldProp.lock is not newProp.lock:
-            target_layer = bpy.data.collections[newProp.name]
-            for objs in target_layer.objects:
-                objs.hide_select = newProp.lock
+    for i, oldInfo in enumerate(oldScene.l_exclude):
+        newInfo = newScene.l_exclude[i]
+
+        is_value_equal = oldInfo.lock is newInfo.lock
+        is_lock_equal = oldInfo.value is newInfo.value
+
+        if not is_value_equal or not is_lock_equal:
+            target_layer = bpy.data.collections[newInfo.name]
+            for obj in target_layer.objects:
+                update_info(obj, is_value_equal, is_lock_equal)
 
 
 def up(group_list: List[Collection], group_item: Collection) -> Optional[Collection]:

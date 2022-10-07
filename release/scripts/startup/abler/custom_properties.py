@@ -62,24 +62,65 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         del bpy.types.Scene.l_exclude
 
     def update_layer_visibility(self, context):
+        l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
-        for objs in target_layer.objects:
-            belonging_col_names = {
-                collection.name for collection in objs.users_collection
-            }
-            should_show = all(
-                layer.value
-                for layer in bpy.context.scene.l_exclude
-                if layer.name in belonging_col_names
-            )
 
-            objs.hide_viewport = not should_show
-            objs.hide_render = not should_show
+        # 시작 오브젝트의 부모 오브젝트의 상태
+        def get_parent_value(obj):
+            cur = obj.parent
+            while cur:
+                if cur.hide_viewport:
+                    return False
+                cur = cur.parent
+            return True
+
+        # 부모 오브젝트 off => 항상 off,  부모 오브젝트 on => 현재 값으로 결정
+        def update_objects(obj, value: bool):
+            if value:
+                for l in l_exclude:
+                    if l.name == obj.ACON_prop.layer_name and not l.value:
+                        value = False
+                        break
+
+            obj.hide_viewport = not value
+            obj.hide_render = not value
+
+            for o in obj.children:
+                update_objects(o, value)
+
+        for obj in target_layer.objects:
+            value = get_parent_value(obj) and self.value
+            update_objects(obj, value)
 
     def update_layer_lock(self, context):
+        l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
-        for objs in target_layer.objects:
-            objs.hide_select = self.lock
+
+        # 시작 오브젝트의 부모 오브젝트의 상태
+        def get_parent_value(obj):
+            cur = obj.parent
+            while cur:
+                if cur.hide_select:
+                    return True
+                cur = cur.parent
+            return False
+
+        # 부모 오브젝트 off => 항상 off,  부모 오브젝트 on => 현재 값으로 결정
+        def update_objects(obj, lock: bool):
+            if not lock:
+                for info in l_exclude:
+                    if info.name == obj.ACON_prop.layer_name and info.lock:
+                        lock = True
+                        break
+
+            obj.hide_select = lock
+
+            for o in obj.children:
+                update_objects(o, lock)
+
+        for obj in target_layer.objects:
+            lock = get_parent_value(obj) and self.lock
+            update_objects(obj, lock)
 
     name: bpy.props.StringProperty(name="Layer Name", default="")
 
@@ -594,6 +635,8 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     @classmethod
     def unregister(cls):
         del bpy.types.Object.ACON_prop
+
+    layer_name: bpy.props.StringProperty()
 
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
