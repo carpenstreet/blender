@@ -108,8 +108,8 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         # 부모 오브젝트 off => 항상 off,  부모 오브젝트 on => 현재 값으로 결정
         def update_objects(obj, lock: bool):
             if not lock:
-                for info in l_exclude:
-                    if info.name == obj.ACON_prop.layer_name and info.lock:
+                for l in l_exclude:
+                    if l.name == obj.ACON_prop.layer_name and l.lock:
                         lock = True
                         break
 

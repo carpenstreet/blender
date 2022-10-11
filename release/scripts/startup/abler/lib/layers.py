@@ -24,20 +24,37 @@ from typing import Any, List, Optional, Tuple, Union
 
 
 def handle_layer_visibility_on_scene_change(oldScene, newScene):
-
     if not oldScene or not newScene:
         print("Invalid oldScene / newScene given")
         return
 
-    def update_info(obj: Object, is_value_equal: bool, is_lock_equal: bool):
-        if not is_value_equal:
-            obj.hide_viewport = not (newInfo.value)
-            obj.hide_render = not (newInfo.value)
-        if not is_lock_equal:
-            obj.hide_select = newInfo.lock
+    visited = []
+
+    def update_info(obj: Object, new_value: bool, new_lock: bool):
+        if obj.name in visited:
+            return
+        visited.append(obj.name)
+
+        if new_value is not None:
+            for l in newScene.l_exclude:
+                if l.name == obj.ACON_prop.layer_name and not l.value:
+                    new_value = False
+                    break
+
+            obj.hide_viewport = not new_value
+            obj.hide_render = not new_value
+
+        if new_lock is not None:
+            if not new_lock:
+                for l in newScene.l_exclude:
+                    if l.name == obj.ACON_prop.layer_name and l.lock:
+                        new_lock = True
+                        break
+
+            obj.hide_select = new_lock
 
         for o in obj.children:
-            update_info(o, is_value_equal, is_lock_equal)
+            update_info(o, new_value, new_lock)
 
     for i, oldInfo in enumerate(oldScene.l_exclude):
         newInfo = newScene.l_exclude[i]
@@ -47,8 +64,12 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
 
         if not is_value_equal or not is_lock_equal:
             target_layer = bpy.data.collections[newInfo.name]
+
+            new_value = newInfo.value if is_value_equal else None
+            new_lock = newInfo.lock if is_lock_equal else None
+
             for obj in target_layer.objects:
-                update_info(obj, is_value_equal, is_lock_equal)
+                update_info(obj, new_value, new_lock)
 
 
 def up(group_list: List[Collection], group_item: Collection) -> Optional[Collection]:
