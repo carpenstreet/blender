@@ -30,6 +30,30 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
 
     visited = []
 
+    def get_parent_values(obj: Object):
+        cur = obj.parent
+        parent_value = True
+        parent_lock = False
+
+        while cur:
+            if parent_value or not parent_lock:
+                # new scene 에서 변경될 object 의 레이어 정보를 가져옴
+                new_scene_layer = None
+                for l in newScene.l_exclude:
+                    if l.name == cur.ACON_prop.layer_name:
+                        new_scene_layer = l
+                        break
+                if new_scene_layer:
+                    if parent_value:
+                        parent_value = parent_value and new_scene_layer.value
+                    if not parent_lock:
+                        parent_lock = parent_lock and new_scene_layer.lock
+
+            if not parent_value and parent_lock:
+                return parent_value, parent_lock
+            cur = cur.parent
+        return parent_value, parent_lock
+
     def update_info(obj: Object, new_value: bool, new_lock: bool):
         if obj.name in visited:
             return
@@ -69,6 +93,9 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
             new_lock = newInfo.lock if is_lock_equal else None
 
             for obj in target_layer.objects:
+                parent_value, parent_lock = get_parent_values(obj)
+                new_value = new_value and parent_value
+                new_lock = new_lock and parent_lock
                 update_info(obj, new_value, new_lock)
 
 

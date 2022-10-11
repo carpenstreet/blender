@@ -65,6 +65,8 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
 
+        visited = []
+
         # 시작 오브젝트의 부모 오브젝트의 상태
         def get_parent_value(obj):
             cur = obj.parent
@@ -76,6 +78,10 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
         # 부모 오브젝트 off => 항상 off,  부모 오브젝트 on => 현재 값으로 결정
         def update_objects(obj, value: bool):
+            if obj.name in visited:
+                return
+            visited.append(obj.name)
+
             if value:
                 for l in l_exclude:
                     if l.name == obj.ACON_prop.layer_name and not l.value:
@@ -96,6 +102,8 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
 
+        visited = []
+
         # 시작 오브젝트의 부모 오브젝트의 상태
         def get_parent_value(obj):
             cur = obj.parent
@@ -107,6 +115,10 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
         # 부모 오브젝트 off => 항상 off,  부모 오브젝트 on => 현재 값으로 결정
         def update_objects(obj, lock: bool):
+            if obj.name in visited:
+                return
+            visited.append(obj.name)
+
             if not lock:
                 for l in l_exclude:
                     if l.name == obj.ACON_prop.layer_name and l.lock:
