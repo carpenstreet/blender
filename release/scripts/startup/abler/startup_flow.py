@@ -23,6 +23,7 @@ import pickle
 import platform
 import sys
 import textwrap
+import time
 import webbrowser
 from json import JSONDecodeError
 
@@ -36,6 +37,85 @@ from .lib.read_cookies import *
 
 from .lib.tracker import tracker
 from .lib.tracker._get_ip import user_ip
+from .warning_modal import BlockingModalOperator
+import subprocess
+from .lib.version import (
+    get_launcher,
+    check_file_version,
+    FileVersionCheckResult,
+    update_file_version,
+    has_server_update,
+    get_file_version,
+    get_local_version,
+    read_low_version_warning_hidden,
+    get_launcher_process_count,
+)
+
+
+is_first_run = False
+
+
+def is_blend_open():
+    return bpy.data.filepath != ""
+
+
+class Acon3dStartUpFlowOperator(bpy.types.Operator):
+    bl_idname = "acon3d.startup_flow"
+    bl_label = "Startup flow"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        global is_first_run
+        is_first_run = True
+        run_startup_flow()
+        setup_next_startup_flow()
+        return {"FINISHED"}
+
+
+def setup_next_startup_flow():
+    # NOTE: 블렌더 초기화 시점에 load_post.append 로 핸들러를 등록하면 startup_flow_handler 가 두 번 실행되는 문제가 있음.
+    # 이를 회피하기 위해 첫 번째 실행을 하고 나서 핸들러 등록하고, wm_init_exit.c 에서 if 문 제거하는 workaround 적용함
+    bpy.app.handlers.load_post.append(startup_flow_handler)
+
+
+@persistent
+def startup_flow_handler(_dummy):
+    global is_first_run
+    is_first_run = False
+    run_startup_flow()
+
+
+def run_startup_flow():
+    if is_blend_open():
+        start_check_file_version()
+    elif is_first_run:
+        start_check_server_version()
+
+
+def start_check_file_version():
+    hide_low_version_warning = read_low_version_warning_hidden()
+    bpy.context.window_manager.ACON_prop.hide_low_version_warning = (
+        hide_low_version_warning
+    )
+    check_result = check_file_version()
+    if check_result == FileVersionCheckResult.HIGHER_FILE_VERSION:
+        bpy.ops.acon3d.higher_file_version_error("INVOKE_DEFAULT")
+    elif (
+        check_result == FileVersionCheckResult.LOW_FILE_VERSION
+        and not hide_low_version_warning
+    ):
+        bpy.ops.acon3d.low_file_version_warning("INVOKE_DEFAULT")
+    elif is_first_run:
+        start_check_server_version()
+    else:
+        start_authentication()
+
+
+def start_check_server_version():
+    if is_first_run and has_server_update():
+        bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
+    else:
+        start_authentication()
 
 
 class Acon3dAlertOperator(bpy.types.Operator):
@@ -155,94 +235,15 @@ class Acon3dNoticeOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dModalOperator(bpy.types.Operator):
+class Acon3dModalOperator(BlockingModalOperator):
     bl_idname = "acon3d.modal_operator"
     bl_label = "Login Modal Operator"
-    pass_key = {
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-        "ZERO",
-        "ONE",
-        "TWO",
-        "THREE",
-        "FOUR",
-        "FIVE",
-        "SIX",
-        "SEVEN",
-        "EIGHT",
-        "NINE",
-        "BACK_SPACE",
-        "SEMI_COLON",
-        "PERIOD",
-        "COMMA",
-        "QUOTE",
-        "ACCENT_GRAVE",
-        "MINUS",
-        "PLUS",
-        "SLASH",
-        "BACK_SLASH",
-        "EQUAL",
-        "LEFT_BRACKET",
-        "RIGHT_BRACKET",
-        "NUMPAD_2",
-        "NUMPAD_4",
-        "NUMPAD_6",
-        "NUMPAD_8",
-        "NUMPAD_1",
-        "NUMPAD_3",
-        "NUMPAD_5",
-        "NUMPAD_7",
-        "NUMPAD_9",
-        "NUMPAD_PERIOD",
-        "NUMPAD_SLASH",
-        "NUMPAD_ASTERIX",
-        "NUMPAD_0",
-        "NUMPAD_MINUS",
-        "NUMPAD_ENTER",
-        "NUMPAD_PLUS",
-    }
 
-    def execute(self, context):
-        return {"FINISHED"}
+    def _invoke_actual_modal(self, context, event):
+        bpy.ops.wm.splash("INVOKE_DEFAULT")
 
-    def modal(self, context, event):
+    def should_close(self, context, event) -> bool:
         userInfo = bpy.data.meshes.get("ACON_userInfo")
-
-        def char2key(c):
-            # 로그인 modal 창 밖에서 마우스 홀드로 modal 없는 상태에서 키보드로 연타할 때
-            # ord() expected a character, but string of length 0 found 발생
-            # length가 0일 때도 splash 실행
-            if not c:
-                bpy.ops.wm.splash("INVOKE_DEFAULT")
-
-            else:
-                result = ctypes.windll.User32.VkKeyScanW(ord(c))
-                shift_state = (result & 0xFF00) >> 8
-                return result & 0xFF
 
         splash_closing = event.type in (
             "LEFTMOUSE",
@@ -251,49 +252,20 @@ class Acon3dModalOperator(bpy.types.Operator):
             "ESC",
             "RET",
         )
-        is_blend_open: bool = False
-        for arg in sys.argv:
-            if arg.lower().endswith(".blend"):
-                is_blend_open = True
-                break
+        if event.type == "WINDOW_DEACTIVATE":
+            return False
 
         if (
             userInfo
             and userInfo.ACON_prop.login_status == "SUCCESS"
-            and (splash_closing or is_blend_open)
+            and (splash_closing or is_blend_open())
         ):
-            if read_remembered_show_guide():
-                bpy.ops.acon3d.tutorial_guide_popup()
+            return True
+        return False
 
-            return {"FINISHED"}
-
-        if event.type in ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"):
-            bpy.ops.wm.splash("INVOKE_DEFAULT")
-
-        if event.type in self.pass_key:
-            if platform.system() == "Windows":
-                if event.type == "BACK_SPACE":
-                    ctypes.windll.user32.keybd_event(char2key("\b"))
-                else:
-                    ctypes.windll.user32.keybd_event(char2key(event.unicode))
-            elif platform.system() == "Darwin":
-                import keyboard
-
-                try:
-                    if event.type == "BACK_SPACE":
-                        keyboard.send("delete")
-                    else:
-                        keyboard.write(event.unicode)
-                except Exception as e:
-                    print(e)
-            elif platform.system() == "Linux":
-                print("Linux")
-
-        return {"RUNNING_MODAL"}
-
-    def invoke(self, context, event):
-        context.window_manager.modal_handler_add(self)
-        return {"RUNNING_MODAL"}
+    def after_close(self, context, event):
+        if read_remembered_show_guide():
+            bpy.ops.acon3d.tutorial_guide_popup()
 
 
 class NamedException(Exception):
@@ -468,7 +440,7 @@ class Acon3dAnchorOperator(bpy.types.Operator):
 
 
 @persistent
-def open_credential_modal(dummy):
+def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
@@ -504,17 +476,176 @@ def open_credential_modal(dummy):
     except:
         print("Failed to load cookies")
 
-    # 자동로그인 시 modal이 실행 안되고 있어서
-    # 자동로그인인 경우에도 modal 실행하도록 if문 제거
-    bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
-
     if prop.remember_username:
         prop.username = read_remembered_username()
 
+    if is_first_run:
+        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
-@persistent
-def hide_header(dummy):
-    bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
+
+class Acon3dUpdateAlertOperator(BlockingModalOperator):
+    bl_idname = "acon3d.update_alert"
+    bl_label = ""
+    bl_translation_context = "*"
+
+    def draw_modal(self, layout):
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(text="Latest version found for ABLER. Do you want to update?")
+        col.label(
+            text="When using an older version of ABLER, some features may not work properly."
+        )
+        col.operator("acon3d.update_abler", text="Update ABLER")
+        col.operator("acon3d.close_blocking_modal", text="Close")
+        row.label(text="")
+
+        main.label(text="")
+
+    def after_close(self, context, event):
+        start_authentication()
+
+
+class Acon3dUpdateAblerOperator(bpy.types.Operator):
+    bl_idname = "acon3d.update_abler"
+    bl_label = ""
+    bl_description = "Update ABLER with ABLER Launcher"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        launcher = get_launcher()
+
+        # 관리자 권한이 필요한 프로그램을 실행하는 옵션
+        launcher_process = subprocess.Popen(launcher, shell=True)
+        is_launcher_open = True
+
+        # AblerLauncher.exe가 실행되면 ABLER 종료
+        if sys.platform == "win32":
+            while get_launcher_process_count("AblerLauncher") < 1:
+                time.sleep(1)
+
+                # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
+                # 실행되면 None이 아닌 값을 return
+                if launcher_process.poll() is not None:
+                    is_launcher_open = False
+                    break
+        elif sys.platform == "darwin":
+            raise NotImplementedError("Not implemented yet for %s." % sys.platform)
+        else:
+            raise Exception("Unsupported platform")
+
+        if is_launcher_open:
+            bpy.ops.wm.quit_blender()
+
+        return {"FINISHED"}
+
+
+class Acon3dLowFileVersionWarning(BlockingModalOperator):
+    bl_idname = "acon3d.low_file_version_warning"
+    bl_label = "Warning"
+
+    def draw_modal(self, layout):
+        tr = bpy.app.translations.pgettext
+        file_version = get_file_version() or "< 0.2.6"
+        client_version = get_local_version()
+
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(
+            text=tr(
+                "This file was created in a older version of ABLER ($(fileVer))"
+            ).replace("$(fileVer)", file_version)
+        )
+        col.label(
+            text=tr(
+                "If you save in the current version ($(clientVer)), you will not be able to load this file from older version of ABLER."
+            ).replace("$(clientVer)", client_version)
+        )
+
+        row = col.row()
+        row.prop(
+            bpy.context.window_manager.ACON_prop,
+            "hide_low_version_warning",
+            text="",
+            icon="CHECKBOX_HLT",
+            emboss=False,
+            invert_checkbox=True,
+        )
+        row.label(text="Don’t show this message again.")
+
+        col.operator("acon3d.close_blocking_modal", text="Close")
+        row.label(text="")
+
+        main.label(text="")
+
+    def after_close(self, context, event):
+        start_check_server_version()
+
+
+class Acon3dHigherFileVersionError(BlockingModalOperator):
+    bl_idname = "acon3d.higher_file_version_error"
+    bl_label = "Higher File Version Error"
+
+    def draw_modal(self, layout):
+        tr = bpy.app.translations.pgettext
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(text="The file was created in a newer version of ABLER.")
+        col.label(
+            text=tr("You have ABLER version $(clientVer)").replace(
+                "$(clientVer)", get_local_version()
+            )
+        )
+        col.label(
+            text=tr("You need ABLER version $(fileVer)").replace(
+                "$(fileVer)", get_file_version()
+            )
+        )
+        col.operator("acon3d.update_abler", text="Update ABLER")
+        col.operator("acon3d.close_abler", text="Close ABLER")
+        row.label(text="")
+
+        main.label(text="")
+
+    def after_close(self, context, event):
+        start_check_server_version()
+
+
+class Acon3dCloseAblerOprator(bpy.types.Operator):
+    bl_idname = "acon3d.close_abler"
+    bl_label = "Close ABLER"
+    bl_description = "Close ABLER"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        bpy.ops.wm.quit_blender()
+        return {"FINISHED"}
 
 
 classes = (
@@ -524,6 +655,12 @@ classes = (
     Acon3dAnchorOperator,
     Acon3dNoticeOperator,
     Acon3dNoticeInvokeOperator,
+    Acon3dUpdateAlertOperator,
+    Acon3dUpdateAblerOperator,
+    Acon3dLowFileVersionWarning,
+    Acon3dHigherFileVersionError,
+    Acon3dStartUpFlowOperator,
+    Acon3dCloseAblerOprator,
 )
 
 
@@ -531,13 +668,7 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.app.handlers.load_post.append(open_credential_modal)
-    bpy.app.handlers.load_post.append(hide_header)
-
 
 def unregister():
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
-
-    bpy.app.handlers.load_post.remove(hide_header)
-    bpy.app.handlers.load_post.remove(open_credential_modal)

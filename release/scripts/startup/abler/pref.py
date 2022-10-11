@@ -8,7 +8,7 @@ from bpy.app.handlers import persistent
 from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
-from .lib import version
+from .lib.version import update_file_version
 
 
 def init_setting(dummy):
@@ -46,9 +46,24 @@ def init_setting(dummy):
     prefs_input.use_zoom_to_mouse = True
 
 
+def hide_header(dummy):
+    bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
+
+
 @persistent
 def load_handler(dummy):
+    """
+    Scene 초기화 시 발생하는 크래시를 회피하기 위한 부분
+    관련 이슈:
+    https://www.notion.so/acon3d/Issue-0039_-244e83d84c21436a87f84cb38ef1173b
+    https://www.notion.so/acon3d/Issue-0058-fd84882296d24fd7b46808e37679dc47
+    """
+    bpy.app.timers.register(delayed_load_handler)
+
+
+def delayed_load_handler():
     tracker.turn_off()
+    hide_header(None)
     try:
         init_setting(None)
         cameras.make_sure_camera_exists()
@@ -71,7 +86,6 @@ def load_handler(dummy):
         post_open.update_layers()
         post_open.hide_adjust_last_operation_panel()
         post_open.add_dummy_background_image()
-        version.show_update_alert()
     finally:
         tracker.turn_on()
 
@@ -87,6 +101,7 @@ def save_pre_handler(dummy):
     override_ACON_prop.toggle_toon_face = False
     materials_handler.toggle_toon_edge(None, override)
     materials_handler.toggle_toon_face(None, override)
+    update_file_version()
 
 
 @persistent
@@ -97,14 +112,24 @@ def save_post_handler(dummy):
         scene.view_settings.view_transform = "Standard"
 
 
+def grid_on_when_selected(dummy):
+    show_grid = len(bpy.context.selected_objects) > 0
+    if "ACON3D" in bpy.data.screens.keys() and len(bpy.data.screens["ACON3D"].areas) > 0 and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0:
+        viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
+        viewport_overlay.show_ortho_grid = show_grid
+        viewport_overlay.show_floor = show_grid
+
+
 def register():
     bpy.app.handlers.load_factory_startup_post.append(init_setting)
     bpy.app.handlers.load_post.append(load_handler)
     bpy.app.handlers.save_pre.append(save_pre_handler)
     bpy.app.handlers.save_post.append(save_post_handler)
+    bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)

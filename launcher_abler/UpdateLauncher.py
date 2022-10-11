@@ -39,7 +39,6 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
-    print(f"> url : {url}")
 
     is_release, req, state_ui, launcher_installed = get_req_from_url(
         url, state_ui, launcher_installed, dir_

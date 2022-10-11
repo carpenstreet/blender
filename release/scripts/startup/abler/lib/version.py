@@ -4,14 +4,19 @@ import sys
 import requests
 import bpy
 import configparser
+import psutil
 from distutils.version import StrictVersion
-
+from typing import Optional
+from enum import Enum
 
 # GitHub Repo의 URL 세팅
-url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
+url = "https://cms.abler3d.biz/abler_update_info"
+user_path = bpy.utils.resource_path("USER")
+low_version_warning_hidden_path = os.path.join(user_path, "lvwh")
+METADATA_NAME = ".metadata"
 
 
-def set_updater():
+def set_updater() -> str:
     home = pathlib.Path.home()
     updater = None
 
@@ -22,37 +27,50 @@ def set_updater():
         )
     elif sys.platform == "darwin":
         updater = os.path.join(home, "Library/Application Support/Blender/2.96/updater")
+    else:
+        raise Exception("Unsupported platform")
 
     return updater
 
 
-def get_launcher():
+def get_launcher() -> str:
     launcher = os.path.join(set_updater(), "AblerLauncher.exe")
     return launcher
 
 
-def get_local_version():
+def get_launcher_process_count(proc) -> int:
+    """현재 실행되고 있는 프로세스의 개수를 세기"""
+
+    proc_list = [p.name() for p in psutil.process_iter()]
+    proc_count = sum(i.startswith(proc) for i in proc_list)
+    return proc_count
+
+
+def get_local_version() -> str:
     config = configparser.ConfigParser()
-    config.read(os.path.join(set_updater(), "config.ini"))
-    abler_ver = config["main"]["installed"]
+    if os.path.isfile(os.path.join(set_updater(), "config.ini")):
+        config.read(os.path.join(set_updater(), "config.ini"))
+        abler_ver = config["main"]["installed"]
+    else:
+        abler_ver = "0.0.0"
 
     # config.ini에 installed 정보가 없을 때 버전 처리
-    if abler_ver is (None or ""):
+    if abler_ver == (None or ""):
         abler_ver = "0.0.0"
 
     return abler_ver
 
 
-def get_server_version(url):
+def get_server_version(url) -> Optional[str]:
     # Pre-Release 고려하지 않고 url 정보 받아오기
     req = None
     is_release = None
     abler_ver = None
 
     try:
-        req = requests.get(url).json()
+        req = requests.get(url, timeout=5).json()
     except Exception as e:
-        pass
+        return None
 
     if ("message" in req.keys()) and (req["message"] == "Not Found"):
         print("Release Not Found.")
@@ -70,10 +88,76 @@ def get_server_version(url):
     return abler_ver
 
 
-def show_update_alert():
+def has_server_update() -> bool:
     # 에이블러 버전만 비교하기
-    local_ver = StrictVersion(get_local_version())
-    server_ver = StrictVersion(get_server_version(url))
+    server_ver_str = get_server_version(url)
+    if not server_ver_str:
+        return False
 
-    if (len(sys.argv) > 1) and (local_ver < server_ver):
-        bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
+    local_ver = StrictVersion(get_local_version())
+    server_ver = StrictVersion(server_ver_str)
+
+    if local_ver < server_ver:
+        return True
+
+
+def get_file_version() -> Optional[str]:
+    """
+    파일이 어떤 에이블러 버전에서 저장되었는지를 반환
+
+    0.2.6 이전 버전에서는 이 기능이 없었으므로, None 반환됨
+    """
+    if text_data := bpy.data.texts.get(METADATA_NAME):
+        return text_data.ACON_metadata.file_version
+    else:
+        return None
+
+
+class FileVersionCheckResult:
+    CURRENT_VERSION = 1
+    LOW_FILE_VERSION = 2
+    HIGHER_FILE_VERSION = 3
+
+
+def check_file_version() -> FileVersionCheckResult:
+    local_version = get_local_version()
+    if file_version := get_file_version():
+        sfv = StrictVersion(file_version)
+        slv = StrictVersion(local_version)
+        if sfv > slv:
+            return FileVersionCheckResult.HIGHER_FILE_VERSION
+
+        elif sfv < slv:
+            return FileVersionCheckResult.LOW_FILE_VERSION
+
+        else:
+            return FileVersionCheckResult.CURRENT_VERSION
+    else:
+        return FileVersionCheckResult.LOW_FILE_VERSION
+
+
+def update_file_version():
+    text_data = bpy.data.texts.get(METADATA_NAME)
+    if text_data is None:
+        text_data = bpy.data.texts.new(METADATA_NAME)
+    metadata = text_data.ACON_metadata
+    metadata.file_version = get_local_version()
+
+
+def read_low_version_warning_hidden() -> bool:
+    try:
+        with open(low_version_warning_hidden_path, "r") as f:
+            return f.read().strip() == get_local_version()
+    except:
+        return False
+
+
+def remember_low_version_warning_hidden(self, context):
+    try:
+        if context.window_manager.ACON_prop.hide_low_version_warning:
+            with open(low_version_warning_hidden_path, "w") as f:
+                f.write(get_local_version())
+        else:
+            os.remove(low_version_warning_hidden_path)
+    except:
+        pass

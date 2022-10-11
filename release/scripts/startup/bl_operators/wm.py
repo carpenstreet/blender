@@ -3127,7 +3127,13 @@ class WM_MT_splash(Menu):
                     but.link = ""
                     but.link_name = ""
             layout.separator()
-        layout.label(text=abler_version())
+
+        from abler.lib.version import get_local_version
+        config_ver = get_local_version()
+
+        # layout.label(text=abler_version()) # 원래 쓰던 코드 아카이빙을 위해서 주석으로 만듬
+        layout.label(text=f"v{config_ver}")  # 현재 사용중인 코드
+
         layout.separator()
 
 

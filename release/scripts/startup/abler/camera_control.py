@@ -220,20 +220,6 @@ class RemoveBackgroundOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-def is_valid_extension(target_path, accepted):
-    _, ext = os.path.splitext(target_path)
-
-    if ext.lower() not in accepted:
-        bpy.ops.acon3d.alert(
-            "INVOKE_DEFAULT",
-            title="Check Background Image File",
-            message_1="Failed to load background image file:",
-            message_2=f"{target_path}",
-        )
-        return False
-    return True
-
-
 class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
     """Open Default Background Image"""
 
@@ -247,7 +233,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
     filepath: bpy.props.StringProperty()
 
     def execute(self, context):
-        if not self.check_path() or not is_valid_extension(self.filepath, [".png", ".jpg"]):
+        if not self.check_path(accepted=["png", "jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
@@ -288,7 +274,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
 
     def execute(self, context):
-        if not self.check_path() or not is_valid_extension(self.filepath, [".png", ".jpg"]):
+        if not self.check_path(accepted=["png", "jpg"]):
             return {"FINISHED"}
 
         new_image = bpy.data.images.load(self.filepath)
