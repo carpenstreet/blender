@@ -116,7 +116,6 @@ class Acon3dViewPanel(bpy.types.Panel):
         layout = self.layout
         layout.use_property_split = True
         layout.use_property_decorate = False  # No animation.
-        layout.operator("acon3d.fly_mode")
 
         cam = context.scene.camera
         if cam is not None:
@@ -129,28 +128,6 @@ class Acon3dViewPanel(bpy.types.Panel):
             row.prop(cam.data, "lens")
 
         return
-
-
-class Acon3dCameraPanel(bpy.types.Panel):
-    """Creates a Panel in the scene context of the properties editor"""
-
-    bl_parent_id = "ACON3D_PT_view"
-    bl_idname = "ACON3D_PT_camera"
-    bl_label = "Cameras"
-    bl_category = "Camera"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
-
-        scene = context.scene
-        row = layout.row(align=True)
-        row.prop(scene.ACON_prop, "view", text="")
-        row.operator("acon3d.create_camera", text="", icon="ADD")
-        row.operator("acon3d.delete_camera", text="", icon="REMOVE")
 
 
 def scene_mychosenobject_poll(self, object):
@@ -166,7 +143,6 @@ class Acon3dDOFPanel(bpy.types.Panel):
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
     COMPAT_ENGINES = {"BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
@@ -198,7 +174,6 @@ class Acon3dDOFPanel(bpy.types.Panel):
 
 classes = (
     Acon3dViewPanel,
-    Acon3dCameraPanel,
     CreateCameraOperator,
     DeleteCameraOperator,
     Acon3dDOFPanel,
