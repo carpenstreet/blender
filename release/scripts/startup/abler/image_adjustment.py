@@ -39,7 +39,7 @@ class Acon3dImageAdjustmentPanel(bpy.types.Panel):
 
     bl_idname = "ACON3D_PT_image_adjustment"
     bl_label = "Image Adjustment"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -57,7 +57,7 @@ class Acon3dBrightnessContrastPanel(bpy.types.Panel):
     bl_label = "Brightness / Contrast"
     bl_idname = "ACON3D_PT_image_sub_bright"
     bl_parent_id = "ACON3D_PT_image_adjustment"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -78,7 +78,7 @@ class Acon3dColorBalancePanel(bpy.types.Panel):
     bl_label = "Color Balance"
     bl_idname = "ACON3D_PT_image_sub_color"
     bl_parent_id = "ACON3D_PT_image_adjustment"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -100,7 +100,7 @@ class Acon3dHueSaturationPanel(bpy.types.Panel):
     bl_label = "Hue / Saturation"
     bl_idname = "ACON3D_PT_image_sub_hue"
     bl_parent_id = "ACON3D_PT_image_adjustment"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -121,7 +121,7 @@ class Acon3dExposurePanel(bpy.types.Panel):
     bl_label = "Exposure"
     bl_idname = "ACON3D_PT_image_sub_exposure"
     bl_parent_id = "ACON3D_PT_image_adjustment"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}

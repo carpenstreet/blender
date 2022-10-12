@@ -455,7 +455,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
     bl_label = "General"
-    bl_category = "ACON3D"
+    bl_category = "General"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
 

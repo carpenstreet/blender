@@ -99,7 +99,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 class Acon3dImportExternalFilesPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_import_external_files"
     bl_label = "Import External Files"
-    bl_category = "ACON3D"
+    bl_category = "General"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}

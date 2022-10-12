@@ -150,7 +150,7 @@ class Acon3dStateActionOperator(bpy.types.Operator):
 class Acon3dObjectPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Object_Main"
     bl_label = "Object Control"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -187,7 +187,7 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Object_Main"
     bl_idname = "ACON_PT_Object_Sub"
     bl_label = "Use State"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -226,7 +226,7 @@ class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Object_Main"
     bl_idname = "ACON_PT_Group_Navigation"
     bl_label = "Group Navigation"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}

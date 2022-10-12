@@ -37,7 +37,7 @@ import bpy
 class Acon3dEdgePanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Edge_Main"
     bl_label = "Edges Control"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -54,7 +54,7 @@ class EdgeSubPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Edge_Main"
     bl_idname = "ACON_PT_Edge_Sub"
     bl_label = "Toon Style"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}

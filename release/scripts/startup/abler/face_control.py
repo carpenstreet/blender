@@ -90,7 +90,7 @@ class MaterialPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Face_Main"
     bl_idname = "ACON_PT_Material"
     bl_label = "Object Material"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -151,7 +151,7 @@ class MaterialPanel(bpy.types.Panel):
 class Acon3dFacePanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Face_Main"
     bl_label = "Face Control"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -178,7 +178,7 @@ class FaceSubPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Face_Main"
     bl_idname = "ACON_PT_Face_sub"
     bl_label = "Toon Style"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
@@ -218,7 +218,7 @@ class Acon3dBloomPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Face_Main"
     bl_idname = "ACON3D_BLOOM_PT_Main"
     bl_label = "Bloom"
-    bl_category = "ACON3D"
+    bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {"DEFAULT_CLOSED"}
