@@ -47,7 +47,6 @@ from .style_tab import object_control
 from .style_tab import image_adjustment
 from .style_tab import shadow_control
 from .export_tab import render_control
-from . import import_external_files
 from . import pref
 from . import operators
 from . import warning_modal
@@ -69,7 +68,6 @@ importedLibrary = [
     image_adjustment,
     shadow_control,
     render_control,
-    import_external_files,
     pref,
     operators,
     warning_modal,
