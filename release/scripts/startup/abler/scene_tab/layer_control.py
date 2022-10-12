@@ -32,7 +32,7 @@ bl_info = {
 
 
 import bpy
-from .lib import layers
+from ..lib import layers
 
 
 class Acon3dCreateGroupOperator(bpy.types.Operator):

@@ -32,8 +32,8 @@ bl_info = {
 
 
 import bpy
-from .lib import scenes
-from .lib.tracker import tracker
+from ..lib import scenes
+from ..lib.tracker import tracker
 
 
 class CreateSceneOperator(bpy.types.Operator):
