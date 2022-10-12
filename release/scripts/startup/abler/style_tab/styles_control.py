@@ -58,7 +58,7 @@ class Acon3dStylePanel(bpy.types.Panel):
 
 class LinePanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
-    bl_idname = "ACON_PT_Edge_Sub"
+    bl_idname = "ACON_PT_Line"
     bl_label = "Line"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
@@ -82,7 +82,31 @@ class LinePanel(bpy.types.Panel):
             layout.prop(prop, "edge_line_detail", text="Line Detail", slider=True)
 
 
-classes = (Acon3dStylePanel, LinePanel)
+class SunlightPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON3D_PT_Sunlight"
+    bl_label = "Sunlight"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.prop(context.scene.ACON_prop, "toggle_sun", text="")
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_decorate = False  # No animation.
+        layout.use_property_split = True
+        row = layout.row(align=True)
+        row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
+        row = layout.row(align=True)
+        row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
+        row = layout.row(align=True)
+        row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
+
+
+classes = (Acon3dStylePanel, LinePanel, SunlightPanel)
 
 
 def register():
