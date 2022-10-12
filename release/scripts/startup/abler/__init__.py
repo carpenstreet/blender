@@ -37,14 +37,14 @@ import sys
 from types import ModuleType
 
 from . import custom_properties
-from .general import general
+from .general_tab import general
+from .camera_tab import camera_control
 from . import scene_control
 from . import edge_control
 from . import face_control
 from . import object_control
 from . import image_adjustment
 from . import shadow_control
-from . import camera_control
 from . import layer_control
 from . import render_control
 from . import import_external_files

@@ -32,8 +32,8 @@ bl_info = {
 
 
 import bpy
-from .lib import cameras
-from .lib.import_file import AconImportHelper
+from ..lib import cameras
+from ..lib.import_file import AconImportHelper
 
 
 class CreateCameraOperator(bpy.types.Operator):
