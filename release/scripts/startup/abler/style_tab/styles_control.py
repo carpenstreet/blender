@@ -310,6 +310,100 @@ class BloomPanel(bpy.types.Panel):
         col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 
 
+class ColorAdjustmentPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON3D_PT_ColorAdjustment"
+    bl_label = "Color Adjustment"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        return
+
+
+class BrightnessContrastPanel(bpy.types.Panel):
+    bl_label = "Brightness / Contrast"
+    bl_idname = "ACON3D_PT_image_sub_bright"
+    bl_parent_id = "ACON3D_PT_ColorAdjustment"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        layout.prop(prop, "image_adjust_brightness", text="Brightness", slider=True)
+        layout.prop(prop, "image_adjust_contrast", text="Contrast", slider=True)
+
+
+class ColorBalancePanel(bpy.types.Panel):
+    bl_label = "Color Balance"
+    bl_idname = "ACON3D_PT_image_sub_color"
+    bl_parent_id = "ACON3D_PT_ColorAdjustment"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        layout.prop(prop, "image_adjust_color_r", text="Red", slider=True)
+        layout.prop(prop, "image_adjust_color_g", text="Green", slider=True)
+        layout.prop(prop, "image_adjust_color_b", text="Blue", slider=True)
+
+
+class HueSaturationPanel(bpy.types.Panel):
+    bl_label = "Hue / Saturation"
+    bl_idname = "ACON3D_PT_image_sub_hue"
+    bl_parent_id = "ACON3D_PT_ColorAdjustment"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        layout.prop(prop, "image_adjust_hue", text="Hue", slider=True)
+        layout.prop(prop, "image_adjust_saturation", text="Saturation", slider=True)
+
+
+class ExposurePanel(bpy.types.Panel):
+    bl_label = "Exposure"
+    bl_idname = "ACON3D_PT_image_sub_exposure"
+    bl_parent_id = "ACON3D_PT_ColorAdjustment"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        layout.prop(prop, "exposure", text="Exposure", slider=True)
+        layout.prop(prop, "gamma", text="Gamma", slider=True)
+
+
 classes = (
     Acon3dStylePanel,
     LinePanel,
@@ -319,6 +413,11 @@ classes = (
     CloneMaterialOperator,
     ObjectPropertiesPanel,
     BloomPanel,
+    ColorAdjustmentPanel,
+    BrightnessContrastPanel,
+    ColorBalancePanel,
+    HueSaturationPanel,
+    ExposurePanel,
 )
 
 
