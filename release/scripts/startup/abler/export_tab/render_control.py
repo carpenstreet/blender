@@ -559,7 +559,6 @@ class Acon3dRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
