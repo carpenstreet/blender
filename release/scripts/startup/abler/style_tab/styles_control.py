@@ -106,7 +106,24 @@ class SunlightPanel(bpy.types.Panel):
         row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
 
 
-classes = (Acon3dStylePanel, LinePanel, SunlightPanel)
+class ShadowPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON3D_PT_Shadow"
+    bl_label = "Shadow / Shading"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw_header(self, context):
+        layout = self.layout
+        # TODO : header에 shadow/shading 모두 꺼주는 custom_properties 달아주기
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(context.scene.ACON_prop, "toggle_shadow", text="Shadow")
+
+
+classes = (Acon3dStylePanel, LinePanel, SunlightPanel, ShadowPanel)
 
 
 def register():
