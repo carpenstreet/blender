@@ -43,10 +43,7 @@ from .camera_tab import background_control
 from .scene_tab import scene_control
 from .scene_tab import layer_control
 from .style_tab import styles_control
-from .style_tab import face_control
 from .style_tab import object_control
-from .style_tab import image_adjustment
-from .style_tab import shadow_control
 from .export_tab import render_control
 from . import pref
 from . import operators
@@ -65,10 +62,7 @@ importedLibrary = [
     scene_control,
     layer_control,
     styles_control,
-    face_control,
     object_control,
-    image_adjustment,
-    shadow_control,
     render_control,
     pref,
     operators,
