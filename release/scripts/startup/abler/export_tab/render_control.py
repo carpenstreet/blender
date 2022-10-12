@@ -19,9 +19,9 @@
 
 import bpy, platform, os, subprocess
 from bpy_extras.io_utils import ImportHelper, ExportHelper
-from .lib import render, cameras
-from .lib.materials import materials_handler
-from .lib.tracker import tracker
+from ..lib import render, cameras
+from ..lib.materials import materials_handler
+from ..lib.tracker import tracker
 from bpy.props import StringProperty
 
 
