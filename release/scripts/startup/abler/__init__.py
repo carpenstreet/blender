@@ -41,11 +41,11 @@ from .general_tab import general
 from .camera_tab import camera_control
 from .scene_tab import scene_control
 from .scene_tab import layer_control
-from . import edge_control
-from . import face_control
-from . import object_control
-from . import image_adjustment
-from . import shadow_control
+from .style_tab import edge_control
+from .style_tab import face_control
+from .style_tab import object_control
+from .style_tab import image_adjustment
+from .style_tab import shadow_control
 from . import render_control
 from . import import_external_files
 from . import pref

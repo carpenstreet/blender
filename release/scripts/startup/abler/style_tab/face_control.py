@@ -32,7 +32,7 @@ bl_info = {
 
 
 import bpy
-from .lib.tracker import tracker
+from ..lib.tracker import tracker
 
 
 class MATERIAL_UL_List(bpy.types.UIList):

@@ -32,8 +32,8 @@ bl_info = {
 
 
 import bpy
-from .lib import layers
-from .lib.tracker import tracker
+from ..lib import layers
+from ..lib.tracker import tracker
 
 
 class GroupNavigateTopOperator(bpy.types.Operator):
