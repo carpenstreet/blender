@@ -166,7 +166,127 @@ class ShadingPanel(bpy.types.Panel):
                 )
 
 
-classes = (Acon3dStylePanel, LinePanel, SunlightPanel, ShadowPanel, ShadingPanel)
+class MATERIAL_UL_List(bpy.types.UIList):
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname
+    ):
+        layout.use_property_split = True
+        layout.use_property_decorate = False
+        ob = data
+        slot = item
+        if ma := slot.material:
+            layout.prop(ma, "name", text="", emboss=False, icon_value=icon)
+            layout.prop(ma.ACON_prop, "type", text="")
+
+            toonNode = ma.node_tree.nodes.get("ACON_nodeGroup_combinedToon")
+
+            if not toonNode:
+                return
+
+            if ma.ACON_prop.type == "Diffuse":
+                layout.label(text="", translate=False)
+
+            if ma.ACON_prop.type == "Mirror":
+                layout.prop(toonNode.inputs[6], "default_value", text="")
+
+            if ma.ACON_prop.type == "Glow":
+                layout.prop(toonNode.inputs[5], "default_value", text="")
+
+            if ma.ACON_prop.type == "Clear":
+                layout.prop(toonNode.inputs[7], "default_value", text="")
+
+
+class CloneMaterialOperator(bpy.types.Operator):
+    """Clone selected material"""
+
+    bl_idname = "acon3d.clone_material"
+    bl_label = "Clone Material"
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        try:
+            return bool(context.object.active_material)
+        except:
+            return False
+
+    def execute(self, context):
+        mat = context.object.active_material.copy()
+        context.object.active_material = mat
+
+        return {"FINISHED"}
+
+
+class ObjectPropertiesPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON_PT_ObjectProperties"
+    bl_label = "Object Properties"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        layout = self.layout
+        obj = context.object
+
+        if obj and context.selected_objects:
+            # Breadcrumb을 그려줌
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text=obj.name, icon="OBJECT_DATA")
+            col = row.column()
+            col.label(text="", icon="RIGHTARROW")
+            if obj.active_material:
+                col = row.column()
+                col.label(text=obj.active_material.name, icon="MATERIAL")
+            # MATERIAL_UL_List을 그려주는 부분
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.template_list(
+                "MATERIAL_UL_List",
+                "",
+                obj,
+                "material_slots",
+                obj,
+                "active_material_index",
+                rows=2,
+            )
+            if mat := obj.active_material:
+                box = col.box()
+                row = box.row()
+                row.template_ID(
+                    obj, "active_material", new="acon3d.clone_material", unlink=""
+                )
+                row = box.row()
+                row.prop(mat.ACON_prop, "toggle_shadow")
+                row = box.row()
+                row.prop(mat.ACON_prop, "toggle_shading")
+                row = box.row()
+                row.prop(mat.ACON_prop, "toggle_edge")
+        else:
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            col.label(text="No selected object")
+
+
+classes = (
+    Acon3dStylePanel,
+    LinePanel,
+    SunlightPanel,
+    ShadowPanel,
+    ShadingPanel,
+    CloneMaterialOperator,
+    ObjectPropertiesPanel,
+)
 
 
 def register():
