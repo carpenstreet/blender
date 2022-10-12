@@ -27,7 +27,7 @@ bl_info = {
     "warning": "",  # used for warning icon and text in addons panel
     "wiki_url": "",
     "tracker_url": "",
-    "category": "ACON3D",
+    "category": "CAMERA",
 }
 
 
@@ -196,184 +196,12 @@ class Acon3dDOFPanel(bpy.types.Panel):
             sub.prop(dof, "aperture_fstop", text="F-stop")
 
 
-class RemoveBackgroundOperator(bpy.types.Operator):
-    """Removes Current Background Image"""
-
-    bl_idname = "acon3d.background_image_remove"
-    bl_label = "Remove Background Image"
-    bl_translation_context = "*"
-    bl_options = {"REGISTER", "UNDO"}
-
-    index: bpy.props.IntProperty(name="Index", default=0)
-
-    def execute(self, context):
-        # self.index를 유저가 마음대로 바꿀 수 있는 패널로 인해 try/except로 감쌈
-        try:
-            image = context.scene.camera.data.background_images[self.index]
-            if image.image:
-                bpy.data.images.remove(image.image)
-            image.image = None
-            bpy.context.scene.camera.data.background_images.remove(image)
-        except:
-            pass
-        return {"FINISHED"}
-
-
-class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Default Background Image"""
-
-    bl_idname = "acon3d.default_background_image_open"
-    bl_label = "Default Image"
-    bl_translation_context = "*"
-    bl_options = {"REGISTER", "UNDO"}
-
-    index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
-    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
-    filepath: bpy.props.StringProperty()
-
-    def execute(self, context):
-        if not self.check_path(accepted=["png", "jpg"]):
-            return {"FINISHED"}
-
-        new_image = bpy.data.images.load(self.filepath)
-        image = context.scene.camera.data.background_images[self.index]
-        if image.image:
-            bpy.data.images.remove(image.image)
-        image.image = new_image
-        return {"FINISHED"}
-
-    def invoke(self, context, event):
-        path_abler = bpy.utils.preset_paths("abler")[0]
-        self.filepath = path_abler + "/Background_Image/"
-        wm = context.window_manager.fileselect_add(self)
-        return {"RUNNING_MODAL"}
-
-    def draw(self, context):
-        # FileBrowser UI 변경
-        space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        space.show_region_tool_props = False
-        space.show_region_ui = False
-        space.show_region_toolbar = False
-
-
-class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Custom Background Image"""
-
-    bl_idname = "acon3d.custom_background_image_open"
-    bl_label = "Custom Image"
-    bl_translation_context = "*"
-    bl_options = {"REGISTER", "UNDO"}
-
-    image_extension = "*.png;*.jpg;"
-    index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
-    filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
-
-    def execute(self, context):
-        if not self.check_path(accepted=["png", "jpg"]):
-            return {"FINISHED"}
-
-        new_image = bpy.data.images.load(self.filepath)
-        image = context.scene.camera.data.background_images[self.index]
-        if image.image:
-            bpy.data.images.remove(image.image)
-        image.image = new_image
-        return {"FINISHED"}
-
-    def draw(self, context):
-        # FileBrowser UI 변경
-        space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_invert = True
-        space.show_region_tool_props = False
-
-
-class Acon3dBackgroundPanel(bpy.types.Panel):
-    bl_idname = "ACON3D_PT_background"
-    bl_label = "Background"
-    bl_category = "Camera"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-
-    def draw_header(self, context):
-        layout = self.layout
-        layout.label(icon="IMAGE_BACKGROUND")
-
-    def draw(self, context):
-        layout = self.layout
-        layout.operator("view3d.background_image_add", text="Add Image", text_ctxt="*")
-
-        camObj = context.scene.camera
-
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-
-        if camObj is not None:
-            background_images = camObj.data.background_images
-
-            l = len(background_images)
-            for i, bg in enumerate(reversed(background_images)):
-                count = l - i - 1
-
-                box = layout.box()
-                row = box.row(align=True)
-                row.prop(bg, "show_expanded", text="", emboss=False)
-
-                if bg.source == "IMAGE" and bg.image:
-                    row.prop(bg.image, "name", text="", emboss=False)
-                elif bg.source == "MOVIE_CLIP" and bg.clip:
-                    row.prop(bg.clip, "name", text="", emboss=False)
-                elif bg.source and bg.use_camera_clip:
-                    row.label(text="Active Clip")
-                else:
-                    row.label(text="Not Set")
-
-                row.operator(
-                    "acon3d.background_image_remove", text="", emboss=False, icon="X"
-                ).index = count
-
-                if bg.show_expanded:
-                    row = box.row()
-                    row.operator(
-                        "acon3d.default_background_image_open", text="Default Image"
-                    ).index = count
-                    row.operator(
-                        "acon3d.custom_background_image_open", text="Custom Image"
-                    ).index = count
-                    row = box.row()
-                    row.prop(bg, "alpha")
-                    row = box.row()
-                    row.prop(bg, "display_depth", text="Placement", expand=True)
-                    row = box.row()
-                    row.prop(bg, "frame_method", expand=True)
-                    row = box.row()
-                    row.prop(bg, "offset")
-                    row = box.row()
-                    row.prop(bg, "rotation")
-                    row = box.row()
-                    row.prop(bg, "scale")
-                    row = box.row(heading="Flip")
-                    row.prop(bg, "use_flip_x", text="X")
-                    row.prop(bg, "use_flip_y", text="Y")
-
-
 classes = (
     Acon3dViewPanel,
     Acon3dCameraPanel,
     CreateCameraOperator,
     DeleteCameraOperator,
     Acon3dDOFPanel,
-    RemoveBackgroundOperator,
-    OpenDefaultBackgroundOperator,
-    OpenCustomBackgroundOperator,
-    Acon3dBackgroundPanel,
 )
 
 

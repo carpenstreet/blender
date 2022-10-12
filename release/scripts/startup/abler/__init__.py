@@ -39,6 +39,7 @@ from types import ModuleType
 from . import custom_properties
 from .general_tab import general
 from .camera_tab import camera_control
+from .camera_tab import background_control
 from .scene_tab import scene_control
 from .scene_tab import layer_control
 from .style_tab import edge_control
@@ -60,6 +61,7 @@ importedLibrary = [
     custom_properties,
     general,
     camera_control,
+    background_control,
     scene_control,
     layer_control,
     edge_control,
