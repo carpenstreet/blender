@@ -278,6 +278,38 @@ class ObjectPropertiesPanel(bpy.types.Panel):
             col.label(text="No selected object")
 
 
+class BloomPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON_PT_BLOOM"
+    bl_label = "Bloom"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    COMPAT_ENGINES = {"BLENDER_EEVEE"}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(scene.ACON_prop, "use_bloom", text="")
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        scene = context.scene
+        eevee_prop = scene.eevee
+        prop = scene.ACON_prop
+
+        layout.active = eevee_prop.use_bloom
+        col = layout.column()
+        col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
+        col.prop(prop, "bloom_knee", text="Knee", slider=True)
+        col.prop(prop, "bloom_radius", text="Radius", slider=True)
+        col.prop(eevee_prop, "bloom_color")
+        col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
+        col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
+
+
 classes = (
     Acon3dStylePanel,
     LinePanel,
@@ -286,6 +318,7 @@ classes = (
     ShadingPanel,
     CloneMaterialOperator,
     ObjectPropertiesPanel,
+    BloomPanel,
 )
 
 
