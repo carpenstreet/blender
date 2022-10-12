@@ -107,7 +107,6 @@ class Acon3dViewPanel(bpy.types.Panel):
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         layout = self.layout
@@ -297,13 +296,15 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
-    bl_parent_id = "ACON3D_PT_view"
     bl_idname = "ACON3D_PT_background"
-    bl_label = "Background Images"
+    bl_label = "Background"
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.label(icon="IMAGE_BACKGROUND")
 
     def draw(self, context):
         layout = self.layout
