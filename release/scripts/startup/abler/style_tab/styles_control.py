@@ -45,10 +45,44 @@ class Acon3dStylePanel(bpy.types.Panel):
         layout.label(icon="MATERIAL")
 
     def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        col = row.column()
+        col.scale_x = 3
+        col.separator()
+        col = row.column()
+        row = col.row()
+        row.prop(context.scene.ACON_prop, "toggle_texture", text="Texture")
         return
 
 
-classes = (Acon3dStylePanel,)
+class LinePanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON_PT_Edge_Sub"
+    bl_label = "Line"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.prop(context.scene.ACON_prop, "toggle_toon_edge", text="")
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        prop = context.scene.ACON_prop
+
+        if prop.toggle_toon_edge:
+
+            layout.prop(prop, "edge_min_line_width", text="Min Line Width", slider=True)
+            layout.prop(prop, "edge_max_line_width", text="Max Line Width", slider=True)
+            layout.prop(prop, "edge_line_detail", text="Line Detail", slider=True)
+
+
+classes = (Acon3dStylePanel, LinePanel)
 
 
 def register():

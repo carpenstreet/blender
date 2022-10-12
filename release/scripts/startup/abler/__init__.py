@@ -43,7 +43,6 @@ from .camera_tab import background_control
 from .scene_tab import scene_control
 from .scene_tab import layer_control
 from .style_tab import styles_control
-from .style_tab import edge_control
 from .style_tab import face_control
 from .style_tab import object_control
 from .style_tab import image_adjustment
@@ -66,7 +65,6 @@ importedLibrary = [
     scene_control,
     layer_control,
     styles_control,
-    edge_control,
     face_control,
     object_control,
     image_adjustment,
