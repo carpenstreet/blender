@@ -71,7 +71,7 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     """Show Tutorial Guide"""
 
     bl_idname = "acon3d.tutorial_guide_popup"
-    bl_label = "Show Tutorial Guide"
+    bl_label = "Quick Start Guide"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -233,27 +233,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
 
-class ToggleToolbarOperator(bpy.types.Operator):
-    """Toggle toolbar visibility"""
-
-    bl_idname = "acon3d.context_toggle"
-    bl_label = "Toggle Toolbar"
-    bl_translation_context = "*"
-
-    def execute(self, context):
-        tracker.toggle_toolbar()
-
-        context.scene.render.engine = "BLENDER_EEVEE"
-        for area in context.screen.areas:
-            if area.type == "VIEW_3D":
-                for space in area.spaces:
-                    if space.type == "VIEW_3D":
-                        value = space.show_region_toolbar
-                        space.show_region_toolbar = not value
-
-        return {"FINISHED"}
-
-
 def update_recent_files(target_path, is_add=False):
     """
     Update Recent Files in User Resources
@@ -310,7 +289,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
-    bl_label = "File Open"
+    bl_label = "Open"
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
@@ -360,7 +339,7 @@ class FlyOperator(bpy.types.Operator):
     """Move around the scene using WASD, QE, and mouse like FPS game"""
 
     bl_idname = "acon3d.fly_mode"
-    bl_label = "Fly Mode (shift + `)"
+    bl_label = "Fly with WASD (shift + `)"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -544,8 +523,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row.prop(view, "language")
         row = layout.row()
-        row.operator("acon3d.context_toggle")
-        row = layout.row()
         row.operator("acon3d.fly_mode")
 
         row = layout.row()
@@ -574,7 +551,6 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
-    ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
