@@ -120,10 +120,53 @@ class ShadowPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.scene.ACON_prop, "toggle_shadow", text="Shadow")
+        row = layout.row()
+        col = row.column()
+        col.scale_x = 3
+        col.separator()
+        col = row.column()
+        row = col.row()
+        row.prop(context.scene.ACON_prop, "toggle_shadow", text="Shadow")
 
 
-classes = (Acon3dStylePanel, LinePanel, SunlightPanel, ShadowPanel)
+class ShadingPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_Shadow"
+    bl_idname = "ACON_PT_Shading"
+    bl_label = "Toon Style Shading"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.prop(context.scene.ACON_prop, "toggle_toon_face", text="")
+
+    def draw(self, context):
+        layout = self.layout
+        layout.use_property_split = True
+        layout.use_property_decorate = False  # No animation.
+
+        if context.scene.ACON_prop.toggle_toon_face:
+
+            prop = context.scene.ACON_prop
+
+            col = layout.column()
+            col.prop(prop, "toon_shading_depth")
+
+            if prop.toon_shading_depth == "2":
+                col.prop(
+                    prop, "toon_shading_brightness_1", text="Brightness", slider=True
+                )
+            else:
+                col.prop(
+                    prop, "toon_shading_brightness_1", text="Brightness 1", slider=True
+                )
+                col.prop(
+                    prop, "toon_shading_brightness_2", text="Brightness 2", slider=True
+                )
+
+
+classes = (Acon3dStylePanel, LinePanel, SunlightPanel, ShadowPanel, ShadingPanel)
 
 
 def register():
