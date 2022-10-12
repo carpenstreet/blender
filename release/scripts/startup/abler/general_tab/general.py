@@ -34,11 +34,11 @@ import os
 from datetime import datetime, timedelta
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
-from .lib import scenes
-from .lib.materials import materials_setup
-from .lib.tracker import tracker
-from .lib.read_cookies import read_remembered_show_guide
-from .lib.import_file import AconImportHelper
+from ..lib import scenes
+from ..lib.materials import materials_setup
+from ..lib.tracker import tracker
+from ..lib.read_cookies import read_remembered_show_guide
+from ..lib.import_file import AconImportHelper
 
 
 def split_filepath(filepath):

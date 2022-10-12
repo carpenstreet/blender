@@ -37,7 +37,7 @@ import sys
 from types import ModuleType
 
 from . import custom_properties
-from . import general
+from .general import general
 from . import scene_control
 from . import edge_control
 from . import face_control
