@@ -64,6 +64,8 @@
 #include "WM_api.h"
 #include "WM_types.h"
 
+#include "RNA_access.h"
+#include "RNA_define.h"
 #include "wm.h"
 
 static uiBlock *last_tutorial_block = NULL;
@@ -374,11 +376,17 @@ void WM_OT_splash_about(wmOperatorType *ot)
  * wm.py의 WM_MT_splash_tutorial 클래스의 UI를 받아오기 때문에 1,2,3 UI가 동일함
  */
 
-static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
+static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height, void *arg_op)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_1_png[];
-  extern int datatoc_tutorial_guide_1_png_size;
+  extern char datatoc_tutorial_guide_1_ko_KR_png[];
+  extern int datatoc_tutorial_guide_1_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_1_en_US_png[];
+  extern int datatoc_tutorial_guide_1_en_US_png_size;
+  // Operator argument에서 current language 받아오기
+  wmOperator *op = (wmOperator *)arg_op;
+  char current_lang[10];
+  RNA_string_get(op->ptr, "current_lang", current_lang);
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -387,14 +395,22 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
       BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_1.png");
+          splash_filepath, sizeof(splash_filepath), template_directory, strcat(strcat("tutorial_guide_1_", current_lang), ".png"));
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_1_png;
-    size_t splash_data_size = datatoc_tutorial_guide_1_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0){
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_1_ko_KR_png_size;
+    }
+    else{
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_1_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -418,7 +434,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 #endif
 }
 
-static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *UNUSED(arg))
+static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *arg_op)
 {
   const uiStyle *style = UI_style_get_dpi();
 
@@ -440,7 +456,7 @@ static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *U
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
-  ImBuf *ibuf = wm_block_splash_tutorial_image_1(splash_width, &splash_height);
+  ImBuf *ibuf = wm_block_splash_tutorial_image_1(splash_width, &splash_height, arg_op);
 
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
@@ -490,9 +506,9 @@ static uiBlock *wm_block_create_tutorial_1(bContext *C, ARegion *region, void *U
   return block;
 }
 
-static int wm_tutorial_invoke_1(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_tutorial_invoke_1(bContext *C, wmOperator *op, const wmEvent *UNUSED(event))
 {
-  UI_popup_block_invoke(C, wm_block_create_tutorial_1, NULL, NULL);
+  UI_popup_block_invoke(C, wm_block_create_tutorial_1, op, NULL);
 
   return OPERATOR_FINISHED;
 }
@@ -505,14 +521,28 @@ void WM_OT_splash_tutorial_1(wmOperatorType *ot)
 
   ot->invoke = wm_tutorial_invoke_1;
   ot->poll = WM_operator_winactive;
+
+  RNA_def_string(
+      ot->srna,
+      "current_lang",
+      "en_US",
+      10,
+      "cur_language",
+      "cur_language"
+  );
 }
 
-static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
+static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height, void *arg_op)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_2_png[];
-  extern int datatoc_tutorial_guide_2_png_size;
-
+  extern char datatoc_tutorial_guide_2_ko_KR_png[];
+  extern int datatoc_tutorial_guide_2_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_2_en_US_png[];
+  extern int datatoc_tutorial_guide_2_en_US_png_size;
+  // Operator argument에서 current language 받아오기
+  wmOperator *op = (wmOperator *)arg_op;
+  char current_lang[10];
+  RNA_string_get(op->ptr, "current_lang", current_lang);
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
     char splash_filepath[FILE_MAX];
@@ -520,14 +550,22 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
       BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_2.png");
+          splash_filepath, sizeof(splash_filepath), template_directory, strcat(strcat("tutorial_guide_2_", current_lang), ".png"));
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_2_png;
-    size_t splash_data_size = datatoc_tutorial_guide_2_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0){
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_2_ko_KR_png_size;
+    }
+    else{
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_2_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -551,7 +589,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 #endif
 }
 
-static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *UNUSED(arg))
+static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *arg_op)
 {
   const uiStyle *style = UI_style_get_dpi();
 
@@ -573,7 +611,7 @@ static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *U
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
-  ImBuf *ibuf = wm_block_splash_tutorial_image_2(splash_width, &splash_height);
+  ImBuf *ibuf = wm_block_splash_tutorial_image_2(splash_width, &splash_height, arg_op);
 
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
@@ -623,9 +661,9 @@ static uiBlock *wm_block_create_tutorial_2(bContext *C, ARegion *region, void *U
   return block;
 }
 
-static int wm_tutorial_invoke_2(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_tutorial_invoke_2(bContext *C, wmOperator *op, const wmEvent *UNUSED(event))
 {
-  UI_popup_block_invoke(C, wm_block_create_tutorial_2, NULL, NULL);
+  UI_popup_block_invoke(C, wm_block_create_tutorial_2, op, NULL);
 
   return OPERATOR_FINISHED;
 }
@@ -638,13 +676,28 @@ void WM_OT_splash_tutorial_2(wmOperatorType *ot)
 
   ot->invoke = wm_tutorial_invoke_2;
   ot->poll = WM_operator_winactive;
+
+  RNA_def_string(
+      ot->srna,
+      "current_lang",
+      "en_US",
+      10,
+      "cur_language",
+      "cur_language"
+  );
 }
 
-static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
+static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height, void *arg_op)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_3_png[];
-  extern int datatoc_tutorial_guide_3_png_size;
+  extern char datatoc_tutorial_guide_3_ko_KR_png[];
+  extern int datatoc_tutorial_guide_3_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_3_en_US_png[];
+  extern int datatoc_tutorial_guide_3_en_US_png_size;
+  // Operator argument에서 current language 받아오기
+  wmOperator *op = (wmOperator *)arg_op;
+  char current_lang[10];
+  RNA_string_get(op->ptr, "current_lang", current_lang);
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -653,14 +706,22 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
       BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_3.png");
+          splash_filepath, sizeof(splash_filepath), template_directory, strcat(strcat("tutorial_guide_3_", current_lang), ".png"));
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_3_png;
-    size_t splash_data_size = datatoc_tutorial_guide_3_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0){
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_3_ko_KR_png_size;
+    }
+    else{
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_3_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -684,7 +745,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 #endif
 }
 
-static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *UNUSED(arg))
+static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *arg_op)
 {
   const uiStyle *style = UI_style_get_dpi();
 
@@ -706,7 +767,7 @@ static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *U
 
   /* Would be nice to support caching this, so it only has to be re-read (and likely resized) on
    * first draw or if the image changed. */
-  ImBuf *ibuf = wm_block_splash_tutorial_image_3(splash_width, &splash_height);
+  ImBuf *ibuf = wm_block_splash_tutorial_image_3(splash_width, &splash_height, arg_op);
 
   uiBut *but = uiDefButImage(
       block, ibuf, 0, 0.5f * U.widget_unit, splash_width, splash_height, NULL);
@@ -756,9 +817,9 @@ static uiBlock *wm_block_create_tutorial_3(bContext *C, ARegion *region, void *U
   return block;
 }
 
-static int wm_tutorial_invoke_3(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_tutorial_invoke_3(bContext *C, wmOperator *op, const wmEvent *UNUSED(event))
 {
-  UI_popup_block_invoke(C, wm_block_create_tutorial_3, NULL, NULL);
+  UI_popup_block_invoke(C, wm_block_create_tutorial_3, op, NULL);
 
   return OPERATOR_FINISHED;
 }
@@ -771,6 +832,15 @@ void WM_OT_splash_tutorial_3(wmOperatorType *ot)
 
   ot->invoke = wm_tutorial_invoke_3;
   ot->poll = WM_operator_winactive;
+
+  RNA_def_string(
+      ot->srna,
+      "current_lang",
+      "en_US",
+      10,
+      "cur_language",
+      "cur_language"
+  );
 }
 
 static int wm_tutorial_close_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
