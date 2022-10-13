@@ -106,9 +106,9 @@ class SunlightPanel(bpy.types.Panel):
         row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
 
 
-class ShadowPanel(bpy.types.Panel):
+class ShadowShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
-    bl_idname = "ACON3D_PT_Shadow"
+    bl_idname = "ACON3D_PT_ShadowShading"
     bl_label = "Shadow / Shading"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
@@ -130,7 +130,7 @@ class ShadowPanel(bpy.types.Panel):
 
 
 class ShadingPanel(bpy.types.Panel):
-    bl_parent_id = "ACON3D_PT_Shadow"
+    bl_parent_id = "ACON3D_PT_ShadowShading"
     bl_idname = "ACON_PT_Shading"
     bl_label = "Toon Style Shading"
     bl_category = "Style"
@@ -408,7 +408,7 @@ classes = (
     Acon3dStylesPanel,
     LinePanel,
     SunlightPanel,
-    ShadowPanel,
+    ShadowShadingPanel,
     ShadingPanel,
     CloneMaterialOperator,
     ObjectPropertiesPanel,
