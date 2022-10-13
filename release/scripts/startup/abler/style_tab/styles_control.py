@@ -33,7 +33,7 @@ bl_info = {
 import bpy
 
 
-class Acon3dStylePanel(bpy.types.Panel):
+class Acon3dStylesPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Styles"
     bl_label = "Styles"
     bl_category = "Style"
@@ -405,7 +405,7 @@ class ExposurePanel(bpy.types.Panel):
 
 
 classes = (
-    Acon3dStylePanel,
+    Acon3dStylesPanel,
     LinePanel,
     SunlightPanel,
     ShadowPanel,
