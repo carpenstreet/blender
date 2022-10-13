@@ -50,7 +50,8 @@ class Scene_UL_List(bpy.types.UIList):
     ):
 
         if self.layout_type in {"DEFAULT", "COMPACT"}:
-            layout.label(text=item.name, icon="FILE")
+            # 칸 간격을 위해 공백 2칸을 앞에 넣어줌
+            layout.label(text="  " + item.name)
 
 
 class CreateSceneOperator(bpy.types.Operator):
