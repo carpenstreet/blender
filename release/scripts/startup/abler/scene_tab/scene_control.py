@@ -178,7 +178,7 @@ class Acon3dScenesPanel(bpy.types.Panel):
             context.window_manager.ACON_prop,
             "active_scene_index",
         )
-        col = row.column()
+        col = row.column(align=True)
         col.operator("acon3d.create_scene", text="", icon="ADD")
         col.operator("acon3d.delete_scene", text="", icon="REMOVE")
 
