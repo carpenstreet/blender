@@ -38,12 +38,9 @@ from types import ModuleType
 
 from . import custom_properties
 from .general_tab import general
-from .camera_tab import camera_control
-from .camera_tab import background_control
-from .scene_tab import scene_control
-from .scene_tab import layer_control
-from .style_tab import styles_control
-from .style_tab import object_control
+from .camera_tab import camera_control, background_control
+from .scene_tab import scene_control, layer_control
+from .style_tab import styles_control, object_control
 from .export_tab import render_control
 from . import pref
 from . import operators
