@@ -23,12 +23,19 @@ from bpy.types import Collection, Object
 from typing import Any, List, Optional, Tuple, Union
 
 
+def get_first_collection_name_of_object(obj: Object):
+    collections = obj.users_collection
+    if len(collections) == 0:
+        return None
+    return collections[0].name
+
+
 def handle_layer_visibility_on_scene_change(oldScene, newScene):
     if not oldScene or not newScene:
         print("Invalid oldScene / newScene given")
         return
 
-    visited = []
+    visited = set()
 
     def get_parent_values(obj: Object):
         cur = obj.parent
@@ -40,14 +47,14 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
                 # new scene 에서 변경될 object 의 레이어 정보를 가져옴
                 new_scene_layer = None
                 for l in newScene.l_exclude:
-                    if l.name == cur.ACON_prop.layer_name:
+                    if l.name == get_first_collection_name_of_object(cur):
                         new_scene_layer = l
                         break
                 if new_scene_layer:
                     if parent_value:
                         parent_value = parent_value and new_scene_layer.value
                     if not parent_lock:
-                        parent_lock = parent_lock and new_scene_layer.lock
+                        parent_lock = parent_lock or new_scene_layer.lock
 
             if not parent_value and parent_lock:
                 return parent_value, parent_lock
@@ -57,11 +64,11 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
     def update_info(obj: Object, new_value: bool, new_lock: bool):
         if obj.name in visited:
             return
-        visited.append(obj.name)
+        visited.add(obj.name)
 
         if new_value is not None:
             for l in newScene.l_exclude:
-                if l.name == obj.ACON_prop.layer_name and not l.value:
+                if l.name == get_first_collection_name_of_object(obj) and not l.value:
                     new_value = False
                     break
 
@@ -71,7 +78,7 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
         if new_lock is not None:
             if not new_lock:
                 for l in newScene.l_exclude:
-                    if l.name == obj.ACON_prop.layer_name and l.lock:
+                    if l.name == get_first_collection_name_of_object(obj) and l.lock:
                         new_lock = True
                         break
 
@@ -83,19 +90,19 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
     for i, oldInfo in enumerate(oldScene.l_exclude):
         newInfo = newScene.l_exclude[i]
 
-        is_value_equal = oldInfo.lock is newInfo.lock
-        is_lock_equal = oldInfo.value is newInfo.value
+        is_value_equal = oldInfo.value is newInfo.value
+        is_lock_equal = oldInfo.lock is newInfo.lock
 
         if not is_value_equal or not is_lock_equal:
             target_layer = bpy.data.collections[newInfo.name]
 
-            new_value = newInfo.value if is_value_equal else None
-            new_lock = newInfo.lock if is_lock_equal else None
+            new_value = newInfo.value if not is_value_equal else None
+            new_lock = newInfo.lock if not is_lock_equal else None
 
             for obj in target_layer.objects:
                 parent_value, parent_lock = get_parent_values(obj)
                 new_value = new_value and parent_value
-                new_lock = new_lock and parent_lock
+                new_lock = new_lock or parent_lock
                 update_info(obj, new_value, new_lock)
 
 

@@ -19,6 +19,8 @@
 
 import bpy
 from math import radians
+
+from .lib.layers import get_first_collection_name_of_object
 from .lib import scenes, cameras, shadow, objects, bloom, version
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
@@ -65,7 +67,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
 
-        visited = []
+        visited = set()
 
         # 시작 오브젝트의 부모 오브젝트의 상태
         def get_parent_value(obj):
@@ -80,11 +82,14 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         def update_objects(obj, value: bool):
             if obj.name in visited:
                 return
-            visited.append(obj.name)
+            visited.add(obj.name)
 
             if value:
                 for l in l_exclude:
-                    if l.name == obj.ACON_prop.layer_name and not l.value:
+                    if (
+                        l.name == get_first_collection_name_of_object(obj)
+                        and not l.value
+                    ):
                         value = False
                         break
 
@@ -102,10 +107,10 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         l_exclude = bpy.context.scene.l_exclude
         target_layer = bpy.data.collections[self.name]
 
-        visited = []
+        visited = set()
 
         # 시작 오브젝트의 부모 오브젝트의 상태
-        def get_parent_value(obj):
+        def get_parent_lock(obj):
             cur = obj.parent
             while cur:
                 if cur.hide_select:
@@ -117,11 +122,11 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         def update_objects(obj, lock: bool):
             if obj.name in visited:
                 return
-            visited.append(obj.name)
+            visited.add(obj.name)
 
             if not lock:
                 for l in l_exclude:
-                    if l.name == obj.ACON_prop.layer_name and l.lock:
+                    if l.name == get_first_collection_name_of_object(obj) and l.lock:
                         lock = True
                         break
 
@@ -131,7 +136,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
                 update_objects(o, lock)
 
         for obj in target_layer.objects:
-            lock = get_parent_value(obj) and self.lock
+            lock = get_parent_lock(obj) or self.lock
             update_objects(obj, lock)
 
     name: bpy.props.StringProperty(name="Layer Name", default="")
@@ -647,8 +652,6 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     @classmethod
     def unregister(cls):
         del bpy.types.Object.ACON_prop
-
-    layer_name: bpy.props.StringProperty()
 
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
