@@ -48,7 +48,7 @@ class SCENE_UL_List(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
-
+        self.use_filter_show = True
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             # 칸 간격을 위해 공백 2칸을 앞에 넣어줌
             layout.label(text="  " + item.name)
