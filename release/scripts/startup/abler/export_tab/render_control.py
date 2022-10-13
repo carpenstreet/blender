@@ -19,9 +19,9 @@
 
 import bpy, platform, os, subprocess
 from bpy_extras.io_utils import ImportHelper, ExportHelper
-from .lib import render, cameras
-from .lib.materials import materials_handler
-from .lib.tracker import tracker
+from ..lib import render, cameras
+from ..lib.materials import materials_handler
+from ..lib.tracker import tracker
 from bpy.props import StringProperty
 
 
@@ -556,10 +556,9 @@ class Acon3dRenderPanel(bpy.types.Panel):
 
     bl_idname = "ACON3D_PT_render"
     bl_label = "Render"
-    bl_category = "ACON3D"
+    bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):

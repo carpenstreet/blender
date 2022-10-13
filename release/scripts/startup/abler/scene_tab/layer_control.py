@@ -32,7 +32,7 @@ bl_info = {
 
 
 import bpy
-from .lib import layers
+from ..lib import layers
 
 
 class Acon3dCreateGroupOperator(bpy.types.Operator):
@@ -111,15 +111,14 @@ class Acon3dExplodeGroupOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dLayerPanel(bpy.types.Panel):
+class Acon3dLayersPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
     bl_idname = "ACON3D_PT_Layer"
-    bl_label = "Layer"
-    bl_category = "ACON3D"
+    bl_label = "Layers"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         layout = self.layout
@@ -194,7 +193,7 @@ class Acon3dLayerPanel(bpy.types.Panel):
 classes = (
     Acon3dCreateGroupOperator,
     Acon3dExplodeGroupOperator,
-    Acon3dLayerPanel,
+    Acon3dLayersPanel,
 )
 
 

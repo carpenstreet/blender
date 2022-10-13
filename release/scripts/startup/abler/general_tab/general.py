@@ -34,11 +34,11 @@ import os
 from datetime import datetime, timedelta
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
-from .lib import scenes
-from .lib.materials import materials_setup
-from .lib.tracker import tracker
-from .lib.read_cookies import read_remembered_show_guide
-from .lib.import_file import AconImportHelper
+from ..lib import scenes
+from ..lib.materials import materials_setup
+from ..lib.tracker import tracker
+from ..lib.read_cookies import read_remembered_show_guide
+from ..lib.import_file import AconImportHelper
 
 
 def split_filepath(filepath):
@@ -71,7 +71,7 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     """Show Tutorial Guide"""
 
     bl_idname = "acon3d.tutorial_guide_popup"
-    bl_label = "Show Tutorial Guide"
+    bl_label = "Quick Start Guide"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -233,27 +233,6 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
 
-class ToggleToolbarOperator(bpy.types.Operator):
-    """Toggle toolbar visibility"""
-
-    bl_idname = "acon3d.context_toggle"
-    bl_label = "Toggle Toolbar"
-    bl_translation_context = "*"
-
-    def execute(self, context):
-        tracker.toggle_toolbar()
-
-        context.scene.render.engine = "BLENDER_EEVEE"
-        for area in context.screen.areas:
-            if area.type == "VIEW_3D":
-                for space in area.spaces:
-                    if space.type == "VIEW_3D":
-                        value = space.show_region_toolbar
-                        space.show_region_toolbar = not value
-
-        return {"FINISHED"}
-
-
 def update_recent_files(target_path, is_add=False):
     """
     Update Recent Files in User Resources
@@ -310,7 +289,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
     """Open new file"""
 
     bl_idname = "acon3d.file_open"
-    bl_label = "File Open"
+    bl_label = "Open"
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
@@ -360,7 +339,7 @@ class FlyOperator(bpy.types.Operator):
     """Move around the scene using WASD, QE, and mouse like FPS game"""
 
     bl_idname = "acon3d.fly_mode"
-    bl_label = "Fly Mode (shift + `)"
+    bl_label = "Fly with WASD (shift + `)"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -452,12 +431,70 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
+    """Import FBX file according to the current settings"""
+
+    bl_idname = "acon3d.import_fbx"
+    bl_label = "Import FBX"
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
+
+    def execute(self, context):
+        if not self.check_path(accepted=["fbx"]):
+            return {"FINISHED"}
+        try:
+            for obj in bpy.data.objects:
+                obj.select_set(False)
+
+            FILEPATH = self.filepath
+
+            filename = os.path.basename(FILEPATH)
+            col_imported = bpy.data.collections.new(
+                "[FBX] " + filename.replace(".fbx", "")
+            )
+
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
+
+            bpy.ops.import_scene.fbx(filepath=FILEPATH)
+            for obj in bpy.context.selected_objects:
+                if obj.name in bpy.context.scene.collection.objects:
+                    bpy.context.scene.collection.objects.unlink(obj)
+                for c in bpy.data.collections:
+                    if obj.name in c.objects:
+                        c.objects.unlink(obj)
+                col_imported.objects.link(obj)
+
+            # put col_imported in l_exclude
+            col_layers.children.link(col_imported)
+            added_l_exclude = context.scene.l_exclude.add()
+            added_l_exclude.name = col_imported.name
+            added_l_exclude.value = True
+
+            # create group
+            bpy.ops.acon3d.create_group()
+            # apply AconToonStyle
+            materials_setup.apply_ACON_toon_style()
+
+        except Exception as e:
+            tracker.import_fbx_fail()
+            raise e
+        else:
+            tracker.import_fbx()
+
+        return {"FINISHED"}
+
+
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
     bl_label = "General"
-    bl_category = "ACON3D"
+    bl_category = "General"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_options = {"HIDE_HEADER"}
 
     def draw_header(self, context):
         layout = self.layout
@@ -486,9 +523,11 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row.prop(view, "language")
         row = layout.row()
-        row.operator("acon3d.context_toggle")
-        row = layout.row()
         row.operator("acon3d.fly_mode")
+
+        row = layout.row()
+        row.scale_y = 1.0
+        row.operator("acon3d.import_fbx", text="Import FBX")
 
 
 class ApplyToonStyleOperator(bpy.types.Operator):
@@ -512,7 +551,6 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
-    ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
@@ -520,6 +558,7 @@ classes = (
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    ImportFBXOperator,
 )
 
 
