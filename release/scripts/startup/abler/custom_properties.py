@@ -260,6 +260,13 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=shadow.change_sun_strength,
     )
 
+    toggle_shadow_shading: bpy.props.BoolProperty(
+        name="",
+        description="Express shadow and shading",
+        default=True,
+        update=shadow.toggle_shadow_shading,
+    )
+
     toggle_shadow: bpy.props.BoolProperty(
         # name="Shadow",
         name="",
