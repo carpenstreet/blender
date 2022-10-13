@@ -288,8 +288,9 @@ class BloomPanel(bpy.types.Panel):
     COMPAT_ENGINES = {"BLENDER_EEVEE"}
 
     def draw_header(self, context):
+        layout = self.layout
         scene = context.scene
-        self.layout.prop(scene.ACON_prop, "use_bloom", text="")
+        layout.prop(scene.ACON_prop, "use_bloom", text="")
 
     def draw(self, context):
         layout = self.layout
