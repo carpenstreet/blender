@@ -111,11 +111,11 @@ class Acon3dExplodeGroupOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dLayerPanel(bpy.types.Panel):
+class Acon3dLayersPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
     bl_idname = "ACON3D_PT_Layer"
-    bl_label = "Layer"
+    bl_label = "Layers"
     bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -193,7 +193,7 @@ class Acon3dLayerPanel(bpy.types.Panel):
 classes = (
     Acon3dCreateGroupOperator,
     Acon3dExplodeGroupOperator,
-    Acon3dLayerPanel,
+    Acon3dLayersPanel,
 )
 
 
