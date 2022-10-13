@@ -44,7 +44,7 @@ from bpy.props import (
 )
 
 
-class Scene_UL_List(bpy.types.UIList):
+class SCENE_UL_List(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
@@ -168,10 +168,10 @@ class Acon3dScenesPanel(bpy.types.Panel):
         row = layout.row()
         # row.prop(context.window_manager.ACON_prop, "scene", text="")
 
-        # Scene_UL_List을 그려주는 부분
+        # SCENE_UL_List을 그려주는 부분
         col = row.column()
         col.template_list(
-            "Scene_UL_List",
+            "SCENE_UL_List",
             "",
             context.window_manager.ACON_prop,
             "scene_col",
@@ -187,7 +187,7 @@ classes = (
     CreateSceneOperator,
     DeleteSceneOperator,
     Acon3dScenesPanel,
-    Scene_UL_List,
+    SCENE_UL_List,
 )
 
 
