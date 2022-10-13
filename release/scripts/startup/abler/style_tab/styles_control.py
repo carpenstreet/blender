@@ -325,7 +325,7 @@ class ColorAdjustmentPanel(bpy.types.Panel):
 
 class BrightnessContrastPanel(bpy.types.Panel):
     bl_label = "Brightness / Contrast"
-    bl_idname = "ACON3D_PT_image_sub_bright"
+    bl_idname = "ACON3D_PT_BrightnessContrast"
     bl_parent_id = "ACON3D_PT_ColorAdjustment"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
@@ -345,7 +345,7 @@ class BrightnessContrastPanel(bpy.types.Panel):
 
 class ColorBalancePanel(bpy.types.Panel):
     bl_label = "Color Balance"
-    bl_idname = "ACON3D_PT_image_sub_color"
+    bl_idname = "ACON3D_PT_ColorBalance"
     bl_parent_id = "ACON3D_PT_ColorAdjustment"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
@@ -366,7 +366,7 @@ class ColorBalancePanel(bpy.types.Panel):
 
 class HueSaturationPanel(bpy.types.Panel):
     bl_label = "Hue / Saturation"
-    bl_idname = "ACON3D_PT_image_sub_hue"
+    bl_idname = "ACON3D_PT_HueSaturation"
     bl_parent_id = "ACON3D_PT_ColorAdjustment"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
@@ -386,7 +386,7 @@ class HueSaturationPanel(bpy.types.Panel):
 
 class ExposurePanel(bpy.types.Panel):
     bl_label = "Exposure"
-    bl_idname = "ACON3D_PT_image_sub_exposure"
+    bl_idname = "ACON3D_PT_Exposure"
     bl_parent_id = "ACON3D_PT_ColorAdjustment"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
