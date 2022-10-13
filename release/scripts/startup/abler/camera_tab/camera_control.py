@@ -99,10 +99,10 @@ class DeleteCameraOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dViewPanel(bpy.types.Panel):
+class Acon3dCameraControlPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
-    bl_idname = "ACON3D_PT_view"
+    bl_idname = "ACON3D_PT_CameraControl"
     bl_label = "Camera Control"
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
@@ -137,7 +137,7 @@ def scene_mychosenobject_poll(self, object):
 class Acon3dDOFPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
-    bl_parent_id = "ACON3D_PT_view"
+    bl_parent_id = "ACON3D_PT_CameraControl"
     bl_idname = "ACON3D_PT_dof"
     bl_label = "Depth of Field"
     bl_category = "Camera"
@@ -173,7 +173,7 @@ class Acon3dDOFPanel(bpy.types.Panel):
 
 
 classes = (
-    Acon3dViewPanel,
+    Acon3dCameraControlPanel,
     CreateCameraOperator,
     DeleteCameraOperator,
     Acon3dDOFPanel,
