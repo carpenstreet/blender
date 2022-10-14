@@ -191,9 +191,11 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                                 bpy.data.collections["Layer0"].objects.link(coll_obj)
 
                         else:
-                            added_l_exclude = context.scene.l_exclude.add()
-                            added_l_exclude.name = coll_2.name
-                            added_l_exclude.value = True
+                            # 모든 씬의 l_exclude에 col_imported를 추가
+                            for scene in bpy.data.scenes:
+                                added_l_exclude = scene.l_exclude.add()
+                                added_l_exclude.name = coll_2.name
+                                added_l_exclude.value = True
                             col_layers.children.link(coll_2)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
@@ -468,11 +470,12 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
                         c.objects.unlink(obj)
                 col_imported.objects.link(obj)
 
-            # put col_imported in l_exclude
+            # 모든 씬의 l_exclude에 col_imported를 추가
             col_layers.children.link(col_imported)
-            added_l_exclude = context.scene.l_exclude.add()
-            added_l_exclude.name = col_imported.name
-            added_l_exclude.value = True
+            for scene in bpy.data.scenes:
+                added_l_exclude = scene.l_exclude.add()
+                added_l_exclude.name = col_imported.name
+                added_l_exclude.value = True
 
             # create group
             bpy.ops.acon3d.create_group()
