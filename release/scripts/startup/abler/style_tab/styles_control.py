@@ -116,7 +116,6 @@ class ShadowShadingPanel(bpy.types.Panel):
 
     def draw_header(self, context):
         layout = self.layout
-        # TODO : header에 shadow/shading 모두 꺼주는 custom_properties 달아주기
         layout.prop(context.scene.ACON_prop, "toggle_shadow_shading", text="")
 
     def draw(self, context):
