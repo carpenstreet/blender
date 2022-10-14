@@ -470,11 +470,13 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
                         c.objects.unlink(obj)
                 col_imported.objects.link(obj)
 
-            # put col_imported in l_exclude
+            # 모든 씬의 l_exclude에 col_imported를 추가
             col_layers.children.link(col_imported)
-            added_l_exclude = context.scene.l_exclude.add()
-            added_l_exclude.name = col_imported.name
-            added_l_exclude.value = True
+            for scene in bpy.data.scenes:
+                print(scene)
+                added_l_exclude = scene.l_exclude.add()
+                added_l_exclude.name = col_imported.name
+                added_l_exclude.value = True
 
             # create group
             bpy.ops.acon3d.create_group()
