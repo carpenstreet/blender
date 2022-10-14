@@ -1021,7 +1021,7 @@ def km_view3d_generic(_params):
 
     items.extend([
         *_template_space_region_type_toggle(
-            toolbar_key={"type": 'T', "value": 'PRESS'},
+            # toolbar_key={"type": 'T', "value": 'PRESS'},
             sidebar_key={"type": 'N', "value": 'PRESS'},
         )
     ])
