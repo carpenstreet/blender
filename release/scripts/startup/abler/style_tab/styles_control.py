@@ -140,7 +140,7 @@ class ShadingPanel(bpy.types.Panel):
     bl_region_type = "UI"
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         return context.scene.ACON_prop.toggle_shadow_shading
 
     def draw_header(self, context):

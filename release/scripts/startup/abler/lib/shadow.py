@@ -57,29 +57,8 @@ def change_sun_strength(self, context: Context) -> None:
 
 def toggle_shadow_shading(self, context: Context) -> None:
     prop = context.scene.ACON_prop
-
-    # Shadow
-    acon_sun: Optional[Object] = bpy.data.objects.get("ACON_sun")
-    if not acon_sun:
-        acon_sun = create_ACON_sun()
-
-    if acon_sun.data.type == "SUN":
-        acon_sun.data.use_shadow = prop.toggle_shadow_shading
-
-    # Shading
-    # obj: Optional[Object] = context.object
-    # if obj is None:
-    #     return
-    #
-    # mat: Optional[Material] = obj.active_material
-    # if not mat:
-    #     return
-    #
-    # shadingFactorValue: int = int(prop.toggle_shadow_shading)
-    # toonNode: Optional[Node] = mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon")
-    # if not toonNode:
-    #     return
-    # toonNode.inputs[4].default_value = shadingFactorValue
+    prop.toggle_shadow = True if prop.toggle_shadow_shading else False
+    prop.toggle_toon_face = True if prop.toggle_shadow_shading else False
 
 
 def toggle_shadow(self, context: Context) -> None:
