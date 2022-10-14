@@ -150,10 +150,9 @@ class Acon3dStateActionOperator(bpy.types.Operator):
 class Acon3dObjectPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Object_Main"
     bl_label = "Object Control"
-    bl_category = "Style"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         layout = self.layout
@@ -190,7 +189,6 @@ class ObjectSubPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         if obj := context.object:
@@ -229,7 +227,6 @@ class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
         layout = self.layout
