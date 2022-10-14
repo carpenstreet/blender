@@ -120,14 +120,15 @@ class ShadowShadingPanel(bpy.types.Panel):
         layout.prop(context.scene.ACON_prop, "toggle_shadow_shading", text="")
 
     def draw(self, context):
-        layout = self.layout
-        row = layout.row()
-        col = row.column()
-        col.scale_x = 3
-        col.separator()
-        col = row.column()
-        row = col.row()
-        row.prop(context.scene.ACON_prop, "toggle_shadow", text="Shadow")
+        if context.scene.ACON_prop.toggle_shadow_shading:
+            layout = self.layout
+            row = layout.row()
+            col = row.column()
+            col.scale_x = 3
+            col.separator()
+            col = row.column()
+            row = col.row()
+            row.prop(context.scene.ACON_prop, "toggle_shadow", text="Shadow")
 
 
 class ShadingPanel(bpy.types.Panel):
@@ -137,6 +138,10 @@ class ShadingPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+
+    @classmethod
+    def poll(self, context):
+        return context.scene.ACON_prop.toggle_shadow_shading
 
     def draw_header(self, context):
         layout = self.layout
