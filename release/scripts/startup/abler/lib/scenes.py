@@ -107,6 +107,12 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     return scene_items
 
 
+def snap_to_face():
+    scene = bpy.context.scene
+    scene.tool_settings.use_snap = True
+    scene.tool_settings.snap_elements = {"FACE"}
+
+
 def load_scene(self, context: Context) -> None:
 
     if not context:
