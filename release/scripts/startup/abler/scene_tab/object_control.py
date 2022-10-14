@@ -215,6 +215,8 @@ def unregister():
 
 
 ## Use State 기록용
+## 목적별 탭 분리 기획에서 Use State가 빠지기로 결정돼 주석처리 후 보관하기로 논의됨.
+## 노션 문서 : https://www.notion.so/acon3d/Object-Control-d2706235c0334950a70e88081f65333c
 # class Acon3dStateUpdateOperator(bpy.types.Operator):
 #     """Save newly adjusted state data of the object"""
 
