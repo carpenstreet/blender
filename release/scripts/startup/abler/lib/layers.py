@@ -33,7 +33,7 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
         # oldScene의 l_exclude 갯수가 newScene보다 오버될 때
         # 오버되는 i는 따로 처리할 필요가 없으므로 넘어가도록 처리함
         if i > len(newScene.l_exclude) - 1:
-            continue
+            break
 
         newProp = newScene.l_exclude[i]
 
