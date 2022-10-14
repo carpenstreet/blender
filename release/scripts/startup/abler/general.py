@@ -79,9 +79,7 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
         prop = userInfo.ACON_prop
         prop.show_guide = read_remembered_show_guide()
 
-        bpy.ops.wm.splash_tutorial_1(
-            "INVOKE_DEFAULT", current_lang=bpy.context.preferences.view.language
-        )
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
@@ -105,9 +103,7 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
-        bpy.ops.wm.splash_tutorial_1(
-            "INVOKE_DEFAULT", current_lang=bpy.context.preferences.view.language
-        )
+        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
@@ -120,9 +116,7 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
-        bpy.ops.wm.splash_tutorial_2(
-            "INVOKE_DEFAULT", current_lang=bpy.context.preferences.view.language
-        )
+        bpy.ops.wm.splash_tutorial_2("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
@@ -135,9 +129,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
-        bpy.ops.wm.splash_tutorial_3(
-            "INVOKE_DEFAULT", current_lang=bpy.context.preferences.view.language
-        )
+        bpy.ops.wm.splash_tutorial_3("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
