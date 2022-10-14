@@ -235,6 +235,34 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
 
+class ToggleToolbarOperator(bpy.types.Operator):
+    """
+    Toggle toolbar visibility
+
+    Toogle Toolbar를 General 패널에서 삭제하기로 기획됨.
+    그러나, 관련 내용을 다른 위치 혹은 다른 기능으로 재사용 할 수 있어 코드를 삭제하지 않음.
+    관련 Notion 문서:
+    https://www.notion.so/acon3d/DEFAULT-Show-78cd7fd6d13742ed9f36d9ae423e15cf
+    """
+
+    bl_idname = "acon3d.context_toggle"
+    bl_label = "Toggle Toolbar"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        tracker.toggle_toolbar()
+
+        context.scene.render.engine = "BLENDER_EEVEE"
+        for area in context.screen.areas:
+            if area.type == "VIEW_3D":
+                for space in area.spaces:
+                    if space.type == "VIEW_3D":
+                        value = space.show_region_toolbar
+                        space.show_region_toolbar = not value
+
+        return {"FINISHED"}
+
+
 def update_recent_files(target_path, is_add=False):
     """
     Update Recent Files in User Resources
@@ -554,6 +582,7 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
+    ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
