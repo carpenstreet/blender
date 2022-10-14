@@ -1070,7 +1070,13 @@ static uiTooltipData *ui_tooltip_data_from_gizmo(bContext *C, wmGizmo *gz)
       const char *prefix;
     } gzop_actions[] = {
         {
-            .part = gz->highlight_part,
+            /*
+             * 기획 결과로 Gizmo Tooltip에서 Click 이벤트 description 삭제
+             * https://www.notion.so/acon3d/Orbit-Gizmo-Zoom-Move-UI-a514136ae7914393b337cb6b18f629f9
+             * use_drag (Gizmo Tooltip) 가 true면 Click tooltip이 발생하므로 -1 처리함.
+             * use_drag가 false일 경우에는 Zoom, Move의 tooltip이 활성화됨.
+             */
+            .part = use_drag ? -1 : gz->highlight_part,
             .prefix = use_drag ? CTX_TIP_(BLT_I18NCONTEXT_OPERATOR_DEFAULT, "Click") : NULL,
         },
         {
