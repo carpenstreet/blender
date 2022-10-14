@@ -4056,8 +4056,8 @@ static int view_axis_exec(bContext *C, wmOperator *op)
   const int nextperspo = (rv3d->persp == RV3D_CAMOB) ? rv3d->lpersp : perspo;
   float quat[4];
   ED_view3d_quat_from_axis_view(viewnum, view_axis_roll, quat);
-  axis_set_view(
-      C, v3d, region, quat, viewnum, view_axis_roll, nextperspo, align_quat, smooth_viewtx);
+  // axis_set_view(
+  //     C, v3d, region, quat, viewnum, view_axis_roll, nextperspo, align_quat, smooth_viewtx);
 
   perspo = rv3d->persp;
 
