@@ -120,12 +120,13 @@ class DeleteSceneOperator(bpy.types.Operator):
         return len(bpy.data.scenes) > 1
 
     def execute(self, context):
-        prop = bpy.context.window_manager.ACON_prop
+        prop = context.window_manager.ACON_prop
 
         scene = prop.scene_col[prop.active_scene_index]
         scenesList = [*bpy.data.scenes]
 
-        # bpy.data.scenes와 scene_col 순서가 달라 scene.name을 대조해 삭제
+        # bpy.data.scenes은 이름순으로 자동정렬돼 생성순인 scene_col와 순서가 달라
+        # scene.name을 대조해 삭제
         for item in scenesList:
             if item.name == scene.name:
                 scene = item
@@ -137,7 +138,7 @@ class DeleteSceneOperator(bpy.types.Operator):
 
         # Updating `scene` value invoke `load_scene` function which compares current
         # scene and target scene. So it should happen before removing scene.
-        context.window_manager.ACON_prop.scene = nextScene.name
+        prop.scene = nextScene.name
 
         bpy.data.scenes.remove(scene)
         prop.scene_col.remove(prop.active_scene_index)
@@ -146,7 +147,7 @@ class DeleteSceneOperator(bpy.types.Operator):
         # that sets `scene` value to 1 when `nextScene` is the first element of
         # `bpy.data.scenes` collection. This ends up having `scene` value invalid
         # and displaying empty value in the ui panel.
-        context.window_manager.ACON_prop.scene = nextScene.name
+        prop.scene = nextScene.name
 
         return {"FINISHED"}
 
@@ -166,17 +167,12 @@ class Acon3dScenesPanel(bpy.types.Panel):
         layout = self.layout
 
         row = layout.row()
-        # row.prop(context.window_manager.ACON_prop, "scene", text="")
+        prop = context.window_manager.ACON_prop
 
         # SCENE_UL_List을 그려주는 부분
         col = row.column()
         col.template_list(
-            "SCENE_UL_List",
-            "",
-            context.window_manager.ACON_prop,
-            "scene_col",
-            context.window_manager.ACON_prop,
-            "active_scene_index",
+            "SCENE_UL_List", "", prop, "scene_col", prop, "active_scene_index"
         )
         col = row.column(align=True)
         col.operator("acon3d.create_scene", text="", icon="ADD")
