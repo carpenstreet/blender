@@ -128,11 +128,11 @@ def grid_on_when_selected(dummy):
 
 
 def find_screen_acon3d() -> bool:
-    name = "ACON3D"
-    screen = bpy.data.screens[name]
-    areas = screen.areas
-
-    if name in bpy.data.screens.keys() and len(areas) > 0 and len(areas[0].spaces) > 0:
+    if (
+        "ACON3D" in bpy.data.screens.keys()
+        and len(bpy.data.screens["ACON3D"].areas) > 0
+        and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0
+    ):
         return True
 
 
