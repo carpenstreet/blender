@@ -22,8 +22,9 @@ def init_setting(dummy):
         try:
             init_screen = bpy.data.screens["ACON3D"].areas[0].spaces[0]
             init_screen.shading.type = "RENDERED"
-            init_screen.show_region_header = False
+            init_screen.show_region_header = True
             init_screen.show_region_tool_header = False
+            init_screen.show_region_toolbar = True
             init_screen.show_gizmo = True
             init_screen.show_gizmo_object_translate = True
             init_screen.show_gizmo_object_rotate = True
@@ -81,6 +82,7 @@ def delayed_load_handler():
             )
             bpy.ops.preferences.keyconfig_activate(filepath=abler_keymap_path)
         scenes.refresh_look_at_me()
+        scenes.snap_to_face()
         scenes.add_scene_items_to_collection()
         post_open.change_and_reset_value()
         post_open.update_scene()

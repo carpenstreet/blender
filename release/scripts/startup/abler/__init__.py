@@ -39,8 +39,8 @@ from types import ModuleType
 from . import custom_properties
 from .general_tab import general
 from .camera_tab import camera_control, background_control
-from .scene_tab import scene_control, layer_control
-from .style_tab import styles_control, object_control
+from .scene_tab import scene_control, object_control, layer_control
+from .style_tab import styles_control
 from .export_tab import render_control
 from . import pref
 from . import operators
@@ -57,9 +57,9 @@ importedLibrary = [
     camera_control,
     background_control,
     scene_control,
+    object_control,
     layer_control,
     styles_control,
-    object_control,
     render_control,
     pref,
     operators,

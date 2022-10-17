@@ -71,6 +71,7 @@ def refresh_look_at_me() -> None:
     # 그래서 일단 deselect를 확보된 자원들을 이용해서 사용하도록 아래와 같이 안전하게 처리함.
     try:
         if context.selected_objects:
+            bpy.ops.object.mode_set(mode="OBJECT")
             for obj in context.selected_objects:
                 obj.select_set(False)
     except Exception as e:
@@ -139,6 +140,12 @@ def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
         scene_items.append((scene.name, scene.name, ""))
 
     return scene_items
+
+
+def snap_to_face():
+    scene = bpy.context.scene
+    scene.tool_settings.use_snap = True
+    scene.tool_settings.snap_elements = {"FACE"}
 
 
 def load_scene(self, context: Context) -> None:

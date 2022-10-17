@@ -191,9 +191,11 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
                                 bpy.data.collections["Layer0"].objects.link(coll_obj)
 
                         else:
-                            added_l_exclude = context.scene.l_exclude.add()
-                            added_l_exclude.name = coll_2.name
-                            added_l_exclude.value = True
+                            # 모든 씬의 l_exclude에 col_imported를 추가
+                            for scene in bpy.data.scenes:
+                                added_l_exclude = scene.l_exclude.add()
+                                added_l_exclude.name = coll_2.name
+                                added_l_exclude.value = True
                             col_layers.children.link(coll_2)
 
             # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
@@ -229,6 +231,34 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
         else:
             tracker.import_blend()
+
+        return {"FINISHED"}
+
+
+class ToggleToolbarOperator(bpy.types.Operator):
+    """
+    Toggle toolbar visibility
+
+    Toogle Toolbar를 General 패널에서 삭제하기로 기획됨.
+    그러나, 관련 내용을 다른 위치 혹은 다른 기능으로 재사용 할 수 있어 코드를 삭제하지 않음.
+    관련 Notion 문서:
+    https://www.notion.so/acon3d/DEFAULT-Show-78cd7fd6d13742ed9f36d9ae423e15cf
+    """
+
+    bl_idname = "acon3d.context_toggle"
+    bl_label = "Toggle Toolbar"
+    bl_translation_context = "*"
+
+    def execute(self, context):
+        tracker.toggle_toolbar()
+
+        context.scene.render.engine = "BLENDER_EEVEE"
+        for area in context.screen.areas:
+            if area.type == "VIEW_3D":
+                for space in area.spaces:
+                    if space.type == "VIEW_3D":
+                        value = space.show_region_toolbar
+                        space.show_region_toolbar = not value
 
         return {"FINISHED"}
 
@@ -468,11 +498,12 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
                         c.objects.unlink(obj)
                 col_imported.objects.link(obj)
 
-            # put col_imported in l_exclude
+            # 모든 씬의 l_exclude에 col_imported를 추가
             col_layers.children.link(col_imported)
-            added_l_exclude = context.scene.l_exclude.add()
-            added_l_exclude.name = col_imported.name
-            added_l_exclude.value = True
+            for scene in bpy.data.scenes:
+                added_l_exclude = scene.l_exclude.add()
+                added_l_exclude.name = col_imported.name
+                added_l_exclude.value = True
 
             # create group
             bpy.ops.acon3d.create_group()
@@ -551,6 +582,7 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
+    ToggleToolbarOperator,
     ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,

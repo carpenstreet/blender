@@ -88,72 +88,12 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class Acon3dStateUpdateOperator(bpy.types.Operator):
-    """Save newly adjusted state data of the object"""
-
-    bl_idname = "acon3d.state_update"
-    bl_label = "Update State"
-    bl_translation_context = "*"
-    bl_options = {"REGISTER", "UNDO"}
-
-    @classmethod
-    def poll(cls, context):
-        return context.selected_objects
-
-    def execute(self, context):
-
-        for obj in context.selected_objects:
-
-            prop = obj.ACON_prop
-
-            if not prop.use_state:
-                continue
-
-            for att in ["location", "rotation_euler", "scale"]:
-
-                vector = getattr(obj, att)
-                setattr(prop.state_end, att, vector)
-
-        context.object.ACON_prop.state_slider = 1
-
-        return {"FINISHED"}
-
-
-class Acon3dStateActionOperator(bpy.types.Operator):
-    """Move object state"""
-
-    bl_idname = "acon3d.state_action"
-    bl_label = "Move State"
-    bl_translation_context = "*"
-    bl_options = {"REGISTER", "UNDO"}
-
-    step: bpy.props.FloatProperty(name="Toggle Mode", default=0.25)
-
-    def execute(self, context):
-
-        for obj in context.selected_objects:
-
-            prop = obj.ACON_prop
-            x = prop.state_slider
-
-            if x == 1:
-                x = 0
-            else:
-                x += self.step
-
-            x = min(x, 1)
-            prop.state_slider = x
-
-        return {"FINISHED"}
-
-
 class Acon3dObjectPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Object_Main"
     bl_label = "Object Control"
-    bl_category = "Style"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         layout = self.layout
@@ -183,45 +123,6 @@ class Acon3dObjectPanel(bpy.types.Panel):
             row.label(text="Look at me", icon="SELECT_SET")
 
 
-class ObjectSubPanel(bpy.types.Panel):
-    bl_parent_id = "ACON_PT_Object_Main"
-    bl_idname = "ACON_PT_Object_Sub"
-    bl_label = "Use State"
-    bl_category = "Style"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
-
-    def draw_header(self, context):
-        if obj := context.object:
-            layout = self.layout
-            layout.active = bool(len(context.selected_objects))
-            layout.enabled = layout.active
-            layout.prop(obj.ACON_prop, "use_state", text="")
-
-    def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = True
-
-        if context.selected_objects and context.object:
-            obj = context.object
-            prop = obj.ACON_prop
-
-            layout.active = prop.use_state and bool(len(context.selected_objects))
-            layout.enabled = layout.active
-            row = layout.row(align=True)
-            row.prop(prop, "state_slider", slider=True)
-            row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
-        else:
-            row = layout.row()
-            col = row.column()
-            col.scale_x = 3
-            col.separator()
-            col = row.column()
-            col.label(text="No selected object")
-
-
 class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Object_Main"
     bl_idname = "ACON_PT_Group_Navigation"
@@ -229,7 +130,6 @@ class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
         layout = self.layout
@@ -294,10 +194,7 @@ classes = (
     GroupNavigateTopOperator,
     GroupNavigateDownOperator,
     GroupNavigateBottomOperator,
-    Acon3dStateActionOperator,
-    Acon3dStateUpdateOperator,
     Acon3dObjectPanel,
-    ObjectSubPanel,
     Acon3dGroupNavigationPanel,
     ObjectAllSelectOperator,
 )
@@ -315,3 +212,102 @@ def unregister():
 
     for cls in reversed(classes):
         unregister_class(cls)
+
+
+## Use State 기록용
+## 목적별 탭 분리 기획에서 Use State가 빠지기로 결정돼 주석처리 후 보관하기로 논의됨.
+## 노션 문서 : https://www.notion.so/acon3d/Object-Control-d2706235c0334950a70e88081f65333c
+# class Acon3dStateUpdateOperator(bpy.types.Operator):
+#     """Save newly adjusted state data of the object"""
+
+#     bl_idname = "acon3d.state_update"
+#     bl_label = "Update State"
+#     bl_translation_context = "*"
+#     bl_options = {"REGISTER", "UNDO"}
+
+#     @classmethod
+#     def poll(cls, context):
+#         return context.selected_objects
+
+#     def execute(self, context):
+
+#         for obj in context.selected_objects:
+
+#             prop = obj.ACON_prop
+
+#             if not prop.use_state:
+#                 continue
+
+#             for att in ["location", "rotation_euler", "scale"]:
+
+#                 vector = getattr(obj, att)
+#                 setattr(prop.state_end, att, vector)
+
+#         context.object.ACON_prop.state_slider = 1
+
+#         return {"FINISHED"}
+
+
+# class Acon3dStateActionOperator(bpy.types.Operator):
+#     """Move object state"""
+
+#     bl_idname = "acon3d.state_action"
+#     bl_label = "Move State"
+#     bl_translation_context = "*"
+#     bl_options = {"REGISTER", "UNDO"}
+
+#     step: bpy.props.FloatProperty(name="Toggle Mode", default=0.25)
+
+#     def execute(self, context):
+
+#         for obj in context.selected_objects:
+
+#             prop = obj.ACON_prop
+#             x = prop.state_slider
+
+#             if x == 1:
+#                 x = 0
+#             else:
+#                 x += self.step
+
+#             x = min(x, 1)
+#             prop.state_slider = x
+
+#         return {"FINISHED"}
+
+# class ObjectSubPanel(bpy.types.Panel):
+#     bl_parent_id = "ACON_PT_Object_Main"
+#     bl_idname = "ACON_PT_Object_Sub"
+#     bl_label = "Use State"
+#     bl_category = "Style"
+#     bl_space_type = "VIEW_3D"
+#     bl_region_type = "UI"
+
+#     def draw_header(self, context):
+#         if obj := context.object:
+#             layout = self.layout
+#             layout.active = bool(len(context.selected_objects))
+#             layout.enabled = layout.active
+#             layout.prop(obj.ACON_prop, "use_state", text="")
+
+#     def draw(self, context):
+#         layout = self.layout
+#         layout.use_property_split = True
+#         layout.use_property_decorate = True
+
+#         if context.selected_objects and context.object:
+#             obj = context.object
+#             prop = obj.ACON_prop
+
+#             layout.active = prop.use_state and bool(len(context.selected_objects))
+#             layout.enabled = layout.active
+#             row = layout.row(align=True)
+#             row.prop(prop, "state_slider", slider=True)
+#             row.operator("acon3d.state_update", text="", icon="FILE_REFRESH")
+#         else:
+#             row = layout.row()
+#             col = row.column()
+#             col.scale_x = 3
+#             col.separator()
+#             col = row.column()
+#             col.label(text="No selected object")

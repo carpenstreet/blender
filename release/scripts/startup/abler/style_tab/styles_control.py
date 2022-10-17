@@ -411,6 +411,7 @@ classes = (
     SunlightPanel,
     ShadowShadingPanel,
     ShadingPanel,
+    MATERIAL_UL_List,
     CloneMaterialOperator,
     ObjectPropertiesPanel,
     BloomPanel,
