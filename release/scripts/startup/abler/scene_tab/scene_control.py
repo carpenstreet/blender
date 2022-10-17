@@ -34,6 +34,24 @@ bl_info = {
 import bpy
 from ..lib import scenes
 from ..lib.tracker import tracker
+from bpy.types import PropertyGroup
+from bpy.props import (
+    CollectionProperty,
+    IntProperty,
+    BoolProperty,
+    StringProperty,
+    PointerProperty,
+)
+
+
+class SCENE_UL_List(bpy.types.UIList):
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname
+    ):
+        self.use_filter_show = True
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
+            # 칸 간격을 위해 공백 2칸을 앞에 넣어줌
+            layout.label(text="  " + item.name)
 
 
 class CreateSceneOperator(bpy.types.Operator):
@@ -64,7 +82,16 @@ class CreateSceneOperator(bpy.types.Operator):
 
         old_scene = context.scene
         new_scene = scenes.create_scene(old_scene, self.preset, self.name)
-        context.window_manager.ACON_prop.scene = new_scene.name
+        prop = context.window_manager.ACON_prop
+        prop.scene = new_scene.name
+
+        # scene_col 추가
+        new_scene_col = prop.scene_col.add()
+        new_scene_col.name = new_scene.name
+        new_scene_col.index = len(prop.scene_col) - 1
+
+        prop.active_scene_index = new_scene_col.index
+
         return {"FINISHED"}
 
     def invoke(self, context, event):
@@ -93,9 +120,16 @@ class DeleteSceneOperator(bpy.types.Operator):
         return len(bpy.data.scenes) > 1
 
     def execute(self, context):
+        prop = context.window_manager.ACON_prop
 
-        scene = context.scene
+        scene = prop.scene_col[prop.active_scene_index]
         scenesList = [*bpy.data.scenes]
+
+        # bpy.data.scenes은 이름순으로 자동정렬돼 생성순인 scene_col와 순서가 달라
+        # scene.name을 대조해 삭제
+        for item in scenesList:
+            if item.name == scene.name:
+                scene = item
 
         i = scenesList.index(scene)
         scenesList.remove(scene)
@@ -104,15 +138,16 @@ class DeleteSceneOperator(bpy.types.Operator):
 
         # Updating `scene` value invoke `load_scene` function which compares current
         # scene and target scene. So it should happen before removing scene.
-        context.window_manager.ACON_prop.scene = nextScene.name
+        prop.scene = nextScene.name
 
         bpy.data.scenes.remove(scene)
+        prop.scene_col.remove(prop.active_scene_index)
 
         # Why set `scene` value again? Because `remove(scene)` occurs funny bug
         # that sets `scene` value to 1 when `nextScene` is the first element of
         # `bpy.data.scenes` collection. This ends up having `scene` value invalid
         # and displaying empty value in the ui panel.
-        context.window_manager.ACON_prop.scene = nextScene.name
+        prop.scene = nextScene.name
 
         return {"FINISHED"}
 
@@ -131,16 +166,24 @@ class Acon3dScenesPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row(align=True)
-        row.prop(context.window_manager.ACON_prop, "scene", text="")
-        row.operator("acon3d.create_scene", text="", icon="ADD")
-        row.operator("acon3d.delete_scene", text="", icon="REMOVE")
+        row = layout.row()
+        prop = context.window_manager.ACON_prop
+
+        # SCENE_UL_List을 그려주는 부분
+        col = row.column()
+        col.template_list(
+            "SCENE_UL_List", "", prop, "scene_col", prop, "active_scene_index"
+        )
+        col = row.column(align=True)
+        col.operator("acon3d.create_scene", text="", icon="ADD")
+        col.operator("acon3d.delete_scene", text="", icon="REMOVE")
 
 
 classes = (
     CreateSceneOperator,
     DeleteSceneOperator,
     Acon3dScenesPanel,
+    SCENE_UL_List,
 )
 
 

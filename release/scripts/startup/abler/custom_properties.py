@@ -24,6 +24,14 @@ from .lib.materials import materials_handler
 from .lib.read_cookies import *
 
 
+class AconSceneColGroupProperty(bpy.types.PropertyGroup):
+    name: bpy.props.StringProperty(
+        name="Scene_Item", description="Scene_Item", default=""
+    )
+
+    index: bpy.props.IntProperty()
+
+
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -48,6 +56,10 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         default=False,
         update=version.remember_low_version_warning_hidden,
     )
+    
+    scene_col: bpy.props.CollectionProperty(type=AconSceneColGroupProperty)
+
+    active_scene_index: bpy.props.IntProperty(update=scenes.load_scene_by_index)
 
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
@@ -638,6 +650,7 @@ class AconObjectProperty(bpy.types.PropertyGroup):
 
 
 classes = (
+    AconSceneColGroupProperty,
     AconWindowManagerProperty,
     CollectionLayerExcludeProperties,
     AconSceneSelectedGroupProperty,

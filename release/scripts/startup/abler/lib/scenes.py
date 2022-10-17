@@ -99,6 +99,41 @@ def change_background_color(self, context: Context) -> None:
 scene_items: List[Tuple[str, str, str]] = []
 
 
+def add_scene_items_to_collection():
+    """scene_col에 bpy.data.scenes 항목 넣어주기"""
+
+    prop = bpy.context.window_manager.ACON_prop
+    prop.scene_col.clear()
+    for i, scene in enumerate(bpy.data.scenes):
+        new_scene = prop.scene_col.add()
+        new_scene.name = scene.name
+        new_scene.index = i
+
+    # 현재 씬과 scene_col 맞추기
+    scene = bpy.context.scene
+    scene_col_list = [*prop.scene_col]
+
+    for item in scene_col_list:
+        if item.name == scene.name:
+            index = item.index
+    prop.active_scene_index = index
+
+
+def load_scene_by_index(self, context: Context) -> None:
+    if not context:
+        context = bpy.context
+
+    if not self:
+        self = context.window_manager.ACON_prop
+
+    scene_col = self.scene_col
+    active_scene_index = self.active_scene_index
+
+    # EnumProperty인 self.scene을 select scene으로 변경
+    self.scene = scene_col[active_scene_index].name
+    load_scene(self, context)
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
