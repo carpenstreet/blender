@@ -132,15 +132,8 @@ def find_screen_acon3d() -> bool:
     screen = bpy.data.screens[name]
     areas = screen.areas
 
-    return (
-        True
-        if (
-            "ACON3D" in bpy.data.screens.keys()
-            and len(areas) > 0
-            and len(areas[0].spaces) > 0
-        )
-        else False
-    )
+    if name in bpy.data.screens.keys() and len(areas) > 0 and len(areas[0].spaces) > 0:
+        return True
 
 
 def register():
