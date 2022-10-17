@@ -57,8 +57,8 @@ def change_sun_strength(self, context: Context) -> None:
 
 def toggle_shadow_shading(self, context: Context) -> None:
     prop = context.scene.ACON_prop
-    prop.toggle_shadow = True if prop.toggle_shadow_shading else False
-    prop.toggle_toon_face = True if prop.toggle_shadow_shading else False
+    prop.toggle_shadow = prop.toggle_shadow_shading
+    prop.toggle_toon_face = prop.toggle_shadow_shading
 
 
 def toggle_shadow(self, context: Context) -> None:
