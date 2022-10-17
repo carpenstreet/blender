@@ -26,7 +26,10 @@ from .lib.read_cookies import *
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(
-        name="Scene_Item", description="Scene_Item", default=""
+        name="Scene_Item",
+        description="Scene_Item",
+        default="",
+        update=scenes.change_scene_name,
     )
 
     index: bpy.props.IntProperty()

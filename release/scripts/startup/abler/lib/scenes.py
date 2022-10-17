@@ -134,6 +134,15 @@ def load_scene_by_index(self, context: Context) -> None:
     load_scene(self, context)
 
 
+def change_scene_name(self, context):
+    prop = context.window_manager.ACON_prop
+
+    scene_col = prop.scene_col
+    active_scene_index = prop.active_scene_index
+
+    context.scene.name = scene_col[active_scene_index].name
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
