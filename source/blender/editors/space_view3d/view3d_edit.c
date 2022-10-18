@@ -1033,7 +1033,7 @@ void VIEW3D_OT_rotate(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Rotate View";
-  ot->description = "Rotate the view";
+  ot->description = "Drag to rotate the view";
   ot->idname = "VIEW3D_OT_rotate";
 
   /* api callbacks */
@@ -1859,7 +1859,7 @@ void VIEW3D_OT_move(wmOperatorType *ot)
 
   /* identifiers */
   ot->name = "Pan View";
-  ot->description = "Move the view";
+  ot->description = "Click and drag to move the view";
   ot->idname = "VIEW3D_OT_move";
 
   /* api callbacks */
@@ -2418,7 +2418,7 @@ void VIEW3D_OT_zoom(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Zoom View";
-  ot->description = "Zoom in/out in the view";
+  ot->description = "Click and drag to zoom in/out in the view";
   ot->idname = "VIEW3D_OT_zoom";
 
   /* api callbacks */
@@ -4056,8 +4056,8 @@ static int view_axis_exec(bContext *C, wmOperator *op)
   const int nextperspo = (rv3d->persp == RV3D_CAMOB) ? rv3d->lpersp : perspo;
   float quat[4];
   ED_view3d_quat_from_axis_view(viewnum, view_axis_roll, quat);
-  axis_set_view(
-      C, v3d, region, quat, viewnum, view_axis_roll, nextperspo, align_quat, smooth_viewtx);
+  // axis_set_view(
+  //     C, v3d, region, quat, viewnum, view_axis_roll, nextperspo, align_quat, smooth_viewtx);
 
   perspo = rv3d->persp;
 
@@ -4070,7 +4070,7 @@ void VIEW3D_OT_view_axis(wmOperatorType *ot)
 
   /* identifiers */
   ot->name = "View Axis";
-  ot->description = "Use a preset viewpoint";
+  ot->description = "Show viewpoint of selected axis";
   ot->idname = "VIEW3D_OT_view_axis";
 
   /* api callbacks */

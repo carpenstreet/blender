@@ -29,16 +29,17 @@ def init_setting(dummy):
             init_screen.show_gizmo_object_translate = True
             init_screen.show_gizmo_object_rotate = True
             init_screen.show_gizmo_object_scale = True
-            init_screen.show_gizmo_navigate = False
+            init_screen.show_gizmo_navigate = True
             init_screen.show_gizmo_tool = True
             init_screen.show_gizmo_context = True
+            init_screen.overlay.show_ortho_grid = False
 
         except:
             print("Failed to find screen 'ACON3D'")
 
     prefs_sys.use_region_overlap = False
     prefs_view.show_column_layout = True
-    prefs_view.show_navigate_ui = False
+    prefs_view.show_navigate_ui = True
     prefs_view.show_developer_ui = False
     prefs_view.show_tooltips_python = False
     prefs_view.color_picker_type = "SQUARE_SV"
