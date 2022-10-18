@@ -48,7 +48,12 @@ def init_setting(dummy):
 
 
 def hide_header(dummy):
-    bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
+    """
+    관련 오류:
+    https://www.notion.so/acon3d/pref-py-ACON3D-9718e7bb8516440b89f015b8862f9ede
+    """
+    if find_screen_acon3d():
+        bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
 
 
 @persistent
@@ -117,10 +122,18 @@ def save_post_handler(dummy):
 
 def grid_on_when_selected(dummy):
     show_grid = len(bpy.context.selected_objects) > 0
-    if "ACON3D" in bpy.data.screens.keys() and len(bpy.data.screens["ACON3D"].areas) > 0 and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0:
+    if find_screen_acon3d():
         viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
         viewport_overlay.show_ortho_grid = show_grid
         viewport_overlay.show_floor = show_grid
+
+
+def find_screen_acon3d() -> bool:
+    return (
+        "ACON3D" in bpy.data.screens.keys()
+        and len(bpy.data.screens["ACON3D"].areas) > 0
+        and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0
+    )
 
 
 def register():
