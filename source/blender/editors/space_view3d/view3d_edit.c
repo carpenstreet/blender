@@ -1033,7 +1033,7 @@ void VIEW3D_OT_rotate(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Rotate View";
-  ot->description = "Rotate the view";
+  ot->description = "Drag to rotate the view";
   ot->idname = "VIEW3D_OT_rotate";
 
   /* api callbacks */
