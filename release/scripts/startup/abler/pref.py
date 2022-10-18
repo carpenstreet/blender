@@ -45,6 +45,7 @@ def init_setting(dummy):
     prefs_paths.use_load_ui = False
     prefs_paths.save_version = 0
     prefs_input.use_zoom_to_mouse = True
+    prefs_input.use_mouse_depth_navigate = True
 
 
 def hide_header(dummy):
