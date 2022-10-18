@@ -59,10 +59,12 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         default=False,
         update=version.remember_low_version_warning_hidden,
     )
-    
+
     scene_col: bpy.props.CollectionProperty(type=AconSceneColGroupProperty)
 
-    active_scene_index: bpy.props.IntProperty(update=scenes.load_scene_by_index)
+    active_scene_index: bpy.props.IntProperty(
+        update=scenes.load_scene_by_index, name="Scene"
+    )
 
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
