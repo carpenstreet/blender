@@ -26,6 +26,10 @@ from math import radians
 from .tracker import tracker
 from . import cameras
 
+# custom_properties에서 BoolProperty로 prop을 생성하면 버그가 발생해
+# is_scene_renamed를 글로벌 변수로 정의함 (참조 : lib.objects의 글로벌 변수 items)
+is_scene_renamed = True
+
 
 def change_dof(self, context: Context) -> None:
     if use_dof := context.scene.ACON_prop.use_dof:
@@ -134,6 +138,23 @@ def load_scene_by_index(self, context: Context) -> None:
     load_scene(self, context)
 
 
+def change_scene_name(self, context):
+    global is_scene_renamed
+
+    # CreateSceneOperator에서 create_scene 후에 change_scene_name이 실행되면서
+    # active_scene_index가 이전 씬을 가리킨 상태에서 씬 복사를 하면서 씬 네이밍이 어긋나는 문제가 발생
+    # 이를 위해 create_scene 후엔 change_scene_name을 실행하지 않도록 is_scene_renamed을 False로 설정해
+    # 실제로 이름을 바꿀 때만 change_scene_name을 실행
+    if is_scene_renamed:
+        prop = context.window_manager.ACON_prop
+
+        scene_col = prop.scene_col
+        active_scene_index = prop.active_scene_index
+        bpy.context.scene.name = scene_col[active_scene_index].name
+
+    is_scene_renamed = True
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
@@ -185,6 +206,8 @@ def load_scene(self, context: Context) -> None:
 
 
 def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
+    global is_scene_renamed
+    is_scene_renamed = False
 
     new_scene = old_scene.copy()
     new_scene.name = name

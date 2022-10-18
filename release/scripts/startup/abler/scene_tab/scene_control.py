@@ -50,8 +50,8 @@ class SCENE_UL_List(bpy.types.UIList):
     ):
         self.use_filter_show = True
         if self.layout_type in {"DEFAULT", "COMPACT"}:
-            # 칸 간격을 위해 공백 2칸을 앞에 넣어줌
-            layout.label(text="  " + item.name)
+            row = layout.row()
+            row.prop(item, "name", text="", emboss=False)
 
 
 class CreateSceneOperator(bpy.types.Operator):
