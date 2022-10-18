@@ -26,6 +26,8 @@ from math import radians
 from .tracker import tracker
 from . import cameras
 
+# custom_properties에서 BoolProperty로 prop을 생성하면 버그가 발생해
+# is_scene_renamed를 글로벌 변수로 정의함 (참조 : lib.objects의 글로벌 변수 items)
 is_scene_renamed = True
 
 
