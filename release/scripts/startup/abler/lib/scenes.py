@@ -26,6 +26,8 @@ from math import radians
 from .tracker import tracker
 from . import cameras
 
+bool_change_scene_name = True
+
 
 def change_dof(self, context: Context) -> None:
     if use_dof := context.scene.ACON_prop.use_dof:
@@ -135,12 +137,20 @@ def load_scene_by_index(self, context: Context) -> None:
 
 
 def change_scene_name(self, context):
-    prop = context.window_manager.ACON_prop
+    global bool_change_scene_name
 
-    scene_col = prop.scene_col
-    active_scene_index = prop.active_scene_index
+    # CreateSceneOperator에서 create_scene 후에 change_scene_name이 실행되면서
+    # active_scene_index가 이전 씬을 가리킨 상태에서 씬 복사를 하면서 씬 네이밍이 어긋나는 문제가 발생
+    # 이를 위해 create_scene 후엔 change_scene_name을 실행하지 않도록 bool_change_scene_name을 False로 설정해
+    # 실제로 이름을 바꿀 때만 change_scene_name을 실행
+    if bool_change_scene_name:
+        prop = context.window_manager.ACON_prop
 
-    context.scene.name = scene_col[active_scene_index].name
+        scene_col = prop.scene_col
+        active_scene_index = prop.active_scene_index
+        bpy.context.scene.name = scene_col[active_scene_index].name
+
+    bool_change_scene_name = True
 
 
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
@@ -194,6 +204,8 @@ def load_scene(self, context: Context) -> None:
 
 
 def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
+    global bool_change_scene_name
+    bool_change_scene_name = False
 
     new_scene = old_scene.copy()
     new_scene.name = name
