@@ -375,6 +375,22 @@ void WM_OT_splash_about(wmOperatorType *ot)
  * wm.py의 WM_MT_splash_tutorial 클래스의 UI를 받아오기 때문에 1,2,3 UI가 동일함
  */
 
+static char* Get_Current_Lang()
+{
+  // 앞으로 다국어 관리를 더 쉽게 하기 위해서 아래와 같은 로직을 추가함.
+  const char* lang_list[2] = {"ko_KR", "en_US"};
+  int cmpout = 1;
+  for (int i = 0; i < sizeof(lang_list)/sizeof(lang_list[0]); i++){
+    cmpout *= strcmp(lang_list[i], BLT_lang_get());
+  }
+  if (cmpout == 0){
+    return BLT_lang_get();
+  }
+  else{
+    return "en_US";
+  }
+}
+
 static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
@@ -383,7 +399,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
   extern char datatoc_tutorial_guide_1_en_US_png[];
   extern int datatoc_tutorial_guide_1_en_US_png_size;
 
-  const char *current_lang = BLT_lang_get();
+  const char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -527,8 +543,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
   extern int datatoc_tutorial_guide_2_ko_KR_png_size;
   extern char datatoc_tutorial_guide_2_en_US_png[];
   extern int datatoc_tutorial_guide_2_en_US_png_size;
-
-  const char *current_lang = BLT_lang_get();
+  char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -673,7 +688,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
   extern char datatoc_tutorial_guide_3_en_US_png[];
   extern int datatoc_tutorial_guide_3_en_US_png_size;
 
-  const char *current_lang = BLT_lang_get();
+  const char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
