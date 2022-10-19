@@ -643,49 +643,8 @@ class TOPBAR_MT_window(Menu):
     bl_label = "Window"
 
     def draw(self, context):
-        import sys
-
         layout = self.layout
-
-        operator_context_default = layout.operator_context
-
-        layout.operator("wm.window_new")
-        layout.operator("wm.window_new_main")
-
-        layout.separator()
-
-        layout.operator("wm.window_fullscreen_toggle", icon='FULLSCREEN_ENTER')
-
-        layout.separator()
-
-        layout.operator("screen.workspace_cycle",
-                        text="Next Workspace").direction = 'NEXT'
-        layout.operator("screen.workspace_cycle",
-                        text="Previous Workspace").direction = 'PREV'
-
-        layout.separator()
-
         layout.prop(context.screen, "show_statusbar")
-
-        layout.separator()
-
-        layout.operator("screen.screenshot")
-
-        # Showing the status in the area doesn't work well in this case.
-        # - From the top-bar, the text replaces the file-menu (not so bad but strange).
-        # - From menu-search it replaces the area that the user may want to screen-shot.
-        # Setting the context to screen causes the status to show in the global status-bar.
-        layout.operator_context = 'INVOKE_SCREEN'
-        layout.operator("screen.screenshot_area")
-        layout.operator_context = operator_context_default
-
-        if sys.platform[:3] == "win":
-            layout.separator()
-            layout.operator("wm.console_toggle", icon='CONSOLE')
-
-        if context.scene.render.use_multiview:
-            layout.separator()
-            layout.operator("wm.set_stereo_3d")
 
 
 class TOPBAR_MT_help(Menu):
