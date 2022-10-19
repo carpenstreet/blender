@@ -615,23 +615,6 @@ class TOPBAR_MT_edit(Menu):
         layout.separator()
 
         layout.operator("wm.search_menu", text="Menu Search...", icon='VIEWZOOM')
-        if show_developer:
-            layout.operator("wm.search_operator", text="Operator Search...", icon='VIEWZOOM')
-
-        layout.separator()
-
-        # Mainly to expose shortcut since this depends on the context.
-        props = layout.operator("wm.call_panel", text="Rename Active Item...")
-        props.name = "TOPBAR_PT_name"
-        props.keep_open = False
-
-        layout.operator("wm.batch_rename", text="Batch Rename...")
-
-        layout.separator()
-
-        # Should move elsewhere (impacts outliner & 3D view).
-        tool_settings = context.tool_settings
-        layout.prop(tool_settings, "lock_object_mode")
 
         layout.separator()
 
