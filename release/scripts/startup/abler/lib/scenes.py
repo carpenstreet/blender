@@ -200,6 +200,7 @@ def load_scene(self, context: Context) -> None:
     shadow.change_sun_strength(None, context)
     shadow.toggle_shadow(None, context)
     shadow.change_sun_rotation(None, context)
+    cameras.make_sure_camera_unselectable(self, context)
 
     # refresh look_at_me
     refresh_look_at_me()
