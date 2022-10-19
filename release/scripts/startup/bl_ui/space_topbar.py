@@ -454,7 +454,11 @@ class TOPBAR_MT_file_import(Menu):
     bl_owner_use_filter = False
 
     def draw(self, _context):
-        pass
+        """
+        이 부분에 Import Blend, Import SKP 들어갈 예정
+        Import FBX가 addon으로 동작하고 있어, 순서 변경이 가능한지 확인해야함
+        """
+        self.layout.operator("acon3d.import_blend", text="Import Blend (.blend)")
 
 
 class TOPBAR_MT_file_export(Menu):
