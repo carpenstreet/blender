@@ -64,6 +64,7 @@
 #include "WM_api.h"
 #include "WM_types.h"
 
+#include "BLT_lang.h"
 #include "wm.h"
 
 static uiBlock *last_tutorial_block = NULL;
@@ -374,11 +375,30 @@ void WM_OT_splash_about(wmOperatorType *ot)
  * wm.py의 WM_MT_splash_tutorial 클래스의 UI를 받아오기 때문에 1,2,3 UI가 동일함
  */
 
+static char *Get_Current_Lang()
+{
+  // 앞으로 다국어 관리를 더 쉽게 하기 위해서 아래와 같은 로직을 추가함.
+  const char *lang_list[2] = {"ko_KR", "en_US"};
+  int cmpout;
+  const char *cur_lang = BLT_lang_get();
+  for (int i = 0; i < sizeof(lang_list) / sizeof(lang_list[0]); i++) {
+    cmpout = strcmp(lang_list[i], cur_lang);
+    if (cmpout == 0) {
+      return cur_lang;
+    }
+  }
+  return "en_US";
+}
+
 static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_1_png[];
-  extern int datatoc_tutorial_guide_1_png_size;
+  extern char datatoc_tutorial_guide_1_ko_KR_png[];
+  extern int datatoc_tutorial_guide_1_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_1_en_US_png[];
+  extern int datatoc_tutorial_guide_1_en_US_png_size;
+
+  const char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -386,15 +406,26 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
     char template_directory[FILE_MAX];
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
-      BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_1.png");
+      char str[30];
+      strcpy(str, "tutorial_guide_1_");
+      strcat(str, current_lang);
+      strcat(str, ".png");
+      BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_1_png;
-    size_t splash_data_size = datatoc_tutorial_guide_1_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0) {
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_1_ko_KR_png_size;
+    }
+    else {
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_1_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -510,8 +541,12 @@ void WM_OT_splash_tutorial_1(wmOperatorType *ot)
 static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_2_png[];
-  extern int datatoc_tutorial_guide_2_png_size;
+  extern char datatoc_tutorial_guide_2_ko_KR_png[];
+  extern int datatoc_tutorial_guide_2_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_2_en_US_png[];
+  extern int datatoc_tutorial_guide_2_en_US_png_size;
+
+  const char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -519,15 +554,26 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
     char template_directory[FILE_MAX];
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
-      BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_2.png");
+      char str[30];
+      strcpy(str, "tutorial_guide_2_");
+      strcat(str, current_lang);
+      strcat(str, ".png");
+      BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_2_png;
-    size_t splash_data_size = datatoc_tutorial_guide_2_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0) {
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_2_ko_KR_png_size;
+    }
+    else {
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_2_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -643,8 +689,12 @@ void WM_OT_splash_tutorial_2(wmOperatorType *ot)
 static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_3_png[];
-  extern int datatoc_tutorial_guide_3_png_size;
+  extern char datatoc_tutorial_guide_3_ko_KR_png[];
+  extern int datatoc_tutorial_guide_3_ko_KR_png_size;
+  extern char datatoc_tutorial_guide_3_en_US_png[];
+  extern int datatoc_tutorial_guide_3_en_US_png_size;
+
+  const char *current_lang = Get_Current_Lang();
 
   ImBuf *ibuf = NULL;
   if (U.app_template[0] != '\0') {
@@ -652,15 +702,26 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
     char template_directory[FILE_MAX];
     if (BKE_appdir_app_template_id_search(
             U.app_template, template_directory, sizeof(template_directory))) {
-      BLI_join_dirfile(
-          splash_filepath, sizeof(splash_filepath), template_directory, "tutorial_guide_3.png");
+      char str[30];
+      strcpy(str, "tutorial_guide_3_");
+      strcat(str, current_lang);
+      strcat(str, ".png");
+      BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
     }
   }
 
   if (ibuf == NULL) {
-    const uchar *splash_data = (const uchar *)datatoc_tutorial_guide_3_png;
-    size_t splash_data_size = datatoc_tutorial_guide_3_png_size;
+    const uchar *splash_data;
+    size_t splash_data_size;
+    if (strcmp(current_lang, "ko_KR") == 0) {
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_png;
+      splash_data_size = datatoc_tutorial_guide_3_ko_KR_png_size;
+    }
+    else {
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_png;
+      splash_data_size = datatoc_tutorial_guide_3_en_US_png_size;
+    }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
 
@@ -773,7 +834,9 @@ void WM_OT_splash_tutorial_3(wmOperatorType *ot)
   ot->poll = WM_operator_winactive;
 }
 
-static int wm_tutorial_close_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_tutorial_close_invoke(bContext *C,
+                                    wmOperator *UNUSED(op),
+                                    const wmEvent *UNUSED(event))
 {
   if (last_tutorial_block != NULL) {
     wm_block_close_tutorial(C, last_tutorial_block, NULL);
@@ -857,7 +920,9 @@ static uiBlock *wm_block_create_splash_modal(bContext *C, ARegion *region, void 
   return block;
 }
 
-static int wm_splash_modal_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_splash_modal_invoke(bContext *C,
+                                  wmOperator *UNUSED(op),
+                                  const wmEvent *UNUSED(event))
 {
   UI_popup_block_invoke(C, wm_block_create_splash_modal, NULL, NULL);
 
@@ -881,7 +946,9 @@ static void wm_block_close_blocking_modal(bContext *C, void *arg_block, void *UN
   splash_modal_block = NULL;
 }
 
-static int wm_splash_modal_close_invoke(bContext *C, wmOperator *UNUSED(op), const wmEvent *UNUSED(event))
+static int wm_splash_modal_close_invoke(bContext *C,
+                                        wmOperator *UNUSED(op),
+                                        const wmEvent *UNUSED(event))
 {
   if (splash_modal_block != NULL) {
     wm_block_close_blocking_modal(C, splash_modal_block, NULL);
