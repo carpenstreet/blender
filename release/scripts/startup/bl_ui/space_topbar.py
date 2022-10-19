@@ -454,16 +454,7 @@ class TOPBAR_MT_file_import(Menu):
     bl_owner_use_filter = False
 
     def draw(self, _context):
-        if bpy.app.build_options.collada:
-            self.layout.operator("wm.collada_import",
-                                 text="Collada (Default) (.dae)")
-        if bpy.app.build_options.alembic:
-            self.layout.operator("wm.alembic_import", text="Alembic (.abc)")
-        if bpy.app.build_options.usd:
-            self.layout.operator(
-                "wm.usd_import", text="Universal Scene Description (.usd, .usdc, .usda)")
-
-        self.layout.operator("wm.gpencil_import_svg", text="SVG as Grease Pencil")
+        pass
 
 
 class TOPBAR_MT_file_export(Menu):
