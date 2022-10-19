@@ -17,6 +17,7 @@ def init_setting(dummy):
     prefs_view = prefs.view
     prefs_input = prefs.inputs
     prefs_paths = prefs.filepaths
+    prefs_addon = bpy.ops.preferences
 
     if "--background" not in sys.argv and "-b" not in sys.argv:
         try:
@@ -47,6 +48,19 @@ def init_setting(dummy):
     prefs_paths.save_version = 0
     prefs_input.use_zoom_to_mouse = True
     prefs_input.use_mouse_depth_navigate = True
+
+    # Import에 적용되는 Addons 비활성화
+    addons = [
+        "io_anim_bvh",
+        "io_curve_svg",
+        "io_mesh_ply",
+        "io_mesh_stl",
+        "io_scene_gltf2",
+        "io_scene_obj",
+        "io_scene_x3d",
+    ]
+    for addon in addons:
+        prefs_addon.addon_disable(module=addon)
 
 
 def hide_header(dummy):
