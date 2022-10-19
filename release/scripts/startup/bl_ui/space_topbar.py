@@ -233,15 +233,6 @@ class TOPBAR_MT_blender(Menu):
         layout.operator("wm.splash_about")
         layout.operator("acon3d.logout")
 
-        layout.separator()
-
-        layout.operator("preferences.app_template_install",
-                        text="Install Application Template...")
-
-        layout.separator()
-
-        layout.menu("TOPBAR_MT_blender_system")
-
 
 class TOPBAR_MT_file_cleanup(Menu):
     bl_label = "Clean Up"
