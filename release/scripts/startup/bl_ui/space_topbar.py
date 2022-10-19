@@ -278,7 +278,6 @@ class TOPBAR_MT_file(Menu):
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
         layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
         layout.menu("TOPBAR_MT_ACON3D_open_recent_files")
-        layout.operator("wm.revert_mainfile")
         layout.menu("TOPBAR_MT_file_recover")
 
         layout.separator()
@@ -293,24 +292,11 @@ class TOPBAR_MT_file(Menu):
 
         layout.separator()
 
-        layout.operator_context = 'INVOKE_AREA'
-        layout.operator("wm.link", text="Link...", icon='LINK_BLEND')
-        layout.operator("wm.append", text="Append...", icon='APPEND_BLEND')
-        layout.menu("TOPBAR_MT_file_previews")
-
-        layout.separator()
-
         layout.menu("TOPBAR_MT_file_import", icon='IMPORT')
-        layout.menu("TOPBAR_MT_file_export", icon='EXPORT')
 
         layout.separator()
 
-        layout.menu("TOPBAR_MT_file_external_data")
         layout.menu("TOPBAR_MT_file_cleanup")
-
-        layout.separator()
-
-        layout.menu("TOPBAR_MT_file_defaults")
 
         layout.separator()
 
