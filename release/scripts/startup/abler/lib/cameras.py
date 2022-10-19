@@ -85,6 +85,7 @@ def make_sure_camera_exists() -> None:
     bpy.context.scene.collection.objects.link(camera_object)
 
     camera_object.data.show_passepartout = False
+    camera_object.hide_select = True
 
     # set context camera
     bpy.context.scene.camera = camera_object

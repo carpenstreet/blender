@@ -215,6 +215,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
     if old_scene.camera:
         new_scene.camera = old_scene.camera.copy()
         new_scene.camera.data = old_scene.camera.data.copy()
+        new_scene.camera.hide_select = True
         new_scene.collection.objects.link(new_scene.camera)
         try:
             new_scene.collection.objects.unlink(old_scene.camera)
@@ -228,6 +229,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         obj = bpy.data.objects.new("View_Camera", cam)
         obj.location = (4.7063, 7.6888, 1.9738)
         obj.rotation_euler = (radians(90), radians(0), radians(-212))
+        obj.hide_select = True
         new_scene.collection.objects.link(obj)
         new_scene.camera = obj
         cameras.switch_to_rendered_view()
