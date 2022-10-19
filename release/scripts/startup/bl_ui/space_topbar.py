@@ -292,7 +292,7 @@ class TOPBAR_MT_file(Menu):
 
         layout.separator()
 
-        layout.menu("TOPBAR_MT_file_import", icon='IMPORT')
+        layout.menu("TOPBAR_MT_ACON3D_file_import", icon='IMPORT')
 
         layout.separator()
 
@@ -450,7 +450,7 @@ class TOPBAR_MT_templates_more(Menu):
 
 class TOPBAR_MT_file_import(Menu):
     bl_idname = "TOPBAR_MT_file_import"
-    bl_label = "Import"
+    bl_label = "Import(Original)"
     bl_owner_use_filter = False
 
     def draw(self, _context):
@@ -459,6 +459,17 @@ class TOPBAR_MT_file_import(Menu):
         Import FBX가 addon으로 동작하고 있어, 순서 변경이 가능한지 확인해야함
         """
         self.layout.operator("acon3d.import_blend", text="Import Blend (.blend)")
+
+
+class TOPBAR_MT_ACON3D_file_import(Menu):
+    bl_idname = "TOPBAR_MT_ACON3D_file_import"
+    bl_label = "Import"
+    bl_owner_use_filter = False
+
+    def draw(self, _context):
+        self.layout.operator("acon3d.import_fbx", text="FBX (.fbx)")
+        self.layout.operator("acon3d.import_skp", text="SKP (.skp)")
+        self.layout.operator("acon3d.import_blend", text="Blender (.blend)")
 
 
 class TOPBAR_MT_file_export(Menu):
@@ -769,6 +780,7 @@ classes = (
     TOPBAR_MT_file_defaults,
     TOPBAR_MT_templates_more,
     TOPBAR_MT_file_import,
+    TOPBAR_MT_ACON3D_file_import,
     TOPBAR_MT_file_export,
     TOPBAR_MT_file_external_data,
     TOPBAR_MT_file_cleanup,
