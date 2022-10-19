@@ -13,6 +13,16 @@ bl_info = {
 import bpy
 
 
+class RENDER_UL_List(bpy.types.UIList):
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname
+    ):
+        if self.layout_type in {"DEFAULT", "COMPACT"}:
+            layout.separator()
+            layout.prop(item, "is_selected", text="")
+            layout.prop(item, "name", text="", emboss=False)
+
+
 class Acon3dHighQualityRenderPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
@@ -32,32 +42,34 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             scene = context.scene
 
             layout = self.layout
-            layout.use_property_split = True
-            layout.use_property_decorate = False
+
             row = layout.row(align=True)
-            box = row.box()
-            box.alignment = "LEFT"
-            row = box.row(align=True)
+            row.use_property_split = True
+            row.use_property_decorate = False
             row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
             row.prop(scene.render, "resolution_x", text="")
             row.prop(scene.render, "resolution_y", text="")
             render_prop = context.window_manager.ACON_prop
-            row = box.row()
-            row.prop(render_prop, "hq_render_full", text="")
-            row = box.row()
-            row.prop(render_prop, "hq_render_line", text="")
-            row = box.row()
-            row.prop(render_prop, "hq_render_texture", text="")
-            row = box.row()
-            row.prop(render_prop, "hq_render_shadow", text="")
-            row = box.row()
-            row.prop(scene.ACON_prop, "edge_min_line_width", text="hihihihi")
-            row = box.row()
+            row = layout.row()
+            col = row.column()
+            row = col.row()
+            row.prop(render_prop, "hq_render_full", text="Full Render")
+            row = col.row()
+            row.prop(render_prop, "hq_render_line", text="Line Render")
+            row = col.row()
+            row.prop(render_prop, "hq_render_texture", text="Texture Render")
+            row = col.row()
+            row.prop(render_prop, "hq_render_shadow", text="Shadow Render")
+            col.template_list(
+                "RENDER_UL_List",
+                "",
+                render_prop,
+                "scene_col",
+                render_prop,
+                "active_scene_index",
+            )
+            row = layout.row()
             row.operator("acon3d.render_full", text="Full Render")
-            # row.operator("acon3d.render_line", text="Line Render")
-            # row.operator("acon3d.render_shadow", text="Shadow Render")
-            # row = layout.row()
-            # row.operator("acon3d.render_all", text="Render All Scenes")
 
             # 변경한 뷰포트 색이 같이 렌더되는 기능과 함께 들어가기로 논의되었습니다.
             # 그 전까지 주석처리 해두겠습니다.
@@ -85,14 +97,13 @@ class Acon3dQuickRenderPanel(bpy.types.Panel):
         scene = context.scene
 
         layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-        box = layout.box()
-        row = box.row(align=True)
+        row = layout.row(align=True)
+        row.use_property_split = True
+        row.use_property_decorate = False
         row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
         row.prop(scene.render, "resolution_x", text="")
         row.prop(scene.render, "resolution_y", text="")
-        row = box.row()
+        row = layout.row()
         row.operator("acon3d.render_quick", text="Render Viewport", text_ctxt="*")
 
 
@@ -114,14 +125,13 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
         scene = context.scene
 
         layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-        box = layout.box()
-        row = box.row(align=True)
+        row = layout.row(align=True)
+        row.use_property_split = True
+        row.use_property_decorate = False
         row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
         row.prop(scene.render, "resolution_x", text="")
         row.prop(scene.render, "resolution_y", text="")
-        row = box.row()
+        row = layout.row()
         row.operator("acon3d.render_snip", text="Render Viewport", text_ctxt="*")
 
 
@@ -129,6 +139,7 @@ classes = (
     Acon3dHighQualityRenderPanel,
     Acon3dQuickRenderPanel,
     Acon3dSnipRenderPanel,
+    RENDER_UL_List,
 )
 
 

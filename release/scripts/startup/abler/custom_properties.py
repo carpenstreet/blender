@@ -34,6 +34,11 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
 
     index: bpy.props.IntProperty()
 
+    is_selected: bpy.props.BoolProperty(
+        name="Scene Selected",
+        description="Is Scene Selected",
+    )
+
 
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
