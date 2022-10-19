@@ -48,7 +48,6 @@ class SCENE_UL_List(bpy.types.UIList):
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
-        self.use_filter_show = True
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             row = layout.row()
             row.prop(item, "name", text="", emboss=False)
