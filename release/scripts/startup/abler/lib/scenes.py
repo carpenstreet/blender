@@ -109,6 +109,12 @@ def add_scene_items_to_collection():
     prop = bpy.context.window_manager.ACON_prop
     prop.scene_col.clear()
     for i, scene in enumerate(bpy.data.scenes):
+        # 파일 열기 시 씬 이름들을 Scene UI에 넣는 과정에서 change_scene_name이 실행이 됨
+        # 실제 이름을 바꾸는 과정이 아니므로 is_scene_renamed를 설정
+        # 각 씬마다 change_scene_name 함수에 들어갔다 나오므로 for문 안에서 설정
+        global is_scene_renamed
+        is_scene_renamed = False
+
         new_scene = prop.scene_col.add()
         new_scene.name = scene.name
         new_scene.index = i
