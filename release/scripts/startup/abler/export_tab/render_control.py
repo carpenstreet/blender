@@ -604,7 +604,7 @@ classes = (
     Acon3dRenderLineOperator,
     Acon3dRenderSnipOperator,
     Acon3dRenderQuickOperator,
-    Acon3dRenderPanel,
+    # Acon3dRenderPanel,
 )
 
 

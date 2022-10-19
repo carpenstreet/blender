@@ -42,6 +42,7 @@ from .camera_tab import camera_control, background_control
 from .scene_tab import scene_control, object_control, layer_control
 from .style_tab import styles_control
 from .export_tab import render_control
+from .export_tab import export_control
 from . import pref
 from . import operators
 from . import warning_modal
@@ -61,6 +62,7 @@ importedLibrary = [
     layer_control,
     styles_control,
     render_control,
+    export_control,
     pref,
     operators,
     warning_modal,

@@ -66,6 +66,11 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         update=scenes.load_scene_by_index, name="Scene"
     )
 
+    hq_render_full: bpy.props.BoolProperty(name="Full Render", description="asdf")
+    hq_render_line: bpy.props.BoolProperty(name="Line Render", description="asdf")
+    hq_render_texture: bpy.props.BoolProperty(name="Texture Render", description="asdf")
+    hq_render_shadow: bpy.props.BoolProperty(name="Shadow Render", description="asdf")
+
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     @classmethod
