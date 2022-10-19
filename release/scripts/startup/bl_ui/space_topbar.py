@@ -354,14 +354,6 @@ class TOPBAR_MT_file_new(Menu):
                 "wm.read_homefile", text="General", icon=icon)
             props.app_template = ""
 
-        for d in paths:
-            props = layout.operator(
-                "wm.read_homefile",
-                text=bpy.path.display_name(d),
-                icon=icon,
-            )
-            props.app_template = d
-
         layout.operator_context = 'EXEC_DEFAULT'
 
         if show_more:
