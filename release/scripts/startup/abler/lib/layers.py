@@ -23,11 +23,18 @@ from bpy.types import Collection, Object
 from typing import Any, List, Optional, Tuple, Union
 
 
-def get_first_collection_name_of_object(obj: Object):
+def get_first_layer_name_of_object(obj: Object):
     collections = obj.users_collection
-    if len(collections) == 0:
+    layer_collection = bpy.data.collections.get("Layers")
+
+    if not layer_collection:
         return None
-    return collections[0].name
+
+    for c in collections:
+        if c.name in layer_collection.children:
+            return c.name
+
+    return None
 
 
 def handleLayerVisibilityOnSceneChange(oldScene, newScene):
@@ -47,7 +54,7 @@ def handleLayerVisibilityOnSceneChange(oldScene, newScene):
                 # new scene 에서 변경될 object 의 레이어 정보를 가져옴
                 new_scene_layer = None
                 for l in newScene.l_exclude:
-                    if l.name == get_first_collection_name_of_object(cur):
+                    if l.name == get_first_layer_name_of_object(cur):
                         new_scene_layer = l
                         break
                 if new_scene_layer:
@@ -68,7 +75,7 @@ def handleLayerVisibilityOnSceneChange(oldScene, newScene):
 
         if new_value is not None:
             for l in newScene.l_exclude:
-                if l.name == get_first_collection_name_of_object(obj) and not l.value:
+                if l.name == get_first_layer_name_of_object(obj) and not l.value:
                     new_value = False
                     break
 
@@ -78,7 +85,7 @@ def handleLayerVisibilityOnSceneChange(oldScene, newScene):
         if new_lock is not None:
             if not new_lock:
                 for l in newScene.l_exclude:
-                    if l.name == get_first_collection_name_of_object(obj) and l.lock:
+                    if l.name == get_first_layer_name_of_object(obj) and l.lock:
                         new_lock = True
                         break
 

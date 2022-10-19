@@ -19,7 +19,7 @@
 
 import bpy
 from math import radians
-from .lib.layers import get_first_collection_name_of_object
+from .lib.layers import get_first_layer_name_of_object
 from .lib import scenes, cameras, shadow, objects
 from .lib.materials import materials_handler
 from . import object_control
@@ -78,10 +78,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
             if value:
                 for l in l_exclude:
-                    if (
-                        l.name == get_first_collection_name_of_object(obj)
-                        and not l.value
-                    ):
+                    if l.name == get_first_layer_name_of_object(obj) and not l.value:
                         value = False
                         break
 
@@ -118,7 +115,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
             if not lock:
                 for l in l_exclude:
-                    if l.name == get_first_collection_name_of_object(obj) and l.lock:
+                    if l.name == get_first_layer_name_of_object(obj) and l.lock:
                         lock = True
                         break
 
