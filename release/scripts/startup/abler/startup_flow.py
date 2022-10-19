@@ -23,6 +23,7 @@ import pickle
 import platform
 import sys
 import textwrap
+import threading
 import time
 import webbrowser
 from json import JSONDecodeError
@@ -155,6 +156,62 @@ class Acon3dAlertOperator(bpy.types.Operator):
             row.label(text=self.message_3)
         layout.separator()
         layout.separator()
+
+
+class Acon3dDynamicAlertOperator(bpy.types.Operator):
+    bl_idname = "acon3d.dynamic_alert"
+    bl_label = "Dynamic Alert"
+
+    title: bpy.props.StringProperty(name="Title")
+
+    my_int: bpy.props.IntProperty(name="Index", default=0)
+    my_bool: bpy.props.BoolProperty(name="My bool", default=True)
+
+    t = None
+
+    def timer(self):
+        self.my_int += 1
+
+    def set_interval(self, func, sec):
+        def func_wrapper():
+            self.set_interval(func, sec)
+            func()
+
+        if self.my_int < 10:
+            self.t = threading.Timer(sec, func_wrapper)
+            self.t.start()
+
+    def execute(self, context):
+        if self.t:
+            self.t.cancel()
+        return {"FINISHED"}
+
+    def check(self, context):
+        print("Check", self.my_int > 5)
+        if self.my_int > 5:
+            return True
+        return False
+
+    def draw(self, context):
+        print("draw")
+        layout = self.layout
+        row = layout.row()
+        row.label(text=self.title)
+        row = layout.row()
+        row.prop(self, "my_bool")
+        row = layout.row()
+        row.prop(self, "title")
+        row.label(text=str(self.my_int))
+
+    def invoke(self, context, event):
+        print("invoke")
+        self.set_interval(self.timer, 1)
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
+
+    def cancel(self, context):
+        if self.t:
+            self.t.cancel()
 
 
 class Acon3dNoticeInvokeOperator(bpy.types.Operator):
@@ -649,6 +706,7 @@ class Acon3dCloseAblerOprator(bpy.types.Operator):
 
 
 classes = (
+    Acon3dDynamicAlertOperator,
     Acon3dAlertOperator,
     Acon3dModalOperator,
     Acon3dLoginOperator,
