@@ -85,12 +85,19 @@ def make_sure_camera_exists() -> None:
     bpy.context.scene.collection.objects.link(camera_object)
 
     camera_object.data.show_passepartout = False
+    camera_object.hide_select = True
 
     # set context camera
     bpy.context.scene.camera = camera_object
 
     # View_Camera 오브젝트 활성화
     bpy.context.view_layer.objects.active = camera_object
+
+
+def make_sure_camera_unselectable(self, context) -> None:
+    # 씬을 로드할 때 camera 오브젝트들이 선택되지 않도록 설정
+    if camera := context.scene.camera:
+        camera.hide_select = True
 
 
 # turn on camera view (set viewport to the current selected camera's view)
