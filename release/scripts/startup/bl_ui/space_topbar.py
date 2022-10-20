@@ -450,6 +450,8 @@ class TOPBAR_MT_file_import(Menu):
 
 
 class TOPBAR_MT_ACON3D_file_import(Menu):
+    # import_fbx 애드온이 무조건 TOPBAR_MT_file_import에 그려주고 있어서
+    # acon3d.import_fbx를 넣기 위해 ACON3D 클래스를 새로 만들어 이 클래스를 TOPBAR 메뉴에 그려줌
     bl_idname = "TOPBAR_MT_ACON3D_file_import"
     bl_label = "Import"
     bl_owner_use_filter = False
