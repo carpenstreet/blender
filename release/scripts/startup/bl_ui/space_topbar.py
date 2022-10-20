@@ -68,16 +68,8 @@ class TOPBAR_HT_upper_bar(Header):
             layout.template_reports_banner()
             layout.template_running_jobs()
 
-        # Active workspace view-layer is retrieved through window, not through workspace.
-        layout.template_ID(window, "scene", new="scene.new",
-                           unlink="scene.delete")
-
-        row = layout.row(align=True)
-        row.template_search(
-            window, "view_layer",
-            scene, "view_layers",
-            new="scene.view_layer_add",
-            unlink="scene.view_layer_remove")
+        # 상단 바에 있던 Scene, ViewLayer 삭제
+        # 관련 링크 : https://www.notion.so/acon3d/50c72f2723bf4b178f508e84fc48a345
 
 
 class TOPBAR_PT_tool_settings_extra(Panel):
