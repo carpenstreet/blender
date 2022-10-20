@@ -69,7 +69,7 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
                 "active_scene_index",
             )
             row = layout.row()
-            row.operator("acon3d.render_full", text="Full Render")
+            row.operator("acon3d.render_high_quality", text="Full Render")
 
             # 변경한 뷰포트 색이 같이 렌더되는 기능과 함께 들어가기로 논의되었습니다.
             # 그 전까지 주석처리 해두겠습니다.

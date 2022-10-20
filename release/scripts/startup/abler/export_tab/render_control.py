@@ -279,20 +279,6 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderAllOperator(Acon3dRenderDirOperator):
-    """Render all scenes with full render settings"""
-
-    bl_idname = "acon3d.render_all"
-    bl_label = "Save"
-    bl_translation_context = "*"
-
-    def prepare_queue(self, context):
-        tracker.render_all_scenes()
-
-        super().prepare_queue(context)
-        return {"RUNNING_MODAL"}
-
-
 class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
     """Render according to the set pixel"""
 
@@ -309,50 +295,6 @@ class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
 
         self.render_queue.append(context.scene)
         return {"RUNNING_MODAL"}
-
-
-class Acon3dRenderTempSceneFileOperator(Acon3dRenderFileOperator):
-
-    temp_scenes = []
-
-    def prepare_render(self):
-        render.clear_compositor()
-        render.match_object_visibility()
-
-    def prepare_queue(self, context):
-
-        scene = context.scene.copy()
-
-        # 현재 씬을 복사한 씬으로 적용
-        bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
-
-        self.render_queue.append(scene)
-        self.temp_scenes.append(scene)
-
-        scene.eevee.use_bloom = False
-        scene.render.use_lock_interface = True
-
-        for mat in bpy.data.materials:
-            mat.blend_method = "OPAQUE"
-            mat.shadow_method = "OPAQUE"
-            if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
-                toonNode.inputs[1].default_value = 0
-                toonNode.inputs[3].default_value = 1
-
-        return {"RUNNING_MODAL"}
-
-    def on_render_finish(self, context):
-
-        for mat in bpy.data.materials:
-            materials_handler.set_material_parameters_by_type(mat)
-
-        for scene in self.temp_scenes:
-            bpy.data.scenes.remove(scene)
-
-        self.temp_scenes.clear()
-
-        super().on_render_finish(context)
-        return {"FINISHED"}
 
 
 class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
@@ -395,56 +337,107 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
         return {"FINISHED"}
 
 
-class Acon3dRenderShadowOperator(Acon3dRenderTempSceneFileOperator):
-    """Renders only shadow according to the set pixel"""
+# TODO: Texture Render
+class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
+    """Render selected objects isolatedly from background"""
 
-    bl_idname = "acon3d.render_shadow"
-    bl_label = "Shadow Render"
+    bl_idname = "acon3d.render_high_quality"
+    bl_label = "High Quality Render"
     bl_translation_context = "*"
 
+    # 렌더를 위해 임시로 만들어진 scene list
+    temp_scenes = []
+
     def __init__(self):
-        scene = bpy.context.scene
-        self.filepath = f"{scene.name}_shadow{self.filename_ext}"
+        super().__init__()
+
+    def prepare_render(self):
+        render.clear_compositor()
+        render.match_object_visibility()
+
+    # render_type - line, shadow, texture
+    def prepare_temp_scene(self, base_scene, render_type: str):
+        scene = base_scene.copy()
+
+        # 현재 씬을 복사한 씬으로 적용
+        bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
+
+        self.render_queue.append(scene)
+        self.temp_scenes.append(scene)
+
+        scene.eevee.use_bloom = False
+        scene.render.use_lock_interface = True
+
+        for mat in bpy.data.materials:
+            mat.blend_method = "OPAQUE"
+            mat.shadow_method = "OPAQUE"
+            if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
+                toonNode.inputs[1].default_value = 0
+                toonNode.inputs[3].default_value = 1
+
+        scene.name = f"{base_scene.name}_{render_type}"
+        prop = scene.ACON_prop
+        if render_type == "line":
+            prop.toggle_texture = False
+            prop.toggle_shading = False
+            prop.toggle_toon_edge = True
+        elif render_type == "shadow":
+            prop.toggle_texture = False
+            prop.toggle_shading = True
+            prop.toggle_toon_edge = False
 
     def prepare_queue(self, context):
-        tracker.render_shadow()
+        render_prop = context.window_manager.ACON_prop
+        for s_col in render_prop.scene_col:
+            if s_col.is_render_selected:
+                if s_col.name in bpy.data.scenes:
+                    scene = bpy.data.scenes[s_col.name]
 
-        super().prepare_queue(context)
+                    if render_prop.hq_render_full:
+                        tracker.render_full()
+                        self.render_queue.append(scene)
 
-        scene = self.render_queue[0]
-        scene.name = f"{context.scene.name}_shadow"
-        prop = scene.ACON_prop
-        prop.toggle_texture = False
-        prop.toggle_shading = True
-        prop.toggle_toon_edge = False
+                    if render_prop.hq_render_line:
+                        tracker.render_line()
+                        self.prepare_temp_scene(scene, render_type="line")
+
+                    if render_prop.hq_render_texture:
+                        # TODO Texture Render
+                        pass
+
+                    if render_prop.hq_render_shadow:
+                        tracker.render_shadow()
+                        self.prepare_temp_scene(scene, render_type="shadow")
 
         return {"RUNNING_MODAL"}
 
+    def on_render_finish(self, context):
 
-class Acon3dRenderLineOperator(Acon3dRenderTempSceneFileOperator):
-    """Renders only lines according to the set pixel"""
+        for mat in bpy.data.materials:
+            materials_handler.set_material_parameters_by_type(mat)
 
-    bl_idname = "acon3d.render_line"
-    bl_label = "Line Render"
-    bl_translation_context = "*"
+        for scene in self.temp_scenes:
+            bpy.data.scenes.remove(scene)
 
-    def __init__(self):
-        scene = bpy.context.scene
-        self.filepath = f"{scene.name}_line{self.filename_ext}"
+        self.temp_scenes.clear()
 
-    def prepare_queue(self, context):
-        tracker.render_line()
+        super().on_render_finish(context)
+        return {"FINISHED"}
 
-        super().prepare_queue(context)
+    @classmethod
+    def poll(self, context):
+        render_prop = context.window_manager.ACON_prop
 
-        scene = self.render_queue[0]
-        scene.name = f"{context.scene.name}_line"
-        prop = scene.ACON_prop
-        prop.toggle_texture = False
-        prop.toggle_shading = False
-        prop.toggle_toon_edge = True
+        is_method_selected = (
+            render_prop.hq_render_full
+            or render_prop.hq_render_line
+            or render_prop.hq_render_texture
+            or render_prop.hq_render_shadow
+        )
 
-        return {"RUNNING_MODAL"}
+        is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
+
+        return is_method_selected and is_scene_selected
 
 
 class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
@@ -554,57 +547,10 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
         return {"RUNNING_MODAL"}
 
 
-class Acon3dRenderPanel(bpy.types.Panel):
-    """Creates a Panel in the scene context of the properties editor"""
-
-    bl_idname = "ACON3D_PT_render"
-    bl_label = "Render"
-    bl_category = "Export"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
-
-    def draw_header(self, context):
-        layout = self.layout
-        layout.label(icon="RENDER_STILL")
-
-    def draw(self, context):
-        scene = context.scene
-
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-        row = layout.row(align=True)
-        row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
-        row.prop(scene.render, "resolution_x", text="")
-        row.prop(scene.render, "resolution_y", text="")
-
-        row = layout.row()
-        row.operator("acon3d.render_quick", text="Quick Render", text_ctxt="*")
-
-        if bpy.context.scene.camera:
-            row.operator("acon3d.render_full", text="Full Render")
-            row = layout.row()
-            row.operator("acon3d.render_line", text="Line Render")
-            row.operator("acon3d.render_shadow", text="Shadow Render")
-            row = layout.row()
-            row.operator("acon3d.render_all", text="Render All Scenes")
-            row.operator("acon3d.render_snip", text="Snip Render")
-
-            # 변경한 뷰포트 색이 같이 렌더되는 기능과 함께 들어가기로 논의되었습니다.
-            # 그 전까지 주석처리 해두겠습니다.
-            # 해당 이슈 링크: https://www.notion.so/acon3d/Issue-37_-af9ca441b3c44e858097418fb6dc811c
-            # row = layout.row()
-            # prop = context.scene.ACON_prop
-            # row.prop(prop, "background_color", text="Background Color")
-
-
 classes = (
     Acon3dCameraViewOperator,
     Acon3dRenderFullOperator,
-    Acon3dRenderAllOperator,
-    Acon3dRenderShadowOperator,
-    Acon3dRenderLineOperator,
+    Acon3dRenderHighQualityOperator,
     Acon3dRenderSnipOperator,
     Acon3dRenderQuickOperator,
 )
