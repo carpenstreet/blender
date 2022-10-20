@@ -993,9 +993,10 @@ class WM_OT_url_open_support(Operator):
         import webbrowser
         prefs_lang = bpy.context.preferences.view.language
 
-        for language in self.languages:
-            if prefs_lang == language:
-                webbrowser.open(f"https://www.acon3d.com/{language[:2]}/toon/inquiry/write")
+        if prefs_lang in self.languages:
+            webbrowser.open(f"https://www.acon3d.com/{prefs_lang[:2]}/toon/inquiry/write")
+        else:
+            webbrowser.open(f"https://www.acon3d.com/en/toon/inquiry/write")
 
         return {'FINISHED'}
 
