@@ -279,24 +279,6 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
-    """Render according to the set pixel"""
-
-    bl_idname = "acon3d.render_full"
-    bl_label = "Full Render"
-    bl_description = "Render with high quality according to the set pixel"
-    bl_translation_context = "*"
-
-    def __init__(self):
-        super().__init__()
-
-    def prepare_queue(self, context):
-        tracker.render_full()
-
-        self.render_queue.append(context.scene)
-        return {"RUNNING_MODAL"}
-
-
 class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
 
     temp_scenes = []
@@ -339,10 +321,11 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
 
 # TODO: Texture Render
 class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
-    """Render selected objects isolatedly from background"""
+    """Render according to the set pixel"""
 
     bl_idname = "acon3d.render_high_quality"
     bl_label = "High Quality Render"
+    bl_description = "Render with high quality according to the set pixel"
     bl_translation_context = "*"
 
     # 렌더를 위해 임시로 만들어진 scene list
@@ -385,6 +368,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
             prop.toggle_texture = False
             prop.toggle_shading = True
             prop.toggle_toon_edge = False
+        # TODO: Texture Render
 
     def prepare_queue(self, context):
         render_prop = context.window_manager.ACON_prop
@@ -549,7 +533,6 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
 
 classes = (
     Acon3dCameraViewOperator,
-    Acon3dRenderFullOperator,
     Acon3dRenderHighQualityOperator,
     Acon3dRenderSnipOperator,
     Acon3dRenderQuickOperator,
