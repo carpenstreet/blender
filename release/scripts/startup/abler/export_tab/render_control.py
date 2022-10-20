@@ -156,14 +156,21 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
-    # Render Type : Quick, Full, Line, Shadow
+class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
+    """Take a snapshot of the active viewport"""
+
+    bl_idname = "acon3d.render_quick"
+    bl_label = "Quick Render"
+    bl_description = "Take a snapshot of the active viewport"
+    bl_translation_context = "*"
 
     def __init__(self):
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
     def execute(self, context):
+        tracker.render_quick()
+
         # Get basename without file extension
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
@@ -171,6 +178,18 @@ class Acon3dRenderFileOperator(Acon3dRenderOperator, ExportHelper):
             self.basename = ".".join(self.basename.split(".")[:-1])
 
         return super().execute(context)
+
+    def prepare_queue(self, context):
+        # File name duplicate check
+
+        check_file_numbering(self, context)
+
+        for obj in context.selected_objects:
+            obj.select_set(False)
+
+        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
+
+        return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
 
@@ -279,15 +298,55 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
+class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
+    """Render selected objects isolatedly from background"""
+
+    bl_idname = "acon3d.render_snip"
+    bl_label = "Snip Render"
+    bl_translation_context = "*"
 
     temp_scenes = []
+    temp_layer = None
+    temp_col = None
+    temp_image = None
+
+    @classmethod
+    def poll(self, context):
+        return len(context.selected_objects)
 
     def prepare_render(self):
-        render.clear_compositor()
+        if len(self.render_queue) == 3:
+            render.clear_compositor()
+
+        elif len(self.render_queue) == 2:
+            shade_scene = self.temp_scenes[0]
+            filename = (
+                f"{shade_scene.name}.{shade_scene.render.image_settings.file_format}"
+            )
+
+            image_path = os.path.join(self.filepath, filename)
+            self.temp_image = bpy.data.images.load(image_path)
+
+            for mat in bpy.data.materials:
+                materials_handler.set_material_parameters_by_type(mat)
+
+            compNodes = render.clear_compositor()
+            render.setup_background_images_compositor(*compNodes)
+            render.setup_snip_compositor(
+                *compNodes, snip_layer=self.temp_layer, shade_image=self.temp_image
+            )
+
+            os.remove(image_path)
+
+        else:
+            bpy.data.collections.remove(self.temp_col)
+            bpy.data.images.remove(self.temp_image)
+            render.setup_background_images_compositor()
+
         render.match_object_visibility()
 
     def prepare_queue(self, context):
+        tracker.render_snip()
 
         scene = context.scene.copy()
         self.render_queue.append(scene)
@@ -302,6 +361,27 @@ class Acon3dRenderTempSceneDirOperator(Acon3dRenderDirOperator):
             if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
                 toonNode.inputs[1].default_value = 0
                 toonNode.inputs[3].default_value = 1
+
+        scene = context.scene.copy()
+        scene.name = f"{context.scene.name}_snipped"
+        self.render_queue.append(scene)
+        self.temp_scenes.append(scene)
+
+        layer = scene.view_layers.new("ACON_layer_snip")
+        self.temp_layer = layer
+        for col in layer.layer_collection.children:
+            col.exclude = True
+
+        col_group = bpy.data.collections.new("ACON_group_snip")
+        self.temp_col = col_group
+        scene.collection.children.link(col_group)
+        for obj in context.selected_objects:
+            col_group.objects.link(obj)
+
+        scene = context.scene.copy()
+        scene.name = f"{context.scene.name}_full"
+        self.render_queue.append(scene)
+        self.temp_scenes.append(scene)
 
         return {"RUNNING_MODAL"}
 
@@ -422,113 +502,6 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
 
         return is_method_selected and is_scene_selected
-
-
-class Acon3dRenderSnipOperator(Acon3dRenderTempSceneDirOperator):
-    """Render selected objects isolatedly from background"""
-
-    bl_idname = "acon3d.render_snip"
-    bl_label = "Snip Render"
-    bl_translation_context = "*"
-
-    temp_layer = None
-    temp_col = None
-    temp_image = None
-
-    @classmethod
-    def poll(self, context):
-        return len(context.selected_objects)
-
-    def prepare_render(self):
-
-        if len(self.render_queue) == 3:
-
-            render.clear_compositor()
-
-        elif len(self.render_queue) == 2:
-
-            shade_scene = self.temp_scenes[0]
-            filename = (
-                f"{shade_scene.name}.{shade_scene.render.image_settings.file_format}"
-            )
-
-            image_path = os.path.join(self.filepath, filename)
-            self.temp_image = bpy.data.images.load(image_path)
-
-            for mat in bpy.data.materials:
-                materials_handler.set_material_parameters_by_type(mat)
-
-            compNodes = render.clear_compositor()
-            render.setup_background_images_compositor(*compNodes)
-            render.setup_snip_compositor(
-                *compNodes, snip_layer=self.temp_layer, shade_image=self.temp_image
-            )
-
-            os.remove(image_path)
-
-        else:
-
-            bpy.data.collections.remove(self.temp_col)
-            bpy.data.images.remove(self.temp_image)
-            render.setup_background_images_compositor()
-
-        render.match_object_visibility()
-
-    def prepare_queue(self, context):
-        tracker.render_snip()
-
-        super().prepare_queue(context)
-
-        scene = context.scene.copy()
-        scene.name = f"{context.scene.name}_snipped"
-        self.render_queue.append(scene)
-        self.temp_scenes.append(scene)
-
-        layer = scene.view_layers.new("ACON_layer_snip")
-        self.temp_layer = layer
-        for col in layer.layer_collection.children:
-            col.exclude = True
-
-        col_group = bpy.data.collections.new("ACON_group_snip")
-        self.temp_col = col_group
-        scene.collection.children.link(col_group)
-        for obj in context.selected_objects:
-            col_group.objects.link(obj)
-
-        scene = context.scene.copy()
-        scene.name = f"{context.scene.name}_full"
-        self.render_queue.append(scene)
-        self.temp_scenes.append(scene)
-
-        return {"RUNNING_MODAL"}
-
-
-class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
-    """Take a snapshot of the active viewport"""
-
-    bl_idname = "acon3d.render_quick"
-    bl_label = "Quick Render"
-    bl_description = "Take a snapshot of the active viewport"
-    bl_translation_context = "*"
-
-    def __init__(self):
-        super().__init__()
-
-    def execute(self, context):
-        tracker.render_quick()
-        return super().execute(context)
-
-    def prepare_queue(self, context):
-        # File name duplicate check
-
-        check_file_numbering(self, context)
-
-        for obj in context.selected_objects:
-            obj.select_set(False)
-
-        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
-
-        return {"RUNNING_MODAL"}
 
 
 classes = (
