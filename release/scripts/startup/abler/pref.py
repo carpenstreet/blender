@@ -60,7 +60,8 @@ def init_setting(dummy):
         "io_scene_x3d",
     ]
     for addon in addons:
-        prefs_addon.addon_disable(module=addon)
+        if prefs.addons.find(addon) != -1:
+            prefs_addon.addon_disable(module=addon)
 
 
 def hide_header(dummy):
