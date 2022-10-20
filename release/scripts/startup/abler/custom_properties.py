@@ -34,9 +34,9 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
 
     index: bpy.props.IntProperty()
 
-    is_selected: bpy.props.BoolProperty(
-        name="Scene Selected",
-        description="Is Scene Selected",
+    is_render_selected: bpy.props.BoolProperty(
+        name="Scene Name",
+        description="Check to render",
     )
 
 
@@ -71,10 +71,20 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         update=scenes.load_scene_by_index, name="Scene"
     )
 
-    hq_render_full: bpy.props.BoolProperty(name="Full Render", description="asdf")
-    hq_render_line: bpy.props.BoolProperty(name="Line Render", description="asdf")
-    hq_render_texture: bpy.props.BoolProperty(name="Texture Render", description="asdf")
-    hq_render_shadow: bpy.props.BoolProperty(name="Shadow Render", description="asdf")
+    hq_render_full: bpy.props.BoolProperty(
+        name="Full Render", description="Render according to the set pixel"
+    )
+    hq_render_line: bpy.props.BoolProperty(
+        name="Line Render", description="Render only lines according to the set pixel"
+    )
+    hq_render_texture: bpy.props.BoolProperty(
+        name="Texture Render",
+        description="Render only textures according to the set pixel",
+    )
+    hq_render_shadow: bpy.props.BoolProperty(
+        name="Shadow Render",
+        description="Render only shadow according to the set pixel",
+    )
 
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):

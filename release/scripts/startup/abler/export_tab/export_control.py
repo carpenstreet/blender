@@ -19,7 +19,7 @@ class RENDER_UL_List(bpy.types.UIList):
     ):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             layout.separator()
-            layout.prop(item, "is_selected", text="")
+            layout.prop(item, "is_render_selected", text="")
             layout.prop(item, "name", text="", emboss=False)
 
 

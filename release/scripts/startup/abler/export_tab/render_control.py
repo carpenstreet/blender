@@ -77,6 +77,7 @@ class Acon3dCameraViewOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.camera_view"
     bl_label = "Camera View"
+    bl_description = "Fit render region to viewport."
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
@@ -297,6 +298,7 @@ class Acon3dRenderFullOperator(Acon3dRenderFileOperator):
 
     bl_idname = "acon3d.render_full"
     bl_label = "Full Render"
+    bl_description = "Render with high quality according to the set pixel"
     bl_translation_context = "*"
 
     def __init__(self):
@@ -529,6 +531,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderFileOperator):
 
     bl_idname = "acon3d.render_quick"
     bl_label = "Quick Render"
+    bl_description = "Take a snapshot of the active viewport"
     bl_translation_context = "*"
 
     def __init__(self):
@@ -604,7 +607,6 @@ classes = (
     Acon3dRenderLineOperator,
     Acon3dRenderSnipOperator,
     Acon3dRenderQuickOperator,
-    # Acon3dRenderPanel,
 )
 
 
