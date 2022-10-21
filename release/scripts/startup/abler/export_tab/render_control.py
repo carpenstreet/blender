@@ -96,6 +96,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     )
     write_still = True
     render_queue = []
+    render_name_queue = []
     rendering = False
     render_canceled = False
     timer_event = None
@@ -108,6 +109,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
     def post_render(self, dummy, dum):
         if self.render_queue:
             self.render_queue.pop(0)
+            if self.render_name_queue and self.render_name_queue[0]:
+                self.render_name_queue.pop(0)
             self.rendering = False
 
     def on_render_cancel(self, dummy, dum):
@@ -231,7 +234,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
 
 
 class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
-    # Render Type : All Scene, Snip
+    # Render Type : High Quality, Snip
 
     def __init__(self):
         # Get basename without file extension
@@ -279,8 +282,15 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
             elif self.rendering is False:
 
                 qitem = self.render_queue[0]
+                if self.render_name_queue and self.render_name_queue[0]:
+                    name_item = self.render_name_queue[0]
+                    dirname_temp = os.path.join(self.filepath, name_item)
+                    if not os.path.exists(dirname_temp):
+                        os.makedirs(dirname_temp)
+                else:
+                    dirname_temp = self.filepath
 
-                base_filepath = os.path.join(self.filepath, qitem.name)
+                base_filepath = os.path.join(dirname_temp, qitem.name)
                 file_format = qitem.render.image_settings.file_format
                 numbered_filepath = base_filepath
                 number = 2
@@ -404,7 +414,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     """Render according to the set pixel"""
 
     bl_idname = "acon3d.render_high_quality"
-    bl_label = "High Quality Render"
+    bl_label = "Render Selected Scenes"
     bl_description = "Render with high quality according to the set pixel"
     bl_translation_context = "*"
 
@@ -421,10 +431,11 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     # render_type - line, shadow, texture
     def prepare_temp_scene(self, base_scene, render_type: str):
         scene = base_scene.copy()
-
         # 현재 씬을 복사한 씬으로 적용
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
+        # 렌더를 위한 씬 이름를 폴더명으로 설정하기 위한 queue에 추가
+        self.render_name_queue.append(base_scene.name)
         self.render_queue.append(scene)
         self.temp_scenes.append(scene)
 
@@ -453,25 +464,23 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def prepare_queue(self, context):
         render_prop = context.window_manager.ACON_prop
         for s_col in render_prop.scene_col:
-            if s_col.is_render_selected:
-                if s_col.name in bpy.data.scenes:
-                    scene = bpy.data.scenes[s_col.name]
+            if s_col.is_render_selected and s_col.name in bpy.data.scenes:
+                scene = bpy.data.scenes[s_col.name]
 
-                    if render_prop.hq_render_full:
-                        tracker.render_full()
-                        self.render_queue.append(scene)
+                if render_prop.hq_render_full:
+                    tracker.render_full()
+                    self.prepare_temp_scene(scene, render_type="full")
 
-                    if render_prop.hq_render_line:
-                        tracker.render_line()
-                        self.prepare_temp_scene(scene, render_type="line")
+                if render_prop.hq_render_line:
+                    tracker.render_line()
+                    self.prepare_temp_scene(scene, render_type="line")
 
-                    if render_prop.hq_render_texture:
-                        # TODO Texture Render
-                        pass
-
-                    if render_prop.hq_render_shadow:
-                        tracker.render_shadow()
-                        self.prepare_temp_scene(scene, render_type="shadow")
+                if render_prop.hq_render_shadow:
+                    tracker.render_shadow()
+                    self.prepare_temp_scene(scene, render_type="shadow")
+                if render_prop.hq_render_texture:
+                    # TODO Texture Render
+                    pass
 
         return {"RUNNING_MODAL"}
 
