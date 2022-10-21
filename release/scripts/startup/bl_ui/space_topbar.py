@@ -608,12 +608,16 @@ class TOPBAR_MT_help(Menu):
     def draw(self, context):
         layout = self.layout
 
-        layout.operator("wm.url_open_preset", text="Manual",
-                        icon='HELP').type = 'MANUAL'
+        # TODO:
+        # 에이블러 가이드가 국문/영문 페이지가 따로 있으나, 가이드 내부에서 이동할 수 있도록 수정될 수도 있음.
+        # 만약, 가이드 페이지가 언어별로 링크가 다르면 Support operator와 같이 언어 처리를 해야함.
+        layout.operator(
+            "wm.url_open", text="Manual", icon='HELP'
+        ).url = "https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7"
 
         layout.operator(
-            "wm.url_open", text="Support", icon='URL',
-        ).url = "https://www.blender.org/support"
+            "wm.url_open_support", text="Support", icon='URL',
+        )
 
         layout.separator()
 

@@ -981,6 +981,25 @@ class WM_OT_url_open(Operator):
         return {'FINISHED'}
 
 
+class WM_OT_url_open_support(Operator):
+    """Open local ACON3D support website in the web browser"""
+    bl_idname = "wm.url_open_support"
+    bl_label = ""
+    bl_options = {'INTERNAL'}
+
+    languages = ["ko_KR", "en_US", "ja_JP"]
+
+    def execute(self, _context):
+        import webbrowser
+        prefs_lang = bpy.context.preferences.view.language
+
+        for language in self.languages:
+            if prefs_lang == language:
+                webbrowser.open(f"https://www.acon3d.com/{language[:2]}/toon/inquiry/write")
+
+        return {'FINISHED'}
+
+
 # NOTE: needed for Python 3.10 since there are name-space issues with annotations.
 # This can be moved into the class as a static-method once Python 3.9x is dropped.
 def _wm_url_open_preset_type_items(_self, _context):
@@ -3302,6 +3321,7 @@ classes = (
     WM_OT_owner_disable,
     WM_OT_owner_enable,
     WM_OT_url_open,
+    WM_OT_url_open_support,
     WM_OT_url_open_preset,
     WM_OT_tool_set_by_id,
     WM_OT_tool_set_by_index,
