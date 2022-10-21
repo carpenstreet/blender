@@ -987,7 +987,7 @@ class WM_OT_url_open_support(Operator):
     bl_label = ""
     bl_options = {'INTERNAL'}
 
-    languages = ["ko_KR", "en_US", "ja_JP"]
+    languages = ["ko_KR", "en_US", "ja_JP", "zh_CN", "zh_TW"]
 
     def execute(self, _context):
         import webbrowser
