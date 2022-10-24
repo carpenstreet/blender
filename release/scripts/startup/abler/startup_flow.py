@@ -30,6 +30,7 @@ from json import JSONDecodeError
 import bpy
 import requests
 from bpy.app.handlers import persistent
+from bpy_extras.io_utils import ExportHelper
 
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
@@ -155,6 +156,64 @@ class Acon3dAlertOperator(bpy.types.Operator):
             row.label(text=self.message_3)
         layout.separator()
         layout.separator()
+
+
+class Acon3dRenderWarningOperator(BlockingModalOperator):
+    bl_idname = "acon3d.render_warning"
+    bl_label = "Render Selected Scenes"
+    bl_translation_context = "*"
+    scene_count: bpy.props.IntProperty(name="Scene count")
+
+    def draw_modal(self, layout):
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(text="Render selected scenes?")
+        col.label(text="High quality render may take a long time to be finished.")
+        col.label(text="Render can be canceled after starting.")
+        col.label(text=f"Selected Scenes : {self.scene_count}")
+
+        col.operator("acon3d.render_save", text="Save and Render")
+        col.operator("acon3d.close_blocking_modal", text="Cancel")
+        row.label(text="")
+
+        main.label(text="")
+
+    @classmethod
+    def poll(self, context):
+        render_prop = context.window_manager.ACON_prop
+
+        is_method_selected = (
+            render_prop.hq_render_full
+            or render_prop.hq_render_line
+            or render_prop.hq_render_texture
+            or render_prop.hq_render_shadow
+        )
+
+        is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
+
+        return is_method_selected and is_scene_selected
+
+
+class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
+    bl_idname = "acon3d.render_save"
+    bl_label = "Save and Render"
+    filename_ext = ".blend"
+
+    def execute(self, context):
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        if bpy.data.is_dirty:
+            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+        bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
+        return {"FINISHED"}
 
 
 class Acon3dNoticeInvokeOperator(bpy.types.Operator):
@@ -661,6 +720,8 @@ classes = (
     Acon3dHigherFileVersionError,
     Acon3dStartUpFlowOperator,
     Acon3dCloseAblerOprator,
+    Acon3dRenderWarningOperator,
+    Acon3dRenderSaveOpertor,
 )
 
 

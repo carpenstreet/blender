@@ -69,7 +69,13 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
                 "active_scene_index",
             )
             row = layout.row()
-            row.operator("acon3d.render_high_quality")
+            count = 0
+            render_prop = context.window_manager.ACON_prop
+            for s_col in render_prop.scene_col:
+                if s_col.is_render_selected and s_col.name in bpy.data.scenes:
+                    count += 1
+            opr = row.operator("acon3d.render_warning")
+            opr.scene_count = count
 
             # 변경한 뷰포트 색이 같이 렌더되는 기능과 함께 들어가기로 논의되었습니다.
             # 그 전까지 주석처리 해두겠습니다.
