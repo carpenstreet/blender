@@ -158,13 +158,37 @@ class Acon3dAlertOperator(bpy.types.Operator):
         layout.separator()
 
 
+def redraw_callback(self, context):
+    # https://blender.stackexchange.com/questions/238441/force-redraw-add-on-custom-propery-in-n-panel-from-a-separate-thread
+    print("redraw_callback")
+    # breakpoint()
+    if area := context.area:
+        print("area found")
+        area.tag_redraw()
+        for region in context.area.regions:
+            if region.type == "UI":
+                print("UI region found")
+                region.tag_redraw()
+                break
+        else:
+            print("UI region not found")
+    else:
+        print("area not found")
+
+    if area2 := bpy.context.area:
+        print("area2 found")
+        area2.tag_redraw()
+
+    return None
+
+
 class Acon3dDynamicAlertOperator(bpy.types.Operator):
     bl_idname = "acon3d.dynamic_alert"
     bl_label = "Dynamic Alert"
 
     title: bpy.props.StringProperty(name="Title")
 
-    my_int: bpy.props.IntProperty(name="Index", default=0)
+    my_int: bpy.props.IntProperty(name="Index", default=0, update=redraw_callback)
     my_bool: bpy.props.BoolProperty(name="My bool", default=True)
 
     t = None
@@ -205,7 +229,10 @@ class Acon3dDynamicAlertOperator(bpy.types.Operator):
 
     def invoke(self, context, event):
         print("invoke")
-        self.set_interval(self.timer, 1)
+        def timer_handler():
+            self.timer()
+            return 1.0
+        bpy.app.timers.register(timer_handler)
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
 
@@ -321,6 +348,7 @@ class Acon3dModalOperator(BlockingModalOperator):
         return False
 
     def after_close(self, context, event):
+        # breakpoint()
         if read_remembered_show_guide():
             bpy.ops.acon3d.tutorial_guide_popup()
 
@@ -704,6 +732,63 @@ class Acon3dCloseAblerOprator(bpy.types.Operator):
         bpy.ops.wm.quit_blender()
         return {"FINISHED"}
 
+def ui_update(self, context):
+    for region in context.area.regions:
+        if region.type == "UI":
+            region.tag_redraw()
+    return None
+
+class MySettings(bpy.types.PropertyGroup):
+
+    my_float: bpy.props.FloatProperty(
+        name="Float",
+        description="Float property",
+        default = 0,
+        update=ui_update)
+
+
+class ModalTimerOperator(bpy.types.Operator):
+    """Operator which runs its self from a timer"""
+    bl_idname = "wm.modal_timer_operator"
+    bl_label = "Modal Timer Operator"
+
+    _timer = None
+
+    def modal(self, context, event):
+        if event.type in {'RIGHTMOUSE', 'ESC'}:
+            self.cancel(context)
+            return {'CANCELLED'}
+
+        if event.type == 'TIMER':
+            context.scene.my_tool.my_float += .1
+        return {'PASS_THROUGH'}
+
+    def execute(self, context):
+
+        wm = context.window_manager
+        self._timer = wm.event_timer_add(0.1, window=context.window)
+        wm.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+    def cancel(self, context):
+        wm = context.window_manager
+        wm.event_timer_remove(self._timer)
+
+
+class OBJECT_PT_panel(bpy.types.Panel):
+    bl_label = "My Panel"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Tools"
+    bl_context = "objectmode"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        mytool = scene.my_tool
+        layout.prop(mytool, "my_float")
+        layout.operator(ModalTimerOperator.bl_idname)
+
 
 classes = (
     Acon3dDynamicAlertOperator,
@@ -719,14 +804,19 @@ classes = (
     Acon3dHigherFileVersionError,
     Acon3dStartUpFlowOperator,
     Acon3dCloseAblerOprator,
+    MySettings,
+    ModalTimerOperator,
+    OBJECT_PT_panel,
 )
 
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+    bpy.types.Scene.my_tool = bpy.props.PointerProperty(type=MySettings)
 
 
 def unregister():
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
+    del bpy.types.Scene.my_tool
