@@ -534,7 +534,7 @@ class AconMaterialProperty(bpy.types.PropertyGroup):
     )
 
     toggle_edge: bpy.props.BoolProperty(
-        name="Edges", default=True, update=materials_handler.toggle_each_edge
+        name="Line", default=True, update=materials_handler.toggle_each_edge
     )
 
 
