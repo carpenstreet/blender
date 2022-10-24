@@ -55,9 +55,9 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             row = col.row()
             row.prop(render_prop, "hq_render_full", text="Full Render")
             row = col.row()
-            row.prop(render_prop, "hq_render_line", text="Line Render")
-            row = col.row()
             row.prop(render_prop, "hq_render_texture", text="Texture Render")
+            row = col.row()
+            row.prop(render_prop, "hq_render_line", text="Line Render")
             row = col.row()
             row.prop(render_prop, "hq_render_shadow", text="Shadow Render")
             col.template_list(
