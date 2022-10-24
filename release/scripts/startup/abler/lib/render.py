@@ -166,13 +166,6 @@ def clearCompositor(scene=None):
 
 
 def matchObjectVisibility():
-
-    for l_prop in bpy.context.scene.l_exclude:
-        if layer := bpy.data.collections.get(l_prop.name):
-            for objs in layer.objects:
-                objs.hide_viewport = not (l_prop.value)
-                objs.hide_render = not (l_prop.value)
-
     for obj in bpy.data.objects:
         if obj.hide_get():
             obj.hide_render = True
