@@ -18,6 +18,8 @@
 
 # <pep8 compliant>
 from __future__ import annotations
+import os
+import sys
 import json
 import requests
 
@@ -987,13 +989,24 @@ class WM_OT_url_open_support(Operator):
     bl_label = ""
     bl_options = {'INTERNAL'}
 
-    languages = ["ko_KR", "en_US", "ja_JP", "zh_CN", "zh_TW"]
-
     def execute(self, _context):
         import webbrowser
+
+        # Import ABLER lib directory
+        if sys.platform == "win32":
+            lib = os.path.abspath(__file__).split("\\")[:-2]
+        elif sys.platform == "darwin":
+            lib = os.path.abspath(__file__).split("/")[:-2]
+            lib = "/" + os.path.join(*lib, "abler", "lib")
+        else:
+            lib = None
+
+        sys.path.append(lib)
+        from locales import supported_locales
+
         prefs_lang = bpy.context.preferences.view.language
 
-        if prefs_lang in self.languages:
+        if prefs_lang in supported_locales:
             webbrowser.open(f"https://www.acon3d.com/{prefs_lang[:2]}/toon/inquiry/write")
         else:
             webbrowser.open(f"https://www.acon3d.com/en/toon/inquiry/write")
