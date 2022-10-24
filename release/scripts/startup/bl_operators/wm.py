@@ -992,7 +992,9 @@ class WM_OT_url_open_support(Operator):
     def execute(self, _context):
         import webbrowser
 
-        # Import ABLER lib directory
+        # 앞으로 언어 설정을 추가할 수 있기 때문에, 언어 관련 변수를 abler > lib 폴더 내부에서 관리함.
+        # 그러나, bl_operators에서는 상대 경로로 parent directory의 module을 Import 할 수가 없음.
+        # 그래서 아래의 절대 경로 추가 과정을 거쳐서 parent directory의 module을 불러옴.
         if sys.platform == "win32":
             lib = os.path.abspath(__file__).split("\\")[:-2]
             lib[0] += "\\"
