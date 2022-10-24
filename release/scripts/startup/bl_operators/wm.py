@@ -995,6 +995,8 @@ class WM_OT_url_open_support(Operator):
         # Import ABLER lib directory
         if sys.platform == "win32":
             lib = os.path.abspath(__file__).split("\\")[:-2]
+            lib[0] += "\\"
+            lib = os.path.join(*lib, "abler", "lib")
         elif sys.platform == "darwin":
             lib = os.path.abspath(__file__).split("/")[:-2]
             lib = "/" + os.path.join(*lib, "abler", "lib")
