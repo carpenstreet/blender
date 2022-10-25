@@ -211,7 +211,10 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         if bpy.data.is_dirty:
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+            if bpy.data.filepath == "":
+                bpy.ops.wm.save_mainfile("INVOKE_DEFAULT")
+            else:
+                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
         bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
         return {"FINISHED"}
 
