@@ -519,6 +519,20 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
 
+class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
+    """Import SKP file according to the current settings"""
+
+    bl_idname = "acon3d.import_skp"
+    bl_label = "Import SKP"
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
+
+    def execute(self, context):
+
+        return {"FINISHED"}
+
+
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
     bl_label = "General"
@@ -591,6 +605,7 @@ classes = (
     SaveOperator,
     SaveAsOperator,
     ImportFBXOperator,
+    ImportSKPOperator,
 )
 
 

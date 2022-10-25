@@ -18,6 +18,8 @@
 
 # <pep8 compliant>
 from __future__ import annotations
+import os
+import sys
 import json
 import requests
 
@@ -978,6 +980,41 @@ class WM_OT_url_open(Operator):
     def execute(self, _context):
         import webbrowser
         webbrowser.open(self.url)
+        return {'FINISHED'}
+
+
+class WM_OT_url_open_support(Operator):
+    """Open local ACON3D support website in the web browser"""
+    bl_idname = "wm.url_open_support"
+    bl_label = ""
+    bl_options = {'INTERNAL'}
+
+    def execute(self, _context):
+        import webbrowser
+
+        # 앞으로 언어 설정을 추가할 수 있기 때문에, 언어 관련 변수를 abler > lib 폴더 내부에서 관리함.
+        # 그러나, bl_operators에서는 상대 경로로 parent directory의 module을 Import 할 수가 없음.
+        # 그래서 아래의 절대 경로 추가 과정을 거쳐서 parent directory의 module을 불러옴.
+        if sys.platform == "win32":
+            lib = os.path.abspath(__file__).split("\\")[:-2]
+            lib[0] += "\\"
+            lib = os.path.join(*lib, "abler", "lib")
+        elif sys.platform == "darwin":
+            lib = os.path.abspath(__file__).split("/")[:-2]
+            lib = "/" + os.path.join(*lib, "abler", "lib")
+        else:
+            lib = None
+
+        sys.path.append(lib)
+        from locales import supported_locales
+
+        prefs_lang = bpy.context.preferences.view.language
+
+        if prefs_lang in supported_locales:
+            webbrowser.open(f"https://www.acon3d.com/{prefs_lang[:2]}/toon/inquiry/write")
+        else:
+            webbrowser.open(f"https://www.acon3d.com/en/toon/inquiry/write")
+
         return {'FINISHED'}
 
 
@@ -3302,6 +3339,7 @@ classes = (
     WM_OT_owner_disable,
     WM_OT_owner_enable,
     WM_OT_url_open,
+    WM_OT_url_open_support,
     WM_OT_url_open_preset,
     WM_OT_tool_set_by_id,
     WM_OT_tool_set_by_index,
