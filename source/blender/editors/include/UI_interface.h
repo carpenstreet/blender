@@ -2187,6 +2187,7 @@ void uiTemplateImageInfo(uiLayout *layout,
                          struct Image *ima,
                          struct ImageUser *iuser);
 void uiTemplateRunningJobs(uiLayout *layout, struct bContext *C);
+void uiTemplateRunningJobsTest(uiLayout *layout, struct bContext *C, const float progress);
 void UI_but_func_operator_search(uiBut *but);
 void uiTemplateOperatorSearch(uiLayout *layout);
 
