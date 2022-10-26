@@ -711,7 +711,6 @@ class Acon3dCloseAblerOprator(bpy.types.Operator):
 
 
 classes = (
-    Acon3dDynamicAlertOperator,
     Acon3dAlertOperator,
     Acon3dModalOperator,
     Acon3dLoginOperator,
