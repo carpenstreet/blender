@@ -158,56 +158,61 @@ class Acon3dAlertOperator(bpy.types.Operator):
         layout.separator()
 
 
-class Acon3dDynamicAlertOperator(bpy.types.Operator):
-    bl_idname = "acon3d.dynamic_alert"
-    bl_label = "Dynamic Alert"
+def update_callback(self, context):
+    print("Update Float")
+    for region in context.area.regions:
+        if region.type == "UI":
+            print("Redraw in callback")
+            region.tag_redraw()
 
-    title: bpy.props.StringProperty(name="Title")
 
-    my_int: bpy.props.IntProperty(name="Index", default=0)
-    my_bool: bpy.props.BoolProperty(name="My bool", default=True)
+# WIP Progress
+class ACON_PT_INNER(bpy.types.Panel):
+    bl_idname = "ACON_PT_INNER"
+    bl_label = ""
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        print("Inner Draw")
+        layout = self.layout
+        layout.template_running_jobs_test(
+            progress=context.window_manager.ACON_prop.progress_test
+        )
+
+
+# WIP Progress
+class Acon3dProgressModal(bpy.types.Operator):
+    bl_idname = "acon3d.progress_modal"
+    bl_label = "Progress Modal"
 
     t = None
 
-    def timer(self):
-        self.my_int += 1
+    def set_interval(self, context):
+        def func():
+            context.window_manager.ACON_prop.progress_test += 0.1
 
-    def set_interval(self, func, sec):
         def func_wrapper():
-            self.set_interval(func, sec)
+            self.set_interval(context)
             func()
 
-        if self.my_int < 10:
-            self.t = threading.Timer(sec, func_wrapper)
+        if context.window_manager.ACON_prop.progress_test < 1.0:
+            self.t = threading.Timer(1, func_wrapper)
             self.t.start()
+
+    def invoke(self, context, event):
+        self.set_interval(context)
+        return context.window_manager.invoke_props_dialog(self, width=250)
 
     def execute(self, context):
         if self.t:
             self.t.cancel()
         return {"FINISHED"}
 
-    def check(self, context):
-        print("Check", self.my_int > 5)
-        if self.my_int > 5:
-            return True
-        return False
-
     def draw(self, context):
-        print("draw")
         layout = self.layout
-        row = layout.row()
-        row.label(text=self.title)
-        row = layout.row()
-        row.prop(self, "my_bool")
-        row = layout.row()
-        row.prop(self, "title")
-        row.label(text=str(self.my_int))
-
-    def invoke(self, context, event):
-        print("invoke")
-        self.set_interval(self.timer, 1)
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self)
+        layout.label(text="Hello")
+        ACON_PT_INNER.draw(self, context)
 
     def cancel(self, context):
         if self.t:
@@ -719,6 +724,8 @@ classes = (
     Acon3dHigherFileVersionError,
     Acon3dStartUpFlowOperator,
     Acon3dCloseAblerOprator,
+    ACON_PT_INNER,
+    Acon3dProgressModal,
 )
 
 

@@ -35,6 +35,14 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     index: bpy.props.IntProperty()
 
 
+def update_progress(self, context):
+    print("Update Progress")
+    for region in bpy.context.area.regions:
+        if region.type == "UI":
+            print("Redraw in callback")
+            region.tag_redraw()
+
+
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -45,6 +53,8 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
     def unregister(cls):
         del bpy.types.WindowManager.ACON_prop
+
+    progress_test: bpy.props.FloatProperty(default=0, update=update_progress)
 
     scene: bpy.props.EnumProperty(
         name="Scene",

@@ -75,7 +75,9 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     bl_translation_context = "*"
 
     def execute(self, context):
-        return bpy.ops.acon3d.dynamic_alert("INVOKE_DEFAULT", title="테스트")
+        context.window_manager.ACON_prop.progress_test = 0
+        bpy.ops.acon3d.progress_modal("INVOKE_DEFAULT")
+        return {"FINISHED"}
         # userInfo = bpy.data.meshes.get("ACON_userInfo")
         # prop = userInfo.ACON_prop
         # prop.show_guide = read_remembered_show_guide()
