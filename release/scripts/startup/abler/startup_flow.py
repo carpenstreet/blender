@@ -54,6 +54,7 @@ from .lib.version import (
 
 
 is_first_run = False
+is_rendering = False
 
 
 def is_blend_open():
@@ -180,8 +181,10 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         col.label(text="High quality render may take a long time to be finished.")
         col.label(text="Render can be canceled after starting.")
         col.label(text=f"Selected Scenes : {self.scene_count}")
-
-        col.operator("acon3d.render_save", text="Save and Render")
+        if bpy.data.is_dirty:
+            col.operator("acon3d.render_save", text="Save and Render")
+        else:
+            col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
         col.operator("acon3d.close_blocking_modal", text="Cancel")
         row.label(text="")
 
@@ -201,6 +204,12 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
 
         return is_method_selected and is_scene_selected
+
+    # render_control 모듈에서 현재 모듈의 global variable을 받아서 현재 렌더링중인지 판별해주고,
+    # 그 값에 따라서 그려지는지 여부를 "이후에" 판단하도록 하여 크래시를 피함
+    def should_close(self, context, event) -> bool:
+        global is_rendering
+        return not is_rendering
 
 
 class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
