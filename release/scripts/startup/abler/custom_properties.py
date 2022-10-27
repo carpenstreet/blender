@@ -188,7 +188,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="",
         description="Amount of edges to be shown. (recommended: 1.2)",
         subtype="FACTOR",
-        default=2,
+        default=1,
         min=0,
         max=20,
         step=10,
@@ -299,7 +299,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         subtype="ANGLE",
         unit="ROTATION",
         step=100,
-        default=radians(20),
+        default=radians(60),
         update=shadow.change_sun_rotation,
     )
 
@@ -310,7 +310,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         subtype="ANGLE",
         unit="ROTATION",
         step=100,
-        default=radians(130),
+        default=radians(0),
         update=shadow.change_sun_rotation,
     )
 
@@ -476,7 +476,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     bloom_intensity: bpy.props.FloatProperty(
         name="",
         description="Blend factor",
-        default=0.05,
+        default=0.5,
         min=0,
         max=1.0,
         update=bloom.change_bloom_intensity,
