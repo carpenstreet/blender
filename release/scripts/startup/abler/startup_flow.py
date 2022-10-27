@@ -54,6 +54,7 @@ from .lib.version import (
 
 
 is_first_run = False
+is_rendering = False
 
 
 def is_blend_open():
@@ -180,8 +181,10 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         col.label(text="High quality render may take a long time to be finished.")
         col.label(text="Render can be canceled after starting.")
         col.label(text=f"Selected Scenes : {self.scene_count}")
-
-        col.operator("acon3d.render_save", text="Save and Render")
+        if bpy.data.is_dirty:
+            col.operator("acon3d.render_save", text="Save and Render")
+        else:
+            col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
         col.operator("acon3d.close_blocking_modal", text="Cancel")
         row.label(text="")
 
@@ -202,6 +205,10 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
 
         return is_method_selected and is_scene_selected
 
+    def should_close(self, context, event) -> bool:
+        global is_rendering
+        return not is_rendering
+
 
 class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
     bl_idname = "acon3d.render_save"
@@ -209,9 +216,7 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
     filename_ext = ".blend"
 
     def execute(self, context):
-        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
-        if bpy.data.is_dirty:
-            bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
+        bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
         bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
         return {"FINISHED"}
 

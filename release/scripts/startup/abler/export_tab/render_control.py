@@ -22,6 +22,7 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
+from .. import startup_flow
 from bpy.props import StringProperty
 
 
@@ -105,6 +106,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
     def pre_render(self, dummy, dum):
         self.rendering = True
+        startup_flow.is_rendering = True
 
     def post_render(self, dummy, dum):
         if self.render_queue:
@@ -115,10 +117,12 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
     def on_render_cancel(self, dummy, dum):
         self.render_canceled = True
+        startup_flow.is_rendering = False
 
     def on_render_finish(self, context):
         # set initial_scene
         bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
+        startup_flow.is_rendering = False
         return {"FINISHED"}
 
     def prepare_queue(self, context):
