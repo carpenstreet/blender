@@ -282,8 +282,8 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             elif self.rendering is False:
 
-                qitem = self.render_queue[0][1]
-                if name_item := self.render_queue[0][0]:
+                name_item, qitem = self.render_queue[0]
+                if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
                         os.makedirs(dirname_temp)
