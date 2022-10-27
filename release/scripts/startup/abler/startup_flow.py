@@ -723,7 +723,6 @@ classes = (
     Acon3dHigherFileVersionError,
     Acon3dStartUpFlowOperator,
     Acon3dCloseAblerOprator,
-    ACON_PT_INNER,
     Acon3dProgressModal,
 )
 
