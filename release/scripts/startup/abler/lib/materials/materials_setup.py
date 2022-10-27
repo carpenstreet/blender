@@ -414,10 +414,10 @@ def create_ACON_mat_node_groups():
     node_group.inputs[4].default_value = 1
     node_group.inputs[5].default_value = 1
     node_group.inputs[5].min_value = 0
-    node_group.inputs[6].default_value = 0.5
+    node_group.inputs[6].default_value = 1.0
     node_group.inputs[6].min_value = 0
     node_group.inputs[6].max_value = 1
-    node_group.inputs[7].default_value = 0
+    node_group.inputs[7].default_value = 0.8
     node_group.inputs[7].min_value = 0
     node_group.inputs[7].max_value = 1
     node_group.inputs[8].default_value = 1
