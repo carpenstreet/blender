@@ -201,10 +201,8 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
             or render_prop.hq_render_shadow
         )
 
-        is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
-
-        return is_method_selected and is_scene_selected
-
+        return is_method_selected and self.scene_count > 0
+듬
     # render_control 모듈에서 현재 모듈의 global variable을 받아서 현재 렌더링중인지 판별해주고,
     # 그 값에 따라서 그려지는지 여부를 "이후에" 판단하도록 하여 크래시를 피함
     def should_close(self, context, event) -> bool:
