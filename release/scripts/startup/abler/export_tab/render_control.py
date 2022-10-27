@@ -97,7 +97,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
     )
     write_still = True
     render_queue = []
-    render_name_queue = []
     rendering = False
     render_canceled = False
     timer_event = None
@@ -111,8 +110,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
     def post_render(self, dummy, dum):
         if self.render_queue:
             self.render_queue.pop(0)
-            if self.render_name_queue and self.render_name_queue[0]:
-                self.render_name_queue.pop(0)
             self.rendering = False
 
     def on_render_cancel(self, dummy, dum):
@@ -128,7 +125,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     def prepare_queue(self, context):
 
         for scene in bpy.data.scenes:
-            self.render_queue.append(scene)
+            self.render_queue.append((None, scene))
 
         return {"RUNNING_MODAL"}
 
@@ -285,9 +282,8 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             elif self.rendering is False:
 
-                qitem = self.render_queue[0]
-                if self.render_name_queue and self.render_name_queue[0]:
-                    name_item = self.render_name_queue[0]
+                qitem = self.render_queue[0][1]
+                if name_item := self.render_queue[0][0]:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
                         os.makedirs(dirname_temp)
@@ -363,7 +359,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
         tracker.render_snip()
 
         scene = context.scene.copy()
-        self.render_queue.append(scene)
+        self.render_queue.append((None, scene))
         self.temp_scenes.append(scene)
 
         scene.eevee.use_bloom = False
@@ -378,7 +374,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
         scene = context.scene.copy()
         scene.name = f"{context.scene.name}_snipped"
-        self.render_queue.append(scene)
+        self.render_queue.append((None, scene))
         self.temp_scenes.append(scene)
 
         layer = scene.view_layers.new("ACON_layer_snip")
@@ -394,7 +390,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
         scene = context.scene.copy()
         scene.name = f"{context.scene.name}_full"
-        self.render_queue.append(scene)
+        self.render_queue.append((None, scene))
         self.temp_scenes.append(scene)
 
         return {"RUNNING_MODAL"}
@@ -439,8 +435,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
         # 렌더를 위한 씬 이름를 폴더명으로 설정하기 위한 queue에 추가
-        self.render_name_queue.append(base_scene.name)
-        self.render_queue.append(scene)
+        self.render_queue.append((base_scene.name, scene))
         self.temp_scenes.append(scene)
 
         scene.eevee.use_bloom = False
