@@ -475,7 +475,7 @@ def apply_ACON_toon_style():
 
         node_texImage = None
         baseColor = (1, 1, 1, 1)
-        nega_alpha = 0
+        nega_alpha = 0.8
         node_combinedToon = None
 
         for node in nodes:
