@@ -184,7 +184,7 @@ class Tracker(metaclass=ABCMeta):
         self._track(EventKind.import_blend_fail.value)
 
     def import_same_blend_fail(self):
-        self._track(EventKind.import_same_blend_fail)
+        self._track(EventKind.import_same_blend_fail.value)
 
     def import_fbx(self):
         self._track(EventKind.import_fbx.value)
