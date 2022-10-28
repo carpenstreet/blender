@@ -54,7 +54,7 @@ from .lib.version import (
 
 
 is_first_run = False
-is_rendering = False
+is_rendered = False
 
 
 def is_blend_open():
@@ -163,7 +163,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
     bl_idname = "acon3d.render_warning"
     bl_label = "Render Selected Scenes"
     bl_translation_context = "*"
-    scene_count: bpy.props.IntProperty(name="Scene count")
+    scene_count: bpy.props.IntProperty(name="Scene count", default=0)
 
     def draw_modal(self, layout):
         padding_size = 0.01
@@ -200,14 +200,19 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
             or render_prop.hq_render_texture
             or render_prop.hq_render_shadow
         )
-
-        return is_method_selected and self.scene_count > 0
+        # 이 부분은 뺐다가 poll 실행 당시에 scene_count가 등록이 안되어있는 타이밍 문제때문에 에러메시지가 계속 떠서 그냥 다시 살림.
+        is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
+        return is_method_selected and is_scene_selected
 
     # render_control 모듈에서 현재 모듈의 global variable을 받아서 현재 렌더링중인지 판별해주고,
     # 그 값에 따라서 그려지는지 여부를 "이후에" 판단하도록 하여 크래시를 피함
     def should_close(self, context, event) -> bool:
-        global is_rendering
-        return not is_rendering
+        global is_rendered
+        return is_rendered
+
+    def after_close(self, context, event):
+        global is_rendered
+        is_rendered = False
 
 
 class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):

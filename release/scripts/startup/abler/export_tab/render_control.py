@@ -105,7 +105,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
     def pre_render(self, dummy, dum):
         self.rendering = True
-        startup_flow.is_rendering = True
 
     def post_render(self, dummy, dum):
         if self.render_queue:
@@ -114,12 +113,12 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
     def on_render_cancel(self, dummy, dum):
         self.render_canceled = True
-        startup_flow.is_rendering = False
+        startup_flow.is_rendered = True
 
     def on_render_finish(self, context):
         # set initial_scene
         bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-        startup_flow.is_rendering = False
+        startup_flow.is_rendered = True
         return {"FINISHED"}
 
     def prepare_queue(self, context):
