@@ -2313,6 +2313,7 @@ class WM_OT_toolbar_prompt(Operator):
                 'WHEELDOWNMOUSE', 'WHEELUPMOUSE', 'WHEELINMOUSE', 'WHEELOUTMOUSE',
                 'ESC',
         }:
+            print("set 111")
             context.workspace.status_text_set(None)
             return {'CANCELLED', 'PASS_THROUGH'}
 
@@ -2325,6 +2326,7 @@ class WM_OT_toolbar_prompt(Operator):
                 tool_idname = properties["name"]
                 bpy.ops.wm.tool_set_by_id(name=tool_idname)
 
+            print("set 2222")
             context.workspace.status_text_set(None)
             return {'FINISHED'}
 
@@ -2332,6 +2334,7 @@ class WM_OT_toolbar_prompt(Operator):
         if event_type == self._init_event_type:
             if event_value == 'RELEASE':
                 if not (event.ctrl or event.alt or event.shift or event.oskey):
+                    print("set 333333")
                     context.workspace.status_text_set(None)
                     return {'CANCELLED'}
 
@@ -2377,6 +2380,7 @@ class WM_OT_toolbar_prompt(Operator):
 
         self._keymap = keymap
 
+        print("set 44444")
         context.workspace.status_text_set(status_text_fn)
 
         context.window_manager.modal_handler_add(self)
