@@ -87,6 +87,7 @@ void WM_OT_splash_tutorial_3(wmOperatorType *ot);
 void WM_OT_splash_tutorial_close(wmOperatorType *ot);
 void WM_OT_splash_modal(wmOperatorType *ot);
 void WM_OT_splash_modal_close(wmOperatorType *ot);
+void WM_OT_stop_render(wmOperatorType *ot);
 
 /* wm_stereo.c */
 void wm_stereo3d_draw_sidebyside(wmWindow *win, int view);
