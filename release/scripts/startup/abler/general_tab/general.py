@@ -68,11 +68,11 @@ def numbering_filepath(filepath, ext):
 
 
 class AconTutorialGuidePopUpOperator(bpy.types.Operator):
-    """Show Tutorial Guide"""
+    """Show tutorial guide."""
 
     bl_idname = "acon3d.tutorial_guide_popup"
     bl_label = "Quick Start Guide"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         userInfo = bpy.data.meshes.get("ACON_userInfo")
@@ -99,7 +99,7 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_1"
     bl_label = "Mouse Mode"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -112,7 +112,7 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_2"
     bl_label = "Fly Mode"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -125,7 +125,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_3"
     bl_label = "Scene Control"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -134,11 +134,11 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
 
 class ImportOperator(bpy.types.Operator, AconImportHelper):
-    """Import file according to the current settings"""
+    """Import file according to the current settings. (.skp, .fbx, .blend)"""
 
     bl_idname = "acon3d.import_blend"
     bl_label = "Import"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
@@ -224,7 +224,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
                 title="Import Failure",
-                message_1="Cannot import exact same file from same directory.",
+                message_1="Cannot import the exact same file from the same directory",
             )
         except Exception as e:
             tracker.import_blend_fail()
@@ -247,7 +247,7 @@ class ToggleToolbarOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.context_toggle"
     bl_label = "Toggle Toolbar"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.toggle_toolbar()
@@ -316,11 +316,11 @@ class BaseFileOpenOperator:
 
 
 class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperator):
-    """Open new file"""
+    """Open new file."""
 
     bl_idname = "acon3d.file_open"
     bl_label = "Open"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
@@ -334,7 +334,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
 class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
     bl_idname = "acon3d.recent_file_open"
     bl_label = ""
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     @classmethod
     def description(cls, context, properties):
@@ -366,11 +366,11 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
 
 
 class FlyOperator(bpy.types.Operator):
-    """Move around the scene using WASD, QE, and mouse like FPS game"""
+    """Move around the scene using WASD, QE, and mouse like FPS game. Shortcut: Shift `"""
 
     bl_idname = "acon3d.fly_mode"
     bl_label = "Fly with WASD (shift + `)"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.fly_mode()
@@ -382,11 +382,11 @@ class FlyOperator(bpy.types.Operator):
 
 
 class SaveOperator(bpy.types.Operator, ExportHelper):
-    """Save the current Blender file"""
+    """Save the current Blender file. Shortcut: Ctrl S"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filename_ext = ".blend"
 
@@ -432,11 +432,11 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
 
 class SaveAsOperator(bpy.types.Operator, ExportHelper):
-    """Save the current file in the desired location"""
+    """Save the current file in the desired location. Shortcut: Shift Ctrl S"""
 
     bl_idname = "acon3d.save_as"
     bl_label = "Save As"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filename_ext = ".blend"
 
@@ -466,7 +466,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_fbx"
     bl_label = "Import FBX"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
@@ -524,7 +524,7 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_skp"
     bl_label = "Import SKP"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
@@ -539,6 +539,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     bl_category = "General"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     bl_options = {"HIDE_HEADER"}
 
     def draw_header(self, context):
@@ -580,7 +581,7 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.apply_toon_style"
     bl_label = "Apply Toon Style"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         materials_setup.apply_ACON_toon_style()

@@ -84,7 +84,7 @@ class DeleteCameraOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.delete_camera"
     bl_label = "Delete Camera"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
@@ -125,7 +125,11 @@ class Acon3dCameraControlPanel(bpy.types.Panel):
             col.separator()
             col = row.column()
             row = col.row()
-            row.prop(cam.data, "lens")
+            row.prop(
+                cam.data,
+                "lens",
+                text="Focal Length",
+            )
 
         return
 
@@ -143,6 +147,7 @@ class Acon3dDOFPanel(bpy.types.Panel):
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
