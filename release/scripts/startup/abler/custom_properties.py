@@ -26,8 +26,8 @@ from .lib.read_cookies import *
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(
-        name="Scene_Item",
-        description="Scene_Item",
+        name="Scene Name",
+        description="Click to apply scene and double click to rename.",
         default="",
         update=scenes.change_scene_name,
     )
@@ -102,14 +102,14 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
     value: bpy.props.BoolProperty(
         name="Layer Exclude",
-        description="Make objects on the current layer invisible in the viewport",
+        description="Choose if the objects in the current layer visible in the viewport or not",
         default=True,
         update=update_layer_visibility,
     )
 
     lock: bpy.props.BoolProperty(
         name="Layer Lock",
-        description="Make objects on the current layer lock in the viewport",
+        description="Choose if the objects in the current layer lock in the viewport or not",
         default=False,
         update=update_layer_lock,
     )
