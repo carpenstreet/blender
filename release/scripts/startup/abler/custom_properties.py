@@ -188,7 +188,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="",
         description="Amount of edges to be shown. (recommended: 1.2)",
         subtype="FACTOR",
-        default=2,
+        default=1,
         min=0,
         max=20,
         step=10,
@@ -476,7 +476,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     bloom_intensity: bpy.props.FloatProperty(
         name="",
         description="Blend factor",
-        default=0.05,
+        default=0.5,
         min=0,
         max=1.0,
         update=bloom.change_bloom_intensity,
