@@ -332,6 +332,8 @@ class LoginTask(AsyncTask):
         if response_godo.status_code >= 500:
             raise GodoServerError(response_godo)
 
+        # TODO 추후 api 변경된 후 수정 필요
+        # TODO api 변경이 된다면, status code 및 error code 등으로 에러 처리 필요
         wrong_messages = [
             "아이디 또는 비밀번호를 다시한번 확인해 주시기 바랍니다.",
             "로그인을 7회 실패하셨습니다. 10회 이상 실패 시 접속이 제한됩니다.",
@@ -342,6 +344,7 @@ class LoginTask(AsyncTask):
             "로그인이 제한되었습니다. 10분 후에 시도해 주세요.",
         ]
 
+        # 이 두 경우 외의 에러는 정상적으로 일어나지 않을 에러로 보이고, _on_failure 의 else 문에서 처리되고 있음
         if response_godo.text in wrong_messages:
             raise GodoBadRequest(response_godo)
         elif response_godo.text in consecutive_fail_messages:
