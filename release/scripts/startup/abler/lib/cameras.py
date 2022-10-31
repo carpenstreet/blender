@@ -89,7 +89,7 @@ def make_camera():
     cam.lens = 43
     cam.show_passepartout = False
     obj = bpy.data.objects.new("View_Camera", cam)
-    obj.location = (4.7063, 7.6888, 1.9738)
+    obj.location = (6.487949371337891, 10.378044128417969, 1.9881811141967773)
     obj.rotation_euler = (radians(90), radians(0), radians(-212))
     obj.hide_select = True
 
