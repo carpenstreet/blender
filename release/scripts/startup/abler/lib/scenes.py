@@ -230,7 +230,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
 
     else:
         cam = bpy.data.cameras.new("View_Camera")
-        cam.lens = 30
+        cam.lens = 43
         cam.show_passepartout = False
         obj = bpy.data.objects.new("View_Camera", cam)
         obj.location = (4.7063, 7.6888, 1.9738)

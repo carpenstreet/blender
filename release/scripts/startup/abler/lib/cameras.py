@@ -74,6 +74,7 @@ def make_sure_camera_exists() -> None:
 
     # create camera if View_Camera does not exist
     camera_data: Camera = bpy.data.cameras.new("View_Camera")
+    camera_data.lens = 43
     camera_object: Object = bpy.data.objects.new("View_Camera", camera_data)
     camera_object.location[0] = 7.35889
     camera_object.location[1] = -6.92579
