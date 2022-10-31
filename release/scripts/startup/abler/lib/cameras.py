@@ -74,13 +74,7 @@ def make_sure_camera_exists() -> None:
         return
 
     # create camera if View_Camera does not exist
-    cam = bpy.data.cameras.new("View_Camera")
-    cam.lens = 30
-    cam.show_passepartout = False
-    obj = bpy.data.objects.new("View_Camera", cam)
-    obj.location = (4.7063, 7.6888, 1.9738)
-    obj.rotation_euler = (radians(90), radians(0), radians(-212))
-    obj.hide_select = True
+    obj = make_camera()
     bpy.context.scene.collection.objects.link(obj)
 
     # set context camera
@@ -88,6 +82,18 @@ def make_sure_camera_exists() -> None:
 
     # View_Camera 오브젝트 활성화
     bpy.context.view_layer.objects.active = obj
+
+
+def make_camera():
+    cam = bpy.data.cameras.new("View_Camera")
+    cam.lens = 43
+    cam.show_passepartout = False
+    obj = bpy.data.objects.new("View_Camera", cam)
+    obj.location = (4.7063, 7.6888, 1.9738)
+    obj.rotation_euler = (radians(90), radians(0), radians(-212))
+    obj.hide_select = True
+
+    return obj
 
 
 def make_sure_camera_unselectable(self, context) -> None:
