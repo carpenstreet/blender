@@ -299,7 +299,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         subtype="ANGLE",
         unit="ROTATION",
         step=100,
-        default=radians(60),
+        default=radians(20),
         update=shadow.change_sun_rotation,
     )
 
@@ -310,7 +310,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         subtype="ANGLE",
         unit="ROTATION",
         step=100,
-        default=radians(0),
+        default=radians(130),
         update=shadow.change_sun_rotation,
     )
 
