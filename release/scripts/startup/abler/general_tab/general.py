@@ -68,7 +68,7 @@ def numbering_filepath(filepath, ext):
 
 
 class AconTutorialGuidePopUpOperator(bpy.types.Operator):
-    """Show tutorial guide."""
+    """Show tutorial guide"""
 
     bl_idname = "acon3d.tutorial_guide_popup"
     bl_label = "Quick Start Guide"
@@ -316,7 +316,7 @@ class BaseFileOpenOperator:
 
 
 class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperator):
-    """Open new file."""
+    """Open new file"""
 
     bl_idname = "acon3d.file_open"
     bl_label = "Open"
@@ -366,7 +366,7 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
 
 
 class FlyOperator(bpy.types.Operator):
-    """Move around the scene using WASD, QE, and mouse like FPS game. Shortcut: Shift `"""
+    """Move around the scene using WASD, QE, and mouse like FPS games"""
 
     bl_idname = "acon3d.fly_mode"
     bl_label = "Fly with WASD (shift + `)"
@@ -382,7 +382,7 @@ class FlyOperator(bpy.types.Operator):
 
 
 class SaveOperator(bpy.types.Operator, ExportHelper):
-    """Save the current Blender file. Shortcut: Ctrl S"""
+    """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
@@ -432,10 +432,10 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
 
 class SaveAsOperator(bpy.types.Operator, ExportHelper):
-    """Save the current file in the desired location. Shortcut: Shift Ctrl S"""
+    """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
-    bl_label = "Save As"
+    bl_label = "Save As..."
     bl_translation_context = "abler"
 
     filename_ext = ".blend"
