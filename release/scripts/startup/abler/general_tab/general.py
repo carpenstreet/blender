@@ -370,6 +370,17 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         default="*.blend;*.fbx;*.skp", options={"HIDDEN"}
     )
 
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        row.label(text="Import files onto the viewport.")
+        row = layout.row()
+        row.label(text="ㅁ Sketchup File (.skp)")
+        row = layout.row()
+        row.label(text="ㅁ FBX File (.fbx)")
+        row = layout.row()
+        row.label(text="ㅁ Blender File (.blend)")
+
     def execute(self, context):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
             return {"FINISHED"}
