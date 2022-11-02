@@ -103,27 +103,10 @@ class Acon3dRenderOperator(bpy.types.Operator):
     initial_scene = None
     initial_display_type = None
 
-    total_render_num = 0
-    complete_num = 0
-    _get_current_progress = None
-
     def pre_render(self, dummy, dum):
-        def get_current_progress():
-            wm = bpy.context.window_manager
-            bpy.context.scene.render_prop.render_progress = wm.get_progress()
-            print(bpy.context.scene.render_prop.render_progress)
-            return 2
-
         self.rendering = True
 
-        self._get_current_progress = get_current_progress
-        bpy.app.timers.register(get_current_progress)
-
     def post_render(self, dummy, dum):
-        self.complete_num += 1
-        if bpy.app.timers.is_registered(self._get_current_progress):
-            bpy.app.timers.unregister(self._get_current_progress)
-
         if self.render_queue:
             self.render_queue.pop(0)
             self.rendering = False
@@ -142,8 +125,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
         for scene in bpy.data.scenes:
             self.render_queue.append((None, scene))
-
-        self.total_render_num = len(bpy.data.scenes)
 
         return {"RUNNING_MODAL"}
 
@@ -442,6 +423,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def __init__(self):
         super().__init__()
 
+    def post_render(self, dummy, dum):
+        super().post_render(dummy, dum)
+        bpy.context.window_manager.progress_prop.complete_num += 1
+
     def prepare_render(self):
         render.clear_compositor()
         render.match_object_visibility()
@@ -455,6 +440,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         # 렌더를 위한 씬 이름를 폴더명으로 설정하기 위한 queue에 추가
         self.render_queue.append((base_scene.name, scene))
         self.temp_scenes.append(scene)
+
+        bpy.context.window_manager.progress_prop.total_render_num += 1
 
         scene.eevee.use_bloom = False
         scene.render.use_lock_interface = True
@@ -479,6 +466,12 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         # TODO: Texture Render
 
     def prepare_queue(self, context):
+        # 렌더 초기화
+        progress_prop = context.window_manager.progress_prop
+        progress_prop.total_render_num = 0
+        progress_prop.complete_num = 0
+        progress_prop.is_progress_shown = True
+
         render_prop = context.window_manager.ACON_prop
         for s_col in render_prop.scene_col:
             if s_col.is_render_selected and s_col.name in bpy.data.scenes:
@@ -502,7 +495,6 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         return {"RUNNING_MODAL"}
 
     def on_render_finish(self, context):
-
         for mat in bpy.data.materials:
             materials_handler.set_material_parameters_by_type(mat)
 
@@ -530,87 +522,16 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         return is_method_selected and is_scene_selected
 
 
-global_regions = None
-
-
-class ModalTimerOperator(bpy.types.Operator):
-    """Operator which runs its self from a timer"""
-
-    bl_idname = "wm.modal_timer_operator"
-    bl_label = "Modal Timer Operator"
-
-    _timer = None
-
-    def modal(self, context, event):
-        global global_regions
-        global_regions = []
-        for r in context.area.regions:
-            global_regions.append(r)
-        if context.scene.render_prop.render_progress >= 1.0:
-            self.cancel(context)
-            return {"CANCELLED"}
-
-        if event.type in {"RIGHTMOUSE", "ESC"}:
-            self.cancel(context)
-            return {"CANCELLED"}
-
-        if event.type == "TIMER":
-            context.scene.render_prop.render_progress += 0.1
-        return {"PASS_THROUGH"}
-
-    def execute(self, context):
-        context.scene.render_prop.render_progress = 0
-        wm = context.window_manager
-        self._timer = wm.event_timer_add(0.1, window=context.window)
-        wm.modal_handler_add(self)
-        return {"RUNNING_MODAL"}
-
-    def cancel(self, context):
-        wm = context.window_manager
-        wm.event_timer_remove(self._timer)
-
-
-class AconRenderProgressPanel(bpy.types.Panel):
-    """TODO"""
-
-    bl_label = "Progress"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_category = "Export"
-
-    # @classmethod
-    # def poll(cls, context):
-    #     return startup_flow.is_rendered
-
-    def draw(self, context):
-        progress = context.scene.render_prop.render_progress
-        layout = self.layout
-        layout.template_progress_bar(progress=progress)
-        layout.operator(ModalTimerOperator.bl_idname)
-        layout.operator("wm.stop_render", text="Cancel")
-
-
-def update_progress(self, context):
-    if global_regions:
-        for region in global_regions:
-            if region.type == "UI":
-                print("")
-                print(f"Redraw in callback {context.scene.render_prop.render_progress}")
-                region.tag_redraw()
-    # for region in context.area.regions:
-    #     if region.type == "UI":
-    #         print("Redraw in callback")
-    #         region.tag_redraw()
-    return None
-
-
 class RenderProperty(bpy.types.PropertyGroup):
-    render_progress: bpy.props.FloatProperty(
-        name="Render Progress",
-        description="Float property",
-        default=0,
-        update=update_progress,
+    complete_num: bpy.props.IntProperty(
+        name="Complete Num", description="Complete number", default=0
     )
+
+    total_render_num: bpy.props.IntProperty(
+        name="Total Num", description="Total number", default=0
+    )
+
+    is_progress_shown: bpy.props.BoolProperty(name="show progress", default=False)
 
 
 classes = (
@@ -618,8 +539,6 @@ classes = (
     Acon3dRenderHighQualityOperator,
     Acon3dRenderSnipOperator,
     Acon3dRenderQuickOperator,
-    ModalTimerOperator,
-    AconRenderProgressPanel,
     RenderProperty,
 )
 
@@ -630,7 +549,9 @@ def register():
     for cls in classes:
         register_class(cls)
 
-    bpy.types.Scene.render_prop = bpy.props.PointerProperty(type=RenderProperty)
+    bpy.types.WindowManager.progress_prop = bpy.props.PointerProperty(
+        type=RenderProperty
+    )
 
 
 def unregister():
@@ -639,4 +560,4 @@ def unregister():
     for cls in reversed(classes):
         unregister_class(cls)
 
-    del bpy.types.Scene.render_prop
+    del bpy.types.WindowManager.progress_prop

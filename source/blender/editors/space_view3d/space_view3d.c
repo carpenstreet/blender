@@ -1702,6 +1702,10 @@ static void view3d_buttons_region_listener(const wmRegionListenerParams *params)
       if (wmn->data == ND_XR_DATA_CHANGED) {
         ED_region_tag_redraw(region);
       }
+      /* 프로그레스바를 실시간으로 그리기 위한 조건 추가 */
+      else if (wmn->data == ND_JOB && region && region->type->regionid == RGN_TYPE_UI) {
+        ED_region_tag_redraw(region);
+      }
       break;
   }
 }

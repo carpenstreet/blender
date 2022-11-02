@@ -85,6 +85,33 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             # row.prop(prop, "background_color", text="Background Color")
 
 
+class AconRenderProgressPanel(bpy.types.Panel):
+    """TODO"""
+
+    bl_parent_id = "ACON3D_PT_high_quality_render"
+    bl_idname = "ACON3D_PT_render_progress_panel"
+    bl_label = "Progress"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Export"
+
+    # @classmethod
+    # def poll(cls, context):
+    #     return context.window_manager.progress_prop.is_progress_shown
+
+    def draw(self, context):
+        layout = self.layout
+        cur_progress = context.window_manager.get_progress()
+
+        prop = context.window_manager.progress_prop
+        render_progress = 0
+        if prop.total_render_num:
+            render_progress = (prop.complete_num + cur_progress) / prop.total_render_num
+
+        layout.template_progress_bar(progress=render_progress)
+        layout.operator("wm.stop_render", text="Cancel")
+
+
 class Acon3dQuickRenderPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
 
@@ -143,6 +170,7 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
 
 classes = (
     Acon3dHighQualityRenderPanel,
+    AconRenderProgressPanel,
     Acon3dQuickRenderPanel,
     Acon3dSnipRenderPanel,
     RENDER_UL_List,
