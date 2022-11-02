@@ -360,7 +360,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
 
 
 class ImportOperator(bpy.types.Operator, AconImportHelper):
-    """Import file according to the current settings"""
+    """Import file according to the current settings (.skp, .fbx, .blend)"""
 
     bl_idname = "acon3d.import"
     bl_label = "Import"
