@@ -359,11 +359,31 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class ImportOperator(bpy.types.Operator, AconImportHelper):
+    """Import file according to the current settings"""
+
+    bl_idname = "acon3d.import"
+    bl_label = "Import"
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.blend;*.fbx;*.skp", options={"HIDDEN"}
+    )
+
+    def execute(self, context):
+        if not self.check_path(accepted=["blend", "fbx", "skp"]):
+            return {"FINISHED"}
+
+        print("A")
+
+        return {"FINISHED"}
+
+
 class ImportBlendOperator(bpy.types.Operator, AconImportHelper):
     """Import file according to the current settings"""
 
     bl_idname = "acon3d.import_blend"
-    bl_label = "Import"
+    bl_label = "Import Blender"
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
@@ -555,7 +575,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 1.0
         row.operator("acon3d.file_open")
-        row.operator("acon3d.import_blend", text="Import")
+        row.operator("acon3d.import", text="Import")
 
         row = layout.row()
         row.scale_y = 1.0
@@ -597,13 +617,14 @@ classes = (
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
     ToggleToolbarOperator,
-    ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
     FileRecentOpenOperator,
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    ImportOperator,
+    ImportBlendOperator,
     ImportFBXOperator,
     ImportSKPOperator,
 )
