@@ -374,7 +374,15 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
             return {"FINISHED"}
 
-        print("A")
+        path = self.filepath
+        path_ext = path.rsplit(".")[-1]
+
+        if path_ext == "blend":
+            bpy.ops.acon3d.import_blend(filepath=path)
+        elif path_ext == "fbx":
+            bpy.ops.acon3d.import_fbx(filepath=path)
+        elif path_ext == "skp":
+            bpy.ops.acon3d.import_skp(filepath=path)
 
         return {"FINISHED"}
 
