@@ -457,7 +457,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
             prop.toggle_texture = False
             prop.toggle_shading = True
             prop.toggle_toon_edge = False
-        # TODO: Texture Render
+        elif render_type == "texture":
+            prop.toggle_texture = True
+            prop.toggle_shading = False
+            prop.toggle_toon_edge = False
 
     def prepare_queue(self, context):
         render_prop = context.window_manager.ACON_prop
@@ -476,9 +479,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                 if render_prop.hq_render_shadow:
                     tracker.render_shadow()
                     self.prepare_temp_scene(scene, render_type="shadow")
+
                 if render_prop.hq_render_texture:
-                    # TODO Texture Render
-                    pass
+                    tracker.render_texture()
+                    self.prepare_temp_scene(scene, render_type="texture")
 
         return {"RUNNING_MODAL"}
 
