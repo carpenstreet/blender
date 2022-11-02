@@ -235,37 +235,36 @@ static void rna_def_camera_background_image(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "offset", PROP_FLOAT, PROP_XYZ);
   RNA_def_property_float_sdna(prop, NULL, "offset");
-  RNA_def_property_ui_text(prop, "Offset", "");
+  RNA_def_property_ui_text(prop, "Offset", "Select how image fits in the camera frame");
   RNA_def_property_ui_range(prop, -FLT_MAX, FLT_MAX, 0.1, RNA_TRANSLATION_PREC_DEFAULT);
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "scale", PROP_FLOAT, PROP_NONE);
   RNA_def_property_float_sdna(prop, NULL, "scale");
-  RNA_def_property_ui_text(prop, "Scale", "Scale the background image");
+  RNA_def_property_ui_text(prop, "Scale", "Scale background image");
   RNA_def_property_range(prop, 0.0, FLT_MAX);
   RNA_def_property_ui_range(prop, 0.0, 10.0, 0.100, RNA_TRANSLATION_PREC_DEFAULT);
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "rotation", PROP_FLOAT, PROP_ANGLE);
   RNA_def_property_float_sdna(prop, NULL, "rotation");
-  RNA_def_property_ui_text(
-      prop, "Rotation", "Rotation for the background image (ortho view only)");
+  RNA_def_property_ui_text(prop, "Rotation", "Rotate background image");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "use_flip_x", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "flag", CAM_BGIMG_FLAG_FLIP_X);
-  RNA_def_property_ui_text(prop, "Flip Horizontally", "Flip the background image horizontally");
+  RNA_def_property_ui_text(prop, "Flip_X-axis", "Flip the background image horizontally");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "use_flip_y", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "flag", CAM_BGIMG_FLAG_FLIP_Y);
-  RNA_def_property_ui_text(prop, "Flip Vertically", "Flip the background image vertically");
+  RNA_def_property_ui_text(prop, "Flip_Y-axis", "Flip the background image vertically");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "alpha", PROP_FLOAT, PROP_NONE);
   RNA_def_property_float_sdna(prop, NULL, "alpha");
   RNA_def_property_ui_text(
-      prop, "Opacity", "Image opacity to blend the image against the background color");
+      prop, "Opacity", "Adjust image opacity to blend the image against the background color");
   RNA_def_property_range(prop, 0.0, 1.0);
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
@@ -302,7 +301,7 @@ static void rna_def_camera_background_image(BlenderRNA *brna)
   prop = RNA_def_property(srna, "frame_method", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_bitflag_sdna(prop, NULL, "flag");
   RNA_def_property_enum_items(prop, bgpic_camera_frame_items);
-  RNA_def_property_ui_text(prop, "Frame Method", "How the image fits in the camera frame");
+  RNA_def_property_ui_text(prop, "Frame Method", "Select how image fits in the camera frame");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   RNA_define_lib_overridable(false);
@@ -451,14 +450,14 @@ static void rna_def_camera_dof_settings_data(BlenderRNA *brna)
   RNA_def_property_range(prop, 0.0f, FLT_MAX);
   RNA_def_property_ui_range(prop, 0.0f, 5000.0f, 1, 2);
   RNA_def_property_ui_text(
-      prop, "Focus Distance", "Distance to the focus point for depth of field");
+      prop, "Focus Distance", "Adjust distance to the focus point for depth of field");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_dof_update");
 
   prop = RNA_def_property(srna, "aperture_fstop", PROP_FLOAT, PROP_NONE);
-  RNA_def_property_ui_text(
-      prop,
-      "F-Stop",
-      "F-Stop ratio (lower numbers give more defocus, higher numbers give a sharper image)");
+  RNA_def_property_ui_text(prop,
+                           "F-Stop",
+                           "Adjust F-stop ratio (lower numbers give more defocus. higher numbers "
+                           "give a sharper image)");
   RNA_def_property_range(prop, 0.0f, FLT_MAX);
   RNA_def_property_ui_range(prop, 0.1f, 128.0f, 10, 1);
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_dof_update");
@@ -578,7 +577,8 @@ void RNA_def_camera(BlenderRNA *brna)
   RNA_def_property_float_sdna(prop, NULL, "lens");
   RNA_def_property_range(prop, 1.0f, FLT_MAX);
   RNA_def_property_ui_range(prop, 1.0f, 5000.0f, 100, 4);
-  RNA_def_property_ui_text(prop, "Focal Length", "Perspective Camera lens value in millimeters");
+  RNA_def_property_ui_text(
+      prop, "Focal Length", "Adjust perspective camera lens value in millimeters (Range: 1~5000)");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_update");
 
   prop = RNA_def_property(srna, "sensor_width", PROP_FLOAT, PROP_DISTANCE_CAMERA);

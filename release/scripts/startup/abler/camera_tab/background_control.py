@@ -39,7 +39,7 @@ class RemoveBackgroundOperator(bpy.types.Operator):
     """Removes Current Background Image"""
 
     bl_idname = "acon3d.background_image_remove"
-    bl_label = "Remove Background Image"
+    bl_label = "Remove current background image"
     bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
@@ -59,7 +59,7 @@ class RemoveBackgroundOperator(bpy.types.Operator):
 
 
 class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Default Background Image"""
+    """Open default background image"""
 
     bl_idname = "acon3d.default_background_image_open"
     bl_label = "Default Image"
@@ -100,7 +100,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
 
 
 class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Custom Background Image"""
+    """Open custom background image"""
 
     bl_idname = "acon3d.custom_background_image_open"
     bl_label = "Custom Image"

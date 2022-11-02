@@ -134,7 +134,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
 
 class ImportOperator(bpy.types.Operator, AconImportHelper):
-    """Import file according to the current settings. (.skp, .fbx, .blend)"""
+    """Import file according to the current settings (.skp, .fbx, .blend)"""
 
     bl_idname = "acon3d.import_blend"
     bl_label = "Import"
