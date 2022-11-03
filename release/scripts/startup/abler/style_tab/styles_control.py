@@ -39,6 +39,7 @@ class Acon3dStylesPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout
@@ -63,6 +64,7 @@ class LinePanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout
@@ -89,6 +91,7 @@ class SunlightPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout
@@ -133,10 +136,11 @@ class ShadowShadingPanel(bpy.types.Panel):
 class ShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_ShadowShading"
     bl_idname = "ACON_PT_Shading"
-    bl_label = "Toon Style Shading"
+    bl_label = "Toon Style"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     @classmethod
     def poll(cls, context):
@@ -207,6 +211,7 @@ class CloneMaterialOperator(bpy.types.Operator):
     bl_idname = "acon3d.clone_material"
     bl_label = "Clone Material"
     bl_options = {"REGISTER", "UNDO"}
+    bl_translation_context = "abler"
 
     @classmethod
     def poll(cls, context):
@@ -229,6 +234,7 @@ class ObjectPropertiesPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw(self, context):
         layout = self.layout
@@ -290,6 +296,7 @@ class BloomPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_EEVEE"}
 
     def draw_header(self, context):
@@ -323,6 +330,7 @@ class ColorAdjustmentPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw(self, context):
@@ -336,6 +344,7 @@ class BrightnessContrastPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw(self, context):
@@ -356,6 +365,7 @@ class ColorBalancePanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw(self, context):
@@ -377,6 +387,7 @@ class HueSaturationPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw(self, context):
@@ -397,6 +408,7 @@ class ExposurePanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw(self, context):

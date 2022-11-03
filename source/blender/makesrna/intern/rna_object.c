@@ -3202,7 +3202,8 @@ static void rna_def_object(BlenderRNA *brna)
                              "rna_Object_active_material_index_get",
                              "rna_Object_active_material_index_set",
                              "rna_Object_active_material_index_range");
-  RNA_def_property_ui_text(prop, "Active Material Index", "Index of active material slot");
+  RNA_def_property_ui_text(
+      prop, "Active Material List", "Click to select material or double click to rename");
   RNA_def_property_update(prop, NC_MATERIAL | ND_SHADING_LINKS, "rna_MaterialIndex_update");
 
   /* transform */
