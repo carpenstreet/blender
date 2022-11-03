@@ -19,6 +19,7 @@ class EventKind(enum.Enum):
     render_full = "Render Full"
     render_line = "Render Line"
     render_shadow = "Render Shadow"
+    render_texture = "Render Texture"
     render_all_scenes = "Render All Scenes"
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
@@ -170,6 +171,9 @@ class Tracker(metaclass=ABCMeta):
 
     def render_shadow(self):
         self._track(EventKind.render_shadow.value)
+
+    def render_texture(self):
+        self._track(EventKind.render_texture.value)
 
     def render_all_scenes(self):
         self._track(EventKind.render_all_scenes.value)
