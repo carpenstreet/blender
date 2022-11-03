@@ -133,108 +133,6 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class ImportOperator(bpy.types.Operator, AconImportHelper):
-    """Import file according to the current settings"""
-
-    bl_idname = "acon3d.import_blend"
-    bl_label = "Import"
-    bl_translation_context = "*"
-
-    filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
-
-    class SameFileImportError(Exception):
-        def __init__(self):
-            super().__init__()
-
-    def execute(self, context):
-        try:
-            if not self.check_path(accepted=["blend"]):
-                return {"FINISHED"}
-
-            # Blender에서 File Open과 같은 파일을 import하면 Collection과 Mesh Object 이름에 ".001"이 넘버링 하지 않음
-            # 그래서 중복 처리를 하지 않고 있어, 예외 경우로 구분하고 메세지 알림 띄워주기
-            filepath_curr = bpy.data.filepath
-            FILEPATH = self.filepath
-
-            if filepath_curr == FILEPATH:
-                raise self.SameFileImportError
-
-            for obj in bpy.data.objects:
-                obj.select_set(False)
-
-            col_layers = bpy.data.collections.get("Layers")
-            if not col_layers:
-                col_layers = bpy.data.collections.new("Layers")
-                context.scene.collection.children.link(col_layers)
-
-            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
-                data_to.collections = data_from.collections
-                data_to.objects = list(data_from.objects)
-
-            for coll in data_to.collections:
-
-                if "ACON_col" in coll.name:
-                    data_to.collections.remove(coll)
-                    break
-
-                if coll.name == "Layers" or (
-                    "Layers." in coll.name and len(coll.name) == 10
-                ):
-                    for coll_2 in coll.children:
-                        # File Open과 다른 파일을 import 할 때, Collection과 Mesh Object 이름이 중복되면 ".001"부터 넘버링됨
-                        # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
-                        if "Layer0." in coll_2.name:
-                            for coll_obj in bpy.data.collections[coll_2.name].objects:
-                                bpy.data.collections[coll_2.name].objects.unlink(
-                                    coll_obj
-                                )
-                                bpy.data.collections["Layer0"].objects.link(coll_obj)
-
-                        else:
-                            # 모든 씬의 l_exclude에 col_imported를 추가
-                            for scene in bpy.data.scenes:
-                                added_l_exclude = scene.l_exclude.add()
-                                added_l_exclude.name = coll_2.name
-                                added_l_exclude.value = True
-                            col_layers.children.link(coll_2)
-
-            # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
-            for coll in data_to.collections:
-                if "Layer0." in coll.name:
-                    bpy.data.collections.remove(coll)
-
-            # View Layer에 없는 Mesh Object들의 select_set(True) 에러가 나고 있었음
-            # 이런 오브젝트들은 선택되지 않아도 무방하여 해당 작업을 제거함
-            for obj in data_to.objects:
-                if obj.type != "MESH":
-                    data_to.objects.remove(obj)
-
-            materials_setup.apply_ACON_toon_style()
-
-            for area in context.screen.areas:
-                if area.type == "VIEW_3D":
-                    ctx = bpy.context.copy()
-                    ctx["area"] = area
-                    ctx["region"] = area.regions[-1]
-                    bpy.ops.view3d.view_selected(ctx)
-
-        # TODO: 에러 세분화 필요
-        except self.SameFileImportError:
-            tracker.import_same_blend_fail()
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="Import Failure",
-                message_1="Cannot import exact same file from same directory.",
-            )
-        except Exception as e:
-            tracker.import_blend_fail()
-            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
-        else:
-            tracker.import_blend()
-
-        return {"FINISHED"}
-
-
 class ToggleToolbarOperator(bpy.types.Operator):
     """
     Toggle toolbar visibility
@@ -461,6 +359,147 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class ImportOperator(bpy.types.Operator, AconImportHelper):
+    """Import file according to the current settings (.skp, .fbx, .blend)"""
+
+    bl_idname = "acon3d.import"
+    bl_label = "Import"
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.blend;*.fbx;*.skp", options={"HIDDEN"}
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        row.label(text="Import files onto the viewport.")
+        row = layout.row()
+        row.label(text="ㅁ Sketchup File (.skp)")
+        row = layout.row()
+        row.label(text="ㅁ FBX File (.fbx)")
+        row = layout.row()
+        row.label(text="ㅁ Blender File (.blend)")
+
+    def execute(self, context):
+        if not self.check_path(accepted=["blend", "fbx", "skp"]):
+            return {"FINISHED"}
+
+        path = self.filepath
+        path_ext = path.rsplit(".")[-1]
+
+        if path_ext == "blend":
+            bpy.ops.acon3d.import_blend(filepath=path)
+        elif path_ext == "fbx":
+            bpy.ops.acon3d.import_fbx(filepath=path)
+        elif path_ext == "skp":
+            bpy.ops.acon3d.import_skp(filepath=path)
+
+        return {"FINISHED"}
+
+
+class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
+    """Import Blender file according to the current settings"""
+
+    bl_idname = "acon3d.import_blend"
+    bl_label = "Import Blender"
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
+
+    class SameFileImportError(Exception):
+        def __init__(self):
+            super().__init__()
+
+    def execute(self, context):
+        try:
+            if not self.check_path(accepted=["blend"]):
+                return {"FINISHED"}
+
+            # Blender에서 File Open과 같은 파일을 import하면 Collection과 Mesh Object 이름에 ".001"이 넘버링 하지 않음
+            # 그래서 중복 처리를 하지 않고 있어, 예외 경우로 구분하고 메세지 알림 띄워주기
+            filepath_curr = bpy.data.filepath
+            FILEPATH = self.filepath
+
+            if filepath_curr == FILEPATH:
+                raise self.SameFileImportError
+
+            for obj in bpy.data.objects:
+                obj.select_set(False)
+
+            col_layers = bpy.data.collections.get("Layers")
+            if not col_layers:
+                col_layers = bpy.data.collections.new("Layers")
+                context.scene.collection.children.link(col_layers)
+
+            with bpy.data.libraries.load(FILEPATH) as (data_from, data_to):
+                data_to.collections = data_from.collections
+                data_to.objects = list(data_from.objects)
+
+            for coll in data_to.collections:
+
+                if "ACON_col" in coll.name:
+                    data_to.collections.remove(coll)
+                    break
+
+                if coll.name == "Layers" or (
+                    "Layers." in coll.name and len(coll.name) == 10
+                ):
+                    for coll_2 in coll.children:
+                        # File Open과 다른 파일을 import 할 때, Collection과 Mesh Object 이름이 중복되면 ".001"부터 넘버링됨
+                        # Layer0.001의 오브젝트를 Layer0으로 이동하고 Layer0.001을 Outliner에서 제거
+                        if "Layer0." in coll_2.name:
+                            for coll_obj in bpy.data.collections[coll_2.name].objects:
+                                bpy.data.collections[coll_2.name].objects.unlink(
+                                    coll_obj
+                                )
+                                bpy.data.collections["Layer0"].objects.link(coll_obj)
+
+                        else:
+                            # 모든 씬의 l_exclude에 col_imported를 추가
+                            for scene in bpy.data.scenes:
+                                added_l_exclude = scene.l_exclude.add()
+                                added_l_exclude.name = coll_2.name
+                                added_l_exclude.value = True
+                            col_layers.children.link(coll_2)
+
+            # 레이어 이름에 Layer0.이 포함된 중복 레이어 제거
+            for coll in data_to.collections:
+                if "Layer0." in coll.name:
+                    bpy.data.collections.remove(coll)
+
+            # View Layer에 없는 Mesh Object들의 select_set(True) 에러가 나고 있었음
+            # 이런 오브젝트들은 선택되지 않아도 무방하여 해당 작업을 제거함
+            for obj in data_to.objects:
+                if obj.type != "MESH":
+                    data_to.objects.remove(obj)
+
+            materials_setup.apply_ACON_toon_style()
+
+            for area in context.screen.areas:
+                if area.type == "VIEW_3D":
+                    ctx = bpy.context.copy()
+                    ctx["area"] = area
+                    ctx["region"] = area.regions[-1]
+                    bpy.ops.view3d.view_selected(ctx)
+
+        # TODO: 에러 세분화 필요
+        except self.SameFileImportError:
+            tracker.import_same_blend_fail()
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import exact same file from same directory.",
+            )
+        except Exception as e:
+            tracker.import_blend_fail()
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+        else:
+            tracker.import_blend()
+
+        return {"FINISHED"}
+
+
 class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
     """Import FBX file according to the current settings"""
 
@@ -555,7 +594,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 1.0
         row.operator("acon3d.file_open")
-        row.operator("acon3d.import_blend", text="Import")
+        row.operator("acon3d.import", text="Import")
 
         row = layout.row()
         row.scale_y = 1.0
@@ -597,13 +636,14 @@ classes = (
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
     ToggleToolbarOperator,
-    ImportOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
     FileRecentOpenOperator,
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    ImportOperator,
+    ImportBlenderOperator,
     ImportFBXOperator,
     ImportSKPOperator,
 )
