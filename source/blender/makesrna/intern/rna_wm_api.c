@@ -81,6 +81,33 @@ const EnumPropertyItem rna_enum_window_cursor_items[] = {
 
 #  include "WM_types.h"
 
+#include "BKE_global.h"
+#include "BKE_main.h"
+#include "RNA_access.h"
+#include "RNA_define.h"
+
+float WM_get_progress(struct bContext *C) {
+  Main *bmain = CTX_data_main(C);
+  wmWindowManager *wm = CTX_wm_manager(C);
+  void *owner = NULL;
+
+  /* another scene can be rendering too, for example via compositor */
+  LISTBASE_FOREACH (Scene *, scene, &bmain->scenes) {
+    if (!WM_jobs_test(wm, scene, WM_JOB_TYPE_ANY)) {
+      continue;
+    }
+    if (!owner) {
+      owner = scene;
+    }
+  }
+
+  if (owner) {
+    return WM_jobs_progress(wm, owner);
+  }
+
+  return 0.0f;
+}
+
 /* Needed since RNA doesn't use `const` in function signatures. */
 static bool rna_KeyMapItem_compare(struct wmKeyMapItem *k1, struct wmKeyMapItem *k2)
 {
@@ -756,6 +783,14 @@ void RNA_api_wm(StructRNA *srna)
 {
   FunctionRNA *func;
   PropertyRNA *parm;
+
+  func = RNA_def_function(srna, "get_progress", "WM_get_progress");
+  RNA_def_function_ui_description(
+      func,
+      "Get progress of current job");
+  RNA_def_function_flag(func, FUNC_NO_SELF | FUNC_USE_CONTEXT);
+  RNA_def_function_return(
+      func, RNA_def_float(func, "progress", 0.0f, 0.0f, 1.0f, "Progress", "", 0.0f, 1.0f));
 
   func = RNA_def_function(srna, "fileselect_add", "WM_event_add_fileselect");
   RNA_def_function_ui_description(

@@ -11,6 +11,7 @@ bl_info = {
     "category": "ACON3D",
 }
 import bpy
+from time import time, strftime, localtime, gmtime
 
 
 class RENDER_UL_List(bpy.types.UIList):
@@ -21,6 +22,15 @@ class RENDER_UL_List(bpy.types.UIList):
             layout.separator()
             layout.prop(item, "is_render_selected", text="")
             layout.prop(item, "name", text="", emboss=False)
+
+
+# TODO Util 함수 어디에 넣어야 할지 확인
+def timestamp_to_string(timestamp, is_date=True):
+    if not timestamp:
+        return "- - -"
+    if is_date:
+        return strftime("%Y-%m-%d %H:%M:%S", localtime(timestamp))
+    return strftime("%H:%M:%S", gmtime(timestamp))
 
 
 class Acon3dHighQualityRenderPanel(bpy.types.Panel):
@@ -83,6 +93,68 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             # row = layout.row()
             # prop = context.scene.ACON_prop
             # row.prop(prop, "background_color", text="Background Color")
+
+            self.draw_progress(context, layout)
+
+    def draw_progress(self, context, layout):
+        progress_prop = context.window_manager.progress_prop
+        if not progress_prop.start_date:
+            return
+
+        box = layout.box()
+
+        cur_progress = context.window_manager.get_progress()
+
+        render_progress = 0
+        if progress_prop.total_render_num:
+            render_progress = (
+                progress_prop.complete_num + cur_progress
+            ) / progress_prop.total_render_num
+
+        box.label(text="Total Rendering")
+        sub = box.split(align=True, factor=0.20)
+        col = sub.column(align=True)
+        col.label(
+            text=f"{min(progress_prop.complete_num + 1, progress_prop.total_render_num)} / {progress_prop.total_render_num} "
+        )
+        col = sub.column(align=True)
+        col.template_progress_bar(progress=render_progress)
+
+        for info in progress_prop.render_scene_infos:
+            box.label(text=info.render_scene_name)
+            if info.status == "waiting":
+                box.template_progress_bar(progress=0.0)
+            elif info.status == "in progress":
+                box.template_progress_bar(progress=cur_progress)
+            else:
+                box.template_progress_bar(progress=1.0)
+
+        sub = box.split(align=True, factor=0.25)
+
+        col = sub.column(align=True)
+        col.label(text="Start", icon="DOT")
+        col.label(text="Finish", icon="DOT")
+        col.label(text="Time Span", icon="DOT")
+
+        start_string = timestamp_to_string(progress_prop.start_date)
+        end_string = timestamp_to_string(progress_prop.end_date)
+
+        if not progress_prop.start_date:
+            span = 0
+        elif not progress_prop.end_date:
+            span = time() - progress_prop.start_date
+        else:
+            span = progress_prop.end_date - progress_prop.start_date
+        span_string = timestamp_to_string(span, is_date=False)
+
+        col = sub.column(align=True)
+        col.label(text=": " + start_string)
+        col.label(text=": " + end_string)
+        col.label(text=": " + span_string)
+
+        layout.operator("acon3d.close_progress", text="OK")
+        # TODO 렌더 cancel
+        # layout.operator("wm.stop_render", text="Cancel")
 
 
 class Acon3dQuickRenderPanel(bpy.types.Panel):
