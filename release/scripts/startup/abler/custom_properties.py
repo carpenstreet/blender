@@ -476,7 +476,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     bloom_intensity: bpy.props.FloatProperty(
         name="",
         description="Change bloom intensity (Range: 0 ~ 1)",
-        default=0.05,
+        default=0.5,
         min=0,
         max=1.0,
         update=bloom.change_bloom_intensity,

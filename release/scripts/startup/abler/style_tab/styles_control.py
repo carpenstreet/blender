@@ -136,7 +136,7 @@ class ShadowShadingPanel(bpy.types.Panel):
 class ShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_ShadowShading"
     bl_idname = "ACON_PT_Shading"
-    bl_label = "Toon Style"
+    bl_label = "Toon Style Shading"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"

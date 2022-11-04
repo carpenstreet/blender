@@ -36,10 +36,10 @@ from ..lib.import_file import AconImportHelper
 
 
 class RemoveBackgroundOperator(bpy.types.Operator):
-    """Removes Current Background Image"""
+    """Remove current background image"""
 
     bl_idname = "acon3d.background_image_remove"
-    bl_label = "Remove current background image"
+    bl_label = "Remove background image"
     bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
