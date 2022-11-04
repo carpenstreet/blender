@@ -235,7 +235,7 @@ static void rna_def_camera_background_image(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "offset", PROP_FLOAT, PROP_XYZ);
   RNA_def_property_float_sdna(prop, NULL, "offset");
-  RNA_def_property_ui_text(prop, "Offset", "Select how image fits in the camera frame");
+  RNA_def_property_ui_text(prop, "Offset", "Move image according to x-axis and y-axis");
   RNA_def_property_ui_range(prop, -FLT_MAX, FLT_MAX, 0.1, RNA_TRANSLATION_PREC_DEFAULT);
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 

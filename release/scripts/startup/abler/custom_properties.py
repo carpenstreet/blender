@@ -26,7 +26,7 @@ from .lib.read_cookies import *
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(
-        name="Scene Name",
+        name="Scenes",
         description="Click to apply scene and double click to rename.",
         default="",
         update=scenes.change_scene_name,
