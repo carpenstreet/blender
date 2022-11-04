@@ -281,6 +281,14 @@ class GodoBadRequest(NamedException):
         self.response = response
 
 
+class AconLoginConsecutiveFail(NamedException):
+    """여러번 로그인을 실패했을 때의 고도몰 응답 에러"""
+
+    def __init__(self, response: requests.Response):
+        super().__init__()
+        self.response = response
+
+
 class GodoServerError(NamedException):
     """서버 책임의 고도몰 응답 에러"""
 
@@ -324,12 +332,23 @@ class LoginTask(AsyncTask):
         if response_godo.status_code >= 500:
             raise GodoServerError(response_godo)
 
-        try:
-            response_godo.json()
-        # username/password 틀렸을 때는 200 상태코드로
-        # 일반 텍스트 형식의 한국어 에러 메시지가 오고 있음 -> JSONDecodeError 발생
-        except JSONDecodeError:
+        # TODO 추후 api 변경된 후 수정 필요
+        # TODO api 변경이 된다면, status code 및 error code 등으로 에러 처리 필요
+        wrong_messages = [
+            "아이디 또는 비밀번호를 다시한번 확인해 주시기 바랍니다.",
+            "로그인을 7회 실패하셨습니다. 10회 이상 실패 시 접속이 제한됩니다.",
+        ]
+
+        consecutive_fail_messages = [
+            "로그인을 10회 이상 실패하여 10분 동안 접속이 제한됩니다.",
+            "로그인이 제한되었습니다. 10분 후에 시도해 주세요.",
+        ]
+
+        # 이 두 경우 외의 에러는 정상적으로 일어나지 않을 에러로 보이고, _on_failure 의 else 문에서 처리되고 있음
+        if response_godo.text in wrong_messages:
             raise GodoBadRequest(response_godo)
+        elif response_godo.text in consecutive_fail_messages:
+            raise AconLoginConsecutiveFail(response_godo)
 
         cookies_godo = response_godo.cookies
 
@@ -393,6 +412,13 @@ class LoginTask(AsyncTask):
                 "INVOKE_DEFAULT",
                 title="Login failed",
                 message_1="Incorrect username or password.",
+            )
+        elif isinstance(e, AconLoginConsecutiveFail):
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Login failed",
+                message_1="The number of consecutive password error count exceeded.",
+                message_2="Please try again in few minutes.",
             )
         else:
             bpy.ops.acon3d.alert(

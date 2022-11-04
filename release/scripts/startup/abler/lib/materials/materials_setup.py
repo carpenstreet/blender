@@ -414,10 +414,10 @@ def create_ACON_mat_node_groups():
     node_group.inputs[4].default_value = 1
     node_group.inputs[5].default_value = 1
     node_group.inputs[5].min_value = 0
-    node_group.inputs[6].default_value = 0.5
+    node_group.inputs[6].default_value = 1.0
     node_group.inputs[6].min_value = 0
     node_group.inputs[6].max_value = 1
-    node_group.inputs[7].default_value = 0
+    node_group.inputs[7].default_value = 0.8
     node_group.inputs[7].min_value = 0
     node_group.inputs[7].max_value = 1
     node_group.inputs[8].default_value = 1
@@ -475,7 +475,7 @@ def apply_ACON_toon_style():
 
         node_texImage = None
         baseColor = (1, 1, 1, 1)
-        nega_alpha = 0
+        nega_alpha = None
         node_combinedToon = None
 
         for node in nodes:
@@ -552,7 +552,10 @@ def apply_ACON_toon_style():
         node_combinedToon = nodes.new(type="ShaderNodeGroup")
         node_combinedToon.name = "ACON_nodeGroup_combinedToon"
         node_combinedToon.node_tree = node_group_data_combined
-        node_combinedToon.inputs[7].default_value = nega_alpha
+        # BSDF_Prinipled 노드에서 변환된 머터리얼은 nega_alpha가 업데이트 되므로
+        # nega_alpha가 있을 때만 Transparent가 업데이트 되도록 변경
+        if nega_alpha:
+            node_combinedToon.inputs[7].default_value = nega_alpha
         mat.node_tree.links.new(node_combinedToon.outputs[0], out_node.inputs[0])
 
         if node_texImage:

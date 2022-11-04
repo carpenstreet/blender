@@ -188,7 +188,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="",
         description="Adjust amount of edges to be shown (Range: 0 ~ 20, Recommended: 1.2)",
         subtype="FACTOR",
-        default=2,
+        default=1,
         min=0,
         max=20,
         step=10,
