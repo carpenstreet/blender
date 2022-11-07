@@ -68,11 +68,11 @@ def numbering_filepath(filepath, ext):
 
 
 class AconTutorialGuidePopUpOperator(bpy.types.Operator):
-    """Show Tutorial Guide"""
+    """Show tutorial guide"""
 
     bl_idname = "acon3d.tutorial_guide_popup"
     bl_label = "Quick Start Guide"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         userInfo = bpy.data.meshes.get("ACON_userInfo")
@@ -99,7 +99,7 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_1"
     bl_label = "Mouse Mode"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -112,7 +112,7 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_2"
     bl_label = "Fly Mode"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -125,7 +125,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_3"
     bl_label = "Scene Control"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.tutorial_guide_close()
@@ -145,7 +145,7 @@ class ToggleToolbarOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.context_toggle"
     bl_label = "Toggle Toolbar"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.toggle_toolbar()
@@ -218,7 +218,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
 
     bl_idname = "acon3d.file_open"
     bl_label = "Open"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
@@ -232,7 +232,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
 class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
     bl_idname = "acon3d.recent_file_open"
     bl_label = ""
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     @classmethod
     def description(cls, context, properties):
@@ -264,11 +264,11 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
 
 
 class FlyOperator(bpy.types.Operator):
-    """Move around the scene using WASD, QE, and mouse like FPS game"""
+    """Move around the scene using WASD, QE, and mouse like FPS games"""
 
     bl_idname = "acon3d.fly_mode"
     bl_label = "Fly with WASD (shift + `)"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.fly_mode()
@@ -284,7 +284,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
 
     bl_idname = "acon3d.save"
     bl_label = "Save"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filename_ext = ".blend"
 
@@ -333,8 +333,8 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
-    bl_label = "Save As"
-    bl_translation_context = "*"
+    bl_label = "Save As..."
+    bl_translation_context = "abler"
 
     filename_ext = ".blend"
 
@@ -505,7 +505,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_fbx"
     bl_label = "Import FBX"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
@@ -563,7 +563,7 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_skp"
     bl_label = "Import SKP"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
@@ -578,6 +578,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     bl_category = "General"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     bl_options = {"HIDE_HEADER"}
 
     def draw_header(self, context):
@@ -619,7 +620,7 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.apply_toon_style"
     bl_label = "Apply Toon Style"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         materials_setup.apply_ACON_toon_style()

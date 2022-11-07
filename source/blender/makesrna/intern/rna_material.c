@@ -763,9 +763,7 @@ void RNA_def_material(BlenderRNA *brna)
 
   srna = RNA_def_struct(brna, "Material", "ID");
   RNA_def_struct_ui_text(
-      srna,
-      "Material",
-      "Material data-block to define the appearance of geometric objects for rendering");
+      srna, "Material", "Show name of selected material or search another material");
   RNA_def_struct_ui_icon(srna, ICON_MATERIAL_DATA);
 
   /* Blending (only Eevee for now) */

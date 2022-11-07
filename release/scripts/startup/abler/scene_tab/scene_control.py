@@ -54,17 +54,18 @@ class SCENE_UL_List(bpy.types.UIList):
 
 
 class CreateSceneOperator(bpy.types.Operator):
-    """Create a new scene with a new preset"""
+    """Create a new scene with current viewport"""
 
     bl_idname = "acon3d.create_scene"
-    bl_label = "New Scene"
+    bl_label = "Add new scene"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
-    name: bpy.props.StringProperty(name="Name")
+    name: bpy.props.StringProperty(name="Name", description="Write scene name")
 
     preset: bpy.props.EnumProperty(
         name="Preset",
-        description="Scene preset",
+        description="Select scene preset",
         items=[
             ("None", "Use Current Scene Settings", ""),
             ("Indoor Daytime", "Indoor Daytime", ""),
@@ -110,8 +111,8 @@ class DeleteSceneOperator(bpy.types.Operator):
     """Remove current scene from this file"""
 
     bl_idname = "acon3d.delete_scene"
-    bl_label = "Remove Scene"
-    bl_translation_context = "*"
+    bl_label = "Remove scene"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
@@ -154,9 +155,10 @@ class DeleteSceneOperator(bpy.types.Operator):
 class Acon3dScenesPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_scenes"
     bl_label = "Scenes"
-    bl_category = "Scene"
+    bl_category = "Scenes"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout

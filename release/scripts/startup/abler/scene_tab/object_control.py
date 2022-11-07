@@ -37,10 +37,10 @@ from ..lib.tracker import tracker
 
 
 class GroupNavigateTopOperator(bpy.types.Operator):
-    """Select Top Group"""
+    """Move to top group"""
 
     bl_idname = "acon3d.group_navigate_top"
-    bl_label = "Group Navigate Top"
+    bl_label = "Top Group"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -50,10 +50,10 @@ class GroupNavigateTopOperator(bpy.types.Operator):
 
 
 class GroupNavigateUpOperator(bpy.types.Operator):
-    """Select Upper Group"""
+    """Move to upper group"""
 
     bl_idname = "acon3d.group_navigate_up"
-    bl_label = "Group Navigate Up"
+    bl_label = "Upper Group"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -63,10 +63,10 @@ class GroupNavigateUpOperator(bpy.types.Operator):
 
 
 class GroupNavigateDownOperator(bpy.types.Operator):
-    """Select Lower Group"""
+    """Move to lower group"""
 
     bl_idname = "acon3d.group_navigate_down"
-    bl_label = "Group Navigate Down"
+    bl_label = "Lower Group"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -76,10 +76,10 @@ class GroupNavigateDownOperator(bpy.types.Operator):
 
 
 class GroupNavigateBottomOperator(bpy.types.Operator):
-    """Select Bottom Group"""
+    """Move to bottom group/object"""
 
     bl_idname = "acon3d.group_navigate_bottom"
-    bl_label = "Group Navigate Bottom"
+    bl_label = "Bottom Group"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -91,7 +91,7 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
 class Acon3dObjectPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Object_Main"
     bl_label = "Object Control"
-    bl_category = "Scene"
+    bl_category = "Scenes"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
 

@@ -4866,7 +4866,7 @@ void VIEW3D_OT_background_image_remove(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Remove Background Image";
-  ot->description = "Remove a background image from the 3D view";
+  ot->description = "Remove current background image";
   ot->idname = "VIEW3D_OT_background_image_remove";
 
   /* api callbacks */

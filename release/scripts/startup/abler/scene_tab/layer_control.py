@@ -40,7 +40,7 @@ class Acon3dCreateGroupOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.create_group"
     bl_label = "Create Group"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
@@ -80,7 +80,7 @@ class Acon3dExplodeGroupOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.explode_group"
     bl_label = "Explode Group"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
@@ -116,9 +116,10 @@ class Acon3dLayersPanel(bpy.types.Panel):
 
     bl_idname = "ACON3D_PT_Layer"
     bl_label = "Layers"
-    bl_category = "Scene"
+    bl_category = "Scenes"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout

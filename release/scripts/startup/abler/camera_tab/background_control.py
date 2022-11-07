@@ -36,11 +36,11 @@ from ..lib.import_file import AconImportHelper
 
 
 class RemoveBackgroundOperator(bpy.types.Operator):
-    """Removes Current Background Image"""
+    """Remove current background image"""
 
     bl_idname = "acon3d.background_image_remove"
-    bl_label = "Remove Background Image"
-    bl_translation_context = "*"
+    bl_label = "Remove background image"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     index: bpy.props.IntProperty(name="Index", default=0)
@@ -59,11 +59,11 @@ class RemoveBackgroundOperator(bpy.types.Operator):
 
 
 class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Default Background Image"""
+    """Open default background image"""
 
     bl_idname = "acon3d.default_background_image_open"
     bl_label = "Default Image"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
@@ -100,11 +100,11 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
 
 
 class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
-    """Open Custom Background Image"""
+    """Open custom background image"""
 
     bl_idname = "acon3d.custom_background_image_open"
     bl_label = "Custom Image"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     image_extension = "*.png;*.jpg;"
@@ -140,6 +140,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout

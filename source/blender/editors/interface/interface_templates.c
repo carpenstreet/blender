@@ -744,7 +744,7 @@ static const char *template_id_browse_tip(const StructRNA *type)
       case ID_MB:
         return N_("Browse Metaball Data to be linked");
       case ID_MA:
-        return N_("Browse Material to be linked");
+        return N_("See all material list included in the file");
       case ID_TE:
         return N_("Browse Texture to be linked");
       case ID_IM:

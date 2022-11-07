@@ -739,7 +739,7 @@ static void ui_template_list_layout_draw(bContext *C,
                                org_i,
                                0,
                                0,
-                               TIP_("Double click to rename"));
+                               TIP_("Click to apply scene and double click to rename"));
           if ((dyntip_data = uilist_item_use_dynamic_tooltip(itemptr,
                                                              input_data->item_dyntip_propname))) {
             UI_but_func_tooltip_set(but, uilist_item_tooltip_func, dyntip_data, MEM_freeN);
