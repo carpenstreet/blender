@@ -393,7 +393,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         elif path_ext == "fbx":
             bpy.ops.acon3d.import_fbx(filepath=path)
         elif path_ext == "skp":
-            bpy.ops.acon3d.import_skp(filepath=path)
+            # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
+            # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
+            # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
+            bpy.ops.acon3d.import_skp_op(filepath=path)
 
         return {"FINISHED"}
 
@@ -561,13 +564,23 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
     """Import SKP file according to the current settings"""
 
-    bl_idname = "acon3d.import_skp"
+    bl_idname = "acon3d.import_skp_op"
     bl_label = "Import SKP"
     bl_translation_context = "abler"
 
-    filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
+    filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
 
     def execute(self, context):
+        if not self.check_path(accepted=["skp"]):
+            return {"FINISHED"}
+        try:
+            # TODO: 이곳에 완성된 skp importer 관련 함수가 들어갈 예정
+            pass
+        except Exception as e:
+            tracker.import_skp_fail()
+            raise e
+        else:
+            tracker.import_skp()
 
         return {"FINISHED"}
 
