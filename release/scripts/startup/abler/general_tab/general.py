@@ -574,7 +574,6 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
-            # TODO: skp importer addon을 켜주는 로직이 들어가야함.
             # TODO: 이곳에 완성된 skp importer 관련 함수가 들어갈 예정
             pass
         except Exception as e:
