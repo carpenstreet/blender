@@ -26,6 +26,8 @@ class EventKind(enum.Enum):
     import_same_blend_fail = "Import Same *.blend Fail"
     import_fbx = "Import FBX"
     import_fbx_fail = "Import FBX Fail"
+    import_skp = "Import SKP"
+    import_skp_fail = "Import SKP Fail"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
     scene_add = "Scene Add"
@@ -191,6 +193,12 @@ class Tracker(metaclass=ABCMeta):
 
     def import_fbx_fail(self):
         self._track(EventKind.import_fbx_fail.value)
+
+    def import_skp(self):
+        self._track(EventKind.import_skp.value)
+
+    def import_skp_fail(self):
+        self._track(EventKind.import_skp_fail.value)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
