@@ -96,8 +96,39 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
 
             self.draw_progress(context, layout)
 
+    def draw_progress_skeleton(self, infos, layout):
+        box = layout.box()
+        box.label(text="Total Rendering")
+        sub = box.split(align=True, factor=0.20)
+        col = sub.column(align=True)
+        col.label(text=f"0 / 0")
+        col = sub.column(align=True)
+        col.template_progress_bar(progress=0.0)
+
+        for info in infos:
+            box.label(text=info.render_scene_name)
+            box.template_progress_bar(progress=0.0)
+
+        sub = box.split(align=True, factor=0.25)
+
+        col = sub.column(align=True)
+        col.label(text="Start", icon="DOT")
+        col.label(text="Finish", icon="DOT")
+        col.label(text="Time Span", icon="DOT")
+
+        col = sub.column(align=True)
+        col.label(text=": - - -")
+        col.label(text=": - - -")
+        col.label(text=": - - -")
+
+        layout.operator("acon3d.close_progress", text="OK")
+
     def draw_progress(self, context, layout):
         progress_prop = context.window_manager.progress_prop
+        if progress_prop.is_loaded:
+            self.draw_progress_skeleton(progress_prop.render_scene_infos, layout)
+            return
+
         if not progress_prop.start_date:
             return
 
@@ -153,8 +184,6 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
         col.label(text=": " + span_string)
 
         layout.operator("acon3d.close_progress", text="OK")
-        # TODO 렌더 cancel
-        # layout.operator("wm.stop_render", text="Cancel")
 
 
 class Acon3dQuickRenderPanel(bpy.types.Panel):

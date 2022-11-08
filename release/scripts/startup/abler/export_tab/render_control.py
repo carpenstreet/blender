@@ -22,7 +22,6 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
-from .. import startup_flow
 from time import time
 
 
@@ -113,12 +112,10 @@ class Acon3dRenderOperator(bpy.types.Operator):
 
     def on_render_cancel(self, dummy, dum):
         self.render_canceled = True
-        startup_flow.is_rendered = True
 
     def on_render_finish(self, context):
         # set initial_scene
         bpy.data.window_managers["WinMan"].ACON_prop.scene = self.initial_scene.name
-        startup_flow.is_rendered = True
         return {"FINISHED"}
 
     def prepare_queue(self, context):
@@ -251,8 +248,15 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             self.filepath = self.basename
 
-    def modal(self, context, event):
+    def render_handler(self):
+        progress_prop = bpy.context.window_manager.progress_prop
+        progress_prop.is_loaded = False
 
+        bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
+
+        return None
+
+    def modal(self, context, event):
         if event.type == "TIMER":
 
             if not self.render_queue or self.render_canceled is True:
@@ -302,7 +306,18 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
                 self.prepare_render()
 
-                bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
+                """
+                렌더 씬이 결정된 직후 ~ 렌더를 처음 시작했을 때 사이에 is_loaded = True 로 설정,
+                is_loaded = True 일 때 스켈레톤 UI 를 그립니다.
+                is_loaded 값이 순간적으로 변경되기 때문에 timers 에 등록하여 다른 큐에서 draw 를 실행하도록 하였습니다.
+                (0초로 두면 draw 도중 잘리는 이슈가 있어서, 0.01초로 변경)
+                """
+                if context.window_manager.progress_prop.is_loaded:
+                    bpy.app.timers.register(self.render_handler, first_interval=0.01)
+                else:
+                    bpy.ops.render.render(
+                        "INVOKE_DEFAULT", write_still=self.write_still
+                    )
 
         return {"PASS_THROUGH"}
 
@@ -408,7 +423,6 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
         return {"FINISHED"}
 
 
-# TODO: Texture Render
 class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     """Render according to the set pixel"""
 
@@ -422,6 +436,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
     def __init__(self):
         super().__init__()
+
+    def invoke(self, context, event):
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        return super().invoke(context, event)
 
     def pre_render(self, dummy, dum):
         super().pre_render(dummy, dum)
@@ -462,7 +480,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
         scene.name = f"{base_scene.name}_{render_type}"
         scene.eevee.use_bloom = False
-        scene.render.use_lock_interface = False
+        scene.render.use_lock_interface = True
 
         # scene_info - UI 에 이름과 진행 상황을 보여주기 위한 데이터
         # FIXME scnee_info 에 scene 을 담고, temp_scenes 를 없애면 더 깔끔하지 않을까?
@@ -500,6 +518,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         progress_prop.start_date = time()
         progress_prop.end_date = 0
         progress_prop.render_scene_infos.clear()
+        progress_prop.is_loaded = False
 
         render_prop = context.window_manager.ACON_prop
         for s_col in render_prop.scene_col:
@@ -521,6 +540,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                 if render_prop.hq_render_texture:
                     tracker.render_texture()
                     self.prepare_temp_scene(scene, render_type="texture")
+
+        progress_prop.is_loaded = True
 
         return {"RUNNING_MODAL"}
 
@@ -599,6 +620,7 @@ class RenderProperty(bpy.types.PropertyGroup):
     total_render_num: bpy.props.IntProperty(default=0)
     is_progress_shown: bpy.props.BoolProperty(default=False)
     render_scene_infos: bpy.props.CollectionProperty(type=RenderSceneInfoProperty)
+    is_loaded: bpy.props.BoolProperty(default=False)
 
 
 classes = (

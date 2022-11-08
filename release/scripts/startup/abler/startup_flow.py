@@ -30,7 +30,6 @@ from json import JSONDecodeError
 import bpy
 import requests
 from bpy.app.handlers import persistent
-from bpy_extras.io_utils import ExportHelper
 
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
@@ -54,7 +53,6 @@ from .lib.version import (
 
 
 is_first_run = False
-is_rendered = False
 
 
 def is_blend_open():
@@ -179,7 +177,6 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         col = row.column()
         col.label(text="Render selected scenes?")
         col.label(text="High quality render may take a long time to be finished.")
-        col.label(text="Render can be canceled after starting.")
         col.label(text=f"Selected Scenes : {self.scene_count}")
         if bpy.data.is_dirty:
             col.operator("acon3d.render_save", text="Save and Render")
@@ -204,31 +201,21 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
         return is_method_selected and is_scene_selected
 
-    # render_control 모듈에서 현재 모듈의 global variable을 받아서 현재 렌더링중인지 판별해주고,
-    # 그 값에 따라서 그려지는지 여부를 "이후에" 판단하도록 하여 크래시를 피함
-    def should_close(self, context, event) -> bool:
-        global is_rendered
-        return is_rendered
 
-    def after_close(self, context, event):
-        global is_rendered
-        is_rendered = False
+def render_save_handler(dummy):
+    bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
+    bpy.app.handlers.save_post.remove(render_save_handler)
 
 
-class Acon3dRenderSaveOpertor(bpy.types.Operator, ExportHelper):
+class Acon3dRenderSaveOpertor(bpy.types.Operator):
     bl_idname = "acon3d.render_save"
     bl_label = "Save and Render"
     filename_ext = ".blend"
 
     def execute(self, context):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
-        if bpy.data.is_dirty:
-            if bpy.data.filepath == "":
-                bpy.ops.wm.save_mainfile("INVOKE_DEFAULT")
-            else:
-                bpy.ops.wm.save_mainfile({"dict": "override"}, filepath=self.filepath)
-        bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
-        return {"FINISHED"}
+        bpy.app.handlers.save_post.append(render_save_handler)
+        return bpy.ops.acon3d.save("INVOKE_DEFAULT")
 
 
 class Acon3dNoticeInvokeOperator(bpy.types.Operator):
