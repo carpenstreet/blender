@@ -3806,6 +3806,7 @@ void wm_operatortypes_register(void)
   WM_operatortype_append(WM_OT_call_panel);
   WM_operatortype_append(WM_OT_radial_control);
   WM_operatortype_append(WM_OT_stereo3d_set);
+  WM_operatortype_append(WM_OT_stop_render);
 #if defined(WIN32)
   WM_operatortype_append(WM_OT_console_toggle);
 #endif

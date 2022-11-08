@@ -64,6 +64,7 @@
 #include "WM_api.h"
 #include "WM_types.h"
 
+#include "BKE_global.h"
 #include "BLT_lang.h"
 #include "wm.h"
 
@@ -851,6 +852,21 @@ void WM_OT_splash_tutorial_close(wmOperatorType *ot)
   ot->description = "Close the tutorial screen";
 
   ot->invoke = wm_tutorial_close_invoke;
+  ot->poll = WM_operator_winactive;
+}
+
+static int wm_stop_render_execute(bContext *C, wmOperator *op)
+{
+  G.is_break = true;
+  return OPERATOR_FINISHED;
+}
+
+void WM_OT_stop_render(wmOperatorType *ot) {
+  ot->name = "Stop Render";
+  ot->idname = "WM_OT_stop_render";
+  ot->description = "Stop Render";
+
+  ot->exec = wm_stop_render_execute;
   ot->poll = WM_operator_winactive;
 }
 

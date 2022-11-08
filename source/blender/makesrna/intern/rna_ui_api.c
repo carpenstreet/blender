@@ -1711,6 +1711,12 @@ void RNA_api_ui_layout(StructRNA *srna)
   func = RNA_def_function(srna, "template_running_jobs", "uiTemplateRunningJobs");
   RNA_def_function_flag(func, FUNC_USE_CONTEXT);
 
+  func = RNA_def_function(srna, "template_progress_bar", "uiTemplateProgressBar");
+  RNA_def_function_flag(func, FUNC_USE_CONTEXT);
+  RNA_def_float(
+      func, "progress", 0, 0, 1.0, "", "Current Progress", 0, 1.0);
+  RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
+
   RNA_def_function(srna, "template_operator_search", "uiTemplateOperatorSearch");
   RNA_def_function(srna, "template_menu_search", "uiTemplateMenuSearch");
 
