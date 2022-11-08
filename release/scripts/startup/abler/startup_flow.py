@@ -157,67 +157,6 @@ class Acon3dAlertOperator(bpy.types.Operator):
         layout.separator()
 
 
-class Acon3dRenderWarningOperator(BlockingModalOperator):
-    bl_idname = "acon3d.render_warning"
-    bl_label = "Render Selected Scenes"
-    bl_translation_context = "*"
-    scene_count: bpy.props.IntProperty(name="Scene count", default=0)
-
-    def draw_modal(self, layout):
-        padding_size = 0.01
-        content_size = 1.0 - 2 * padding_size
-        box = layout.box()
-        main = box.column()
-
-        main.label(text="")
-
-        row = main.split(factor=padding_size)
-        row.label(text="")
-        row = row.split(factor=content_size)
-        col = row.column()
-        col.label(text="Render selected scenes?")
-        col.label(text="High quality render may take a long time to be finished.")
-        col.label(text=f"Selected Scenes : {self.scene_count}")
-        if bpy.data.is_dirty:
-            col.operator("acon3d.render_save", text="Save and Render")
-        else:
-            col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
-        col.operator("acon3d.close_blocking_modal", text="Cancel")
-        row.label(text="")
-
-        main.label(text="")
-
-    @classmethod
-    def poll(self, context):
-        render_prop = context.window_manager.ACON_prop
-
-        is_method_selected = (
-            render_prop.hq_render_full
-            or render_prop.hq_render_line
-            or render_prop.hq_render_texture
-            or render_prop.hq_render_shadow
-        )
-        # 이 부분은 뺐다가 poll 실행 당시에 scene_count가 등록이 안되어있는 타이밍 문제때문에 에러메시지가 계속 떠서 그냥 다시 살림.
-        is_scene_selected = any(s.is_render_selected for s in render_prop.scene_col)
-        return is_method_selected and is_scene_selected
-
-
-def render_save_handler(dummy):
-    bpy.ops.acon3d.render_high_quality("INVOKE_DEFAULT")
-    bpy.app.handlers.save_post.remove(render_save_handler)
-
-
-class Acon3dRenderSaveOpertor(bpy.types.Operator):
-    bl_idname = "acon3d.render_save"
-    bl_label = "Save and Render"
-    filename_ext = ".blend"
-
-    def execute(self, context):
-        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
-        bpy.app.handlers.save_post.append(render_save_handler)
-        return bpy.ops.acon3d.save("INVOKE_DEFAULT")
-
-
 class Acon3dNoticeInvokeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice_invoke"
     bl_label = ""
@@ -722,8 +661,6 @@ classes = (
     Acon3dHigherFileVersionError,
     Acon3dStartUpFlowOperator,
     Acon3dCloseAblerOprator,
-    Acon3dRenderWarningOperator,
-    Acon3dRenderSaveOpertor,
 )
 
 
