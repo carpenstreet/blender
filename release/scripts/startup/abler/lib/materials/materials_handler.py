@@ -259,11 +259,12 @@ def change_material_type(self, context: Context) -> None:
         if not context:
             context = bpy.context
 
-        material_slots: List[MaterialSlot] = context.active_object.material_slots
+        if context.active_object:
+            material_slots: List[MaterialSlot] = context.active_object.material_slots
 
-        for mat_slot in material_slots:
-            mat: Material = mat_slot.material
-            set_material_parameters_by_type(mat)
+            for mat_slot in material_slots:
+                mat: Material = mat_slot.material
+                set_material_parameters_by_type(mat)
 
     except:
         print("ACON Material Type change handler could not complete.")
