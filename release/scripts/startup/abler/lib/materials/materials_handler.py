@@ -266,8 +266,8 @@ def change_material_type(self, context: Context) -> None:
                 mat: Material = mat_slot.material
                 set_material_parameters_by_type(mat)
 
-    except:
-        print("ACON Material Type change handler could not complete.")
+    except Exception as e:
+        print("ACON Material Type change handler could not complete.", e)
 
 
 def change_image_adjust_brightness(self, context: Context) -> None:

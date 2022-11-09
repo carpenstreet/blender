@@ -6,7 +6,7 @@ from .tracker import tracker
 
 
 def toggle_constraint_to_camera(self, context):
-    obj = context.object
+    obj = self.id_data
     if obj.ACON_prop.constraint_to_camera_rotation_z:
         tracker.look_at_me()
 
@@ -36,34 +36,28 @@ def add_group_list_from_collection(
 
 def set_constraint_to_camera_by_object(obj, context=None):
 
-    if not context:
-        context = bpy.context
-
     look_at_me = obj.ACON_prop.constraint_to_camera_rotation_z
+    prop = obj.ACON_prop
+    const = obj.constraints.get("ACON_const_copyRotation")
 
-    for obj in context.selected_objects:
+    if look_at_me:
 
-        prop = obj.ACON_prop
-        const = obj.constraints.get("ACON_const_copyRotation")
+        if not const:
+            const = obj.constraints.new(type="COPY_ROTATION")
+            const.name = "ACON_const_copyRotation"
+            const.use_x = False
+            const.use_y = False
+            const.use_z = True
 
-        if look_at_me:
+        const.target = context.scene.camera
+        const.mute = False
 
-            if not const:
-                const = obj.constraints.new(type="COPY_ROTATION")
-                const.name = "ACON_const_copyRotation"
-                const.use_x = False
-                const.use_y = False
-                const.use_z = True
+    elif const:
 
-            const.target = context.scene.camera
-            const.mute = False
+        const.mute = True
 
-        elif const:
-
-            const.mute = True
-
-        if prop.constraint_to_camera_rotation_z != look_at_me:
-            prop.constraint_to_camera_rotation_z = look_at_me
+    if prop.constraint_to_camera_rotation_z != look_at_me:
+        prop.constraint_to_camera_rotation_z = look_at_me
 
 
 def step(edge0: tuple[float], edge1: tuple[float], x: float) -> tuple[float]:
