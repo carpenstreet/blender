@@ -164,6 +164,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     timer_event = None
     initial_scene = None
     initial_display_type = None
+    render_start_time = None
 
     def pre_render(self, dummy, dum):
         self.rendering = True
@@ -516,7 +517,11 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def post_render(self, dummy, dum):
         base_scene_name, scene, render_type = self.render_queue[0]
         render_prop = bpy.context.window_manager.ACON_prop
-        render_data = {"Scene": base_scene_name, "Filepath": bpy.data.filepath}
+        render_time = time() - self.render_start_time
+        self.render_start_time = time()
+        render_data = {"Scene": base_scene_name, "Filepath": bpy.data.filepath, "Render time": render_time}
+
+        print(f"render_time: {render_time}")
 
         # 현재 렌더가 어떤 렌더인지만 받아오기
         if render_type == "full":
@@ -602,6 +607,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         progress_prop.end_date = 0
         progress_prop.render_scene_infos.clear()
         progress_prop.is_loaded = False
+        self.render_start_time = time()
 
         render_prop = context.window_manager.ACON_prop
         for s_col in render_prop.scene_col:
