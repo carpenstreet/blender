@@ -174,8 +174,8 @@ class Tracker(metaclass=ABCMeta):
     def render_shadow(self):
         self._track(EventKind.render_shadow.value)
 
-    def render_texture(self):
-        self._track(EventKind.render_texture.value)
+    def render_texture(self, name):
+        self._track(EventKind.render_texture.value, {"name": name})
 
     def render_all_scenes(self):
         self._track(EventKind.render_all_scenes.value)
