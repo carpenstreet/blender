@@ -17,13 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-import bpy, platform, os, subprocess
+import bpy, platform, os, subprocess, datetime
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
-import datetime
 from ..warning_modal import BlockingModalOperator
 
 
