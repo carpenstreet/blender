@@ -72,18 +72,24 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
     )
 
     hq_render_full: bpy.props.BoolProperty(
-        name="Full Render", description="Render according to the set pixel"
+        name="Full Render",
+        description="Render according to the set pixel",
+        default=True,
     )
     hq_render_line: bpy.props.BoolProperty(
-        name="Line Render", description="Render only lines according to the set pixel"
+        name="Line Render",
+        description="Render only lines according to the set pixel",
+        default=True,
     )
     hq_render_texture: bpy.props.BoolProperty(
         name="Texture Render",
         description="Render only textures according to the set pixel",
+        default=True,
     )
     hq_render_shadow: bpy.props.BoolProperty(
         name="Shadow Render",
         description="Render only shadow according to the set pixel",
+        default=True,
     )
 
 
