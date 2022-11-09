@@ -516,30 +516,26 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def post_render(self, dummy, dum):
         base_scene_name, scene, render_type = self.render_queue[0]
         render_prop = bpy.context.window_manager.ACON_prop
-        scene = bpy.context.scene
-        render_data = {"Scene": scene.name, "Filepath": bpy.data.filepath}
+        render_data = {"Scene": base_scene_name, "Filepath": bpy.data.filepath}
 
-        for s_col in render_prop.scene_col:
-            # print(s_col.name)
-            if s_col.is_render_selected and s_col.name in bpy.data.scenes:
-                if render_prop.hq_render_full:
-                    tracker.render_full(render_data)
-                    # print("full")
+        # 현재 렌더가 어떤 렌더인지만 받아오기
+        if render_type == "full":
+            tracker.render_full(render_data)
+            print("full")
 
-                if render_prop.hq_render_line:
-                    tracker.render_line(render_data)
-                    # print("line")
+        elif render_type == "line":
+            tracker.render_line(render_data)
+            print("line")
 
-                if render_prop.hq_render_shadow:
-                    tracker.render_shadow(render_data)
-                    # print("shadow")
+        elif render_type == "shadow":
+            tracker.render_shadow(render_data)
+            print("shadow")
 
-                if render_prop.hq_render_texture:
-                    tracker.render_texture(render_data)
-                    # print("texture")
+        elif render_type == "texture":
+            tracker.render_texture(render_data)
+            print("texture")
 
         progress_prop = bpy.context.window_manager.progress_prop
-        _, scene = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
