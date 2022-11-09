@@ -601,7 +601,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                     self.prepare_temp_scene(scene, render_type="shadow")
 
                 if render_prop.hq_render_texture:
-                    tracker.render_texture(scene.name)
+                    tracker.render_texture(scene.name, bpy.data.filepath)
                     self.prepare_temp_scene(scene, render_type="texture")
 
         progress_prop.is_loaded = True
