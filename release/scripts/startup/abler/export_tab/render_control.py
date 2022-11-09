@@ -23,6 +23,7 @@ from ..lib import render, cameras
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
+import datetime
 from ..warning_modal import BlockingModalOperator
 
 
@@ -518,7 +519,9 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
     def post_render(self, dummy, dum):
         base_scene_name, scene, render_type = self.render_queue[0]
-        render_time = time() - self.render_start_time
+        render_time = str(
+            datetime.timedelta(seconds=round(time() - self.render_start_time))
+        )
         render_data = {
             "Scene": base_scene_name,
             "Filepath": bpy.data.filepath,
