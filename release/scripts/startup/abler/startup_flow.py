@@ -265,7 +265,7 @@ class Acon3dModalOperator(BlockingModalOperator):
 
     def after_close(self, context, event):
         if read_remembered_show_guide():
-            bpy.ops.acon3d.tutorial_guide_popup()
+            bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
 
 
 class NamedException(Exception):
