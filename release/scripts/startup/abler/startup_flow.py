@@ -265,6 +265,8 @@ class Acon3dModalOperator(BlockingModalOperator):
 
     def after_close(self, context, event):
         if read_remembered_show_guide():
+            # 버튼을 누를 때만 믹스패널의 tracker.tutorial_guide_on을 실행하기 위해
+            # 에이블러 첫 실행시 가이드는 wm 오퍼레이터를 직접 실행
             bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
 
 
