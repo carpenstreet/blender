@@ -314,7 +314,6 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
             self.filepath = self.basename
 
     def execute(self, context):
-        print(self.filepath)
         if not os.path.isdir(self.filepath) and os.path.isfile(self.filepath):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
