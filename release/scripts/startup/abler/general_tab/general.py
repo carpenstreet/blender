@@ -369,6 +369,9 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(
         default="*.blend;*.fbx;*.skp", options={"HIDDEN"}
     )
+    import_lookatme: bpy.props.BoolProperty(
+        default=False,
+    )
 
     def draw(self, context):
         layout = self.layout
@@ -380,6 +383,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         row.label(text="ㅁ FBX File (.fbx)")
         row = layout.row()
         row.label(text="ㅁ Blender File (.blend)")
+        row = layout.row()
+        row.prop(self, "import_lookatme", text="Import always face camera")
 
     def execute(self, context):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
@@ -396,7 +401,9 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
             # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
             # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
-            bpy.ops.acon3d.import_skp_op(filepath=path)
+            bpy.ops.acon3d.import_skp_op(
+                filepath=path, import_lookatme=self.import_lookatme
+            )
 
         return {"FINISHED"}
 
@@ -569,12 +576,14 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
+    import_lookatme: bpy.props.BoolProperty(default=False)
 
     def execute(self, context):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
             # TODO: 이곳에 완성된 skp importer 관련 함수가 들어갈 예정
+            # bpy.ops.acon3d.import_skp(filepath=self.filepath, import_lookatme=self.import_lookatme)
             pass
         except Exception as e:
             tracker.import_skp_fail()
