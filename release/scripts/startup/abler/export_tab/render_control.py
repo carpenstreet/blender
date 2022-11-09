@@ -588,20 +588,22 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
             if s_col.is_render_selected and s_col.name in bpy.data.scenes:
                 scene = bpy.data.scenes[s_col.name]
 
+                render_data = {"Scene": scene.name, "Filepath": bpy.data.filepath}
+
                 if render_prop.hq_render_full:
-                    tracker.render_full()
+                    tracker.render_full(render_data)
                     self.prepare_temp_scene(scene, render_type="full")
 
                 if render_prop.hq_render_line:
-                    tracker.render_line()
+                    tracker.render_line(render_data)
                     self.prepare_temp_scene(scene, render_type="line")
 
                 if render_prop.hq_render_shadow:
-                    tracker.render_shadow()
+                    tracker.render_shadow(render_data)
                     self.prepare_temp_scene(scene, render_type="shadow")
 
                 if render_prop.hq_render_texture:
-                    tracker.render_texture(scene.name, bpy.data.filepath)
+                    tracker.render_texture(render_data)
                     self.prepare_temp_scene(scene, render_type="texture")
 
         progress_prop.is_loaded = True

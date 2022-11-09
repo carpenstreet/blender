@@ -165,17 +165,17 @@ class Tracker(metaclass=ABCMeta):
     def render_quick(self):
         self._track(EventKind.render_quick.value)
 
-    def render_full(self):
-        self._track(EventKind.render_full.value)
+    def render_full(self, data):
+        self._track(EventKind.render_full.value, data)
 
-    def render_line(self):
-        self._track(EventKind.render_line.value)
+    def render_line(self, data):
+        self._track(EventKind.render_line.value, data)
 
-    def render_shadow(self):
-        self._track(EventKind.render_shadow.value)
+    def render_shadow(self, data):
+        self._track(EventKind.render_shadow.value, data)
 
-    def render_texture(self, name, filepath):
-        self._track(EventKind.render_texture.value, {"name": name, "filepath": filepath})
+    def render_texture(self, data):
+        self._track(EventKind.render_texture.value, data)
 
     def render_all_scenes(self):
         self._track(EventKind.render_all_scenes.value)
