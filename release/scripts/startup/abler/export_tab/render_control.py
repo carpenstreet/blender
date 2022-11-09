@@ -348,7 +348,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             elif self.rendering is False:
 
-                name_item, qitem = self.render_queue[0]
+                name_item, qitem, _ = self.render_queue[0]
                 if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
@@ -506,7 +506,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
     def pre_render(self, dummy, dum):
         super().pre_render(dummy, dum)
-        _, scene = self.render_queue[0]
+        _, scene, _ = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
@@ -514,6 +514,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
             info.status = "in progress"
 
     def post_render(self, dummy, dum):
+        base_scene_name, scene, render_type = self.render_queue[0]
         render_prop = bpy.context.window_manager.ACON_prop
         scene = bpy.context.scene
         render_data = {"Scene": scene.name, "Filepath": bpy.data.filepath}
@@ -558,7 +559,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
         # 렌더를 위한 씬 이름을 폴더명으로 설정하기 위한 queue에 추가
-        self.render_queue.append((base_scene.name, scene))
+        self.render_queue.append((base_scene.name, scene, render_type))
 
         self.temp_scenes.append(scene)
 
