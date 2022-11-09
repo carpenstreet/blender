@@ -78,7 +78,6 @@ class Acon3dCameraViewOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.camera_view"
     bl_label = "Camera View"
-    bl_description = "Fit render region to viewport."
     bl_translation_context = "*"
     bl_options = {"REGISTER", "UNDO"}
 
@@ -152,8 +151,6 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator):
 
 class Acon3dRenderOperator(bpy.types.Operator):
 
-    filename_ext = ".png"
-    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
     show_on_completion: bpy.props.BoolProperty(
         name="Show in folder on completion", default=True
     )
@@ -227,6 +224,9 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
     bl_description = "Take a snapshot of the active viewport"
     bl_translation_context = "*"
 
+    filename_ext = ".png"
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+
     def __init__(self):
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
@@ -296,6 +296,8 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
 class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
     # Render Type : High Quality, Snip
 
+    filter_glob: bpy.props.StringProperty(default="Folders", options={"HIDDEN"})
+
     def __init__(self):
         # Get basename without file extension
         self.filepath = bpy.context.blend_data.filepath
@@ -310,6 +312,17 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
                 self.basename = ".".join(self.basename.split(".")[:-1])
 
             self.filepath = self.basename
+
+    def execute(self, context):
+        print(self.filepath)
+        if not os.path.isdir(self.filepath) and os.path.isfile(self.filepath):
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="File Select Error",
+                message_1="No selected file.",
+            )
+            return {"FINISHED"}
+        return super().execute(context)
 
     def render_handler(self):
         progress_prop = bpy.context.window_manager.progress_prop
@@ -487,11 +500,10 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
 
 class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
-    """Render according to the set pixel"""
+    """Render with high quality according to the set pixel"""
 
     bl_idname = "acon3d.render_high_quality"
     bl_label = "Render Selected Scenes"
-    bl_description = "Render with high quality according to the set pixel"
     bl_translation_context = "*"
 
     # 렌더를 위해 임시로 만들어진 scene list
