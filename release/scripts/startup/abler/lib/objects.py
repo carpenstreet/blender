@@ -6,13 +6,13 @@ from .tracker import tracker
 
 
 def toggle_constraint_to_camera(self, context):
-    if obj := context.object:
-        if obj.ACON_prop.constraint_to_camera_rotation_z:
-            tracker.look_at_me()
+    obj = context.object
+    if obj.ACON_prop.constraint_to_camera_rotation_z:
+        tracker.look_at_me()
 
-        cameras.make_sure_camera_exists()
+    cameras.make_sure_camera_exists()
 
-        set_constraint_to_camera_by_object(obj, context)
+    set_constraint_to_camera_by_object(obj, context)
 
 
 # items should be a global variable due to a bug in EnumProperty
