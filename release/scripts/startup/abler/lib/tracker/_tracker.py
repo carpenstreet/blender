@@ -49,6 +49,7 @@ class EventKind(enum.Enum):
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
     group_navigate_up = "Group Navigate Up"
+    tutorial_guide_on = "Quick Start Guide On"
 
 
 def accumulate(interval=0):
@@ -266,6 +267,9 @@ class Tracker(metaclass=ABCMeta):
 
     def group_navigate_up(self):
         self._track(EventKind.group_navigate_up.value)
+
+    def tutorial_guide_on(self):
+        self._track(EventKind.tutorial_guide_on.value)
 
 
 class DummyTracker(Tracker):
