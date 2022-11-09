@@ -75,6 +75,8 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     bl_translation_context = "abler"
 
     def execute(self, context):
+        tracker.tutorial_guide_on()
+
         userInfo = bpy.data.meshes.get("ACON_userInfo")
         prop = userInfo.ACON_prop
         prop.show_guide = read_remembered_show_guide()
