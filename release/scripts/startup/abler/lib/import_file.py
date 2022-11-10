@@ -14,15 +14,33 @@ class AconImportHelper(ImportHelper):
         """
         path = self.filepath
         path_ext = path.rsplit(".")[-1]
-        # TODO: skp와 fbx importer addon을 켜주는 로직이 들어가야함.
-        # 관련논의 https://github.com/ACON3D/blender/pull/204#discussion_r1015118626
-        # 관련논의2 https://github.com/ACON3D/blender/pull/204#discussion_r1015125268
-        if path_ext not in accepted or not os.path.isfile(path):
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="File Select Error",
-                message_1="No selected file.",
-            )
+        if path_ext in accepted and os.path.isfile(path):
+            return self.turn_on_addon(ext=path_ext, accepted=accepted)
+        bpy.ops.acon3d.alert(
+            "INVOKE_DEFAULT",
+            title="File Select Error",
+            message_1="No selected file.",
+        )
+        return False
+
+    @staticmethod
+    def turn_on_addon(ext: str, accepted: list[str]) -> bool:
+        """
+        :param ext: 켜줄 extension
+        :param accepted: 허용할 extension 리스트
+        """
+        # 지원하지 않는 확장자이면 False 를 리턴
+        if ext not in accepted:
+            return False
+        try:
+            if ext == "fbx":
+                bpy.ops.preferences.addon_enable(module="io_scene_fbx")
+            elif ext == "skp":
+                bpy.ops.preferences.addon_enable(module="io_skp")
+        except Exception as e:
+            print(e)
+            # 뭔가 오류가 있어서 켜지지 않으면 False 리턴
             return False
         else:
+            # 잘 되는 경우는 True 리턴
             return True
