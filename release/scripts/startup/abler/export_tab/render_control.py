@@ -520,12 +520,22 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         self.render_start_time = time()
 
         super().pre_render(dummy, dum)
-        _, scene, _ = self.render_queue[0]
+        _, scene, render_type = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
         if info:
             info.status = "in progress"
+
+        # bpy.data.materials가 전체 씬에 대해 적용되기 때문에
+        # 렌더 씬마다 적용하기 위해 재질의 상태를 렌더하기 전 pre_render에서 적용
+        if render_type != "full":
+            for mat in bpy.data.materials:  # scene
+                mat.blend_method = "OPAQUE"
+                mat.shadow_method = "OPAQUE"
+                if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
+                    toonNode.inputs[1].default_value = 0
+                    toonNode.inputs[3].default_value = 1
 
     def post_render(self, dummy, dum):
         base_scene_name, scene, render_type = self.render_queue[0]
@@ -585,13 +595,6 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         scene_info = bpy.context.window_manager.progress_prop.render_scene_infos.add()
         scene_info.render_scene_name = scene.name
         scene_info.status = "waiting"
-
-        for mat in bpy.data.materials:
-            mat.blend_method = "OPAQUE"
-            mat.shadow_method = "OPAQUE"
-            if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
-                toonNode.inputs[1].default_value = 0
-                toonNode.inputs[3].default_value = 1
 
         prop = scene.ACON_prop
         if render_type == "line":
