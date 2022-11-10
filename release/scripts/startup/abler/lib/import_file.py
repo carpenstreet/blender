@@ -15,7 +15,7 @@ class AconImportHelper(ImportHelper):
         path = self.filepath
         path_ext = path.rsplit(".")[-1]
         if path_ext in accepted and os.path.isfile(path):
-            return self.turn_on_addon(ext=path_ext, accepted=accepted)
+            return self._turn_on_addon(ext=path_ext, accepted=accepted)
         bpy.ops.acon3d.alert(
             "INVOKE_DEFAULT",
             title="File Select Error",
@@ -24,7 +24,7 @@ class AconImportHelper(ImportHelper):
         return False
 
     @staticmethod
-    def turn_on_addon(ext: str, accepted: list[str]) -> bool:
+    def _turn_on_addon(ext: str, accepted: list[str]) -> bool:
         """
         :param ext: 켜줄 extension
         :param accepted: 허용할 extension 리스트
