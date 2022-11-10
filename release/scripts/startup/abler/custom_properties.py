@@ -23,7 +23,7 @@ from .lib import scenes, cameras, shadow, objects, bloom, version
 from .lib.layers import get_first_layer_name_of_object
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
-from . import object_control
+from .scene_tab import object_control
 
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
