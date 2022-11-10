@@ -623,10 +623,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row = layout.row()
         row.operator("acon3d.fly_mode")
 
-        row = layout.row()
-        row.scale_y = 1.0
-        row.operator("acon3d.import_fbx", text="Import FBX")
-
 
 class ApplyToonStyleOperator(bpy.types.Operator):
     """Apply Toon Style"""
