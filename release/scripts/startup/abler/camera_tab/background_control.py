@@ -32,6 +32,7 @@ bl_info = {
 
 import bpy
 from ..lib import cameras
+from ..lib.file_view import file_view_title
 from ..lib.import_file import AconImportHelper
 
 
@@ -110,6 +111,10 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
     image_extension = "*.png;*.jpg;"
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
+
+    def invoke(self, context, event):
+        with file_view_title("BACKGROUND"):
+            return super().invoke(context, event)
 
     def execute(self, context):
         if not self.check_path(accepted=["png", "jpg"]):

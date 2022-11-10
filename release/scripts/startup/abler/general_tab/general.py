@@ -35,6 +35,7 @@ from datetime import datetime, timedelta
 import bpy
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import scenes
+from ..lib.file_view import file_view_title
 from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
@@ -224,6 +225,10 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
 
+    def invoke(self, context, event):
+        with file_view_title("OPEN"):
+            return super().invoke(context, event)
+
     def execute(self, context):
         if not self.check_path(accepted=["blend"]):
             return {"FINISHED"}
@@ -295,11 +300,12 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
     # 파일이 최초 저장될 때는 invoke()를 활용해서 파일 브라우저에서 파일명을 관리를 해야하지만,
     # 파일이 이미 저장된 상태일 때는 invoke()를 넘어가고 바로 execute()를 실행해야 합니다.
     def invoke(self, context, event):
-        if bpy.data.is_saved:
-            return self.execute(context)
+        with file_view_title("SAVE"):
+            if bpy.data.is_saved:
+                return self.execute(context)
 
-        else:
-            return ExportHelper.invoke(self, context, event)
+            else:
+                return ExportHelper.invoke(self, context, event)
 
     def execute(self, context):
         try:
@@ -339,6 +345,10 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
     bl_translation_context = "abler"
 
     filename_ext = ".blend"
+
+    def invoke(self, context, event):
+        with file_view_title("SAVE_AS"):
+            return super().invoke(context, event)
 
     def execute(self, context):
         try:
@@ -383,6 +393,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         row = layout.row()
         row.label(text="ㅁ Blender File (.blend)")
 
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
+
     def execute(self, context):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
             return {"FINISHED"}
@@ -415,6 +429,10 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
     class SameFileImportError(Exception):
         def __init__(self):
             super().__init__()
+
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
 
     def execute(self, context):
         try:
@@ -514,6 +532,10 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
 
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
+
     def execute(self, context):
         if not self.check_path(accepted=["fbx"]):
             return {"FINISHED"}
@@ -571,6 +593,10 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
+
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
 
     def execute(self, context):
         if not self.check_path(accepted=["skp"]):

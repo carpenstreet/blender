@@ -1171,6 +1171,21 @@ extern struct CLG_LogRef *WM_LOG_TOOLS;
 extern struct CLG_LogRef *WM_LOG_MSGBUS_PUB;
 extern struct CLG_LogRef *WM_LOG_MSGBUS_SUB;
 
+
+/* ABLER specific */
+typedef enum abler_fileViewTitle {
+  FILE_VIEW_TITLE_DEFAULT = 0,
+  FILE_VIEW_TITLE_OPEN = 1,
+  FILE_VIEW_TITLE_IMPORT = 2,
+  FILE_VIEW_TITLE_SAVE = 3,
+  FILE_VIEW_TITLE_SAVE_AS = 4,
+  FILE_VIEW_TITLE_BACKGROUND = 5,
+  FILE_VIEW_TITLE_SAVE_AND_RENDER = 6,
+  FILE_VIEW_TITLE_RENDER = 7
+} abler_fileViewTitle;
+void WM_set_abler_fileViewTitle(int value);
+int WM_get_abler_fileViewTitle(void);
+
 #ifdef __cplusplus
 }
 #endif
