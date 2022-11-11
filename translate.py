@@ -45,19 +45,40 @@ def match_po_with_csv(csvfile: str, pofile: str):
             count = 0
 
             # msgctxt가 없는 애를 pass
+
+            big_list = []
+            small_list = []
+            count = 0
             for line in po_file:
-                if line.startswith("msgid"):
-                    msgid = line.split('"')[1]
-                    if msgid in csv_dict:
-                        msg_to_check = csv_dict[msgid]
-                elif line.startswith("msgstr") and msg_to_check:
-                    msgstr = line.split('"')[1]
-                    if msgstr != msg_to_check:
-                        print(
-                            f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다."
-                        )
-                        count += 1
-                    msg_to_check = None
+                if line == "\n":
+                    count += 1
+                else:
+                    small_list.append(line[:-2])
+                
+                if count == 2:
+                    big_list.append(small_list)
+                    count = 0
+                    small_list = []
+                
+            print(big_list)
+                
+
+
+
+
+
+                # if line.startswith("msgid"):
+                #     msgid = line.split('"')[1]
+                #     if msgid in csv_dict:
+                #         msg_to_check = csv_dict[msgid]
+                # elif line.startswith("msgstr") and msg_to_check:
+                #     msgstr = line.split('"')[1]
+                #     if msgstr != msg_to_check:
+                #         print(
+                #             f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다."
+                #         )
+                #         count += 1
+                #     msg_to_check = None
             print(f"total {count} mismatch")
 
 
