@@ -44,33 +44,33 @@ def match_po_with_csv(csvfile: str, pofile: str):
             msg_to_check = None
             err_count = 0
 
-            big_list = []
-            small_list = []
+            trans_body_all = []
+            trans_body = []
             lst_count = 0
             for line in po_file:
                 if line == "\n":
                     lst_count += 1
                 else:
-                    small_list.append(line[:-1])
+                    trans_body.append(line[:-1])
                 
                 # 띄어쓰기 2번이면 다른 번역 영역으로 간주
                 if lst_count == 2:
-                    big_list.append(small_list)
+                    trans_body_all.append(trans_body)
                     lst_count = 0
-                    small_list = []
+                    trans_body = []
 
-            for big_line in big_list:
+            for trans_item in trans_body_all:
 
                 # 'msgctxt "abler"'가 아니면 pass
-                if not big_line[0].startswith('msgctxt "abler"'):
+                if not trans_item[0].startswith('msgctxt "abler"'):
                     continue
 
-                if big_line[1].startswith("msgid"):
-                    msgid = big_line[1].split('"')[1]
+                if trans_item[1].startswith("msgid"):
+                    msgid = trans_item[1].split('"')[1]
                     if msgid in csv_dict:
                         msg_to_check = csv_dict[msgid]
-                if big_line[2].startswith("msgstr") and msg_to_check:
-                    msgstr = big_line[2].split('"')[1]
+                if trans_item[2].startswith("msgstr") and msg_to_check:
+                    msgstr = trans_item[2].split('"')[1]
                     if msgstr != msg_to_check:
                         print(f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다.")
                         err_count += 1
