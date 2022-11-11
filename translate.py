@@ -2,20 +2,31 @@ import csv
 
 
 def csv2po(filepath: str, outfile: str):
+
+    # csv_reader를 enumerate하고나면 csv_reader가 비어버림
+    # csv_dict용으로 따로 읽어야함
     with open(filepath, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
         csv_dict = {row[0]: row[1] for row in csv_reader}
-        # csv가 잘못된 경우를 확인
 
+    with open(filepath, "r") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",")
+        count = 0
         with open(outfile, "w") as po_file:
             for i, row in enumerate(csv_reader):
                 if i == 0:
                     continue
                 if row[0] == row[1]:
                     continue
+                # csv가 잘못된 경우를 확인
+                if csv_dict[row[0]] != row[1]:
+                    print(f"csv file의 '{row[0]}'가 중복으로 들어가 있습니다.")
+                    count += 1
                 po_file.write(f'msgctxt "abler"\n')
                 po_file.write(f'msgid "{row[0]}"\n')
                 po_file.write(f'msgstr "{row[1]}"\n\n\n')
+        
+        print(f"total {count} mismatch")
 
 
 # ko.po file 검수용
