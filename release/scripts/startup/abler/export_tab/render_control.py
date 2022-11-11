@@ -512,6 +512,23 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def __init__(self):
         super().__init__()
 
+    def draw(self, context):
+        layout = self.layout
+        box = layout.box()
+        box.scale_y = 0.5
+        box.use_property_split = True
+        box.use_property_decorate = False
+        box.label(
+            icon="ERROR",
+            text="Please select the path in",
+        )
+        box.label(
+            text="which the rendered images",
+        )
+        box.label(
+            text="will be saved.",
+        )
+
     def invoke(self, context, event):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         return super().invoke(context, event)
