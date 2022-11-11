@@ -16,12 +16,16 @@ def csv2po(filepath: str, outfile: str):
             for i, row in enumerate(csv_reader):
                 if i == 0:
                     continue
+
+                # msg도 영어로 들어가 번역이 필요 없는 경우
                 if row[0] == row[1]:
                     continue
-                # csv가 잘못된 경우를 확인
+
+                # 중복인데 msgid와 msg가 다른 경우
                 if csv_dict[row[0]] != row[1]:
                     print(f"csv file의 '{row[0]}'가 중복으로 들어가 있습니다.")
                     count += 1
+                
                 po_file.write(f'msgctxt "abler"\n')
                 po_file.write(f'msgid "{row[0]}"\n')
                 po_file.write(f'msgstr "{row[1]}"\n\n\n')
