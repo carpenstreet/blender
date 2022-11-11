@@ -8,6 +8,8 @@ def csv2po(filepath: str, outfile: str):
             for i, row in enumerate(csv_reader):
                 if i == 0:
                     continue
+                if row[0] == row[1]:
+                    continue
                 po_file.write(f'msgctxt "abler"\n')
                 po_file.write(f'msgid "{row[0]}"\n')
                 po_file.write(f'msgstr "{row[1]}"\n\n\n')
