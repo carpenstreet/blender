@@ -383,8 +383,10 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         row.label(text="ㅁ FBX File (.fbx)")
         row = layout.row()
         row.label(text="ㅁ Blender File (.blend)")
-        row = layout.row()
-        row.prop(self, "import_lookatme", text="Import always face camera")
+        path_ext = self.filepath.rsplit(".")[-1]
+        if path_ext == "skp":
+            row = layout.row()
+            row.prop(self, "import_lookatme", text="Import always face camera")
 
     def execute(self, context):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
