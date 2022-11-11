@@ -5852,6 +5852,7 @@ void uiTemplateProgressBar(uiLayout *layout, bContext *C, const float progress)
                                                                           NULL);
 
     but_progress->progress = progress;
+    UI_but_func_tooltip_set(&but_progress->but, progress_tooltip_func, tip_arg, MEM_freeN);
   }
 }
 
