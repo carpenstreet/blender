@@ -42,44 +42,41 @@ def match_po_with_csv(csvfile: str, pofile: str):
             csv_reader = csv.reader(csv_file, delimiter=",")
             csv_dict = {row[0]: row[1] for row in csv_reader}
             msg_to_check = None
-            count = 0
-
-            # msgctxt가 없는 애를 pass
+            err_count = 0
 
             big_list = []
             small_list = []
-            count = 0
+            lst_count = 0
             for line in po_file:
                 if line == "\n":
-                    count += 1
+                    lst_count += 1
                 else:
-                    small_list.append(line[:-2])
+                    small_list.append(line[:-1])
                 
-                if count == 2:
+                # 띄어쓰기 2번이면 다른 번역 영역으로 간주
+                if lst_count == 2:
                     big_list.append(small_list)
-                    count = 0
+                    lst_count = 0
                     small_list = []
-                
-            print(big_list)
-                
 
+            for big_line in big_list:
 
+                # 'msgctxt "abler"'가 아니면 pass
+                if not big_line[0].startswith('msgctxt "abler"'):
+                    continue
 
-
-
-                # if line.startswith("msgid"):
-                #     msgid = line.split('"')[1]
-                #     if msgid in csv_dict:
-                #         msg_to_check = csv_dict[msgid]
-                # elif line.startswith("msgstr") and msg_to_check:
-                #     msgstr = line.split('"')[1]
-                #     if msgstr != msg_to_check:
-                #         print(
-                #             f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다."
-                #         )
-                #         count += 1
-                #     msg_to_check = None
-            print(f"total {count} mismatch")
+                if big_line[1].startswith("msgid"):
+                    msgid = big_line[1].split('"')[1]
+                    if msgid in csv_dict:
+                        msg_to_check = csv_dict[msgid]
+                if big_line[2].startswith("msgstr") and msg_to_check:
+                    msgstr = big_line[2].split('"')[1]
+                    if msgstr != msg_to_check:
+                        print(f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다.")
+                        err_count += 1
+                    msg_to_check = None
+        
+            print(f"total {err_count} mismatch")
 
 
 if __name__ == "__main__":
