@@ -383,8 +383,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         row.label(text="ㅁ FBX File (.fbx)")
         row = layout.row()
         row.label(text="ㅁ Blender File (.blend)")
-        path_ext = self.filepath.rsplit(".")[-1]
-        if path_ext == "skp":
+        self.path_ext = self.filepath.rsplit(".")[-1]
+        if self.path_ext == "skp":
             row = layout.row()
             row.prop(self, "import_lookatme", text="Import always face camera")
 
@@ -392,14 +392,11 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["blend", "fbx", "skp"]):
             return {"FINISHED"}
 
-        path = self.filepath
-        path_ext = path.rsplit(".")[-1]
-
-        if path_ext == "blend":
+        if self.path_ext == "blend":
             bpy.ops.acon3d.import_blend(filepath=path)
-        elif path_ext == "fbx":
+        elif self.path_ext == "fbx":
             bpy.ops.acon3d.import_fbx(filepath=path)
-        elif path_ext == "skp":
+        elif self.path_ext == "skp":
             # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
             # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
             # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
