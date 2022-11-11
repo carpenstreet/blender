@@ -378,11 +378,11 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         row = layout.row()
         row.label(text="Import files onto the viewport.")
         row = layout.row()
-        row.label(text="ㅁ Sketchup File (.skp)")
+        row.label(text="- Sketchup File (.skp)")
         row = layout.row()
-        row.label(text="ㅁ FBX File (.fbx)")
+        row.label(text="- FBX File (.fbx)")
         row = layout.row()
-        row.label(text="ㅁ Blender File (.blend)")
+        row.label(text="- Blender File (.blend)")
         self.path_ext = self.filepath.rsplit(".")[-1]
         if self.path_ext == "skp":
             row = layout.row()
