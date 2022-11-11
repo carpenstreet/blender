@@ -4,6 +4,9 @@ import csv
 def csv2po(filepath: str, outfile: str):
     with open(filepath, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
+        csv_dict = {row[0]: row[1] for row in csv_reader}
+        # csv가 잘못된 경우를 확인
+
         with open(outfile, "w") as po_file:
             for i, row in enumerate(csv_reader):
                 if i == 0:
@@ -15,7 +18,7 @@ def csv2po(filepath: str, outfile: str):
                 po_file.write(f'msgstr "{row[1]}"\n\n\n')
 
 
-# po file 검수용
+# ko.po file 검수용
 def match_po_with_csv(csvfile: str, pofile: str):
     with open(pofile, "r") as po_file:
         with open(csvfile, "r") as csv_file:
@@ -23,6 +26,8 @@ def match_po_with_csv(csvfile: str, pofile: str):
             csv_dict = {row[0]: row[1] for row in csv_reader}
             msg_to_check = None
             count = 0
+
+            # msgctxt가 없는 애를 pass
             for line in po_file:
                 if line.startswith("msgid"):
                     msgid = line.split('"')[1]
