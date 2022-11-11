@@ -393,15 +393,15 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
             return {"FINISHED"}
 
         if self.path_ext == "blend":
-            bpy.ops.acon3d.import_blend(filepath=path)
+            bpy.ops.acon3d.import_blend(filepath=self.filepath)
         elif self.path_ext == "fbx":
-            bpy.ops.acon3d.import_fbx(filepath=path)
+            bpy.ops.acon3d.import_fbx(filepath=self.filepath)
         elif self.path_ext == "skp":
             # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
             # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
             # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
             bpy.ops.acon3d.import_skp_op(
-                filepath=path, import_lookatme=self.import_lookatme
+                filepath=self.filepath, import_lookatme=self.import_lookatme
             )
 
         return {"FINISHED"}
