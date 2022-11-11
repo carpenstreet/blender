@@ -1,0 +1,235 @@
+msgid(TO-BE),msg (KO)
+Quick Start Guide,조작 튜토리얼 보기
+Show tutorial guide,튜토리얼 가이드를 엽니다
+Open,열기
+Open new file,새로운 파일을 엽니다
+Import,가져오기
+"Import file according to the current settings (.skp, .fbx, .blend)","현재 설정에 맞추어 파일을 가져옵니다 (.skp 파일, .fbx 파일, .blend 파일)"
+OK,OK
+Finish importing file,가져오기를 완료합니다
+Save,저장
+Save the current Blender file,현재 블렌더 파일을 저장합니다
+Save As...,다른 이름으로 저장
+Save the current file in the desired location,다른 이름으로 현재 파일을 저장합니다
+Language,언어
+Language used for translation,에이블러의 언어를 설정합니다
+Automatic (Automatic),자동 (자동)
+"Automatically choose system's defined language if available, or fall back to English","자동으로 OS 언어로 설정되거나, 기본 언어인 영어로 설정됩니다"
+English (English),영어 (English)
+en_US,en_US
+Korean (한국어),한국어 (한국어)
+ko_KR,ko_KR
+Japanese (日本語),일본어 (日本語)
+ja_JP,ja_JP
+Fly with WASD (shift + `),플라이 모드 (WASD)
+"Move around the scene using WASD, QE, and mouse like FPS games",Scene 을 WASD 키를 이용해서 움직입니다
+Transparent Window,윈도우 창 투명화
+Change window transparency,창 투명도를 조절합니다
+Transparency,투명도
+Change window transparency,창 투명도를 조절합니다
+Camera Control,카메라 설정
+Focal Length,초점 거리
+Adjust perspective camera lens value in millimeters (Range: 1~5000),"초점의 길이가 짧아지면 촬영 범위가 넓어지고, 길어지면 촬영 범위가 좁아지며 피사체는 커지게 됩니다 (범위: 1~5000)"
+Depth of Field,피사계심도 (DOF)
+Blur objects at a certain distance using the values set below,아래에 설정된 값들을 이용해 특정 거리에 있는 물체들을 흐리게 합니다
+Focus on Object,오브젝트에 초점
+Use this object to define the depth of field focal point,스포이드로 선택한 오브젝트에 초점을 맞춥니다. 해제하려면 우측의 X표시를 눌러주세요
+Object Picker,오브젝트 피커
+Select object to focus on,초점이 될 오브젝트를 선택합니다
+Focus Distance,초점 거리
+Adjust distance to the focus point for depth of field,피사계심도를 적용할 거리를 조절합니다
+F-stop,F-stop
+"Adjust F-stop ratio (lower numbers give more defocus, higher numbers give a sharper image)","조리개 조정을 통해, 아웃포커스 정도를 조정합니다. 낮을수록 흐려집니다"
+Background,배경
+Background Color,배경 색상
+Change background color of viewport,뷰포트의 배경 색을 변경합니다
+Background Images,배경 이미지
+Add Image,이미지 추가
+Add a new background image,새 배경 이미지를 추가합니다
+Not Set,선택되지 않음
+Remove background image,삭제
+Remove current background image,현재 배경 이미지를 삭제합니다
+Default Image,기본 이미지
+Open default background image,기본 배경 이미지를 엽니다
+Custom Image,사용자 이미지
+Open custom background image,사용자 디렉토리에서 배경 이미지를 찾습니다
+Opacity,불투명도
+Adjust image opacity to blend the image against the background color,배경 이미지의 투명도를 조절합니다
+Back,뒤
+Display image under or over everything: Back,배경 이미지를 모델 뒤에 배치합니다
+Front,앞
+Display image under or over everything: Front,배경 이미지를 모델 앞에 배치합니다
+Stretch,늘이기
+Select how image fits in the camera frame: Stretch,배경 이미지를 늘여 카메라 영역을 채웁니다
+Fit,맞추기
+Select how image fits in the camera frame: Fit,배경 이미지를 카메라 영역에 맞춥니다
+Crop,자르기
+Select how image fits in the camera frame: Crop,배경 이미지를 잘라서 카메라 영역에 맞춥니다
+Offset,오프셋
+Move image according to x-axis and y-axis,이미지를 x축과 y축 방향으로 이동합니다
+Rotation,회전
+Rotate background image,배경 이미지를 회전시킵니다
+Scale,크기
+Scale background image,배경 이미지의 크기를 조정합니다
+Flip,뒤집기
+Flip_X-axis,좌우 반전
+Flip the background image horizontally,배경 이미지를 좌우로 반전시킵니다
+Flip_Y-axis,상하 반전
+Flip the background image vertically,배경 이미지를 상하로 반전시킵니다
+Scenes,씬
+Scenes,씬
+Click to apply scene and double click to rename,"클릭 시 씬이 적용되며, 더블클릭 시 이름을 변경합니다"
+Add New Scene,씬 추가
+Create a new scene with current viewport,현재 뷰포트에 새로운 씬을 추가합니다
+Name,이름
+Write scene name,씬 이름을 입력합니다
+Preset,프리셋
+Select scene preset,프리셋을 선택합니다
+Remove scene,씬 삭제
+Remove current scene from this file,파일 내에서 현재 씬을 지웁니다
+Object Control,오브젝트 설정
+Look At Me,나만 바라보기
+Set object to look camera,선택한 오브젝트가 카메라를 바라보게 합니다
+Group Navigation,그룹 내비게이션
+No selected object,선택된 오브젝트가 없습니다
+Object Name,오브젝트 이름
+$(Object name),$(오브젝트 이름)
+Top Group,최상위 그룹
+Move to top group,최상위 그룹으로 이동합니다
+Upper Group,상위 그룹
+Move to upper group,상위 그룹으로 이동합니다
+Lower Group,하위 그룹
+Move to lower group,하위 그룹으로 이동합니다
+Bottom Group,최하위 그룹
+Move to bottom group/object,최하위 그룹으로 이동합니다
+Layer Exclude,레이어 보이기/숨기기
+Choose if the objects in the current layer visible in the viewport or not,선택된 레이어 내의 오브젝트를 보여주거나 숨깁니다
+Layer Lock,레이어 잠금
+Choose if the objects in the current layer lock in the viewport or not,선택된 레이어 내의 오브젝트를 잠급니다
+Style Preset,스타일 프리셋
+Click to apply styles and double click to rename,"클릭 시 스타일 프리셋이 적용되며, 더블클릭 시 이름을 변경합니다"
+Create new style preset,스타일 프리셋을 생성합니다
+Delete selected style preset,선택한 프리셋을 영구적으로 삭제합니다
+Import new style preset file,새로운 프리셋 파일을 가져옵니다
+Export selected style preset,선택한 프리셋을 파일로 내보냅니다
+Texture,재질
+Express material texture,"체크 시, 면 재질이 표시됩니다"
+Line,선
+Express toon style line profile,모델의 선이 만화 스타일로 표현됩니다
+Min Line Width,선 굵기 (최소)
+Adjust the thickness of minimum depth edges (Range: 0 ~ 5),심도가 가장 낮은 선의 굵기를 조정합니다 (범위: 0 ~ 5)
+Max Line Width,선 굵기 (최대)
+Adjust the thickness of maximum depth edges (Range: 0 ~ 5),심도가 가장 높은 선의 굵기를 조정합니다 (범위: 0 ~ 5)
+Line Detail,선 디테일
+"Adjust amount of edges to be shown (Range: 0 ~ 20, Recommended: 1.2)","보여질 선의 양을 조정합니다 (범위: 0 ~ 20, 권장: 1.2)"
+Sunlight,태양광
+Express sunlight,"체크 시, 태양광이 표현됩니다"
+Strength,밝기
+Control the strength of sunlight (Range: 0 ~ 10),태양광의 밝기를 조정합니다 (범위: 0 ~ 10)
+Altitude,고도
+Adjust sun altitude,태양의 고도를 조정합니다
+Azimuth,방위각
+Adjust sun azimuth,태양의 방향(방위각)을 조정합니다
+Shadow / Shading,그림자 및 음영
+Express shadow and shading,"체크 시, 그림자 및 음영이 표현됩니다"
+Shadow,그림자
+Express shadow,"체크 시, 그림자가 표현됩니다"
+Toon Style Shading,만화 스타일
+Express toon style face,"체크 시, 모델의 면이 만화 스타일로 표현됩니다"
+Toon Color Depth,색 표현 수
+Change number of colors used for shading,만화스타일 음영 표현에 사용되는 색의 수를 조정합니다
+Brightness1,밝기 1
+Change shading brightness (Range: 0 ~ 10),음영 표현의 밝기를 조정합니다 (범위: 0 ~ 10)
+Brightness2,밝기 2
+Change shading brightness (Range: 0 ~ 10),음영 표현의 밝기를 조정합니다 (범위: 0 ~ 10)
+Object Properties,오브젝트 속성
+Exclude Shadow,그림자
+Exclude shadow of selected object,선택된 오브젝트의 그림자를 제외합니다
+Exclude Shading,음영
+Exclude shading of selected object,선택된 오브젝트의 음영을 제외합니다
+Exclude Line,윤곽선
+Exclude line of selected object,선택된 오브젝트의 선를 제외합니다
+Active Material List,선택 오브젝트의 재질 목록
+Click to select material or double click to rename,클릭하여 재질을 선택하거나 더블 클릭해서 이름을 변경합니다
+Material Type,재질 종류
+Select material type: $(material type),재질의 종류를 선택합니다: $(재질 종류)
+Material Type Strength,재질 종류의 강도
+Adjust material type strength (Range: 0 ~ 1),재질 종류의 강도를 설정합니다 (범위: 0 ~ 1)
+Material List,재질 목록
+See all material list included in the file,파일에 포함된 모든 재질을 확인합니다
+Search Material,재질 찾기
+Show name of selected material or search another material,현재 선택된 재질의 이름을 보여주거나 다른 재질을 선택합니다.
+Number of Users,재질 사용 횟수
+Display number of users of selected material (click to make a single-user copy),선택된 재질이 몇 번 사용되었는지 표시합니다 (클릭 시 선택한 재질을 복사합니다)
+Fake User,적용 오브젝트 없이 재질 저장
+Save material even if it has no users,"재질을 적용한 오브젝트가 없을 시에도, 재질을 저장합니다"
+Clone Material,재질 복사
+Copy selected material,선택한 재질을 복사합니다
+Bloom,블룸 효과
+Create a shining effect with high luminance pixels,블룸 효과를 적용합니다
+Threshold,임계값
+Filter out pixels under this level of brightness (Range: 0 ~ 10),블룸 효과의 임계값을 변경합니다. 임계값이 작을수록 빛이 더 많이 번집니다 (범위: 0 ~ 10)
+Knee,변곡점
+Make transition between under/over-threshold (Range: 0 ~ 1),임계값 전후의 값을 더 부드럽게 변화시킵니다 (범위: 0 ~ 1)
+Radius,반경
+Adjust spreading distance of bloom effect (Range: 0 ~ 10),블룸 효과가 퍼지는 거리를 조정합니다 (범위: 0 ~ 10)
+Color,색상
+Select color of bloom effect,블룸 효과에 적용될 색상을 선택합니다
+Intensity,강도
+Change bloom intensity (Range: 0 ~ 1),블룸 효과의 강도를 조정합니다 (범위: 0 ~ 1)
+Clamp,클램프
+Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000),블룸 효과에서 각 픽셀이 가질 수 있는 최대 밝기를 조정합니다 (범위: 0 ~ 1000)
+Color Adjustment,색상 보정
+Brightness / Contrast,밝기 / 대비
+Brightness,밝기
+Adjust the overall brightness (Range:  1 ~ 1),전반적인 밝기를 조정합니다 (범위:  1 ~ 1)
+Contrast,대비
+Adjust the overall contrast (Range:  1 ~ 1),전반적인 대비를 조정합니다 (범위:  1 ~ 1)
+Color Balance,색상 균형
+Red,레드
+Adjust color balance (Range: 0 ~ 2),색상 밸런스를 조정합니다 (범위: 0 ~ 2)
+Green,그린
+Adjust color balance (Range: 0 ~ 2),색상 밸런스를 조정합니다 (범위: 0 ~ 2)
+Blue,블루
+Adjust color balance (Range: 0 ~ 2),색상 밸런스를 조정합니다 (범위: 0 ~ 2)
+Hue / Saturation,색조 / 채도
+Hue / Saturation,색조
+Adjust hue (Range: 0 ~ 1),색조를 조정합니다 (범위: 0 ~ 1)
+Saturation,채도
+Adjust saturation (Range: 0 ~ 2),채도를 조정합니다 (범위: 0 ~ 2)
+Exposure,노출
+Exposure,노출
+Adjust the overall exposure and light up indoor space along with gamma (range:  10 ~ 10),"전반적인 노출을 조정하며, 감마와 함께 사방이 벽으로 막힌 실내에서 사용 가능합니다 (범위:  10 ~ 10)"
+Gamma,감마 교정
+Adjust the overall gamma value and light up indoor space along with exposure (range: 0 ~ 5),"전반적인 감마값을 교정하며, 노출과 함께 사방이 벽으로 막힌 실내에서 사용 가능합니다 (범위: 0 ~ 5)"
+High-Quality Render,고품질 렌더
+Camera View,렌더 영역 맞춤
+Fit render region to viewport,렌더 영역을 화면의 크기에 맞도록 조절합니다
+Resolution X,렌더 사이즈 X
+Set number of horizontal pixels in the rendered image,렌더된 이미지의 수평 픽셀의 수를 설정합니다
+Resolution Y,렌더 사이즈 Y
+Set number of vertical pixels in the rendered image,렌더된 이미지의 수직 픽셀의 수를 설정합니다
+Transparent Background,배경 투명도 적용
+Render with background transparency,배경 이미지에 적용된 투명도를 렌더 이미지에 적용합니다
+Full Render,전체 렌더
+Render according to the set pixel,설정한 픽셀에 맞추어 전체 이미지를 렌더합니다
+Texture Render,재질 렌더
+Render only textures according to the set pixel,설정한 픽셀에 맞추어 재질만 렌더합니다
+Line Render,선 렌더
+Render only lines according to the set pixel,설정한 픽셀에 맞추어 선만 렌더합니다
+Shadow Render,그림자 렌더
+Render only shadow according to the set pixel,설정한 픽셀에 맞추어 그림자만 렌더합니다
+Scene List,씬 리스트
+Select scene to render,렌더할 씬을 선택합니다
+Filtering Option (Spec Out),필터링 옵션
+Show / Hide filtering options,필터링 옵션을 표시합니다
+Filter by Name ,이름으로 검색
+Enter the name of item to search,찾으려는 항목의 이름을 검색합니다
+Invert Search,검색어 포함 여부
+Include or exclude search item entered,검색어 포함/미포함 검색 여부를 변경합니다
+Sort by Name,이름순 정렬
+Sort items by their name,이름 순으로 항목을 정렬합니다
+Reverse,순서 반전
+Reverse the order of shown items,항목의 순서를 반전시킵니다 (오름차순 / 내림차순)
+Render Selected Scenes,선택된 씬 렌더
+Render with high quality according th the set pixel,설정한 픽셀에 맞추어 렌더합니다
