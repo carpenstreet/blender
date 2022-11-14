@@ -78,7 +78,7 @@ class Acon3dCameraViewOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.camera_view"
     bl_label = "Camera View"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
@@ -91,7 +91,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
     bl_idname = "acon3d.render_warning"
     bl_label = "Render Selected Scenes"
     bl_description = "Render with high quality according to the set pixel"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
     scene_count: bpy.props.IntProperty(name="Scene count", default=0)
 
     def draw_modal(self, layout):
@@ -141,7 +141,7 @@ def render_save_handler(dummy):
 class Acon3dRenderSaveOpertor(bpy.types.Operator):
     bl_idname = "acon3d.render_save"
     bl_label = "Save and Render"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
@@ -223,7 +223,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
     bl_idname = "acon3d.render_quick"
     bl_label = "Quick Render"
     bl_description = "Take a snapshot of the active viewport"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     filename_ext = ".png"
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
@@ -403,7 +403,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
     bl_idname = "acon3d.render_snip"
     bl_label = "Snip Render"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     temp_scenes = []
     temp_layer = None
@@ -504,7 +504,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
     bl_idname = "acon3d.render_high_quality"
     bl_label = "Render Selected Scenes"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     # 렌더를 위해 임시로 만들어진 scene list
     temp_scenes = []
@@ -676,7 +676,7 @@ class Acon3dCloseProgressOperator(bpy.types.Operator):
     bl_idname = "acon3d.close_progress"
     bl_label = "OK"
     bl_description = "Close Progress Panel"
-    bl_translation_context = "*"
+    bl_translation_context = "abler"
 
     @classmethod
     def poll(cls, context):
