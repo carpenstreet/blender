@@ -1,4 +1,4 @@
-import csv, sys
+import csv, sys, os
 
 
 def csv2po(filepath: str, outfile: str):
@@ -79,8 +79,24 @@ def match_po_with_csv(csvfile: str, pofile: str):
             print(f"total {err_count} mismatch")
 
 
+def check_file_exist(filepath):
+    if not os.path.isfile(filepath):
+        print(f"{filepath} 파일이 없습니다.")
+        return False
+    return True
+
+
 if __name__ == "__main__":
-    if sys.argv[1] == "--generate":
-        csv2po("test.csv", "output.po")
-    elif sys.argv[1] == "--test":
-        match_po_with_csv("test.csv", "output.po")
+    if sys.argv[1] == "--generate" and len(sys.argv)>2:
+        input_csv = sys.argv[2]
+        if check_file_exist(input_csv):
+            csv2po(input_csv, "output.po")
+    
+    if sys.argv[1] == "--test" and len(sys.argv)>3:
+        input_csv = sys.argv[2]
+        output_po = sys.argv[3]
+        if check_file_exist(input_csv) and check_file_exist(output_po):    
+            match_po_with_csv(input_csv, output_po)
+
+    else:
+        print("인자 확인")
