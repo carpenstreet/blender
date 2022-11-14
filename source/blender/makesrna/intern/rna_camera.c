@@ -458,8 +458,8 @@ static void rna_def_camera_dof_settings_data(BlenderRNA *brna)
                            "F-Stop",
                            "Adjust F-stop ratio (lower numbers give more defocus, higher numbers "
                            "give a sharper image)");
-  RNA_def_property_range(prop, 0.0f, FLT_MAX);
-  RNA_def_property_ui_range(prop, 0.1f, 128.0f, 10, 1);
+  RNA_def_property_range(prop, 0.0f, 128.0f);
+  RNA_def_property_ui_range(prop, 0.0f, 5.0f, 10, 1);
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_dof_update");
 
   prop = RNA_def_property(srna, "aperture_blades", PROP_INT, PROP_NONE);
