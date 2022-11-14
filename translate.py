@@ -10,27 +10,29 @@ def csv2po(filepath: str, outfile: str):
     with open(filepath, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
         for row in csv_reader:
-            # 이미 딕셔너리에 값이 있으면 번역이 중복으로 들어간 경우
             if csv_dict.get(row[0]):
-                print(f"csv file의 '{row[0]}'가 중복으로 들어가 있습니다.")
-                count += 1
+                # 번역이 중복이고 값은 다른 경우
+                if row[1] != csv_dict.get(row[0]):
+                    print(f"csv file의 '{row[0]}'가 중복으로 들어가 있습니다.")
+                    count += 1
+                # 번역이 중복이고 값도 같은 경우
+                else:
+                    pass
             else:
                 csv_dict[row[0]] = row[1]
 
-    with open(filepath, "r") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=",")
-        with open(outfile, "w") as po_file:
-            for i, row in enumerate(csv_reader):
-                if i == 0:
-                    continue
+    with open(outfile, "w") as po_file:
+        for i, (key, value) in enumerate(csv_dict.items()):
+            if i == 0:
+                continue
 
-                # msg도 영어로 들어가 번역이 필요 없는 경우
-                if row[0] == row[1]:
-                    continue
+            # msg도 영어로 들어가 번역이 필요 없는 경우
+            if key == value:
+                continue
 
-                po_file.write(f'msgctxt "abler"\n')
-                po_file.write(f'msgid "{row[0]}"\n')
-                po_file.write(f'msgstr "{row[1]}"\n\n\n')
+            po_file.write(f'msgctxt "abler"\n')
+            po_file.write(f'msgid "{key}"\n')
+            po_file.write(f'msgstr "{value}"\n\n\n')
         
     print(f"total {count} mismatch")
 
