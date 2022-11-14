@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-import bpy, platform, os, subprocess
+import bpy, platform, os, subprocess, datetime
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
 from ..lib.materials import materials_handler
@@ -161,6 +161,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     timer_event = None
     initial_scene = None
     initial_display_type = None
+    render_start_time = None
 
     def pre_render(self, dummy, dum):
         self.rendering = True
@@ -360,7 +361,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             elif self.rendering is False:
 
-                name_item, qitem = self.render_queue[0]
+                name_item, qitem, _ = self.render_queue[0]
                 if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
@@ -511,22 +512,72 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def __init__(self):
         super().__init__()
 
+    def draw(self, context):
+        layout = self.layout
+        box = layout.box()
+        box.scale_y = 0.5
+        box.use_property_split = True
+        box.use_property_decorate = False
+        box.label(
+            icon="ERROR",
+            text="Please select the path in",
+        )
+        box.label(
+            text="which the rendered images",
+        )
+        box.label(
+            text="will be saved.",
+        )
+
     def invoke(self, context, event):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         return super().invoke(context, event)
 
     def pre_render(self, dummy, dum):
+        self.render_start_time = time()
+
         super().pre_render(dummy, dum)
-        _, scene = self.render_queue[0]
+        _, scene, render_type = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
         if info:
             info.status = "in progress"
 
+        # bpy.data.materials가 전체 씬에 대해 적용되기 때문에
+        # 렌더 씬마다 적용하기 위해 재질의 상태를 렌더하기 전 pre_render에서 적용
+        if render_type != "full":
+            for mat in bpy.data.materials:  # scene
+                mat.blend_method = "OPAQUE"
+                mat.shadow_method = "OPAQUE"
+                if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
+                    toonNode.inputs[1].default_value = 0
+                    toonNode.inputs[3].default_value = 1
+
     def post_render(self, dummy, dum):
+        base_scene_name, scene, render_type = self.render_queue[0]
+        render_time = str(
+            datetime.timedelta(seconds=round(time() - self.render_start_time))
+        )
+        render_data = {
+            "Scene": base_scene_name,
+            "Filepath": bpy.data.filepath,
+            "Render time": render_time,
+        }
+
+        if render_type == "full":
+            tracker.render_full(render_data)
+
+        elif render_type == "line":
+            tracker.render_line(render_data)
+
+        elif render_type == "shadow":
+            tracker.render_shadow(render_data)
+
+        elif render_type == "texture":
+            tracker.render_texture(render_data)
+
         progress_prop = bpy.context.window_manager.progress_prop
-        _, scene = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
@@ -546,7 +597,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
         # 렌더를 위한 씬 이름을 폴더명으로 설정하기 위한 queue에 추가
-        self.render_queue.append((base_scene.name, scene))
+        self.render_queue.append((base_scene.name, scene, render_type))
 
         self.temp_scenes.append(scene)
 
@@ -561,13 +612,6 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         scene_info = bpy.context.window_manager.progress_prop.render_scene_infos.add()
         scene_info.render_scene_name = scene.name
         scene_info.status = "waiting"
-
-        for mat in bpy.data.materials:
-            mat.blend_method = "OPAQUE"
-            mat.shadow_method = "OPAQUE"
-            if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
-                toonNode.inputs[1].default_value = 0
-                toonNode.inputs[3].default_value = 1
 
         prop = scene.ACON_prop
         if render_type == "line":
@@ -600,19 +644,15 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                 scene = bpy.data.scenes[s_col.name]
 
                 if render_prop.hq_render_full:
-                    tracker.render_full()
                     self.prepare_temp_scene(scene, render_type="full")
 
                 if render_prop.hq_render_line:
-                    tracker.render_line()
                     self.prepare_temp_scene(scene, render_type="line")
 
                 if render_prop.hq_render_shadow:
-                    tracker.render_shadow()
                     self.prepare_temp_scene(scene, render_type="shadow")
 
                 if render_prop.hq_render_texture:
-                    tracker.render_texture()
                     self.prepare_temp_scene(scene, render_type="texture")
 
         progress_prop.is_loaded = True
