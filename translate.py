@@ -92,7 +92,7 @@ if __name__ == "__main__":
         if check_file_exist(input_csv):
             csv2po(input_csv, "output.po")
     
-    if sys.argv[1] == "--test" and len(sys.argv)>3:
+    elif sys.argv[1] == "--test" and len(sys.argv)>3:
         input_csv = sys.argv[2]
         output_po = sys.argv[3]
         if check_file_exist(input_csv) and check_file_exist(output_po):    
