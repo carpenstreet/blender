@@ -1,4 +1,4 @@
-import csv
+import csv, sys
 
 
 def csv2po(filepath: str, outfile: str):
@@ -80,5 +80,7 @@ def match_po_with_csv(csvfile: str, pofile: str):
 
 
 if __name__ == "__main__":
-    # csv2po("test.csv", "output.po")
-    match_po_with_csv("test.csv", "output.po")
+    if sys.argv[1] == "--generate":
+        csv2po("test.csv", "output.po")
+    elif sys.argv[1] == "--test":
+        match_po_with_csv("test.csv", "output.po")
