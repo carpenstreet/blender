@@ -26,3 +26,5 @@
 [submodule "release/scripts/addons_abler/io_skp"]
 	path = release/scripts/addons_abler/io_skp
 	url = git@github.com:ACON3D/SKP_Converter.git
+	branch = feature/skp-importer
+	ignore = all
