@@ -152,13 +152,15 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
         col.template_progress_bar(progress=render_progress)
 
         for info in progress_prop.render_scene_infos:
-            box.label(text=info.render_scene_name)
+            col = box.column()
+            col.scale_y = 0.8
+            col.label(text=info.render_scene_name)
             if info.status == "waiting":
-                box.template_progress_bar(progress=0.0)
+                col.template_progress_bar(progress=0.0)
             elif info.status == "in progress":
-                box.template_progress_bar(progress=cur_progress)
+                col.template_progress_bar(progress=cur_progress)
             else:
-                box.template_progress_bar(progress=1.0)
+                col.template_progress_bar(progress=1.0)
 
         sub = box.split(align=True, factor=0.25)
 
