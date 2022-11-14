@@ -80,9 +80,13 @@ class CreateSceneOperator(bpy.types.Operator):
     def execute(self, context):
         tracker.scene_add()
 
+        prop = context.window_manager.ACON_prop
+        # self.name이 씬 이름 목록에 있을 땐 번호 추가
+        if self.name in prop.scene_col:
+            self.name += ".001"
+
         old_scene = context.scene
         new_scene = scenes.create_scene(old_scene, self.preset, self.name)
-        prop = context.window_manager.ACON_prop
         prop.scene = new_scene.name
 
         # scene_col 추가
