@@ -98,15 +98,16 @@ class SunlightPanel(bpy.types.Panel):
         layout.prop(context.scene.ACON_prop, "toggle_sun", text="")
 
     def draw(self, context):
-        layout = self.layout
-        layout.use_property_decorate = False  # No animation.
-        layout.use_property_split = True
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
+        if context.scene.ACON_prop.toggle_sun:
+            layout = self.layout
+            layout.use_property_decorate = False  # No animation.
+            layout.use_property_split = True
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
 
 
 class ShadowShadingPanel(bpy.types.Panel):
