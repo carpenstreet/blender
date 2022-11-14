@@ -609,9 +609,7 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
-            # TODO: 이곳에 완성된 skp importer 관련 함수가 들어갈 예정
-            # bpy.ops.acon3d.import_skp(filepath=self.filepath, import_lookatme=self.import_lookatme)
-            pass
+            bpy.ops.acon3d.import_skp(filepath=self.filepath, import_lookatme=self.import_lookatme)
         except Exception as e:
             tracker.import_skp_fail()
             raise e
