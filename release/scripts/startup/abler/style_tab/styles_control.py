@@ -306,22 +306,23 @@ class BloomPanel(bpy.types.Panel):
         layout.prop(scene.ACON_prop, "use_bloom", text="")
 
     def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
+        if context.scene.ACON_prop.use_bloom:
+            layout = self.layout
+            layout.use_property_split = True
+            layout.use_property_decorate = False  # No animation.
 
-        scene = context.scene
-        eevee_prop = scene.eevee
-        prop = scene.ACON_prop
+            scene = context.scene
+            eevee_prop = scene.eevee
+            prop = scene.ACON_prop
 
-        layout.active = eevee_prop.use_bloom
-        col = layout.column()
-        col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
-        col.prop(prop, "bloom_knee", text="Knee", slider=True)
-        col.prop(prop, "bloom_radius", text="Radius", slider=True)
-        col.prop(eevee_prop, "bloom_color")
-        col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
-        col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
+            layout.active = eevee_prop.use_bloom
+            col = layout.column()
+            col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
+            col.prop(prop, "bloom_knee", text="Knee", slider=True)
+            col.prop(prop, "bloom_radius", text="Radius", slider=True)
+            col.prop(eevee_prop, "bloom_color")
+            col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
+            col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 
 
 class ColorAdjustmentPanel(bpy.types.Panel):
