@@ -31,8 +31,8 @@ def csv2po(filepath: str, outfile: str):
             if key == value[1]:
                 continue
             
-            # "기능명"일 때만 msgctxt "abler" 넣기
-            if value[0] == "기능명":
+            # "툴팁"일 때만 msgctxt "abler" pass
+            if value[0] != "툴팁":
                 po_file.write(f'msgctxt "abler"\n')
             po_file.write(f'msgid "{key}"\n')
             po_file.write(f'msgstr "{value[1]}"\n\n\n')
