@@ -2411,6 +2411,14 @@ static int wm_handler_operator_call(bContext *C,
   return WM_HANDLER_BREAK;
 }
 
+int fileselect_title;
+void WM_set_abler_fileViewTitle(int value) {
+  fileselect_title = value;
+}
+int WM_get_abler_fileViewTitle(void) {
+  return fileselect_title;
+}
+
 /* Fileselect handlers are only in the window queue,
  * so it's safe to switch screens or area types. */
 static int wm_handler_fileselect_do(bContext *C,
@@ -2420,6 +2428,32 @@ static int wm_handler_fileselect_do(bContext *C,
 {
   wmWindowManager *wm = CTX_wm_manager(C);
   int action = WM_HANDLER_CONTINUE;
+  const char* title = "ABLER File View";
+  switch (WM_get_abler_fileViewTitle()) {
+    case FILE_VIEW_TITLE_OPEN:
+      title = "Open Files";
+      break;
+    case FILE_VIEW_TITLE_IMPORT:
+      title = "Import Files";
+      break;
+    case FILE_VIEW_TITLE_SAVE:
+      title = "Save .blend Files";
+      break;
+    case FILE_VIEW_TITLE_SAVE_AS:
+      title = "Save .blend Files";
+      break;
+    case FILE_VIEW_TITLE_BACKGROUND:
+      title = "Open Image Files";
+      break;
+    case FILE_VIEW_TITLE_SAVE_AND_RENDER:
+      title = "Save .blend Files";
+      break;
+    case FILE_VIEW_TITLE_RENDER:
+      title = "Save Image Files";
+      break;
+    default:
+      title = "ABLER File View";
+  }
 
   switch (val) {
     case EVT_FILESELECT_FULL_OPEN: {
@@ -2427,7 +2461,7 @@ static int wm_handler_fileselect_do(bContext *C,
       ScrArea *area;
 
       if ((area = ED_screen_temp_space_open(C,
-                                            IFACE_("Blender File View"),
+                                            IFACE_(BLT_translate_do_iface(NULL, title)),
                                             WM_window_pixels_x(win) / 2,
                                             WM_window_pixels_y(win) / 2,
                                             U.file_space_data.temp_win_sizex * UI_DPI_FAC,

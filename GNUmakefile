@@ -553,6 +553,9 @@ acp: .FORCE
 deploy: .FORCE
 	sh ./release/darwin/ABLER_macOS_Release.sh
 
+skp: .FORCE
+	$(PYTHON) ./abler_skp_build.py
+
 format: .FORCE
 	PATH="../lib/${OS_NCASE}_${CPU}/llvm/bin/:../lib/${OS_NCASE}_centos7_${CPU}/llvm/bin/:../lib/${OS_NCASE}/llvm/bin/:$(PATH)" \
 	    $(PYTHON) source/tools/utils_maintenance/clang_format_paths.py $(PATHS)

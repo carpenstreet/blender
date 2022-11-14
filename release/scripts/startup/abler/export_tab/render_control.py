@@ -20,6 +20,7 @@
 import bpy, platform, os, subprocess, datetime
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
+from ..lib.file_view import file_view_title
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
@@ -512,9 +513,27 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     def __init__(self):
         super().__init__()
 
+    def draw(self, context):
+        layout = self.layout
+        box = layout.box()
+        box.scale_y = 0.5
+        box.use_property_split = True
+        box.use_property_decorate = False
+        box.label(
+            icon="ERROR",
+            text="Please select the path in",
+        )
+        box.label(
+            text="which the rendered images",
+        )
+        box.label(
+            text="will be saved.",
+        )
+
     def invoke(self, context, event):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
-        return super().invoke(context, event)
+        with file_view_title("RENDER"):
+            return super().invoke(context, event)
 
     def pre_render(self, dummy, dum):
         self.render_start_time = time()
