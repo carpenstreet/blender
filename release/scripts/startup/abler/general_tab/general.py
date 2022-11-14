@@ -40,6 +40,7 @@ from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper
+from ..lib.user_info import get_or_init_user_info
 
 
 def split_filepath(filepath):
@@ -78,7 +79,7 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     def execute(self, context):
         tracker.tutorial_guide_on()
 
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
+        userInfo = get_or_init_user_info()
         prop = userInfo.ACON_prop
         prop.show_guide = read_remembered_show_guide()
 

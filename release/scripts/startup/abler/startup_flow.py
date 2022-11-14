@@ -34,7 +34,7 @@ from bpy.app.handlers import persistent
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
 from .lib.read_cookies import *
-
+from .lib.user_info import get_or_init_user_info
 from .lib.tracker import tracker
 from .lib.tracker._get_ip import user_ip
 from .warning_modal import BlockingModalOperator
@@ -243,7 +243,7 @@ class Acon3dModalOperator(BlockingModalOperator):
         bpy.ops.wm.splash("INVOKE_DEFAULT")
 
     def should_close(self, context, event) -> bool:
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
+        user_info = get_or_init_user_info()
 
         splash_closing = event.type in (
             "LEFTMOUSE",
@@ -256,8 +256,7 @@ class Acon3dModalOperator(BlockingModalOperator):
             return False
 
         if (
-            userInfo
-            and userInfo.ACON_prop.login_status == "SUCCESS"
+            user_info.ACON_prop.login_status == "SUCCESS"
             and (splash_closing or is_blend_open())
         ):
             return True
@@ -313,7 +312,7 @@ class LoginTask(AsyncTask):
     def __init__(self):
         super().__init__(timeout=10)
 
-        self.prop = bpy.data.meshes.get("ACON_userInfo").ACON_prop
+        self.prop = get_or_init_user_info().ACON_prop
         self.username = self.prop.username
         self.password = (
             self.prop.password_shown if self.prop.show_password else self.prop.password
@@ -472,7 +471,7 @@ def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
-    userInfo = bpy.data.meshes.new("ACON_userInfo")
+    userInfo = get_or_init_user_info()
     prop = userInfo.ACON_prop
     prop.login_status = "IDLE"
 
@@ -486,7 +485,6 @@ def start_authentication():
 
         if not os.path.exists(path_cookiesFile):
             raise
-        prop.remember_username = read_remembered_checkbox()
 
         with open(path_cookiesFile, "rb") as cookiesFile:
             cookies = pickle.load(cookiesFile)
@@ -503,9 +501,6 @@ def start_authentication():
 
     except:
         print("Failed to load cookies")
-
-    if prop.remember_username:
-        prop.username = read_remembered_username()
 
     if is_first_run:
         bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
