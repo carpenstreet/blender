@@ -118,7 +118,7 @@ static const EnumPropertyItem rna_enum_language_default_items[] = {
      "DEFAULT",
      0,
      "Automatic (Automatic)",
-     "Automatically choose system's defined language if available, or fall-back to English"},
+     "Automatically choose system's defined language if available, or fall back to English"},
     {0, NULL, 0, NULL, NULL},
 };
 #endif

@@ -744,7 +744,7 @@ static const char *template_id_browse_tip(const StructRNA *type)
       case ID_MB:
         return N_("Browse Metaball Data to be linked");
       case ID_MA:
-        return N_("Browse Material to be linked");
+        return N_("See all material list included in the file");
       case ID_TE:
         return N_("Browse Texture to be linked");
       case ID_IM:
@@ -5808,6 +5808,51 @@ static char *progress_tooltip_func(bContext *UNUSED(C), void *argN, const char *
       "Time Elapsed: %s",
       remaining_str,
       elapsed_str);
+}
+
+void uiTemplateProgressBar(uiLayout *layout, bContext *C, const float progress)
+{
+  wmWindowManager *wm = CTX_wm_manager(C);
+
+  uiBlock *block = uiLayoutGetBlock(layout);
+  UI_block_layout_set_current(block, layout);
+
+  UI_block_func_handle_set(block, do_running_jobs, NULL);
+
+  const uiFontStyle *fstyle = UI_FSTYLE_WIDGET;
+
+  uiLayout *row = uiLayoutRow(layout, false);
+  block = uiLayoutGetBlock(row);
+
+  char text[8];
+  BLI_snprintf(text, 8, "%d%%", (int)(progress * 100));
+
+  /* stick progress bar and cancel button together */
+  row = uiLayoutRow(layout, true);
+  uiLayoutSetActive(row, true);
+  block = uiLayoutGetBlock(row);
+
+  {
+    struct ProgressTooltip_Store *tip_arg = MEM_mallocN(sizeof(*tip_arg), __func__);
+    tip_arg->wm = wm;
+    uiButProgressbar *but_progress = (uiButProgressbar *)uiDefIconTextBut(block,
+                                                                          UI_BTYPE_PROGRESS_BAR,
+                                                                          0,
+                                                                          0,
+                                                                          text,
+                                                                          UI_UNIT_X,
+                                                                          0,
+                                                                          UI_UNIT_X * 6.0f,
+                                                                          UI_UNIT_Y,
+                                                                          NULL,
+                                                                          0.0f,
+                                                                          0.0f,
+                                                                          0.0f,
+                                                                          0,
+                                                                          NULL);
+
+    but_progress->progress = progress;
+  }
 }
 
 void uiTemplateRunningJobs(uiLayout *layout, bContext *C)

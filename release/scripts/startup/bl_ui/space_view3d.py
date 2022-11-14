@@ -503,7 +503,8 @@ class VIEW3D_HT_header(Header):
         scene = context.scene
 
         # Orientation
-        if object_mode in {'OBJECT', 'EDIT', 'EDIT_GPENCIL'} or has_pose_mode:
+        # HIDE: Transformation orientation in 'OBJECT'
+        if object_mode in {'EDIT', 'EDIT_GPENCIL'} or has_pose_mode:
             orient_slot = scene.transform_orientation_slots[0]
             row = layout.row(align=True)
 
@@ -515,10 +516,15 @@ class VIEW3D_HT_header(Header):
                 text="",
                 panel="VIEW3D_PT_transform_orientations",
             )
+        elif object_mode == 'OBJECT':
+            pass
 
         # Pivot
-        if object_mode in {'OBJECT', 'EDIT', 'EDIT_GPENCIL', 'SCULPT_GPENCIL'} or has_pose_mode:
+        # HIDE: Transform Pivot Point in 'OBJECT'
+        if object_mode in {'EDIT', 'EDIT_GPENCIL', 'SCULPT_GPENCIL'} or has_pose_mode:
             layout.prop(tool_settings, "transform_pivot_point", text="", icon_only=True)
+        elif object_mode == 'OBJECT':
+            pass
 
         # Snap
         show_snap = False
@@ -563,7 +569,8 @@ class VIEW3D_HT_header(Header):
             )
 
         # Proportional editing
-        if object_mode in {'EDIT', 'PARTICLE_EDIT', 'SCULPT_GPENCIL', 'EDIT_GPENCIL', 'OBJECT'}:
+        # HIDE: Proportional Editing Objects, Falloff in 'OBJECT'
+        if object_mode in {'EDIT', 'PARTICLE_EDIT', 'SCULPT_GPENCIL', 'EDIT_GPENCIL'}:
             row = layout.row(align=True)
             kw = {}
             if object_mode == 'OBJECT':
@@ -591,6 +598,8 @@ class VIEW3D_HT_header(Header):
                 icon_only=True,
                 panel="VIEW3D_PT_proportional_edit",
             )
+        elif object_mode == 'OBJECT':
+            pass
 
     def draw(self, context):
         layout = self.layout
@@ -599,7 +608,8 @@ class VIEW3D_HT_header(Header):
         view = context.space_data
         shading = view.shading
 
-        layout.row(align=True).template_header()
+        # HIDE: Editor Type
+        # layout.row(align=True).template_header()
 
         row = layout.row(align=True)
         obj = context.active_object
@@ -610,23 +620,27 @@ class VIEW3D_HT_header(Header):
             (object_mode == 'WEIGHT_PAINT' and context.pose_object is not None)
         )
 
-        # Note: This is actually deadly in case enum_items have to be dynamically generated
-        #       (because internal RNA array iterator will free everything immediately...).
-        # XXX This is an RNA internal issue, not sure how to fix it.
-        # Note: Tried to add an accessor to get translated UI strings instead of manual call
-        #       to pgettext_iface below, but this fails because translated enumitems
-        #       are always dynamically allocated.
-        act_mode_item = bpy.types.Object.bl_rna.properties["mode"].enum_items[object_mode]
-        act_mode_i18n_context = bpy.types.Object.bl_rna.properties["mode"].translation_context
+        # HIDE: Sets the object interaction mode
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            # Note: This is actually deadly in case enum_items have to be dynamically generated
+            #       (because internal RNA array iterator will free everything immediately...).
+            # XXX This is an RNA internal issue, not sure how to fix it.
+            # Note: Tried to add an accessor to get translated UI strings instead of manual call
+            #       to pgettext_iface below, but this fails because translated enumitems
+            #       are always dynamically allocated.
+            act_mode_item = bpy.types.Object.bl_rna.properties["mode"].enum_items[object_mode]
+            act_mode_i18n_context = bpy.types.Object.bl_rna.properties["mode"].translation_context
 
-        sub = row.row(align=True)
-        sub.ui_units_x = 5.5
-        sub.operator_menu_enum(
-            "object.mode_set", "mode",
-            text=bpy.app.translations.pgettext_iface(act_mode_item.name, act_mode_i18n_context),
-            icon=act_mode_item.icon,
-        )
-        del act_mode_item
+            sub = row.row(align=True)
+            sub.ui_units_x = 5.5
+            sub.operator_menu_enum(
+                "object.mode_set", "mode",
+                text=bpy.app.translations.pgettext_iface(act_mode_item.name, act_mode_i18n_context),
+                icon=act_mode_item.icon,
+            )
+            del act_mode_item
 
         layout.template_header_3D_mode()
 
@@ -709,7 +723,8 @@ class VIEW3D_HT_header(Header):
 
         overlay = view.overlay
 
-        VIEW3D_MT_editor_menus.draw_collapsible(context, layout)
+        # HIDE: Editor Menu
+        # VIEW3D_MT_editor_menus.draw_collapsible(context, layout)
 
         layout.separator_spacer()
 
@@ -753,29 +768,41 @@ class VIEW3D_HT_header(Header):
             layout.separator_spacer()
 
         # Viewport Settings
-        layout.popover(
-            panel="VIEW3D_PT_object_type_visibility",
-            icon_value=view.icon_from_show_object_viewport,
-            text="",
-        )
+        # HIDE: View Object Types
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            layout.popover(
+                panel="VIEW3D_PT_object_type_visibility",
+                icon_value=view.icon_from_show_object_viewport,
+                text="",
+            )
 
         # Gizmo toggle & popover.
-        row = layout.row(align=True)
-        # FIXME: place-holder icon.
-        row.prop(view, "show_gizmo", text="", toggle=True, icon='GIZMO')
-        sub = row.row(align=True)
-        sub.active = view.show_gizmo
-        sub.popover(
-            panel="VIEW3D_PT_gizmo_display",
-            text="",
-        )
+        # HIDE: Show Gizmo
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            # FIXME: place-holder icon.
+            row.prop(view, "show_gizmo", text="", toggle=True, icon='GIZMO')
+            sub = row.row(align=True)
+            sub.active = view.show_gizmo
+            sub.popover(
+                panel="VIEW3D_PT_gizmo_display",
+                text="",
+            )
 
         # Overlay toggle & popover.
-        row = layout.row(align=True)
-        row.prop(overlay, "show_overlays", icon='OVERLAY', text="")
-        sub = row.row(align=True)
-        sub.active = overlay.show_overlays
-        sub.popover(panel="VIEW3D_PT_overlay", text="")
+        # HIDE: Show Overlays
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            row.prop(overlay, "show_overlays", icon='OVERLAY', text="")
+            sub = row.row(align=True)
+            sub.active = overlay.show_overlays
+            sub.popover(panel="VIEW3D_PT_overlay", text="")
 
         row = layout.row()
         row.active = (object_mode == 'EDIT') or (shading.type in {'WIREFRAME', 'SOLID'})
@@ -788,21 +815,30 @@ class VIEW3D_HT_header(Header):
             draw_depressed = shading.show_xray_wireframe
         else:
             draw_depressed = shading.show_xray
-        row.operator(
-            "view3d.toggle_xray",
-            text="",
-            icon='XRAY',
-            depress=draw_depressed,
-        )
 
-        row = layout.row(align=True)
-        row.prop(shading, "type", text="", expand=True)
-        sub = row.row(align=True)
-        # TODO, currently render shading type ignores mesh two-side, until it's supported
-        # show the shading popover which shows double-sided option.
+        # HIDE: Toggle X-Ray
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row.operator(
+                "view3d.toggle_xray",
+                text="",
+                icon='XRAY',
+                depress=draw_depressed,
+            )
 
-        # sub.enabled = shading.type != 'RENDERED'
-        sub.popover(panel="VIEW3D_PT_shading", text="")
+        # HIDE: Viewport Shading
+        if object_mode == 'OBJECT':
+            pass
+        else:
+            row = layout.row(align=True)
+            row.prop(shading, "type", text="", expand=True)
+            sub = row.row(align=True)
+            # TODO, currently render shading type ignores mesh two-side, until it's supported
+            # show the shading popover which shows double-sided option.
+
+            # sub.enabled = shading.type != 'RENDERED'
+            sub.popover(panel="VIEW3D_PT_shading", text="")
 
 
 class VIEW3D_MT_editor_menus(Menu):

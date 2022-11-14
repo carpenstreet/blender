@@ -19,13 +19,15 @@ class EventKind(enum.Enum):
     render_full = "Render Full"
     render_line = "Render Line"
     render_shadow = "Render Shadow"
-    render_all_scenes = "Render All Scenes"
+    render_texture = "Render Texture"
     render_snip = "Render Snip"
     import_blend = "Import *.blend"
     import_blend_fail = "Import *.blend Fail"
     import_same_blend_fail = "Import Same *.blend Fail"
     import_fbx = "Import FBX"
     import_fbx_fail = "Import FBX Fail"
+    import_skp = "Import SKP"
+    import_skp_fail = "Import SKP Fail"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
     scene_add = "Scene Add"
@@ -46,6 +48,7 @@ class EventKind(enum.Enum):
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
     group_navigate_up = "Group Navigate Up"
+    tutorial_guide_on = "Quick Start Guide On"
 
 
 def accumulate(interval=0):
@@ -162,17 +165,17 @@ class Tracker(metaclass=ABCMeta):
     def render_quick(self):
         self._track(EventKind.render_quick.value)
 
-    def render_full(self):
-        self._track(EventKind.render_full.value)
+    def render_full(self, data):
+        self._track(EventKind.render_full.value, data)
 
-    def render_line(self):
-        self._track(EventKind.render_line.value)
+    def render_line(self, data):
+        self._track(EventKind.render_line.value, data)
 
-    def render_shadow(self):
-        self._track(EventKind.render_shadow.value)
+    def render_shadow(self, data):
+        self._track(EventKind.render_shadow.value, data)
 
-    def render_all_scenes(self):
-        self._track(EventKind.render_all_scenes.value)
+    def render_texture(self, data):
+        self._track(EventKind.render_texture.value, data)
 
     def render_snip(self):
         self._track(EventKind.render_snip.value)
@@ -184,13 +187,19 @@ class Tracker(metaclass=ABCMeta):
         self._track(EventKind.import_blend_fail.value)
 
     def import_same_blend_fail(self):
-        self._track(EventKind.import_same_blend_fail)
+        self._track(EventKind.import_same_blend_fail.value)
 
     def import_fbx(self):
         self._track(EventKind.import_fbx.value)
 
     def import_fbx_fail(self):
         self._track(EventKind.import_fbx_fail.value)
+
+    def import_skp(self):
+        self._track(EventKind.import_skp.value)
+
+    def import_skp_fail(self):
+        self._track(EventKind.import_skp_fail.value)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
@@ -254,6 +263,9 @@ class Tracker(metaclass=ABCMeta):
 
     def group_navigate_up(self):
         self._track(EventKind.group_navigate_up.value)
+
+    def tutorial_guide_on(self):
+        self._track(EventKind.tutorial_guide_on.value)
 
 
 class DummyTracker(Tracker):

@@ -9,6 +9,7 @@ from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
 from .lib.version import update_file_version
+from .lib.addons import disable_preference_addons
 
 
 def init_setting(dummy):
@@ -17,37 +18,49 @@ def init_setting(dummy):
     prefs_view = prefs.view
     prefs_input = prefs.inputs
     prefs_paths = prefs.filepaths
+    prefs_addon = bpy.ops.preferences
 
     if "--background" not in sys.argv and "-b" not in sys.argv:
         try:
             init_screen = bpy.data.screens["ACON3D"].areas[0].spaces[0]
             init_screen.shading.type = "RENDERED"
-            init_screen.show_region_header = False
+            init_screen.show_region_header = True
             init_screen.show_region_tool_header = False
+            init_screen.show_region_toolbar = True
             init_screen.show_gizmo = True
             init_screen.show_gizmo_object_translate = True
             init_screen.show_gizmo_object_rotate = True
             init_screen.show_gizmo_object_scale = True
-            init_screen.show_gizmo_navigate = False
+            init_screen.show_gizmo_navigate = True
             init_screen.show_gizmo_tool = True
             init_screen.show_gizmo_context = True
+            init_screen.overlay.show_ortho_grid = False
 
         except:
             print("Failed to find screen 'ACON3D'")
 
     prefs_sys.use_region_overlap = False
     prefs_view.show_column_layout = True
-    prefs_view.show_navigate_ui = False
+    prefs_view.show_navigate_ui = True
     prefs_view.show_developer_ui = False
     prefs_view.show_tooltips_python = False
     prefs_view.color_picker_type = "SQUARE_SV"
     prefs_paths.use_load_ui = False
     prefs_paths.save_version = 0
     prefs_input.use_zoom_to_mouse = True
+    prefs_input.use_mouse_depth_navigate = True
+
+    # Import에 적용되는 Addons 비활성화
+    disable_preference_addons()
 
 
 def hide_header(dummy):
-    bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
+    """
+    관련 오류:
+    https://www.notion.so/acon3d/pref-py-ACON3D-9718e7bb8516440b89f015b8862f9ede
+    """
+    if find_screen_acon3d():
+        bpy.data.screens["ACON3D"].areas[0].spaces[0].show_region_header = False
 
 
 @persistent
@@ -81,6 +94,8 @@ def delayed_load_handler():
             )
             bpy.ops.preferences.keyconfig_activate(filepath=abler_keymap_path)
         scenes.refresh_look_at_me()
+        scenes.snap_to_face()
+        scenes.add_scene_items_to_collection()
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()
@@ -112,14 +127,32 @@ def save_post_handler(dummy):
         scene.view_settings.view_transform = "Standard"
 
 
+def grid_on_when_selected(dummy):
+    show_grid = len(bpy.context.selected_objects) > 0
+    if find_screen_acon3d():
+        viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
+        viewport_overlay.show_ortho_grid = show_grid
+        viewport_overlay.show_floor = show_grid
+
+
+def find_screen_acon3d() -> bool:
+    return (
+        "ACON3D" in bpy.data.screens.keys()
+        and len(bpy.data.screens["ACON3D"].areas) > 0
+        and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0
+    )
+
+
 def register():
     bpy.app.handlers.load_factory_startup_post.append(init_setting)
     bpy.app.handlers.load_post.append(load_handler)
     bpy.app.handlers.save_pre.append(save_pre_handler)
     bpy.app.handlers.save_post.append(save_post_handler)
+    bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)

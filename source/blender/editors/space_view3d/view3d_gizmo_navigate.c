@@ -323,19 +323,25 @@ static void WIDGETGROUP_navigate_draw_prepare(const bContext *C, wmGizmoGroup *g
       WM_gizmo_set_flag(gz, WM_GIZMO_HIDDEN, false);
     }
 
-    if ((RV3D_LOCK_FLAGS(rv3d) & RV3D_LOCK_ROTATION) == 0) {
-      gz = navgroup->gz_array[GZ_INDEX_CAMERA];
-      gz->matrix_basis[3][0] = roundf(co[0]);
-      gz->matrix_basis[3][1] = roundf(co[1] - (icon_offset_mini * icon_mini_slot++));
-      WM_gizmo_set_flag(gz, WM_GIZMO_HIDDEN, false);
-
-      if (navgroup->state.rv3d.is_camera == false) {
-        gz = navgroup->gz_array[rv3d->is_persp ? GZ_INDEX_PERSP : GZ_INDEX_ORTHO];
-        gz->matrix_basis[3][0] = roundf(co[0]);
-        gz->matrix_basis[3][1] = roundf(co[1] - (icon_offset_mini * icon_mini_slot++));
-        WM_gizmo_set_flag(gz, WM_GIZMO_HIDDEN, false);
-      }
-    }
+    /*
+     * Blender > Preferences > Interface > Editors > Navigation Controls 토글의 bool 결과가
+     * show_navigate_ui를 결정하고 show_navigate의 bool 값에 반영됨. show_navigate에는 Zoom, Move,
+     * Camera View 세 기능이 포함되고, 기획에 따라 Camera View 옵션을 꺼줌.
+     * 다음에 기능을 살릴 수도 있으니, 기존의 Camera View 코드를 지우지 않고, 주석처리만 했음.
+     */
+    //    if ((RV3D_LOCK_FLAGS(rv3d) & RV3D_LOCK_ROTATION) == 0) {
+    //      gz = navgroup->gz_array[GZ_INDEX_CAMERA];
+    //      gz->matrix_basis[3][0] = roundf(co[0]);
+    //      gz->matrix_basis[3][1] = roundf(co[1] - (icon_offset_mini * icon_mini_slot++));
+    //      WM_gizmo_set_flag(gz, WM_GIZMO_HIDDEN, false);
+    //
+    //      if (navgroup->state.rv3d.is_camera == false) {
+    //        gz = navgroup->gz_array[rv3d->is_persp ? GZ_INDEX_PERSP : GZ_INDEX_ORTHO];
+    //        gz->matrix_basis[3][0] = roundf(co[0]);
+    //        gz->matrix_basis[3][1] = roundf(co[1] - (icon_offset_mini * icon_mini_slot++));
+    //        WM_gizmo_set_flag(gz, WM_GIZMO_HIDDEN, false);
+    //      }
+    //    }
   }
 }
 

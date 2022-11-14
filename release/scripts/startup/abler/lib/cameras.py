@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from typing import Any, Dict, List, Union, Tuple, Optional
+from math import radians
 import bpy
 from bpy.types import Collection, Object, Camera
 
@@ -73,24 +74,32 @@ def make_sure_camera_exists() -> None:
         return
 
     # create camera if View_Camera does not exist
-    camera_data: Camera = bpy.data.cameras.new("View_Camera")
-    camera_object: Object = bpy.data.objects.new("View_Camera", camera_data)
-    camera_object.location[0] = 7.35889
-    camera_object.location[1] = -6.92579
-    camera_object.location[2] = 4.9583
-    camera_object.rotation_mode = "XYZ"
-    camera_object.rotation_euler[0] = 1.109319
-    camera_object.rotation_euler[1] = 0
-    camera_object.rotation_euler[2] = 0.814928
-    bpy.context.scene.collection.objects.link(camera_object)
-
-    camera_object.data.show_passepartout = False
+    obj = make_camera()
+    bpy.context.scene.collection.objects.link(obj)
 
     # set context camera
-    bpy.context.scene.camera = camera_object
+    bpy.context.scene.camera = obj
 
     # View_Camera 오브젝트 활성화
-    bpy.context.view_layer.objects.active = camera_object
+    bpy.context.view_layer.objects.active = obj
+
+
+def make_camera():
+    cam = bpy.data.cameras.new("View_Camera")
+    cam.lens = 43
+    cam.show_passepartout = False
+    obj = bpy.data.objects.new("View_Camera", cam)
+    obj.location = (6.487949371337891, 10.378044128417969, 1.9881811141967773)
+    obj.rotation_euler = (radians(90), radians(0), radians(-212))
+    obj.hide_select = True
+
+    return obj
+
+
+def make_sure_camera_unselectable(self, context) -> None:
+    # 씬을 로드할 때 camera 오브젝트들이 선택되지 않도록 설정
+    if camera := context.scene.camera:
+        camera.hide_select = True
 
 
 # turn on camera view (set viewport to the current selected camera's view)

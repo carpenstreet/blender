@@ -26,6 +26,10 @@ from math import radians
 from .tracker import tracker
 from . import cameras
 
+# custom_properties에서 BoolProperty로 prop을 생성하면 버그가 발생해
+# is_scene_renamed를 글로벌 변수로 정의함 (참조 : lib.objects의 글로벌 변수 items)
+is_scene_renamed = True
+
 
 def change_dof(self, context: Context) -> None:
     if use_dof := context.scene.ACON_prop.use_dof:
@@ -71,6 +75,7 @@ def refresh_look_at_me() -> None:
     # 그래서 일단 deselect를 확보된 자원들을 이용해서 사용하도록 아래와 같이 안전하게 처리함.
     try:
         if context.selected_objects:
+            bpy.ops.object.mode_set(mode="OBJECT")
             for obj in context.selected_objects:
                 obj.select_set(False)
     except Exception as e:
@@ -98,12 +103,76 @@ def change_background_color(self, context: Context) -> None:
 scene_items: List[Tuple[str, str, str]] = []
 
 
+def add_scene_items_to_collection():
+    """scene_col에 bpy.data.scenes 항목 넣어주기"""
+
+    prop = bpy.context.window_manager.ACON_prop
+    prop.scene_col.clear()
+    for i, scene in enumerate(bpy.data.scenes):
+        # 파일 열기 시 씬 이름들을 Scene UI에 넣는 과정에서 change_scene_name이 실행이 됨
+        # 실제 이름을 바꾸는 과정이 아니므로 is_scene_renamed를 설정
+        # 각 씬마다 change_scene_name 함수에 들어갔다 나오므로 for문 안에서 설정
+        global is_scene_renamed
+        is_scene_renamed = False
+
+        new_scene = prop.scene_col.add()
+        new_scene.name = scene.name
+        new_scene.index = i
+
+    # 현재 씬과 scene_col 맞추기
+    scene = bpy.context.scene
+    scene_col_list = [*prop.scene_col]
+
+    for item in scene_col_list:
+        if item.name == scene.name:
+            index = item.index
+    prop.active_scene_index = index
+
+
+def load_scene_by_index(self, context: Context) -> None:
+    if not context:
+        context = bpy.context
+
+    if not self:
+        self = context.window_manager.ACON_prop
+
+    scene_col = self.scene_col
+    active_scene_index = self.active_scene_index
+
+    # EnumProperty인 self.scene을 select scene으로 변경
+    self.scene = scene_col[active_scene_index].name
+    load_scene(self, context)
+
+
+def change_scene_name(self, context):
+    global is_scene_renamed
+
+    # CreateSceneOperator에서 create_scene 후에 change_scene_name이 실행되면서
+    # active_scene_index가 이전 씬을 가리킨 상태에서 씬 복사를 하면서 씬 네이밍이 어긋나는 문제가 발생
+    # 이를 위해 create_scene 후엔 change_scene_name을 실행하지 않도록 is_scene_renamed을 False로 설정해
+    # 실제로 이름을 바꿀 때만 change_scene_name을 실행
+    if is_scene_renamed:
+        prop = context.window_manager.ACON_prop
+
+        scene_col = prop.scene_col
+        active_scene_index = prop.active_scene_index
+        bpy.context.scene.name = scene_col[active_scene_index].name
+
+    is_scene_renamed = True
+
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
         scene_items.append((scene.name, scene.name, ""))
 
     return scene_items
+
+
+def snap_to_face():
+    scene = bpy.context.scene
+    scene.tool_settings.use_snap = True
+    scene.tool_settings.snap_elements = {"FACE"}
 
 
 def load_scene(self, context: Context) -> None:
@@ -137,18 +206,22 @@ def load_scene(self, context: Context) -> None:
     shadow.change_sun_strength(None, context)
     shadow.toggle_shadow(None, context)
     shadow.change_sun_rotation(None, context)
+    cameras.make_sure_camera_unselectable(self, context)
 
     # refresh look_at_me
     refresh_look_at_me()
 
 
 def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
+    global is_scene_renamed
+    is_scene_renamed = False
 
     new_scene = old_scene.copy()
     new_scene.name = name
     if old_scene.camera:
         new_scene.camera = old_scene.camera.copy()
         new_scene.camera.data = old_scene.camera.data.copy()
+        new_scene.camera.hide_select = True
         new_scene.collection.objects.link(new_scene.camera)
         try:
             new_scene.collection.objects.unlink(old_scene.camera)
@@ -156,12 +229,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
             print("Failed to unlink camera from old scene.")
 
     else:
-        cam = bpy.data.cameras.new("View_Camera")
-        cam.lens = 30
-        cam.show_passepartout = False
-        obj = bpy.data.objects.new("View_Camera", cam)
-        obj.location = (4.7063, 7.6888, 1.9738)
-        obj.rotation_euler = (radians(90), radians(0), radians(-212))
+        obj = cameras.make_camera()
         new_scene.collection.objects.link(obj)
         new_scene.camera = obj
         cameras.switch_to_rendered_view()

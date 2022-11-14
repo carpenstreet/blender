@@ -37,17 +37,12 @@ import sys
 from types import ModuleType
 
 from . import custom_properties
-from . import general
-from . import scene_control
-from . import edge_control
-from . import face_control
-from . import object_control
-from . import image_adjustment
-from . import shadow_control
-from . import camera_control
-from . import layer_control
-from . import render_control
-from . import import_external_files
+from .general_tab import general
+from .camera_tab import camera_control, background_control
+from .scene_tab import scene_control, object_control, layer_control
+from .style_tab import styles_control
+from .export_tab import render_control
+from .export_tab import export_control
 from . import pref
 from . import operators
 from . import warning_modal
@@ -60,16 +55,14 @@ from .lib.tracker import tracker
 importedLibrary = [
     custom_properties,
     general,
-    scene_control,
-    edge_control,
-    face_control,
-    object_control,
-    image_adjustment,
-    shadow_control,
     camera_control,
+    background_control,
+    scene_control,
+    object_control,
     layer_control,
+    styles_control,
     render_control,
-    import_external_files,
+    export_control,
     pref,
     operators,
     warning_modal,

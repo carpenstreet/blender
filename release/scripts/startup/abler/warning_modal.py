@@ -12,7 +12,7 @@ class BlockingModalOperator(bpy.types.Operator):
 
     모달이 닫히게 만드는 방법은 두 가지입니다.
     - acon3d.close_blocking_modal 오퍼레이터를 통해 직접 close_modal 을 호출하거나
-    - should_close 에서 False 를 반환하게 만들기
+    - should_close 에서 True 를 반환하게 만들기
 
     상속 후, 필요하다면 draw_modal, should_close, after_close 를 오버라이드해서 사용하세요.
     """

@@ -24,6 +24,22 @@ from .lib.materials import materials_handler
 from .lib.read_cookies import *
 
 
+class AconSceneColGroupProperty(bpy.types.PropertyGroup):
+    name: bpy.props.StringProperty(
+        name="Scenes",
+        description="Click to apply scene and double click to rename.",
+        default="",
+        update=scenes.change_scene_name,
+    )
+
+    index: bpy.props.IntProperty()
+
+    is_render_selected: bpy.props.BoolProperty(
+        name="Scene Name",
+        description="Check to render",
+    )
+
+
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -47,6 +63,33 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         description="Don’t show this message again.",
         default=False,
         update=version.remember_low_version_warning_hidden,
+    )
+
+    scene_col: bpy.props.CollectionProperty(type=AconSceneColGroupProperty)
+
+    active_scene_index: bpy.props.IntProperty(
+        update=scenes.load_scene_by_index, name="Scene"
+    )
+
+    hq_render_full: bpy.props.BoolProperty(
+        name="Full Render",
+        description="Render according to the set pixel",
+        default=True,
+    )
+    hq_render_line: bpy.props.BoolProperty(
+        name="Line Render",
+        description="Render only lines according to the set pixel",
+        default=True,
+    )
+    hq_render_texture: bpy.props.BoolProperty(
+        name="Texture Render",
+        description="Render only textures according to the set pixel",
+        default=True,
+    )
+    hq_render_shadow: bpy.props.BoolProperty(
+        name="Shadow Render",
+        description="Render only shadow according to the set pixel",
+        default=True,
     )
 
 
@@ -85,14 +128,14 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
 
     value: bpy.props.BoolProperty(
         name="Layer Exclude",
-        description="Make objects on the current layer invisible in the viewport",
+        description="Choose if the objects in the current layer visible in the viewport or not",
         default=True,
         update=update_layer_visibility,
     )
 
     lock: bpy.props.BoolProperty(
         name="Layer Lock",
-        description="Make objects on the current layer lock in the viewport",
+        description="Choose if the objects in the current layer lock in the viewport or not",
         default=False,
         update=update_layer_lock,
     )
@@ -137,7 +180,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     toggle_toon_edge: bpy.props.BoolProperty(
         # name="Toon Style Edge",
         name="",
-        description="Express toon style edge",
+        description="Express toon style line profile",
         default=True,
         update=materials_handler.toggle_toon_edge,
     )
@@ -145,7 +188,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     edge_min_line_width: bpy.props.FloatProperty(
         # name="Min Line Width",
         name="",
-        description="Adjust the thickness of minimum depth edges",
+        description="Adjust the thickness of minimum depth edges (Range: 0 ~ 5)",
         subtype="PIXEL",
         default=1,
         min=0,
@@ -157,7 +200,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     edge_max_line_width: bpy.props.FloatProperty(
         # name="Max Line Width",
         name="",
-        description="Adjust the thickness of maximum depth edges",
+        description="Adjust the thickness of maximum depth edges (Range: 0 ~ 5)",
         subtype="PIXEL",
         default=1,
         min=0,
@@ -169,9 +212,9 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     edge_line_detail: bpy.props.FloatProperty(
         # name="Line Detail",
         name="",
-        description="Amount of edges to be shown. (recommended: 1.2)",
+        description="Adjust amount of edges to be shown (Range: 0 ~ 20, Recommended: 1.2)",
         subtype="FACTOR",
-        default=2,
+        default=1,
         min=0,
         max=20,
         step=10,
@@ -251,13 +294,20 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     sun_strength: bpy.props.FloatProperty(
         # name="Strength",
         name="",
-        description="Control the strength of sunlight",
+        description="Control the strength of sunlight (Range: 0 ~ 10)",
         subtype="FACTOR",
         default=1.5,
         min=0,
         max=10,
         step=1,
         update=shadow.change_sun_strength,
+    )
+
+    toggle_shadow_shading: bpy.props.BoolProperty(
+        name="",
+        description="Express shadow and shading",
+        default=True,
+        update=shadow.toggle_shadow_shading,
     )
 
     toggle_shadow: bpy.props.BoolProperty(
@@ -424,7 +474,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     bloom_threshold: bpy.props.FloatProperty(
         name="",
-        description="Filters out pixels under this level of brightness",
+        description="Filter out pixels under this level of brightness (Range: 0 ~ 10)",
         default=1.0,
         min=0,
         max=10.0,
@@ -433,7 +483,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     bloom_knee: bpy.props.FloatProperty(
         name="",
-        description="Makes transition between under/over-threshold gradual",
+        description="Make transition between under/over-threshold (Range: 0 ~ 1)",
         default=0.5,
         min=0,
         max=1.0,
@@ -442,7 +492,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     bloom_radius: bpy.props.FloatProperty(
         name="",
-        description="Bloom spread distance",
+        description="Adjust spreading distance of bloom effect (Range: 0 ~ 10)",
         default=4.0,
         min=0,
         max=10.0,
@@ -451,8 +501,8 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     bloom_intensity: bpy.props.FloatProperty(
         name="",
-        description="Blend factor",
-        default=0.05,
+        description="Change bloom intensity (Range: 0 ~ 1)",
+        default=0.5,
         min=0,
         max=1.0,
         update=bloom.change_bloom_intensity,
@@ -460,7 +510,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     bloom_clamp: bpy.props.FloatProperty(
         name="",
-        description="Maximum intensity a bloom pixel can have (0 to disabled)",
+        description="Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000)",
         default=0,
         min=0,
         max=1000.0,
@@ -491,7 +541,7 @@ class AconMaterialProperty(bpy.types.PropertyGroup):
 
     type: bpy.props.EnumProperty(
         name="Type",
-        description="Material Type",
+        description="Select material type",
         items=[
             ("Diffuse", "Diffuse", ""),
             ("Mirror", "Reflection", ""),
@@ -502,15 +552,24 @@ class AconMaterialProperty(bpy.types.PropertyGroup):
     )
 
     toggle_shadow: bpy.props.BoolProperty(
-        name="Shadow", default=True, update=materials_handler.toggle_each_shadow
+        name="Shadow",
+        description="Exclude shadow of selected object",
+        default=True,
+        update=materials_handler.toggle_each_shadow,
     )
 
     toggle_shading: bpy.props.BoolProperty(
-        name="Shading", default=True, update=materials_handler.toggle_each_shading
+        name="Shading",
+        description="Exclude shading of selected object",
+        default=True,
+        update=materials_handler.toggle_each_shading,
     )
 
     toggle_edge: bpy.props.BoolProperty(
-        name="Edges", default=True, update=materials_handler.toggle_each_edge
+        name="Line",
+        description="Exclude line of selected object",
+        default=True,
+        update=materials_handler.toggle_each_edge,
     )
 
 
@@ -638,6 +697,7 @@ class AconObjectProperty(bpy.types.PropertyGroup):
 
 
 classes = (
+    AconSceneColGroupProperty,
     AconWindowManagerProperty,
     CollectionLayerExcludeProperties,
     AconSceneSelectedGroupProperty,

@@ -68,16 +68,8 @@ class TOPBAR_HT_upper_bar(Header):
             layout.template_reports_banner()
             layout.template_running_jobs()
 
-        # Active workspace view-layer is retrieved through window, not through workspace.
-        layout.template_ID(window, "scene", new="scene.new",
-                           unlink="scene.delete")
-
-        row = layout.row(align=True)
-        row.template_search(
-            window, "view_layer",
-            scene, "view_layers",
-            new="scene.view_layer_add",
-            unlink="scene.view_layer_remove")
+        # 상단 바에 있던 Scene, ViewLayer 삭제
+        # 관련 링크 : https://www.notion.so/acon3d/50c72f2723bf4b178f508e84fc48a345
 
 
 class TOPBAR_PT_tool_settings_extra(Panel):
@@ -216,9 +208,6 @@ class TOPBAR_MT_editor_menus(Menu):
 
         layout.menu("TOPBAR_MT_file")
         layout.menu("TOPBAR_MT_edit")
-
-        layout.menu("TOPBAR_MT_render")
-
         layout.menu("TOPBAR_MT_window")
         layout.menu("TOPBAR_MT_help")
 
@@ -232,15 +221,6 @@ class TOPBAR_MT_blender(Menu):
         layout.operator("wm.splash")
         layout.operator("wm.splash_about")
         layout.operator("acon3d.logout")
-
-        layout.separator()
-
-        layout.operator("preferences.app_template_install",
-                        text="Install Application Template...")
-
-        layout.separator()
-
-        layout.menu("TOPBAR_MT_blender_system")
 
 
 class TOPBAR_MT_file_cleanup(Menu):
@@ -290,7 +270,6 @@ class TOPBAR_MT_file(Menu):
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
         layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
         layout.menu("TOPBAR_MT_ACON3D_open_recent_files")
-        layout.operator("wm.revert_mainfile")
         layout.menu("TOPBAR_MT_file_recover")
 
         layout.separator()
@@ -305,24 +284,11 @@ class TOPBAR_MT_file(Menu):
 
         layout.separator()
 
-        layout.operator_context = 'INVOKE_AREA'
-        layout.operator("wm.link", text="Link...", icon='LINK_BLEND')
-        layout.operator("wm.append", text="Append...", icon='APPEND_BLEND')
-        layout.menu("TOPBAR_MT_file_previews")
+        layout.menu("TOPBAR_MT_ACON3D_file_import", icon='IMPORT')
 
         layout.separator()
 
-        layout.menu("TOPBAR_MT_file_import", icon='IMPORT')
-        layout.menu("TOPBAR_MT_file_export", icon='EXPORT')
-
-        layout.separator()
-
-        layout.menu("TOPBAR_MT_file_external_data")
         layout.menu("TOPBAR_MT_file_cleanup")
-
-        layout.separator()
-
-        layout.menu("TOPBAR_MT_file_defaults")
 
         layout.separator()
 
@@ -379,14 +345,6 @@ class TOPBAR_MT_file_new(Menu):
             props = layout.operator(
                 "wm.read_homefile", text="General", icon=icon)
             props.app_template = ""
-
-        for d in paths:
-            props = layout.operator(
-                "wm.read_homefile",
-                text=bpy.path.display_name(d),
-                icon=icon,
-            )
-            props.app_template = d
 
         layout.operator_context = 'EXEC_DEFAULT'
 
@@ -488,16 +446,20 @@ class TOPBAR_MT_file_import(Menu):
     bl_owner_use_filter = False
 
     def draw(self, _context):
-        if bpy.app.build_options.collada:
-            self.layout.operator("wm.collada_import",
-                                 text="Collada (Default) (.dae)")
-        if bpy.app.build_options.alembic:
-            self.layout.operator("wm.alembic_import", text="Alembic (.abc)")
-        if bpy.app.build_options.usd:
-            self.layout.operator(
-                "wm.usd_import", text="Universal Scene Description (.usd, .usdc, .usda)")
+        return
 
-        self.layout.operator("wm.gpencil_import_svg", text="SVG as Grease Pencil")
+
+class TOPBAR_MT_ACON3D_file_import(Menu):
+    # import_fbx 애드온이 무조건 TOPBAR_MT_file_import에 그려주고 있어서
+    # acon3d.import_fbx를 넣기 위해 ACON3D 클래스를 새로 만들어 이 클래스를 TOPBAR 메뉴에 그려줌
+    bl_idname = "TOPBAR_MT_ACON3D_file_import"
+    bl_label = "Import"
+    bl_owner_use_filter = False
+
+    def draw(self, _context):
+        self.layout.operator("acon3d.import_fbx", text="FBX (.fbx)")
+        self.layout.operator("acon3d.import_skp", text="SKP (.skp)")
+        self.layout.operator("acon3d.import_blend", text="Blender (.blend)")
 
 
 class TOPBAR_MT_file_export(Menu):
@@ -627,23 +589,6 @@ class TOPBAR_MT_edit(Menu):
         layout.separator()
 
         layout.operator("wm.search_menu", text="Menu Search...", icon='VIEWZOOM')
-        if show_developer:
-            layout.operator("wm.search_operator", text="Operator Search...", icon='VIEWZOOM')
-
-        layout.separator()
-
-        # Mainly to expose shortcut since this depends on the context.
-        props = layout.operator("wm.call_panel", text="Rename Active Item...")
-        props.name = "TOPBAR_PT_name"
-        props.keep_open = False
-
-        layout.operator("wm.batch_rename", text="Batch Rename...")
-
-        layout.separator()
-
-        # Should move elsewhere (impacts outliner & 3D view).
-        tool_settings = context.tool_settings
-        layout.prop(tool_settings, "lock_object_mode")
 
         layout.separator()
 
@@ -655,49 +600,8 @@ class TOPBAR_MT_window(Menu):
     bl_label = "Window"
 
     def draw(self, context):
-        import sys
-
         layout = self.layout
-
-        operator_context_default = layout.operator_context
-
-        layout.operator("wm.window_new")
-        layout.operator("wm.window_new_main")
-
-        layout.separator()
-
-        layout.operator("wm.window_fullscreen_toggle", icon='FULLSCREEN_ENTER')
-
-        layout.separator()
-
-        layout.operator("screen.workspace_cycle",
-                        text="Next Workspace").direction = 'NEXT'
-        layout.operator("screen.workspace_cycle",
-                        text="Previous Workspace").direction = 'PREV'
-
-        layout.separator()
-
         layout.prop(context.screen, "show_statusbar")
-
-        layout.separator()
-
-        layout.operator("screen.screenshot")
-
-        # Showing the status in the area doesn't work well in this case.
-        # - From the top-bar, the text replaces the file-menu (not so bad but strange).
-        # - From menu-search it replaces the area that the user may want to screen-shot.
-        # Setting the context to screen causes the status to show in the global status-bar.
-        layout.operator_context = 'INVOKE_SCREEN'
-        layout.operator("screen.screenshot_area")
-        layout.operator_context = operator_context_default
-
-        if sys.platform[:3] == "win":
-            layout.separator()
-            layout.operator("wm.console_toggle", icon='CONSOLE')
-
-        if context.scene.render.use_multiview:
-            layout.separator()
-            layout.operator("wm.set_stereo_3d")
 
 
 class TOPBAR_MT_help(Menu):
@@ -706,44 +610,16 @@ class TOPBAR_MT_help(Menu):
     def draw(self, context):
         layout = self.layout
 
-        show_developer = context.preferences.view.show_developer_ui
-
-        layout.operator("wm.url_open_preset", text="Manual",
-                        icon='HELP').type = 'MANUAL'
+        # TODO:
+        # 에이블러 가이드가 국문/영문 페이지가 따로 있으나, 가이드 내부에서 이동할 수 있도록 수정될 수도 있음.
+        # 만약, 가이드 페이지가 언어별로 링크가 다르면 Support operator와 같이 언어 처리를 해야함.
+        layout.operator(
+            "wm.url_open", text="Manual", icon='HELP'
+        ).url = "https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7"
 
         layout.operator(
-            "wm.url_open", text="Tutorials", icon='URL',
-        ).url = "https://www.blender.org/tutorials"
-        layout.operator(
-            "wm.url_open", text="Support", icon='URL',
-        ).url = "https://www.blender.org/support"
-
-        layout.separator()
-
-        layout.operator(
-            "wm.url_open", text="User Communities", icon='URL',
-        ).url = "https://www.blender.org/community/"
-        layout.operator(
-            "wm.url_open", text="Developer Community", icon='URL',
-        ).url = "https://devtalk.blender.org"
-
-        layout.separator()
-
-        layout.operator(
-            "wm.url_open", text="Python API Reference", icon='URL',
-        ).url = bpy.types.WM_OT_doc_view._prefix
-
-        if show_developer:
-            layout.operator(
-                "wm.url_open", text="Developer Documentation", icon='URL',
-            ).url = "https://wiki.blender.org/wiki/Main_Page"
-
-            layout.operator("wm.operator_cheat_sheet", icon='TEXT')
-
-        layout.separator()
-
-        layout.operator("wm.url_open_preset",
-                        text="Report a Bug", icon='URL').type = 'BUG'
+            "wm.url_open_support", text="Support", icon='URL',
+        )
 
         layout.separator()
 
@@ -898,6 +774,7 @@ classes = (
     TOPBAR_MT_file_defaults,
     TOPBAR_MT_templates_more,
     TOPBAR_MT_file_import,
+    TOPBAR_MT_ACON3D_file_import,
     TOPBAR_MT_file_export,
     TOPBAR_MT_file_external_data,
     TOPBAR_MT_file_cleanup,

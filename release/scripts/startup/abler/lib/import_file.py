@@ -14,7 +14,9 @@ class AconImportHelper(ImportHelper):
         """
         path = self.filepath
         path_ext = path.rsplit(".")[-1]
-
+        # TODO: skp와 fbx importer addon을 켜주는 로직이 들어가야함.
+        # 관련논의 https://github.com/ACON3D/blender/pull/204#discussion_r1015118626
+        # 관련논의2 https://github.com/ACON3D/blender/pull/204#discussion_r1015125268
         if path_ext not in accepted or not os.path.isfile(path):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
