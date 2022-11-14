@@ -9,17 +9,18 @@ def csv2po(filepath: str, outfile: str):
     # csv_dict용으로 따로 읽어야함
     with open(filepath, "r") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
+        
         for row in csv_reader:
-            if csv_dict.get(row[0]):
+            if csv_dict.get(row[1]):
                 # 번역이 중복이고 값은 다른 경우
-                if row[1] != csv_dict.get(row[0]):
-                    print(f"csv file의 '{row[0]}'가 중복으로 들어가 있습니다.")
+                if row[2] != csv_dict.get(row[1])[1]:
+                    print(f"csv file의 '{row[1]}'가 중복으로 들어가 있습니다.")
                     count += 1
                 # 번역이 중복이고 값도 같은 경우
                 else:
                     pass
             else:
-                csv_dict[row[0]] = row[1]
+                csv_dict[row[1]] = (row[0],row[2])
 
     with open(outfile, "w") as po_file:
         for i, (key, value) in enumerate(csv_dict.items()):
@@ -27,12 +28,14 @@ def csv2po(filepath: str, outfile: str):
                 continue
 
             # msg도 영어로 들어가 번역이 필요 없는 경우
-            if key == value:
+            if key == value[1]:
                 continue
-
-            po_file.write(f'msgctxt "abler"\n')
+            
+            # "기능명"일 때만 msgctxt "abler" 넣기
+            if value[0] == "기능명":
+                po_file.write(f'msgctxt "abler"\n')
             po_file.write(f'msgid "{key}"\n')
-            po_file.write(f'msgstr "{value}"\n\n\n')
+            po_file.write(f'msgstr "{value[1]}"\n\n\n')
         
     print(f"total {count} mismatch")
 
@@ -62,17 +65,19 @@ def match_po_with_csv(csvfile: str, pofile: str):
                     trans_body = []
 
             for trans_item in trans_body_all:
+                if trans_item[0].startswith('msgctxt "abler"'):
+                    original_word = trans_item[1]
+                    translated_word = trans_item[2]
+                else:
+                    original_word = trans_item[0]
+                    translated_word = trans_item[1]
 
-                # 'msgctxt "abler"'가 아니면 pass
-                if not trans_item[0].startswith('msgctxt "abler"'):
-                    continue
-
-                if trans_item[1].startswith("msgid"):
-                    msgid = trans_item[1].split('"')[1]
+                if original_word.startswith("msgid"):
+                    msgid = original_word.split('"')[1]
                     if msgid in csv_dict:
                         msg_to_check = csv_dict[msgid]
-                if trans_item[2].startswith("msgstr") and msg_to_check:
-                    msgstr = trans_item[2].split('"')[1]
+                if translated_word.startswith("msgstr") and msg_to_check:
+                    msgstr = translated_word.split('"')[1]
                     if msgstr != msg_to_check:
                         print(f"PO file의 '{msgstr}'가 CSV파일의 '{msg_to_check}'와 일치하지 않습니다.")
                         err_count += 1
