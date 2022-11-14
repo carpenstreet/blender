@@ -578,7 +578,7 @@ void RNA_def_camera(BlenderRNA *brna)
   RNA_def_property_range(prop, 1.0f, 100.0f);
   RNA_def_property_ui_range(prop, 1.0f, 50.0f, 100, 4);
   RNA_def_property_ui_text(
-      prop, "Focal Length", "Adjust perspective camera lens value in millimeters (Range: 1~5000)");
+      prop, "Focal Length", "Adjust perspective camera lens value in millimeters (Range: 1~100)");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Camera_update");
 
   prop = RNA_def_property(srna, "sensor_width", PROP_FLOAT, PROP_DISTANCE_CAMERA);
