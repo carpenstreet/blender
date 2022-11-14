@@ -29,6 +29,7 @@
 
 #include "RNA_define.h"
 #include "RNA_enum_types.h"
+#include "RNA_access.h"
 
 #include "DNA_screen_types.h"
 #include "DNA_space_types.h"
@@ -85,6 +86,11 @@ const EnumPropertyItem rna_enum_window_cursor_items[] = {
 #include "BKE_main.h"
 #include "RNA_access.h"
 #include "RNA_define.h"
+
+static void WM_set_fileselect_title(struct wmWindowManager *wm, int value)
+{
+  WM_set_abler_fileViewTitle(value);
+}
 
 float WM_get_progress(struct bContext *C) {
   Main *bmain = CTX_data_main(C);
@@ -783,6 +789,55 @@ void RNA_api_wm(StructRNA *srna)
 {
   FunctionRNA *func;
   PropertyRNA *parm;
+
+  static const EnumPropertyItem file_view_title_items[] = {
+      {FILE_VIEW_TITLE_DEFAULT,
+       "DEFAULT",
+       0,
+       "ABLER File View",
+       "ABLER File View"},
+      {FILE_VIEW_TITLE_OPEN,
+       "OPEN",
+       0,
+       "Open Files",
+       "Open Files"},
+      {FILE_VIEW_TITLE_IMPORT,
+       "IMPORT",
+       0,
+       "Import Files",
+       "Import Files"},
+      {FILE_VIEW_TITLE_SAVE,
+       "SAVE",
+       0,
+       "Save .blend Files",
+       "Save .blend Files"},
+      {FILE_VIEW_TITLE_SAVE_AS,
+       "SAVE_AS",
+       0,
+       "Save .blend Files",
+       "Save .blend Files"},
+      {FILE_VIEW_TITLE_BACKGROUND,
+       "BACKGROUND",
+       0,
+       "Open Image Files",
+       "Open Image Files"},
+      {FILE_VIEW_TITLE_SAVE_AND_RENDER,
+       "SAVE_AND_RENDER",
+       0,
+       "Save .blend Files",
+       "Save .blend Files"},
+      {FILE_VIEW_TITLE_RENDER,
+       "RENDER",
+       0,
+       "Save Image Files",
+       "Save Image Files"},
+      {0, NULL, 0, NULL, NULL},
+  };
+
+  func = RNA_def_function(srna, "set_fileselect_title", "WM_set_fileselect_title");
+  RNA_def_function_ui_description(func, "Set fileselect title");
+  RNA_def_enum(func, "title_enum", file_view_title_items, 0, "title enum", "title enum for file selector");
+  RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
 
   func = RNA_def_function(srna, "get_progress", "WM_get_progress");
   RNA_def_function_ui_description(
