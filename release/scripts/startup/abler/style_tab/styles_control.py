@@ -320,7 +320,7 @@ class BloomPanel(bpy.types.Panel):
             col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
             col.prop(prop, "bloom_knee", text="Knee", slider=True)
             col.prop(prop, "bloom_radius", text="Radius", slider=True)
-            col.prop(eevee_prop, "bloom_color")
+            col.prop(prop, "bloom_color", text="Color")
             col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
             col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 

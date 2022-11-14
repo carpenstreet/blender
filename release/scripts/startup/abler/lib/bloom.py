@@ -26,6 +26,14 @@ def change_bloom_radius(self, context: Context) -> None:
     eevee_prop.bloom_radius = value
 
 
+def change_bloom_color(self, context: Context) -> None:
+    eevee_prop = context.scene.eevee
+    prop = context.scene.ACON_prop
+    value = prop.bloom_color
+
+    eevee_prop.bloom_color = value
+
+
 def change_bloom_intensity(self, context: Context) -> None:
     eevee_prop = context.scene.eevee
     prop = context.scene.ACON_prop

@@ -499,6 +499,16 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=bloom.change_bloom_radius,
     )
 
+    bloom_color: bpy.props.FloatVectorProperty(
+        name="",
+        description="Select color of bloom effect",
+        subtype="COLOR",
+        default=(1.0, 1.0, 1.0),
+        min=0,
+        max=1.0,
+        update=bloom.change_bloom_color,
+    )
+
     bloom_intensity: bpy.props.FloatProperty(
         name="",
         description="Change bloom intensity (Range: 0 ~ 1)",
