@@ -41,6 +41,7 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
@@ -63,13 +64,24 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             row = layout.row()
             col = row.column()
             row = col.row()
-            row.prop(render_prop, "hq_render_full", text="Full Render")
+            row.prop(
+                render_prop, "hq_render_full", text="Full Render", text_ctxt="abler"
+            )
             row = col.row()
-            row.prop(render_prop, "hq_render_texture", text="Texture Render")
+            row.prop(
+                render_prop,
+                "hq_render_texture",
+                text="Texture Render",
+                text_ctxt="abler",
+            )
             row = col.row()
-            row.prop(render_prop, "hq_render_line", text="Line Render")
+            row.prop(
+                render_prop, "hq_render_line", text="Line Render", text_ctxt="abler"
+            )
             row = col.row()
-            row.prop(render_prop, "hq_render_shadow", text="Shadow Render")
+            row.prop(
+                render_prop, "hq_render_shadow", text="Shadow Render", text_ctxt="abler"
+            )
             col.template_list(
                 "RENDER_UL_List",
                 "",
@@ -196,6 +208,7 @@ class Acon3dQuickRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
@@ -213,7 +226,7 @@ class Acon3dQuickRenderPanel(bpy.types.Panel):
         row.prop(scene.render, "resolution_x", text="")
         row.prop(scene.render, "resolution_y", text="")
         row = layout.row()
-        row.operator("acon3d.render_quick", text="Render Viewport", text_ctxt="*")
+        row.operator("acon3d.render_quick", text="Render Viewport")
 
 
 class Acon3dSnipRenderPanel(bpy.types.Panel):
@@ -224,6 +237,7 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
     def draw_header(self, context):
@@ -241,7 +255,7 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
         row.prop(scene.render, "resolution_x", text="")
         row.prop(scene.render, "resolution_y", text="")
         row = layout.row()
-        row.operator("acon3d.render_snip", text="Render Viewport", text_ctxt="*")
+        row.operator("acon3d.render_snip", text="Render Viewport")
 
 
 classes = (
