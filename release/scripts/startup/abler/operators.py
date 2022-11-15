@@ -4,6 +4,7 @@ import bpy
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
+from .lib.user_info import get_or_init_user_info
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):
@@ -27,7 +28,7 @@ class Acon3dLogoutOperator(bpy.types.Operator):
 
     def execute(self, context):
         # prop를 업데이트 하면 ACON_userInfo도 업데이트
-        prop = bpy.data.meshes.get("ACON_userInfo").ACON_prop
+        prop = get_or_init_user_info().ACON_prop
         path = bpy.utils.resource_path("USER")
         path_cookiesFolder = os.path.join(path, "cookies")
         path_cookiesFile = os.path.join(path_cookiesFolder, "acon3d_session")
@@ -45,8 +46,6 @@ class Acon3dLogoutOperator(bpy.types.Operator):
             # 아이디 기억하기 체크박스 상태와 아이디 불러오기
             prop.remember_username = read_remembered_checkbox()
             prop.username = read_remembered_username()
-
-            bpy.ops.wm.splash("INVOKE_DEFAULT")
         else:
             print("No login session file")
 

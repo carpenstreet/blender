@@ -89,12 +89,8 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
         return {"RUNNING_MODAL"}
 
     def draw(self, context):
-        # FileBrowser UI 변경
+        super().draw(context)
         space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
         space.show_region_tool_props = False
         space.show_region_ui = False
         space.show_region_toolbar = False
@@ -128,15 +124,8 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
     def draw(self, context):
-        # FileBrowser UI 변경
-        space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_invert = True
-        space.show_region_tool_props = False
+        super().draw(context)
+        context.space_data.show_region_tool_props = False
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
@@ -150,6 +139,19 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     def draw_header(self, context):
         layout = self.layout
         layout.label(icon="IMAGE_BACKGROUND")
+
+    def draw(self, context):
+        pass
+
+
+class Acon3dBackgroundImagesPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_background"
+    bl_idname = "ACON3D_PT_background_images"
+    bl_label = "Background Images"
+    bl_category = "Camera"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw(self, context):
         layout = self.layout
@@ -214,6 +216,7 @@ classes = (
     OpenDefaultBackgroundOperator,
     OpenCustomBackgroundOperator,
     Acon3dBackgroundPanel,
+    Acon3dBackgroundImagesPanel
 )
 
 

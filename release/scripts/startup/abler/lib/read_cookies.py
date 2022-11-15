@@ -31,8 +31,10 @@ def read_remembered_checkbox() -> bool:
 
 
 def remember_show_guide(self, context) -> None:
-    userInfo = bpy.data.meshes.get("ACON_userInfo")
-    prop = userInfo.ACON_prop
+    # 순환 import 회피
+    from ..lib.user_info import get_or_init_user_info
+    user_info = get_or_init_user_info()
+    prop = user_info.ACON_prop
     with open(path_cookies_tutorial_guide, "wb") as cookies_tutorial_guide:
         pickle.dump(prop.show_guide, cookies_tutorial_guide)
 

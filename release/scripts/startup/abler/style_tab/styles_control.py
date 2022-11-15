@@ -35,7 +35,7 @@ import bpy
 
 class Acon3dStylesPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Styles"
-    bl_label = "Styles"
+    bl_label = "Style"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -98,15 +98,16 @@ class SunlightPanel(bpy.types.Panel):
         layout.prop(context.scene.ACON_prop, "toggle_sun", text="")
 
     def draw(self, context):
-        layout = self.layout
-        layout.use_property_decorate = False  # No animation.
-        layout.use_property_split = True
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
-        row = layout.row(align=True)
-        row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
+        if context.scene.ACON_prop.toggle_sun:
+            layout = self.layout
+            layout.use_property_decorate = False  # No animation.
+            layout.use_property_split = True
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
+            row = layout.row(align=True)
+            row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
 
 
 class ShadowShadingPanel(bpy.types.Panel):
@@ -305,22 +306,23 @@ class BloomPanel(bpy.types.Panel):
         layout.prop(scene.ACON_prop, "use_bloom", text="")
 
     def draw(self, context):
-        layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False  # No animation.
+        if context.scene.ACON_prop.use_bloom:
+            layout = self.layout
+            layout.use_property_split = True
+            layout.use_property_decorate = False  # No animation.
 
-        scene = context.scene
-        eevee_prop = scene.eevee
-        prop = scene.ACON_prop
+            scene = context.scene
+            eevee_prop = scene.eevee
+            prop = scene.ACON_prop
 
-        layout.active = eevee_prop.use_bloom
-        col = layout.column()
-        col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
-        col.prop(prop, "bloom_knee", text="Knee", slider=True)
-        col.prop(prop, "bloom_radius", text="Radius", slider=True)
-        col.prop(eevee_prop, "bloom_color")
-        col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
-        col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
+            layout.active = eevee_prop.use_bloom
+            col = layout.column()
+            col.prop(prop, "bloom_threshold", text="Threshold", slider=True)
+            col.prop(prop, "bloom_knee", text="Knee", slider=True)
+            col.prop(prop, "bloom_radius", text="Radius", slider=True)
+            col.prop(prop, "bloom_color", text="Color")
+            col.prop(prop, "bloom_intensity", text="Intensity", slider=True)
+            col.prop(prop, "bloom_clamp", text="Clamp", slider=True)
 
 
 class ColorAdjustmentPanel(bpy.types.Panel):
