@@ -372,6 +372,42 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class SaveCopyOperator(bpy.types.Operator, ExportHelper):
+    """Save the current file in the desired location but do not make the saved file active"""
+
+    bl_idname = "acon3d.save_copy"
+    bl_label = "Save Copy..."
+    bl_translation_context = "abler"
+
+    filename_ext = ".blend"
+
+    def invoke(self, context, event):
+        with file_view_title("SAVE_AS"):
+            return super().invoke(context, event)
+
+    def execute(self, context):
+        try:
+            numbered_filepath, numbered_filename = numbering_filepath(
+                self.filepath, self.filename_ext
+            )
+
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+            bpy.ops.wm.save_as_mainfile(
+                {"dict": "override"}, copy=True, filepath=self.filepath
+            )
+            update_recent_files(self.filepath, is_add=True)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+
+        except Exception as e:
+            tracker.save_copy_fail()
+            raise e
+        else:
+            tracker.save_copy()
+
+        return {"FINISHED"}
+
+
 class ImportOperator(bpy.types.Operator, AconImportHelper):
     """Import file according to the current settings (.skp, .fbx, .blend)"""
 
@@ -689,6 +725,7 @@ classes = (
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    SaveCopyOperator,
     ImportOperator,
     ImportBlenderOperator,
     ImportFBXOperator,
