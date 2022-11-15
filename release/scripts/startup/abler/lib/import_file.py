@@ -44,3 +44,14 @@ class AconImportHelper(ImportHelper):
         else:
             # 잘 되는 경우는 True 리턴
             return True
+
+    def draw(self, context):
+        # FileBrowser UI 변경
+        space = context.space_data
+        params = space.params
+
+        params.display_type = "THUMBNAIL"
+        params.display_size = "LARGE"
+        params.recursion_level = None
+        params.sort_method = "FILE_SORT_TIME"
+        params.use_sort_revert = True
