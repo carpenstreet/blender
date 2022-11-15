@@ -46,8 +46,6 @@ class Acon3dLogoutOperator(bpy.types.Operator):
             # 아이디 기억하기 체크박스 상태와 아이디 불러오기
             prop.remember_username = read_remembered_checkbox()
             prop.username = read_remembered_username()
-
-            bpy.ops.wm.splash("INVOKE_DEFAULT")
         else:
             print("No login session file")
 
