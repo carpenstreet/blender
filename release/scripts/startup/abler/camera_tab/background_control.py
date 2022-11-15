@@ -89,12 +89,8 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
         return {"RUNNING_MODAL"}
 
     def draw(self, context):
-        # FileBrowser UI 변경
+        super().draw(context)
         space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
         space.show_region_tool_props = False
         space.show_region_ui = False
         space.show_region_toolbar = False
@@ -128,15 +124,8 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
     def draw(self, context):
-        # FileBrowser UI 변경
-        space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_invert = True
-        space.show_region_tool_props = False
+        super().draw(context)
+        context.space_data.show_region_tool_props = False
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):

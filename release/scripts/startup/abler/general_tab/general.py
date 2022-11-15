@@ -387,6 +387,8 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     )
 
     def draw(self, context):
+        super().draw(context)
+
         layout = self.layout
         row = layout.row()
         row.label(text="Import files onto the viewport.")
