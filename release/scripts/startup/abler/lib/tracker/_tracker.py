@@ -44,6 +44,8 @@ class EventKind(enum.Enum):
     save_fail = "Save Fail"
     save_as = "save_as"
     save_as_fail = "Save As Fail"
+    save_copy = "Save Copy"
+    save_copy_fail = "Save Copy Fail"
     group_navigate_bottom = "Group Navigate Bottom"
     group_navigate_top = "Group Navigate Top"
     group_navigate_down = "Group Navigate Down"
@@ -251,6 +253,12 @@ class Tracker(metaclass=ABCMeta):
 
     def save_as_fail(self):
         self._track(EventKind.save_as_fail.value)
+
+    def save_copy(self):
+        self._track(EventKind.save_copy.value)
+
+    def save_copy_fail(self):
+        self._track(EventKind.save_copy_fail.value)
 
     def group_navigate_bottom(self):
         self._track(EventKind.group_navigate_bottom.value)
