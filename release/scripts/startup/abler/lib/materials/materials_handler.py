@@ -236,7 +236,6 @@ def set_material_parameters_by_type(mat: Material) -> None:
         toonNode.inputs[3].default_value = 1
     elif type == "Diffuse":
         mat.blend_method = "CLIP"
-        mat.ACON_prop.toggle_shadow = True
         toonNode.inputs[1].default_value = 0
         toonNode.inputs[3].default_value = 1
     elif type == "Glow":
