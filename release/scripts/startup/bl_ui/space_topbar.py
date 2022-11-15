@@ -280,7 +280,7 @@ class TOPBAR_MT_file(Menu):
         layout.operator_context = 'INVOKE_AREA'
         layout.operator("acon3d.save_as", text="Save As...")
         layout.operator_context = 'INVOKE_AREA'
-        layout.operator("wm.save_as_mainfile", text="Save Copy...").copy = True
+        layout.operator("acon3d.save_copy", text="Save Copy...")
 
         layout.separator()
 
