@@ -125,8 +125,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
 
     def draw(self, context):
         super().draw(context)
-        space = context.space_data
-        space.show_region_tool_props = False
+        context.space_data.show_region_tool_props = False
 
 
 class Acon3dBackgroundPanel(bpy.types.Panel):
