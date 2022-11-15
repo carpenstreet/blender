@@ -95,6 +95,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
 
         params.display_type = "THUMBNAIL"
         params.display_size = "LARGE"
+        params.use_sort_invert = True
         space.show_region_tool_props = False
         space.show_region_ui = False
         space.show_region_toolbar = False
