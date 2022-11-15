@@ -52,6 +52,6 @@ class AconImportHelper(ImportHelper):
 
         params.display_type = "THUMBNAIL"
         params.display_size = "LARGE"
-        params.recursion_level = None
+        params.recursion_level = "NONE"
         params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_revert = True
+        params.use_sort_invert = True
