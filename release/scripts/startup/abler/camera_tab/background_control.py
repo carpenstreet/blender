@@ -128,14 +128,8 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
     def draw(self, context):
-        # FileBrowser UI 변경
+        super().draw(context)
         space = context.space_data
-        params = space.params
-
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_invert = True
         space.show_region_tool_props = False
 
 
