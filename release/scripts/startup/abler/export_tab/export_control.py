@@ -15,6 +15,10 @@ from time import time, strftime, localtime, gmtime
 
 
 class RENDER_UL_List(bpy.types.UIList):
+    def __init__(self):
+        super().__init__()
+        self.use_filter_sort_reverse = True
+
     def draw_item(
         self, context, layout, data, item, icon, active_data, active_propname
     ):
