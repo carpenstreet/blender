@@ -11,7 +11,8 @@ bl_info = {
     "category": "ACON3D",
 }
 import bpy
-from time import time, strftime, localtime, gmtime
+from time import time
+from ..lib.utils import timestamp_to_string
 
 
 class RENDER_UL_List(bpy.types.UIList):
@@ -26,15 +27,6 @@ class RENDER_UL_List(bpy.types.UIList):
             layout.separator()
             layout.prop(item, "is_render_selected", text="")
             layout.prop(item, "name", text="", emboss=False)
-
-
-# TODO Util 함수 어디에 넣어야 할지 확인
-def timestamp_to_string(timestamp, is_date=True):
-    if not timestamp:
-        return "- - -"
-    if is_date:
-        return strftime("%Y-%m-%d %H:%M:%S", localtime(timestamp))
-    return strftime("%H:%M:%S", gmtime(timestamp))
 
 
 class Acon3dHighQualityRenderPanel(bpy.types.Panel):

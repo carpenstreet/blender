@@ -16,7 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-
 bl_info = {
     "name": "ACON3D Panel",
     "description": "",
@@ -41,6 +40,8 @@ from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper
 from ..lib.user_info import get_or_init_user_info
+from time import time
+from ..lib.utils import timestamp_to_string
 
 
 def split_filepath(filepath):
@@ -685,6 +686,106 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.operator("acon3d.file_open")
         row.operator("acon3d.import", text="Import")
 
+
+class Acon3dImportProgressPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_import_progress"
+    bl_label = "Import Progress"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+
+    @classmethod
+    def poll(cls, context):
+        skp_prop = context.window_manager.SKP_prop
+        return skp_prop.start_date
+
+    def calculate_total_progres(self, prop):
+        import_start_weight = 0.05
+        material_weight = 0.05
+        object_weight = 0.3
+        update_view_layer_weight = 0.05
+        always_face_camera_weight = 0.1
+        apply_toon_style_weight = 0.05
+        update_skip_layer_weight = 0.2
+        select_all_objects_weight = 0.2
+
+        import_start_progress = import_start_weight if prop.import_start_done else 0
+        material_progress = material_weight * prop.materials_rate
+        object_progress = object_weight * prop.objects_rate
+        update_view_layer_progress = (
+            update_view_layer_weight if prop.update_view_layer_done else 0
+        )
+        always_face_camera_progress = (
+            always_face_camera_weight * prop.always_face_camera_rate
+        )
+        apply_toon_style_progress = (
+            apply_toon_style_weight if prop.apply_toon_style_done else 0
+        )
+        skip_layer_progress = update_skip_layer_weight * prop.skip_layer_rate
+        select_all_objects_progress = (
+            select_all_objects_weight if prop.select_all_objects_done else 0
+        )
+
+        return (
+            import_start_progress
+            + material_progress
+            + object_progress
+            + update_view_layer_progress
+            + always_face_camera_progress
+            + apply_toon_style_progress
+            + skip_layer_progress
+            + select_all_objects_progress
+        )
+
+    def draw(self, context):
+        skp_prop = context.window_manager.SKP_prop
+
+        layout = self.layout
+        box = layout.box()
+        total_progress = self.calculate_total_progres(skp_prop)
+        box.template_progress_bar(progress=total_progress)
+
+        sub = box.split(align=True, factor=0.25)
+
+        col = sub.column(align=True)
+        col.label(text="Start", icon="DOT")
+        col.label(text="Finish", icon="DOT")
+        col.label(text="Time Span", icon="DOT")
+
+        start_string = timestamp_to_string(skp_prop.start_date)
+        end_string = timestamp_to_string(skp_prop.end_date)
+
+        if not skp_prop.start_date:
+            span = 0
+        elif not skp_prop.end_date:
+            span = time() - skp_prop.start_date
+        else:
+            span = skp_prop.end_date - skp_prop.start_date
+        span_string = timestamp_to_string(span, is_date=False)
+
+        col = sub.column(align=True)
+        col.label(text=": " + start_string)
+        col.label(text=": " + end_string)
+        col.label(text=": " + span_string)
+
+        layout.operator("acon3d.close_skp_progress", text="OK")
+
+
+class Acon3dGeneralBottomPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_general_bottom"
+    bl_label = "General"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+    bl_options = {"HIDE_HEADER"}
+
+    def draw(self, context):
+        layout = self.layout
+
         row = layout.row()
         row.scale_y = 1.0
         row.operator("acon3d.save", text="Save")
@@ -720,6 +821,8 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
+    Acon3dImportProgressPanel,
+    Acon3dGeneralBottomPanel,
     ToggleToolbarOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
