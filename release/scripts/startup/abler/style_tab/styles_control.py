@@ -35,7 +35,7 @@ import bpy
 
 class Acon3dStylesPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Styles"
-    bl_label = "Style"
+    bl_label = "Styles"
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
