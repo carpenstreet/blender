@@ -40,13 +40,13 @@ class Acon3dStylesPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
-
-    def draw_header(self, context):
-        layout = self.layout
-        layout.label(icon="MATERIAL")
+    bl_options = {"HIDE_HEADER"}
 
     def draw(self, context):
         layout = self.layout
+        row = layout.row()
+        row.label(text="Styles", icon="MATERIAL")
+
         row = layout.row()
         col = row.column()
         col.scale_x = 3
