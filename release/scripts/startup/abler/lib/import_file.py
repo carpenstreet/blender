@@ -55,3 +55,4 @@ class AconImportHelper(ImportHelper):
         params.recursion_level = "NONE"
         params.sort_method = "FILE_SORT_TIME"
         params.use_sort_invert = True
+        params.use_filter = False
