@@ -589,7 +589,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().post_render(dummy, dum)
 
     def prepare_render(self):
-        render.clear_compositor()
+        _, _, render_type = self.render_queue[0]
+        compNodes = render.clear_compositor()
+        if render_type == "full":
+            render.setup_background_images_compositor(*compNodes)
         render.match_object_visibility()
 
     # render_type - line, shadow, texture
