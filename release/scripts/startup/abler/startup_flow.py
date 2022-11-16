@@ -255,9 +255,8 @@ class Acon3dModalOperator(BlockingModalOperator):
         if event.type == "WINDOW_DEACTIVATE":
             return False
 
-        if (
-            user_info.ACON_prop.login_status == "SUCCESS"
-            and (splash_closing or is_blend_open())
+        if user_info.ACON_prop.login_status == "SUCCESS" and (
+            splash_closing or is_blend_open()
         ):
             return True
         return False

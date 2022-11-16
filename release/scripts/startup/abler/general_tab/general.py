@@ -648,7 +648,9 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
-            bpy.ops.acon3d.import_skp(filepath=self.filepath, import_lookatme=self.import_lookatme)
+            bpy.ops.acon3d.import_skp(
+                filepath=self.filepath, import_lookatme=self.import_lookatme
+            )
         except Exception as e:
             tracker.import_skp_fail()
             raise e

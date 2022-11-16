@@ -216,7 +216,7 @@ classes = (
     OpenDefaultBackgroundOperator,
     OpenCustomBackgroundOperator,
     Acon3dBackgroundPanel,
-    Acon3dBackgroundImagesPanel
+    Acon3dBackgroundImagesPanel,
 )
 
 
