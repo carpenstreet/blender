@@ -296,7 +296,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
+class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
     # Render Type : High Quality, Snip
 
     filter_glob: bpy.props.StringProperty(default="Folders", options={"HIDDEN"})
@@ -515,6 +515,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().__init__()
 
     def draw(self, context):
+        super().draw(context)
+
         layout = self.layout
         box = layout.box()
         box.scale_y = 0.5
