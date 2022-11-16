@@ -18,13 +18,14 @@
 
 
 import bpy, platform, os, subprocess, datetime
-from bpy_extras.io_utils import ImportHelper, ExportHelper
+from bpy_extras.io_utils import ImportHelper
 from ..lib import render, cameras
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
 from ..warning_modal import BlockingModalOperator
+from ..lib.import_file import AconImportHelper, AconExportHelper
 
 
 bl_info = {
@@ -218,7 +219,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
+class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
     """Take a snapshot of the active viewport"""
 
     bl_idname = "acon3d.render_quick"
