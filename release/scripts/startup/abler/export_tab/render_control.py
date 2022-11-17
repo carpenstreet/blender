@@ -18,7 +18,6 @@
 
 
 import bpy, platform, os, subprocess, datetime
-from bpy_extras.io_utils import ImportHelper
 from ..lib import render, cameras
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_handler
@@ -231,6 +230,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
 
     def __init__(self):
+        AconExportHelper.__init__(self)
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
@@ -302,6 +302,8 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
     filter_glob: bpy.props.StringProperty(default="Folders", options={"HIDDEN"})
 
     def __init__(self):
+        AconImportHelper.__init__(self)
+
         # Get basename without file extension
         self.filepath = bpy.context.blend_data.filepath
 
