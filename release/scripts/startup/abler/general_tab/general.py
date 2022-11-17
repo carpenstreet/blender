@@ -40,7 +40,7 @@ from ..lib.file_view import file_view_title
 from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
-from ..lib.import_file import AconImportHelper
+from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
 from ..lib.utils import timestamp_to_string
 
@@ -289,7 +289,7 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator, ExportHelper):
+class SaveOperator(bpy.types.Operator, AconExportHelper):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
@@ -308,7 +308,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 return self.execute(context)
 
             else:
-                return ExportHelper.invoke(self, context, event)
+                return AconExportHelper.invoke(self, context, event)
 
     def execute(self, context):
         try:
@@ -340,7 +340,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class SaveAsOperator(bpy.types.Operator, ExportHelper):
+class SaveAsOperator(bpy.types.Operator, AconExportHelper):
     """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
@@ -374,7 +374,7 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class SaveCopyOperator(bpy.types.Operator, ExportHelper):
+class SaveCopyOperator(bpy.types.Operator, AconExportHelper):
     """Save the current file in the desired location but do not make the saved file active"""
 
     bl_idname = "acon3d.save_copy"
