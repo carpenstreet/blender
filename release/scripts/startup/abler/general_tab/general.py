@@ -30,9 +30,11 @@ bl_info = {
 }
 import os
 
-from datetime import datetime, timedelta
 import bpy
-from bpy_extras.io_utils import ImportHelper, ExportHelper
+from datetime import datetime, timedelta
+from time import time
+from operator import mul
+from bpy_extras.io_utils import ExportHelper
 from ..lib import scenes
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_setup
@@ -40,7 +42,6 @@ from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper
 from ..lib.user_info import get_or_init_user_info
-from time import time
 from ..lib.utils import timestamp_to_string
 
 
@@ -438,7 +439,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         self.path_ext = self.filepath.rsplit(".")[-1]
         if self.path_ext == "skp":
             row = layout.row()
-            row.prop(self, "import_lookatme", text="Import always face camera")
+            row.prop(self, "import_lookatme", text="Import Look at me")
 
     def invoke(self, context, event):
         with file_view_title("IMPORT"):
@@ -687,6 +688,27 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.operator("acon3d.import", text="Import")
 
 
+def calculate_total_progress(prop):
+    # 처리 순서대로
+    # (Import Start, Material, Object, Update Skip Layer, Update View Layer,
+    # Always Face Camera, Apply Toon Style, Select ALl Objects)
+    weights = (1, 0.001, 0.001, 0.2, 0.1, 0.3, 5, 10)
+    #                                    TODO
+    normalize_factor = 1 / sum(weights)
+    progresses = (
+        int(prop.import_start_done),
+        prop.materials_rate,
+        prop.objects_rate,
+        prop.skip_layer_rate,
+        int(prop.update_view_layer_done),
+        prop.always_face_camera_rate,
+        int(prop.apply_toon_style_done),
+        int(prop.select_all_objects_done),
+    )
+
+    return sum(map(mul, weights, progresses)) * normalize_factor
+
+
 class Acon3dImportProgressPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_general"
     bl_idname = "ACON3D_PT_import_progress"
@@ -701,50 +723,12 @@ class Acon3dImportProgressPanel(bpy.types.Panel):
         skp_prop = context.window_manager.SKP_prop
         return skp_prop.start_date
 
-    def calculate_total_progres(self, prop):
-        import_start_weight = 0.05
-        material_weight = 0.05
-        object_weight = 0.3
-        update_view_layer_weight = 0.05
-        always_face_camera_weight = 0.1
-        apply_toon_style_weight = 0.05
-        update_skip_layer_weight = 0.2
-        select_all_objects_weight = 0.2
-
-        import_start_progress = import_start_weight if prop.import_start_done else 0
-        material_progress = material_weight * prop.materials_rate
-        object_progress = object_weight * prop.objects_rate
-        update_view_layer_progress = (
-            update_view_layer_weight if prop.update_view_layer_done else 0
-        )
-        always_face_camera_progress = (
-            always_face_camera_weight * prop.always_face_camera_rate
-        )
-        apply_toon_style_progress = (
-            apply_toon_style_weight if prop.apply_toon_style_done else 0
-        )
-        skip_layer_progress = update_skip_layer_weight * prop.skip_layer_rate
-        select_all_objects_progress = (
-            select_all_objects_weight if prop.select_all_objects_done else 0
-        )
-
-        return (
-            import_start_progress
-            + material_progress
-            + object_progress
-            + update_view_layer_progress
-            + always_face_camera_progress
-            + apply_toon_style_progress
-            + skip_layer_progress
-            + select_all_objects_progress
-        )
-
     def draw(self, context):
         skp_prop = context.window_manager.SKP_prop
 
         layout = self.layout
         box = layout.box()
-        total_progress = self.calculate_total_progres(skp_prop)
+        total_progress = calculate_total_progress(skp_prop)
         box.template_progress_bar(progress=total_progress)
 
         sub = box.split(align=True, factor=0.25)
