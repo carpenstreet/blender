@@ -692,8 +692,7 @@ def calculate_total_progress(prop):
     # 처리 순서대로
     # (Import Start, Material, Object, Update Skip Layer, Update View Layer,
     # Always Face Camera, Apply Toon Style, Select ALl Objects)
-    weights = (1, 0.001, 0.001, 0.2, 0.1, 0.3, 5, 10)
-    #                                    TODO
+    weights = (1, 0.001, 0.001, 0.2, 0.1, 0.001, 5, 10)
     normalize_factor = 1 / sum(weights)
     progresses = (
         int(prop.import_start_done),
