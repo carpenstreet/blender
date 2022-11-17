@@ -233,6 +233,10 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
+    def invoke(self, context, event):
+        with file_view_title("RENDER"):
+            return super().invoke(context, event)
+
     def execute(self, context):
         tracker.render_quick()
 
