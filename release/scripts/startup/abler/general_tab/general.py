@@ -33,7 +33,6 @@ import os
 import bpy
 from datetime import datetime, timedelta
 from time import time
-from operator import mul
 from bpy_extras.io_utils import ExportHelper
 from ..lib import scenes
 from ..lib.file_view import file_view_title
@@ -688,26 +687,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.operator("acon3d.import", text="Import")
 
 
-def calculate_total_progress(prop):
-    # 처리 순서대로
-    # (Import Start, Material, Object, Update Skip Layer, Update View Layer,
-    # Always Face Camera, Apply Toon Style, Select ALl Objects)
-    weights = (1, 0.001, 0.001, 0.2, 0.1, 0.001, 5, 10)
-    normalize_factor = 1 / sum(weights)
-    progresses = (
-        int(prop.import_start_done),
-        prop.materials_rate,
-        prop.objects_rate,
-        prop.skip_layer_rate,
-        int(prop.update_view_layer_done),
-        prop.always_face_camera_rate,
-        int(prop.apply_toon_style_done),
-        int(prop.select_all_objects_done),
-    )
-
-    return sum(map(mul, weights, progresses)) * normalize_factor
-
-
 class Acon3dImportProgressPanel(bpy.types.Panel):
     bl_parent_id = "ACON3D_PT_general"
     bl_idname = "ACON3D_PT_import_progress"
@@ -727,7 +706,7 @@ class Acon3dImportProgressPanel(bpy.types.Panel):
 
         layout = self.layout
         box = layout.box()
-        total_progress = calculate_total_progress(skp_prop)
+        total_progress = skp_prop.total_progress
         box.template_progress_bar(progress=total_progress)
 
         sub = box.split(align=True, factor=0.25)
