@@ -107,15 +107,16 @@ class Acon3dCameraControlPanel(bpy.types.Panel):
     bl_category = "Camera"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-
-    def draw_header(self, context):
-        layout = self.layout
-        layout.label(icon="CAMERA_DATA")
+    bl_translation_context = "abler"
+    bl_options = {"HIDE_HEADER"}
 
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
         layout.use_property_decorate = False  # No animation.
+
+        row = layout.row()
+        row.label(text="Camera Control", icon="CAMERA_DATA", text_ctxt="abler")
 
         cam = context.scene.camera
         if cam is not None:

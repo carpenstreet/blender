@@ -31,16 +31,18 @@ bl_info = {
 }
 import os
 
-from datetime import datetime, timedelta
 import bpy
-from bpy_extras.io_utils import ImportHelper, ExportHelper
+from datetime import datetime, timedelta
+from time import time
+from bpy_extras.io_utils import ExportHelper
 from ..lib import scenes
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
-from ..lib.import_file import AconImportHelper
+from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
+from ..lib.string_helper import timestamp_to_string
 
 
 def split_filepath(filepath):
@@ -287,7 +289,7 @@ class FlyOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SaveOperator(bpy.types.Operator, ExportHelper):
+class SaveOperator(bpy.types.Operator, AconExportHelper):
     """Save the current Blender file"""
 
     bl_idname = "acon3d.save"
@@ -306,7 +308,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
                 return self.execute(context)
 
             else:
-                return ExportHelper.invoke(self, context, event)
+                return AconExportHelper.invoke(self, context, event)
 
     def execute(self, context):
         try:
@@ -338,7 +340,7 @@ class SaveOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class SaveAsOperator(bpy.types.Operator, ExportHelper):
+class SaveAsOperator(bpy.types.Operator, AconExportHelper):
     """Save the current file in the desired location"""
 
     bl_idname = "acon3d.save_as"
@@ -372,6 +374,42 @@ class SaveAsOperator(bpy.types.Operator, ExportHelper):
         return {"FINISHED"}
 
 
+class SaveCopyOperator(bpy.types.Operator, AconExportHelper):
+    """Save the current file in the desired location but do not make the saved file active"""
+
+    bl_idname = "acon3d.save_copy"
+    bl_label = "Save Copy..."
+    bl_translation_context = "abler"
+
+    filename_ext = ".blend"
+
+    def invoke(self, context, event):
+        with file_view_title("SAVE_AS"):
+            return super().invoke(context, event)
+
+    def execute(self, context):
+        try:
+            numbered_filepath, numbered_filename = numbering_filepath(
+                self.filepath, self.filename_ext
+            )
+
+            self.filepath = f"{numbered_filepath}{self.filename_ext}"
+
+            bpy.ops.wm.save_as_mainfile(
+                {"dict": "override"}, copy=True, filepath=self.filepath
+            )
+            update_recent_files(self.filepath, is_add=True)
+            self.report({"INFO"}, f'Saved "{numbered_filename}{self.filename_ext}"')
+
+        except Exception as e:
+            tracker.save_copy_fail()
+            raise e
+        else:
+            tracker.save_copy()
+
+        return {"FINISHED"}
+
+
 class ImportOperator(bpy.types.Operator, AconImportHelper):
     """Import file according to the current settings (.skp, .fbx, .blend)"""
 
@@ -401,7 +439,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         self.path_ext = self.filepath.rsplit(".")[-1]
         if self.path_ext == "skp":
             row = layout.row()
-            row.prop(self, "import_lookatme", text="Import always face camera")
+            row.prop(self, "import_lookatme", text="Import Look at me")
 
     def invoke(self, context, event):
         with file_view_title("IMPORT"):
@@ -612,7 +650,9 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
-            bpy.ops.acon3d.import_skp(filepath=self.filepath, import_lookatme=self.import_lookatme)
+            bpy.ops.acon3d.import_skp(
+                filepath=self.filepath, import_lookatme=self.import_lookatme
+            )
         except Exception as e:
             tracker.import_skp_fail()
             raise e
@@ -646,6 +686,75 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_y = 1.0
         row.operator("acon3d.file_open")
         row.operator("acon3d.import", text="Import")
+
+
+class Acon3dImportProgressPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_import_progress"
+    bl_label = "Import Progress"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+
+    @classmethod
+    def poll(cls, context):
+        skp_prop = context.window_manager.SKP_prop
+        return skp_prop.start_date
+
+    def draw(self, context):
+        skp_prop = context.window_manager.SKP_prop
+
+        layout = self.layout
+        box = layout.box()
+        total_progress = skp_prop.total_progress
+        box.template_progress_bar(progress=total_progress)
+
+        sub = box.split(align=True, factor=0.45)
+
+        sub2 = sub.split(align=True, factor=0.15)
+
+        col = sub2.column(align=True)
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+
+        col = sub2.column(align=True)
+        col.label(text="Start")
+        col.label(text="Finish")
+        col.label(text="Time Span")
+
+        start_string = timestamp_to_string(skp_prop.start_date)
+        end_string = timestamp_to_string(skp_prop.end_date)
+
+        if not skp_prop.start_date:
+            span = 0
+        elif not skp_prop.end_date:
+            span = time() - skp_prop.start_date
+        else:
+            span = skp_prop.end_date - skp_prop.start_date
+        span_string = timestamp_to_string(span, is_date=False)
+
+        col = sub.column(align=True)
+        col.label(text=": " + start_string)
+        col.label(text=": " + end_string)
+        col.label(text=": " + span_string)
+
+        layout.operator("acon3d.close_skp_progress", text="OK")
+
+
+class Acon3dGeneralBottomPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_general_bottom"
+    bl_label = "General"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+    bl_options = {"HIDE_HEADER"}
+
+    def draw(self, context):
+        layout = self.layout
 
         row = layout.row()
         row.scale_y = 1.0
@@ -682,6 +791,8 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
+    Acon3dImportProgressPanel,
+    Acon3dGeneralBottomPanel,
     ToggleToolbarOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
@@ -689,6 +800,7 @@ classes = (
     FlyOperator,
     SaveOperator,
     SaveAsOperator,
+    SaveCopyOperator,
     ImportOperator,
     ImportBlenderOperator,
     ImportFBXOperator,

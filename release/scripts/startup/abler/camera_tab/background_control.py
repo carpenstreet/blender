@@ -135,13 +135,12 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
-
-    def draw_header(self, context):
-        layout = self.layout
-        layout.label(icon="IMAGE_BACKGROUND")
+    bl_options = {"HIDE_HEADER"}
 
     def draw(self, context):
-        pass
+        layout = self.layout
+        row = layout.row()
+        row.label(text="Background", icon="IMAGE_BACKGROUND")
 
 
 class Acon3dBackgroundImagesPanel(bpy.types.Panel):
@@ -216,7 +215,7 @@ classes = (
     OpenDefaultBackgroundOperator,
     OpenCustomBackgroundOperator,
     Acon3dBackgroundPanel,
-    Acon3dBackgroundImagesPanel
+    Acon3dBackgroundImagesPanel,
 )
 
 

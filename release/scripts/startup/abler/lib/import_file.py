@@ -1,9 +1,13 @@
 import os
 import bpy
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, ExportHelper
 
 
 class AconImportHelper(ImportHelper):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_option = None
+
     def check_path(self, accepted: list[str]) -> bool:
         """
         :param accepted: 허용할 extension 리스트
@@ -46,12 +50,33 @@ class AconImportHelper(ImportHelper):
             return True
 
     def draw(self, context):
-        # FileBrowser UI 변경
-        space = context.space_data
-        params = space.params
+        # FileBrowser UI 설정이 맨처음에만 적용되게끔
+        if not self.set_option:
+            params = context.space_data.params
+            params.display_type = "THUMBNAIL"
+            params.display_size = "LARGE"
+            params.recursion_level = "NONE"
+            params.sort_method = "FILE_SORT_TIME"
+            params.use_sort_invert = True
+            params.use_filter = False
 
-        params.display_type = "THUMBNAIL"
-        params.display_size = "LARGE"
-        params.recursion_level = "NONE"
-        params.sort_method = "FILE_SORT_TIME"
-        params.use_sort_invert = True
+            self.set_option = True
+
+
+class AconExportHelper(ExportHelper):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_option = None
+
+    def draw(self, context):
+        # FileBrowser UI 설정이 맨처음에만 적용되게끔
+        if not self.set_option:
+            params = context.space_data.params
+            params.display_type = "THUMBNAIL"
+            params.display_size = "LARGE"
+            params.recursion_level = "NONE"
+            params.sort_method = "FILE_SORT_TIME"
+            params.use_sort_invert = True
+            params.use_filter = False
+
+            self.set_option = True

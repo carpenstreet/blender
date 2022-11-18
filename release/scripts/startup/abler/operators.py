@@ -39,16 +39,13 @@ class Acon3dLogoutOperator(bpy.types.Operator):
         if os.path.exists(path_cookiesFile):
             os.remove(path_cookiesFile)
 
-            # login_status가 SUCCESS가 아닌 상태에서 modal_operator를 실행
-            prop.login_status = "IDLE"
-            bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
+        # login_status가 SUCCESS가 아닌 상태에서 modal_operator를 실행
+        prop.login_status = "IDLE"
+        bpy.ops.acon3d.modal_operator("INVOKE_DEFAULT")
 
-            # 아이디 기억하기 체크박스 상태와 아이디 불러오기
-            prop.remember_username = read_remembered_checkbox()
-            prop.username = read_remembered_username()
-        else:
-            print("No login session file")
-
+        # 아이디 기억하기 체크박스 상태와 아이디 불러오기
+        prop.remember_username = read_remembered_checkbox()
+        prop.username = read_remembered_username()
         tracker.logout()
 
         return {"FINISHED"}

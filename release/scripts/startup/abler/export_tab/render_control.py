@@ -18,13 +18,13 @@
 
 
 import bpy, platform, os, subprocess, datetime
-from bpy_extras.io_utils import ImportHelper, ExportHelper
 from ..lib import render, cameras
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
 from ..warning_modal import BlockingModalOperator
+from ..lib.import_file import AconImportHelper, AconExportHelper
 
 
 bl_info = {
@@ -218,7 +218,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
+class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
     """Take a snapshot of the active viewport"""
 
     bl_idname = "acon3d.render_quick"
@@ -230,6 +230,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
 
     def __init__(self):
+        AconExportHelper.__init__(self)
         scene = bpy.context.scene
         self.filepath = f"{scene.name}{self.filename_ext}"
 
@@ -295,12 +296,14 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, ExportHelper):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
+class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
     # Render Type : High Quality, Snip
 
     filter_glob: bpy.props.StringProperty(default="Folders", options={"HIDDEN"})
 
     def __init__(self):
+        AconImportHelper.__init__(self)
+
         # Get basename without file extension
         self.filepath = bpy.context.blend_data.filepath
 
@@ -362,7 +365,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, ImportHelper):
 
             elif self.rendering is False:
 
-                name_item, qitem, _ = self.render_queue[0]
+                name_item, qitem, *_ = self.render_queue[0]
                 if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
@@ -514,6 +517,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().__init__()
 
     def draw(self, context):
+        super().draw(context)
+
         layout = self.layout
         box = layout.box()
         box.scale_y = 0.5
@@ -589,7 +594,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().post_render(dummy, dum)
 
     def prepare_render(self):
-        render.clear_compositor()
+        _, _, render_type = self.render_queue[0]
+        compNodes = render.clear_compositor()
+        if render_type == "full":
+            render.setup_background_images_compositor(*compNodes)
         render.match_object_visibility()
 
     # render_type - line, shadow, texture
