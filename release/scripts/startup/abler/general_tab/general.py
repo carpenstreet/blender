@@ -16,6 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 bl_info = {
     "name": "ACON3D Panel",
     "description": "",
@@ -41,7 +42,7 @@ from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
-from ..lib.utils import timestamp_to_string
+from ..lib.string_helper import timestamp_to_string
 
 
 def split_filepath(filepath):

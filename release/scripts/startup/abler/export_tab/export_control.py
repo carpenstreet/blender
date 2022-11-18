@@ -12,7 +12,7 @@ bl_info = {
 }
 import bpy
 from time import time
-from ..lib.utils import timestamp_to_string
+from ..lib.string_helper import timestamp_to_string
 
 
 class RENDER_UL_List(bpy.types.UIList):
