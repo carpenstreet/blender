@@ -31,8 +31,10 @@ bl_info = {
 }
 import os
 
-from datetime import datetime, timedelta
 import bpy
+from datetime import datetime, timedelta
+from time import time
+from bpy_extras.io_utils import ExportHelper
 from ..lib import scenes
 from ..lib.file_view import file_view_title
 from ..lib.materials import materials_setup
@@ -40,6 +42,7 @@ from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
+from ..lib.string_helper import timestamp_to_string
 
 
 def split_filepath(filepath):
@@ -436,7 +439,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         self.path_ext = self.filepath.rsplit(".")[-1]
         if self.path_ext == "skp":
             row = layout.row()
-            row.prop(self, "import_lookatme", text="Import always face camera")
+            row.prop(self, "import_lookatme", text="Import Look at me")
 
     def invoke(self, context, event):
         with file_view_title("IMPORT"):
@@ -684,6 +687,68 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.operator("acon3d.file_open")
         row.operator("acon3d.import", text="Import")
 
+
+class Acon3dImportProgressPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_import_progress"
+    bl_label = "Import Progress"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+
+    @classmethod
+    def poll(cls, context):
+        skp_prop = context.window_manager.SKP_prop
+        return skp_prop.start_date
+
+    def draw(self, context):
+        skp_prop = context.window_manager.SKP_prop
+
+        layout = self.layout
+        box = layout.box()
+        total_progress = skp_prop.total_progress
+        box.template_progress_bar(progress=total_progress)
+
+        sub = box.split(align=True, factor=0.25)
+
+        col = sub.column(align=True)
+        col.label(text="Start", icon="DOT")
+        col.label(text="Finish", icon="DOT")
+        col.label(text="Time Span", icon="DOT")
+
+        start_string = timestamp_to_string(skp_prop.start_date)
+        end_string = timestamp_to_string(skp_prop.end_date)
+
+        if not skp_prop.start_date:
+            span = 0
+        elif not skp_prop.end_date:
+            span = time() - skp_prop.start_date
+        else:
+            span = skp_prop.end_date - skp_prop.start_date
+        span_string = timestamp_to_string(span, is_date=False)
+
+        col = sub.column(align=True)
+        col.label(text=": " + start_string)
+        col.label(text=": " + end_string)
+        col.label(text=": " + span_string)
+
+        layout.operator("acon3d.close_skp_progress", text="OK")
+
+
+class Acon3dGeneralBottomPanel(bpy.types.Panel):
+    bl_parent_id = "ACON3D_PT_general"
+    bl_idname = "ACON3D_PT_general_bottom"
+    bl_label = "General"
+    bl_category = "General"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+    bl_options = {"HIDE_HEADER"}
+
+    def draw(self, context):
+        layout = self.layout
+
         row = layout.row()
         row.scale_y = 1.0
         row.operator("acon3d.save", text="Save")
@@ -719,6 +784,8 @@ classes = (
     AconTutorialGuide2Operator,
     AconTutorialGuide3Operator,
     Acon3dGeneralPanel,
+    Acon3dImportProgressPanel,
+    Acon3dGeneralBottomPanel,
     ToggleToolbarOperator,
     ApplyToonStyleOperator,
     FileOpenOperator,
