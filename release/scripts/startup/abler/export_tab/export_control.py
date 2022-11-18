@@ -117,12 +117,19 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             box.label(text=info.render_scene_name)
             box.template_progress_bar(progress=0.0)
 
-        sub = box.split(align=True, factor=0.25)
+        sub = box.split(align=True, factor=0.5)
 
-        col = sub.column(align=True)
-        col.label(text="Start", icon="DOT")
-        col.label(text="Finish", icon="DOT")
-        col.label(text="Time Span", icon="DOT")
+        sub2 = sub.split(align=True, factor=0.15)
+
+        col = sub2.column(align=True)
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+
+        col = sub2.column(align=True)
+        col.label(text="Start")
+        col.label(text="Finish")
+        col.label(text="Time Span")
 
         col = sub.column(align=True)
         col.label(text=": - - -")
@@ -170,12 +177,19 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
             else:
                 col.template_progress_bar(progress=1.0)
 
-        sub = box.split(align=True, factor=0.25)
+        sub = box.split(align=True, factor=0.5)
 
-        col = sub.column(align=True)
-        col.label(text="Start", icon="DOT")
-        col.label(text="Finish", icon="DOT")
-        col.label(text="Time Span", icon="DOT")
+        sub2 = sub.split(align=True, factor=0.15)
+
+        col = sub2.column(align=True)
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+        col.label(icon="DOT")
+
+        col = sub2.column(align=True)
+        col.label(text="Start")
+        col.label(text="Finish")
+        col.label(text="Time Span")
 
         start_string = timestamp_to_string(progress_prop.start_date)
         end_string = timestamp_to_string(progress_prop.end_date)
