@@ -87,7 +87,8 @@ class CreateSceneOperator(bpy.types.Operator):
         prop = context.window_manager.ACON_prop
         # self.name이 씬 이름 목록에 있을 땐 번호 추가
         while self.name in prop.scene_col:
-            scene_name, post_fix = self.name.rsplit(".", 1)
+            scene_name = self.name.rsplit(".")[0]
+            post_fix = self.name.rsplit(".")[-1]
             if post_fix.isnumeric():
                 post_fix = str(int(post_fix) + 1).zfill(3)
             else:
