@@ -120,6 +120,7 @@ class Acon3dLayersPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
+    bl_order = 12
 
     def draw_header(self, context):
         layout = self.layout

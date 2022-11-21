@@ -172,6 +172,7 @@ class Acon3dScenesPanel(bpy.types.Panel):
     bl_category = "Scenes"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_order = 10
     bl_translation_context = "abler"
 
     def draw_header(self, context):

@@ -135,6 +135,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
+    bl_order = 11
     bl_options = {"HIDE_HEADER"}
 
     def draw(self, context):
