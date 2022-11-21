@@ -172,6 +172,9 @@ class Acon3dScenesPanel(bpy.types.Panel):
     bl_category = "Scenes"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    # 블렌더에선 bl_order가 앞이어도 bl_options = {"HIDE_HEADER"}인 패널부터 먼저 배치돼 기획안과 다르게 나옴
+    # camera -> scene -> style 순으로 배치하도록
+    # Acon3dCameraControlPanel의 bl_order 값과 맞춰 하위 패널로 인식하게끔 만듦
     bl_order = 10
     bl_translation_context = "abler"
 
