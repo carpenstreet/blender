@@ -19,7 +19,7 @@ def manage_preferences_addons():
 
     # 활성 addons
     for addon in enable_addons:
-        if addon in prefs_context.addons:
+        if addon not in prefs_context.addons:
             prefs_ops.addon_enable(module=addon)
 
     # 비활성 addons
