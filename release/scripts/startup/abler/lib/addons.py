@@ -13,16 +13,16 @@ disable_addons = [
 ]
 
 
-def preferences_addons():
+def manage_preferences_addons():
     prefs_context = bpy.context.preferences
     prefs_ops = bpy.ops.preferences
 
     # 활성 addons
     for addon in enable_addons:
-        if prefs_context.addons.find(addon) == -1:
+        if addon in prefs_context.addons:
             prefs_ops.addon_enable(module=addon)
 
     # 비활성 addons
     for addon in disable_addons:
-        if prefs_context.addons.find(addon) != -1:
+        if addon in prefs_context.addons:
             prefs_ops.addon_disable(module=addon)
