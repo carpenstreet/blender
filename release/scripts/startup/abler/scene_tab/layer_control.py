@@ -116,7 +116,7 @@ class Acon3dLayersPanel(bpy.types.Panel):
 
     bl_idname = "ACON3D_PT_Layer"
     bl_label = "Layers"
-    bl_category = "Scenes"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
