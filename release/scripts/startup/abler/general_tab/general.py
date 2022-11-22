@@ -669,6 +669,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
+    bl_order = 1
     bl_options = {"HIDE_HEADER"}
 
     def draw_header(self, context):
