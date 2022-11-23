@@ -70,6 +70,7 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
     filepath: bpy.props.StringProperty()
+    use_filter = True
 
     def execute(self, context):
         if not self.check_path(accepted=["png", "jpg"]):
@@ -107,6 +108,7 @@ class OpenCustomBackgroundOperator(bpy.types.Operator, AconImportHelper):
     image_extension = "*.png;*.jpg;"
     index: bpy.props.IntProperty(name="Index", default=0, options={"HIDDEN"})
     filter_glob: bpy.props.StringProperty(default=image_extension, options={"HIDDEN"})
+    use_filter = True
 
     def invoke(self, context, event):
         with file_view_title("BACKGROUND"):
@@ -135,6 +137,7 @@ class Acon3dBackgroundPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
+    bl_order = 11
     bl_options = {"HIDE_HEADER"}
 
     def draw(self, context):

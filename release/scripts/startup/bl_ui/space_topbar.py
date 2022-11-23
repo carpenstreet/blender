@@ -458,7 +458,7 @@ class TOPBAR_MT_ACON3D_file_import(Menu):
 
     def draw(self, _context):
         self.layout.operator("acon3d.import_fbx", text="FBX (.fbx)")
-        self.layout.operator("acon3d.import_skp", text="SKP (.skp)")
+        self.layout.operator("acon3d.import_skp_op", text="SKP (.skp)")
         self.layout.operator("acon3d.import_blend", text="Blender (.blend)")
 
 

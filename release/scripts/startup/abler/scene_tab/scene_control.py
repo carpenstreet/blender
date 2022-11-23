@@ -87,7 +87,8 @@ class CreateSceneOperator(bpy.types.Operator):
         prop = context.window_manager.ACON_prop
         # self.name이 씬 이름 목록에 있을 땐 번호 추가
         while self.name in prop.scene_col:
-            scene_name, post_fix = self.name.rsplit(".", 1)
+            scene_name = self.name.rsplit(".")[0]
+            post_fix = self.name.rsplit(".")[-1]
             if post_fix.isnumeric():
                 post_fix = str(int(post_fix) + 1).zfill(3)
             else:
@@ -168,9 +169,13 @@ class DeleteSceneOperator(bpy.types.Operator):
 class Acon3dScenesPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_scenes"
     bl_label = "Scenes"
-    bl_category = "Scenes"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    # 블렌더에선 bl_order가 앞이어도 bl_options = {"HIDE_HEADER"}인 패널부터 먼저 배치돼 기획안과 다르게 나옴
+    # camera -> scene -> style 순으로 배치하도록
+    # Acon3dCameraControlPanel의 bl_order 값과 맞춰 하위 패널로 인식하게끔 만듦
+    bl_order = 10
     bl_translation_context = "abler"
 
     def draw_header(self, context):
