@@ -4,6 +4,8 @@ from bpy_extras.io_utils import ImportHelper, ExportHelper
 
 
 class AconImportHelper(ImportHelper):
+    use_filter: bool = False
+
     def __init__(self) -> None:
         super().__init__()
         self.set_option = None
@@ -58,7 +60,8 @@ class AconImportHelper(ImportHelper):
             params.recursion_level = "NONE"
             params.sort_method = "FILE_SORT_TIME"
             params.use_sort_invert = True
-            params.use_filter = False
+            if self.use_filter:
+                params.use_filter = True
 
             self.set_option = True
 

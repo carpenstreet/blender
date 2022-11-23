@@ -227,6 +227,7 @@ class FileOpenOperator(bpy.types.Operator, AconImportHelper, BaseFileOpenOperato
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
+    use_filter = True
 
     def invoke(self, context, event):
         with file_view_title("OPEN"):
@@ -423,6 +424,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
     import_lookatme: bpy.props.BoolProperty(
         default=False,
     )
+    use_filter = True
 
     def draw(self, context):
         super().draw(context)
@@ -472,6 +474,7 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
+    use_filter = True
 
     class SameFileImportError(Exception):
         def __init__(self):
@@ -578,6 +581,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
+    use_filter = True
 
     def invoke(self, context, event):
         with file_view_title("IMPORT"):
@@ -641,6 +645,7 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
 
     filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
     import_lookatme: bpy.props.BoolProperty(default=False)
+    use_filter = True
 
     def invoke(self, context, event):
         with file_view_title("IMPORT"):
