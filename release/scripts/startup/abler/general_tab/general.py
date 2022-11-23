@@ -43,6 +43,7 @@ from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
 from ..lib.string_helper import timestamp_to_string
+from ..warning_modal import BlockingModalOperator
 
 
 def split_filepath(filepath):
@@ -650,8 +651,10 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
         try:
-            bpy.ops.acon3d.import_skp(
-                filepath=self.filepath, import_lookatme=self.import_lookatme
+            bpy.ops.acon3d.import_skp_modal(
+                "INVOKE_DEFAULT",
+                filepath=self.filepath,
+                import_lookatme=self.import_lookatme,
             )
         except Exception as e:
             tracker.import_skp_fail()
@@ -659,6 +662,63 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         else:
             tracker.import_skp()
 
+        return {"FINISHED"}
+
+
+class ImportSKPModalOperator(BlockingModalOperator):
+    """Execute Selected File"""
+
+    bl_idname = "acon3d.import_skp_modal"
+    bl_label = "Import SKP"
+    bl_translation_context = "abler"
+
+    filepath: bpy.props.StringProperty(default="")
+    import_lookatme: bpy.props.BoolProperty(default=False)
+
+    def draw_modal(self, layout):
+        filename = self.filepath.split("/")[-1]
+
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(text="Import selected file")
+        col.label(text=filename)
+
+        import_skp_props = col.operator("acon3d.import_skp_accept")
+        import_skp_props.filepath = self.filepath
+        import_skp_props.import_lookatme = self.import_lookatme
+
+        col.operator("acon3d.close_blocking_modal", text="Cancel")
+        row.label(text="")
+
+        main.label(text="")
+
+
+class ImportSKPAcceptOperator(bpy.types.Operator):
+    """Execute Selected File"""
+
+    bl_idname = "acon3d.import_skp_accept"
+    bl_label = "Import"
+    bl_translation_context = "abler"
+
+    filepath: bpy.props.StringProperty(default="")
+    import_lookatme: bpy.props.BoolProperty(default=False)
+
+    def execute(self, context):
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        bpy.ops.acon3d.import_skp(
+            "INVOKE_DEFAULT",
+            filepath=self.filepath,
+            import_lookatme=self.import_lookatme,
+        )
         return {"FINISHED"}
 
 
@@ -806,6 +866,8 @@ classes = (
     ImportBlenderOperator,
     ImportFBXOperator,
     ImportSKPOperator,
+    ImportSKPModalOperator,
+    ImportSKPAcceptOperator,
 )
 
 
