@@ -185,9 +185,10 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
 class Acon3dObjectPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Object_Main"
     bl_label = "Object Control"
-    bl_category = "Scenes"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_order = 11
 
     def draw_header(self, context):
         layout = self.layout
@@ -221,7 +222,7 @@ class Acon3dGroupNavigationPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Object_Main"
     bl_idname = "ACON_PT_Group_Navigation"
     bl_label = "Group Navigation"
-    bl_category = "Style"
+    bl_category = "Scene"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
 

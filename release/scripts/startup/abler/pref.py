@@ -9,7 +9,7 @@ from .lib import cameras, shadow, render, scenes, post_open
 from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
 from .lib.version import update_file_version
-from .lib.addons import disable_preference_addons
+from .lib.addons import manage_preferences_addons
 
 
 def init_setting(dummy):
@@ -50,8 +50,8 @@ def init_setting(dummy):
     prefs_input.use_zoom_to_mouse = True
     prefs_input.use_mouse_depth_navigate = True
 
-    # Import에 적용되는 Addons 비활성화
-    disable_preference_addons()
+    # ABLER 실행 addons 관리
+    manage_preferences_addons()
 
 
 def hide_header(dummy):

@@ -37,6 +37,7 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_order = 30
     bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
@@ -218,6 +219,7 @@ class Acon3dQuickRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_order = 31
     bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
@@ -247,6 +249,7 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
     bl_category = "Export"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_order = 32
     bl_translation_context = "abler"
     COMPAT_ENGINES = {"BLENDER_RENDER", "BLENDER_EEVEE", "BLENDER_WORKBENCH"}
 
