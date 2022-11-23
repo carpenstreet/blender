@@ -667,6 +667,12 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
 
         return {"FINISHED"}
 
+    def draw(self, context):
+        super().draw(context)
+
+        layout = self.layout
+        layout.prop(self, "import_lookatme", text="Import Look at me")
+
 
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
