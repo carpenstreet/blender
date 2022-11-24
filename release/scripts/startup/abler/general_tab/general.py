@@ -696,14 +696,15 @@ class ImportSKPModalOperator(BlockingModalOperator):
         import_skp_props.filepath = self.filepath
         import_skp_props.import_lookatme = self.import_lookatme
 
-        col.operator("acon3d.close_blocking_modal", text="Cancel")
-        row.label(text="")
+        cancel_props = col.operator("acon3d.close_blocking_modal", text="Cancel")
+        cancel_props.description_text = "Cancel"
 
+        row.label(text="")
         main.label(text="")
 
 
 class ImportSKPAcceptOperator(bpy.types.Operator):
-    """Execute Selected File"""
+    """Import selected file"""
 
     bl_idname = "acon3d.import_skp_accept"
     bl_label = "Import"
