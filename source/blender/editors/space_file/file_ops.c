@@ -1299,8 +1299,7 @@ static int bookmark_move_exec(bContext *C, wmOperator *op)
   /*
    * 파일 브라우저에서 북마크에 없는 디렉터리를 선택하고 북마크 Move to Top 관련 기능을 사용하면
    * 최상위 북마크가 삭제되는 문제가 발생함. 이 문제를 해결하기 위한 조건 추가.
-   * Issue: https://www.notion.so/acon3d/Issue-0114-d378035c4e4544dc9a0cc1137a4cdacf
-   * Task : https://www.notion.so/acon3d/Top-baa9d05d98fc4950a49c7e104186c4a0
+   * Task: https://www.notion.so/acon3d/Top-baa9d05d98fc4950a49c7e104186c4a0
    */
   if (act_index == -1) {
     return OPERATOR_CANCELLED;
