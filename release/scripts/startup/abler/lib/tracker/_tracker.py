@@ -1,3 +1,6 @@
+import logging
+import os
+import sys
 from abc import *
 import enum
 from typing import Any, Optional
@@ -84,6 +87,18 @@ def accumulate(interval=0):
     return deco
 
 
+def init_logger():
+    logging.basicConfig(
+        filename=f"{os.path.normpath(os.path.expanduser('~/Desktop'))}/abler_tracker.log",
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+
+
+if "--log" in sys.argv:
+    init_logger()
+
+
 class Tracker(metaclass=ABCMeta):
     def __init__(self):
         self._agreed = True
@@ -137,6 +152,8 @@ class Tracker(metaclass=ABCMeta):
             next_properties.update(properties)
         try:
             self._enqueue_event(event_name, next_properties)
+            if "--log" in sys.argv:
+                logging.log(logging.INFO, f"Tracker: {event_name} {properties}" if properties else f"Tracker: {event_name}")
         except Exception as e:
             print(e)
             return False
