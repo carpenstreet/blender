@@ -159,10 +159,10 @@ class DeleteSceneOperator(bpy.types.Operator):
 
         # active_scene_index 처리
         if prop.active_scene_index == 0:
-            # 제일 아래의 씬을 삭제 후엔 제일 위의 씬으로 이동
+            # 맨 아래 씬 삭제 시 가장 위의 씬으로 이동
             next_scene_index = len(prop.scene_col) - 1
         else:
-            # 씬 삭제 후 내림차순으로 이동
+            # 씬을 삭제 시 바로 다음 순서의 씬(생성순 내림차순)으로 전환
             next_scene_index = prop.active_scene_index - 1
         prop.active_scene_index = next_scene_index
 
