@@ -157,11 +157,14 @@ class DeleteSceneOperator(bpy.types.Operator):
         bpy.data.scenes.remove(scene)
         prop.scene_col.remove(prop.active_scene_index)
 
-        # Why set `scene` value again? Because `remove(scene)` occurs funny bug
-        # that sets `scene` value to 1 when `nextScene` is the first element of
-        # `bpy.data.scenes` collection. This ends up having `scene` value invalid
-        # and displaying empty value in the ui panel.
-        prop.scene = nextScene.name
+        # active_scene_index 처리
+        if prop.active_scene_index == 0:
+            # 제일 아래의 씬을 삭제 후엔 제일 위의 씬으로 이동
+            next_scene_index = len(prop.scene_col) - 1
+        else:
+            # 씬 삭제 후 내림차순으로 이동
+            next_scene_index = prop.active_scene_index - 1
+        prop.active_scene_index = next_scene_index
 
         return {"FINISHED"}
 
