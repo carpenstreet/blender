@@ -114,10 +114,9 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
             col.operator("acon3d.render_save", text="Save and Render")
         else:
             col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
-        cancel_props = col.operator(
-            "acon3d.close_blocking_modal", text="Cancel", text_ctxt="*"
-        )
-        cancel_props.description_text = "Cancel"
+        col.operator(
+            "acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler"
+        ).description_text = "Cancel"
         row.label(text="")
 
         main.label(text="")

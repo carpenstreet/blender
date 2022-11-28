@@ -707,8 +707,9 @@ class ImportSKPModalOperator(BlockingModalOperator):
         import_skp_props.filepath = self.filepath
         import_skp_props.import_lookatme = self.import_lookatme
 
-        cancel_props = col.operator("acon3d.close_blocking_modal", text="Cancel")
-        cancel_props.description_text = "Cancel"
+        col.operator(
+            "acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler"
+        ).description_text = "Cancel"
 
         row.label(text="")
         main.label(text="")
