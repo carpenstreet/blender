@@ -311,6 +311,17 @@ def runas_shell_user(
             cmd, executable, creationflags, cwd, startupinfo, return_handles
         )
     with enable_privileges(win32security.SE_IMPERSONATE_NAME):
+        # advapi32.CreateProcessWithTokenW()에서 새 프로세스와 기본 스레드를 생성하고,
+        # 해당 함수가 문제가 없으면 AblerLauncher.py > exec_windows()가 실행됨.
+        # 여기에서 매개변수 dwCreationFlags의 플래그 값이 콘솔과 프로세스를 관리하고 있어 이 값을 수정함.
+        #
+        # Docs: advapi32.CreateProcessWithTokenW()
+        # https://learn.microsoft.com/ko-kr/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw
+        #
+        # Docs: dwCreateionFlags
+        # https://learn.microsoft.com/ko-kr/windows/win32/procthread/process-creation-flags
+        creationflags = win32con.CREATE_NO_WINDOW  # 0x08000000
+
         if not advapi32.CreateProcessWithTokenW(
             int(htoken),
             0,
