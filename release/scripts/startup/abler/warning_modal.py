@@ -162,10 +162,17 @@ class BlockingModalOperator(bpy.types.Operator):
 
 
 class CloseBlockingModalOperator(bpy.types.Operator):
-    """Close Tutorial Guide"""
-
     bl_idname = "acon3d.close_blocking_modal"
     bl_label = "OK"
+
+    description_text: bpy.props.StringProperty("")
+
+    @classmethod
+    def description(cls, context, properties):
+        if properties.description_text:
+            return bpy.app.translations.pgettext(properties.description_text)
+        else:
+            return None
 
     def execute(self, context):
         BlockingModalOperator.close_modal()
