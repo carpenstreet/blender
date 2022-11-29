@@ -2352,7 +2352,8 @@ static void rna_def_window(BlenderRNA *brna)
   prop = RNA_def_property(srna, "workspace", PROP_POINTER, PROP_NONE);
   RNA_def_property_flag(prop, PROP_NEVER_NULL);
   RNA_def_property_struct_type(prop, "WorkSpace");
-  RNA_def_property_ui_text(prop, "Workspace", "Active workspace showing in the window");
+  // RNA_def_property_ui_text(prop, "Workspace", "Active workspace showing in the window");
+  RNA_def_property_ui_text(prop, "Workspace", "Display active workspace showing in the window");
   RNA_def_property_pointer_funcs(
       prop, "rna_Window_workspace_get", "rna_Window_workspace_set", NULL, NULL);
   RNA_def_property_flag(prop, PROP_EDITABLE | PROP_CONTEXT_UPDATE);

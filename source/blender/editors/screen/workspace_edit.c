@@ -491,9 +491,10 @@ static void WORKSPACE_OT_add(wmOperatorType *ot)
 {
   /* identifiers */
   ot->name = "Add Workspace";
-  ot->description =
-      "Add a new workspace by duplicating the current one or appending one "
-      "from the user configuration";
+  // ot->description =
+  //     "Add a new workspace by duplicating the current one or appending one "
+  //     "from the user configuration";
+  ot->description = "Add new workspace";
   ot->idname = "WORKSPACE_OT_add";
 
   /* api callbacks */
