@@ -54,7 +54,9 @@ class Acon3dStylesPanel(bpy.types.Panel):
         col.separator()
         col = row.column()
         row = col.row()
-        row.prop(context.scene.ACON_prop, "toggle_texture", text="Texture")
+        row.prop(
+            context.scene.ACON_prop, "toggle_texture", text="Texture", text_ctxt="abler"
+        )
         return
 
 
@@ -104,11 +106,26 @@ class SunlightPanel(bpy.types.Panel):
             layout.use_property_decorate = False  # No animation.
             layout.use_property_split = True
             row = layout.row(align=True)
-            row.prop(context.scene.ACON_prop, "sun_strength", text="Strength")
+            row.prop(
+                context.scene.ACON_prop,
+                "sun_strength",
+                text="Strength",
+                text_ctxt="abler",
+            )
             row = layout.row(align=True)
-            row.prop(context.scene.ACON_prop, "sun_rotation_x", text="Altitude")
+            row.prop(
+                context.scene.ACON_prop,
+                "sun_rotation_x",
+                text="Altitude",
+                text_ctxt="abler",
+            )
             row = layout.row(align=True)
-            row.prop(context.scene.ACON_prop, "sun_rotation_z", text="Azimuth")
+            row.prop(
+                context.scene.ACON_prop,
+                "sun_rotation_z",
+                text="Azimuth",
+                text_ctxt="abler",
+            )
 
 
 class ShadowShadingPanel(bpy.types.Panel):
@@ -118,6 +135,7 @@ class ShadowShadingPanel(bpy.types.Panel):
     bl_category = "Style"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_translation_context = "abler"
 
     def draw_header(self, context):
         layout = self.layout

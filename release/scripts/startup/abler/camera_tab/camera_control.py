@@ -164,13 +164,13 @@ class Acon3dDOFPanel(bpy.types.Panel):
             layout.active = dof.use_dof
 
             col = layout.column()
-            col.prop(dof, "focus_object", text="Focus on Object")
+            col.prop(dof, "focus_object", text="Focus on Object", text_ctxt="abler")
             sub = col.column()
             sub.active = dof.focus_object is None
-            sub.prop(dof, "focus_distance", text="Focus Distance")
+            sub.prop(dof, "focus_distance", text="Focus Distance", text_ctxt="abler")
             sub = col.column()
             sub.active = True
-            sub.prop(dof, "aperture_fstop", text="F-stop")
+            sub.prop(dof, "aperture_fstop", text="F-stop", text_ctxt="abler")
 
 
 classes = (

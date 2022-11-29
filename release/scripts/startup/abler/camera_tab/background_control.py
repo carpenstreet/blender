@@ -182,7 +182,7 @@ class Acon3dBackgroundImagesPanel(bpy.types.Panel):
                 elif bg.source and bg.use_camera_clip:
                     row.label(text="Active Clip")
                 else:
-                    row.label(text="Not Set")
+                    row.label(text="Not Set", text_ctxt="abler")
 
                 row.operator(
                     "acon3d.background_image_remove", text="", emboss=False, icon="X"
@@ -207,7 +207,7 @@ class Acon3dBackgroundImagesPanel(bpy.types.Panel):
                     row = box.row()
                     row.prop(bg, "rotation")
                     row = box.row()
-                    row.prop(bg, "scale")
+                    row.prop(bg, "scale", text="Scale", text_ctxt="abler")
                     row = box.row(heading="Flip")
                     row.prop(bg, "use_flip_x", text="X")
                     row.prop(bg, "use_flip_y", text="Y")

@@ -37,8 +37,8 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     index: bpy.props.IntProperty()
 
     is_render_selected: bpy.props.BoolProperty(
-        name="Scene Name",
-        description="Check to render",
+        name="Scene List",
+        description="Select scene to render",
     )
 
 
