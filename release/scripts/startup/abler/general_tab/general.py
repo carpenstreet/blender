@@ -655,17 +655,12 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
     def execute(self, context):
         if not self.check_path(accepted=["skp"]):
             return {"FINISHED"}
-        try:
-            bpy.ops.acon3d.import_skp_modal(
-                "INVOKE_DEFAULT",
-                filepath=self.filepath,
-                import_lookatme=self.import_lookatme,
-            )
-        except Exception as e:
-            tracker.import_skp_fail()
-            raise e
-        else:
-            tracker.import_skp()
+
+        bpy.ops.acon3d.import_skp_modal(
+            "INVOKE_DEFAULT",
+            filepath=self.filepath,
+            import_lookatme=self.import_lookatme,
+        )
 
         return {"FINISHED"}
 
@@ -726,6 +721,7 @@ class ImportSKPAcceptOperator(bpy.types.Operator):
     import_lookatme: bpy.props.BoolProperty(default=False)
 
     def execute(self, context):
+        tracker.import_skp()
         bpy.ops.acon3d.close_skp_progress()
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         bpy.ops.acon3d.import_skp(
