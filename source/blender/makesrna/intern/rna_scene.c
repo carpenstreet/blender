@@ -155,26 +155,51 @@ const EnumPropertyItem rna_enum_mesh_select_mode_uv_items[] = {
     {0, NULL, 0, NULL, NULL},
 };
 
+// 원본 rna_enum_snap_element_items
+// const EnumPropertyItem rna_enum_snap_element_items[] = {
+//     {SCE_SNAP_MODE_INCREMENT,
+//      "INCREMENT",
+//      ICON_SNAP_INCREMENT,
+//      "Increment",
+//      "Snap to increments of grid"},
+//     {SCE_SNAP_MODE_VERTEX, "VERTEX", ICON_SNAP_VERTEX, "Vertex", "Snap to vertices"},
+//     {SCE_SNAP_MODE_EDGE, "EDGE", ICON_SNAP_EDGE, "Edge", "Snap to edges"},
+//     {SCE_SNAP_MODE_FACE, "FACE", ICON_SNAP_FACE, "Face", "Snap to faces"},
+//     {SCE_SNAP_MODE_VOLUME, "VOLUME", ICON_SNAP_VOLUME, "Volume", "Snap to volume"},
+//     {SCE_SNAP_MODE_EDGE_MIDPOINT,
+//      "EDGE_MIDPOINT",
+//      ICON_SNAP_MIDPOINT,
+//      "Edge Center",
+//      "Snap to the middle of edges"},
+//     {SCE_SNAP_MODE_EDGE_PERPENDICULAR,
+//      "EDGE_PERPENDICULAR",
+//      ICON_SNAP_PERPENDICULAR,
+//      "Edge Perpendicular",
+//      "Snap to the nearest point on an edge"},
+//     {0, NULL, 0, NULL, NULL},
+// };
+
+// 다국어 툴팁 반영을 위해 변경
 const EnumPropertyItem rna_enum_snap_element_items[] = {
     {SCE_SNAP_MODE_INCREMENT,
      "INCREMENT",
      ICON_SNAP_INCREMENT,
      "Increment",
-     "Snap to increments of grid"},
-    {SCE_SNAP_MODE_VERTEX, "VERTEX", ICON_SNAP_VERTEX, "Vertex", "Snap to vertices"},
-    {SCE_SNAP_MODE_EDGE, "EDGE", ICON_SNAP_EDGE, "Edge", "Snap to edges"},
-    {SCE_SNAP_MODE_FACE, "FACE", ICON_SNAP_FACE, "Face", "Snap to faces"},
+     "Snap to increment of grid"},
+    {SCE_SNAP_MODE_VERTEX, "VERTEX", ICON_SNAP_VERTEX, "Vertex", "Snap to vertex"},
+    {SCE_SNAP_MODE_EDGE, "EDGE", ICON_SNAP_EDGE, "Edge", "Snap to edge"},
+    {SCE_SNAP_MODE_FACE, "FACE", ICON_SNAP_FACE, "Face", "Snap to face"},
     {SCE_SNAP_MODE_VOLUME, "VOLUME", ICON_SNAP_VOLUME, "Volume", "Snap to volume"},
     {SCE_SNAP_MODE_EDGE_MIDPOINT,
      "EDGE_MIDPOINT",
      ICON_SNAP_MIDPOINT,
      "Edge Center",
-     "Snap to the middle of edges"},
+     "Snap to the middle of edge"},
     {SCE_SNAP_MODE_EDGE_PERPENDICULAR,
      "EDGE_PERPENDICULAR",
      ICON_SNAP_PERPENDICULAR,
      "Edge Perpendicular",
-     "Snap to the nearest point on an edge"},
+     "Snap to the nearest point of edge"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -3115,7 +3140,8 @@ static void rna_def_tool_settings(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "use_snap", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "snap_flag", SCE_SNAP);
-  RNA_def_property_ui_text(prop, "Snap", "Snap during transform");
+  // RNA_def_property_ui_text(prop, "Snap", "Snap during transform");
+  RNA_def_property_ui_text(prop, "Snap", "Snap selected element to another");
   RNA_def_property_ui_icon(prop, ICON_SNAP_OFF, 1);
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
@@ -3203,7 +3229,7 @@ static void rna_def_tool_settings(BlenderRNA *brna)
   RNA_def_property_boolean_sdna(
       prop, NULL, "snap_transform_mode_flag", SCE_SNAP_TRANSFORM_MODE_TRANSLATE);
   RNA_def_property_ui_text(
-      prop, "Use Snap for Translation", "Move is affected by snapping settings");
+      prop, "Use Snap for Translation", "Apply snap setting when moving object");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   prop = RNA_def_property(srna, "use_snap_rotate", PROP_BOOLEAN, PROP_NONE);
@@ -3211,14 +3237,14 @@ static void rna_def_tool_settings(BlenderRNA *brna)
       prop, NULL, "snap_transform_mode_flag", SCE_SNAP_TRANSFORM_MODE_ROTATE);
   RNA_def_property_boolean_default(prop, false);
   RNA_def_property_ui_text(
-      prop, "Use Snap for Rotation", "Rotate is affected by the snapping settings");
+      prop, "Use Snap for Rotation", "Apply snap setting when rotating object");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   prop = RNA_def_property(srna, "use_snap_scale", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(
       prop, NULL, "snap_transform_mode_flag", SCE_SNAP_TRANSFORM_MODE_SCALE);
   RNA_def_property_boolean_default(prop, false);
-  RNA_def_property_ui_text(prop, "Use Snap for Scale", "Scale is affected by snapping settings");
+  RNA_def_property_ui_text(prop, "Use Snap for Scale", "Apply snap setting when scaling object");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   /* Grease Pencil */
