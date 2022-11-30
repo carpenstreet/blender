@@ -121,11 +121,7 @@ class Acon3dCameraControlPanel(bpy.types.Panel):
 
         cam = context.scene.camera
         if cam is not None:
-            layout.prop(
-                cam.data,
-                "lens",
-                text="Focal Length",
-            )
+            layout.prop(cam.data, "lens", text="Focal Length", text_ctxt="abler")
 
         return
 
