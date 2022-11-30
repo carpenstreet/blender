@@ -241,8 +241,6 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
             return super().invoke(context, event)
 
     def execute(self, context):
-        tracker.render_quick()
-
         # Get basename without file extension
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
@@ -300,6 +298,10 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
                 bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
 
         return {"PASS_THROUGH"}
+
+    def on_render_finish(self, context):
+        tracker.render_quick()
+        return super().on_render_finish(context)
 
 
 class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
@@ -456,8 +458,6 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
         render.match_object_visibility()
 
     def prepare_queue(self, context):
-        tracker.render_snip()
-
         scene = context.scene.copy()
         self.render_queue.append((None, scene))
         self.temp_scenes.append(scene)
@@ -496,6 +496,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
         return {"RUNNING_MODAL"}
 
     def on_render_finish(self, context):
+        tracker.render_snip()
 
         for mat in bpy.data.materials:
             materials_handler.set_material_parameters_by_type(mat)
@@ -505,8 +506,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
         self.temp_scenes.clear()
 
-        super().on_render_finish(context)
-        return {"FINISHED"}
+        return super().on_render_finish(context)
 
 
 class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
@@ -686,8 +686,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
         self.temp_scenes.clear()
 
-        super().on_render_finish(context)
-        return {"FINISHED"}
+        return super().on_render_finish(context)
 
     @classmethod
     def poll(self, context):
