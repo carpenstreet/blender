@@ -491,10 +491,9 @@ def start_authentication():
         response = requests.get(
             "https://api-v2.acon3d.com/auth/acon3d/refresh", cookies=cookies
         )
-        is_file_open = bpy.data.filepath is not None and bpy.data.filepath != ""
         responseData = response.json()
         if token := responseData["accessToken"]:
-            if is_process_single() and not is_file_open:
+            if is_process_single() and not bpy.data.filepath:
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
 
