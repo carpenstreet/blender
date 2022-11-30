@@ -491,6 +491,7 @@ def start_authentication():
         response = requests.get(
             "https://api-v2.acon3d.com/auth/acon3d/refresh", cookies=cookies
         )
+
         responseData = response.json()
         if token := responseData["accessToken"]:
             if is_process_single() and not bpy.data.filepath:
