@@ -494,7 +494,7 @@ def start_authentication():
 
         responseData = response.json()
         if token := responseData["accessToken"]:
-            if is_process_single():
+            if is_process_single() and not bpy.data.filepath:
                 tracker.login_auto()
             prop.login_status = "SUCCESS"
 
