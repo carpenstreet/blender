@@ -113,7 +113,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         if bpy.data.is_dirty:
             col.operator("acon3d.render_save", text="Save and Render")
         else:
-            col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
+            col.operator("acon3d.render_high_quality", text="Render", text_ctxt="abler")
         col.operator(
             "acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler"
         ).description_text = "Cancel"
@@ -144,6 +144,7 @@ def render_save_handler(dummy):
 class Acon3dRenderSaveOpertor(bpy.types.Operator):
     bl_idname = "acon3d.render_save"
     bl_label = "Save and Render"
+    bl_description = "Save and render with high quality according to the set pixel"
     bl_translation_context = "abler"
 
     def execute(self, context):
