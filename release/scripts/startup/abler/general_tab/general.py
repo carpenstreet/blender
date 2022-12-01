@@ -568,6 +568,11 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
         except Exception as e:
             tracker.import_blend_fail()
             self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import selected file.",
+            )
         else:
             tracker.import_blend()
 
@@ -630,7 +635,12 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
         except Exception as e:
             tracker.import_fbx_fail()
-            raise e
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import selected file.",
+            )
         else:
             tracker.import_fbx()
 
