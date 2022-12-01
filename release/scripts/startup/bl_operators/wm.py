@@ -3268,7 +3268,7 @@ class WM_MT_splash_tutorial(Menu):
         row = column.row()
         row.prop(userInfo.ACON_prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
         row.alignment = "RIGHT"
-        row.label(text="Show ABLER Starts")
+        row.label(text="Always Show")
         layout.separator()
         
 

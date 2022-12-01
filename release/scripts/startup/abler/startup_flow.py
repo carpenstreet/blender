@@ -434,6 +434,7 @@ class LoginTask(AsyncTask):
 class Acon3dLoginOperator(bpy.types.Operator):
     bl_idname = "acon3d.login"
     bl_label = "Login"
+    bl_description = "Click to login"
     bl_translation_context = "*"
 
     def execute(self, context):
