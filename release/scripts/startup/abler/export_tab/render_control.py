@@ -96,6 +96,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
     scene_count: bpy.props.IntProperty(name="Scene count", default=0)
 
     def draw_modal(self, layout):
+        tr = bpy.app.translations.pgettext
         padding_size = 0.01
         content_size = 1.0 - 2 * padding_size
         box = layout.box()
@@ -109,7 +110,11 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         col = row.column()
         col.label(text="Render Selected Scenes?")
         col.label(text="High quality render may take a long time to be finished.")
-        col.label(text=f"Selected Scenes : {self.scene_count}")
+        col.label(
+            text=tr("Selected Scenes: $(sceneCount)").replace(
+                "$(sceneCount)", str(self.scene_count)
+            )
+        )
         if bpy.data.is_dirty:
             col.operator("acon3d.render_save", text="Save and Render")
         else:

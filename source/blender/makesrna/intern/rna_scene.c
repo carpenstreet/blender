@@ -5961,7 +5961,7 @@ static void rna_def_scene_render_data(BlenderRNA *brna)
   RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
   RNA_def_property_range(prop, 4, 65536);
   RNA_def_property_ui_text(
-      prop, "Resolution X", "Number of horizontal pixels in the rendered image");
+      prop, "Resolution X", "Set number of horizontal pixels in the rendered image");
   RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_SceneCamera_update");
 
   prop = RNA_def_property(srna, "resolution_y", PROP_INT, PROP_PIXEL);
@@ -5970,7 +5970,7 @@ static void rna_def_scene_render_data(BlenderRNA *brna)
   RNA_def_property_clear_flag(prop, PROP_ANIMATABLE);
   RNA_def_property_range(prop, 4, 65536);
   RNA_def_property_ui_text(
-      prop, "Resolution Y", "Number of vertical pixels in the rendered image");
+      prop, "Resolution Y", "Set number of vertical pixels in the rendered image");
   RNA_def_property_update(prop, NC_SCENE | ND_RENDER_OPTIONS, "rna_SceneCamera_update");
 
   prop = RNA_def_property(srna, "resolution_percentage", PROP_INT, PROP_PERCENTAGE);
