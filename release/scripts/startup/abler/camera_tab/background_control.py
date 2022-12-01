@@ -72,6 +72,12 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
     filepath: bpy.props.StringProperty()
     use_filter = True
 
+    def invoke(self, context, event):
+        with file_view_title("BACKGROUND"):
+            path_abler = bpy.utils.preset_paths("abler")[0]
+            self.filepath = path_abler + "/Background_Image/"
+            return super().invoke(context, event)
+
     def execute(self, context):
         if not self.check_path(accepted=["png", "jpg"]):
             return {"FINISHED"}
@@ -82,12 +88,6 @@ class OpenDefaultBackgroundOperator(bpy.types.Operator, AconImportHelper):
             bpy.data.images.remove(image.image)
         image.image = new_image
         return {"FINISHED"}
-
-    def invoke(self, context, event):
-        path_abler = bpy.utils.preset_paths("abler")[0]
-        self.filepath = path_abler + "/Background_Image/"
-        wm = context.window_manager.fileselect_add(self)
-        return {"RUNNING_MODAL"}
 
     def draw(self, context):
         super().draw(context)
