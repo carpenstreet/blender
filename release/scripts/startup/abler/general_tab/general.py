@@ -471,8 +471,8 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
     """Import Blender file according to the current settings"""
 
     bl_idname = "acon3d.import_blend"
-    bl_label = "Import Blender"
-    bl_translation_context = "*"
+    bl_label = "Import BLEND"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
     use_filter = True

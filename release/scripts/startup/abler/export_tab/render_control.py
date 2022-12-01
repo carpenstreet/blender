@@ -424,6 +424,10 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
     def poll(self, context):
         return len(context.selected_objects)
 
+    def invoke(self, context, event):
+        with file_view_title("RENDER"):
+            return super().invoke(context, event)
+
     def prepare_render(self):
         if len(self.render_queue) == 3:
             render.clear_compositor()
