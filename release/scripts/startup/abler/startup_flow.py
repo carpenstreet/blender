@@ -612,7 +612,7 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
             emboss=False,
             invert_checkbox=True,
         )
-        row.label(text="Don’t show this message again.")
+        row.label(text="Don't show this message again")
 
         col.operator(
             "acon3d.close_blocking_modal", text="Close"
