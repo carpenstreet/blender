@@ -986,7 +986,8 @@ class WM_OT_url_open(Operator):
 class WM_OT_url_open_support(Operator):
     """Open local ACON3D support website in the web browser"""
     bl_idname = "wm.url_open_support"
-    bl_label = ""
+    bl_label = "Support"
+    bl_description = "Open local ACON3D support website in the web browser"
     bl_options = {'INTERNAL'}
 
     def execute(self, _context):

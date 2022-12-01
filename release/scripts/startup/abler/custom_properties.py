@@ -691,7 +691,7 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     )
 
     show_guide: bpy.props.BoolProperty(
-        name="Always show tutorial guide when starting ABLER.", default=True, update=remember_show_guide
+        name="", description="Always show tutorial guide when starting ABLER", default=True, update=remember_show_guide
     )
 
 
