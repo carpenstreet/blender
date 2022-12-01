@@ -107,7 +107,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         row.label(text="")
         row = row.split(factor=content_size)
         col = row.column()
-        col.label(text="Render selected scenes?")
+        col.label(text="Render Selected Scenes?")
         col.label(text="High quality render may take a long time to be finished.")
         col.label(text=f"Selected Scenes : {self.scene_count}")
         if bpy.data.is_dirty:
@@ -713,7 +713,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 class Acon3dCloseProgressOperator(bpy.types.Operator):
     bl_idname = "acon3d.close_progress"
     bl_label = "OK"
-    bl_description = "Close Progress Panel"
+    bl_description = "Finish render and close render progress module"
     bl_translation_context = "abler"
 
     @classmethod

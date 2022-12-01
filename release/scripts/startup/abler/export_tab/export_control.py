@@ -107,7 +107,7 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
 
     def draw_progress_skeleton(self, infos, layout):
         box = layout.box()
-        box.label(text="Total Rendering")
+        box.label(text="Total Rendering Progress")
         sub = box.split(align=True, factor=0.20)
         col = sub.column(align=True)
         col.label(text=f"0 / 0")
@@ -158,7 +158,7 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
                 progress_prop.complete_num + cur_progress
             ) / progress_prop.total_render_num
 
-        box.label(text="Total Rendering")
+        box.label(text="Total Rendering Progress")
         sub = box.split(align=True, factor=0.20)
         col = sub.column(align=True)
         col.label(
@@ -188,9 +188,9 @@ class Acon3dHighQualityRenderPanel(bpy.types.Panel):
         col.label(icon="DOT")
 
         col = sub2.column(align=True)
-        col.label(text="Start")
-        col.label(text="Finish")
-        col.label(text="Time Span")
+        col.label(text="Start", text_ctxt="abler")
+        col.label(text="Finish", text_ctxt="abler")
+        col.label(text="Time Span", text_ctxt="abler")
 
         start_string = timestamp_to_string(progress_prop.start_date)
         end_string = timestamp_to_string(progress_prop.end_date)
