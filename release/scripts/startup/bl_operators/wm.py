@@ -3137,16 +3137,21 @@ class WM_MT_splash(Menu):
 
         col1 = split.column()
         anchor = col1.operator("acon3d.anchor", text="See ACON3D models!", icon='EVENT_A')
-        anchor.href = 'https://acon3d.com'
         anchor.description_text = "Link to ACON3D"
+        anchor.href = 'https://acon3d.com'
         anchor = col1.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
         anchor.description_text = "Sign up for ACON3D"
         anchor.href = 'https://www.acon3d.com/member/join'
 
+        # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
-        col2.operator("wm.url_open_preset", text="Blender Release Notes", icon='URL',
-                      text_ctxt="*").type = 'RELEASE_NOTES'
-        col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
+        anchor = col2.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
+        anchor.description_text = "Link to Blender Foundation and check release notes"
+        anchor.href = 'https://www.blender.org/download/releases/'
+        anchor = col2.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
+        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
+        anchor.href = 'https://fund.blender.org/'
+
         # 공지사항 파트
         fetch_notices()
         global notices
