@@ -373,7 +373,7 @@ class _defs_transform:
             idname="builtin.transform",
             label="Transform",
             description=(
-                "Supports any combination of grab, rotate, and scale at once"
+                "Support any combination of grab, rotate, and scale at once"
             ),
             icon="ops.transform.transform",
             widget="VIEW3D_GGT_xform_gizmo",
@@ -1779,7 +1779,7 @@ class _defs_image_uv_transform:
             idname="builtin.transform",
             label="Transform",
             description=(
-                "Supports any combination of grab, rotate, and scale at once"
+                "Support any combination of grab, rotate, and scale at once"
             ),
             icon="ops.transform.transform",
             widget="IMAGE_GGT_gizmo2d",
@@ -2517,7 +2517,7 @@ class _defs_sequencer_generic:
             idname="builtin.transform",
             label="Transform",
             description=(
-                "Supports any combination of grab, rotate, and scale at once"
+                "Support any combination of grab, rotate, and scale at once"
             ),
             icon="ops.transform.transform",
             widget="SEQUENCER_GGT_gizmo2d",

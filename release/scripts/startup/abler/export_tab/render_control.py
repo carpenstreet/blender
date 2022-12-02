@@ -96,6 +96,7 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
     scene_count: bpy.props.IntProperty(name="Scene count", default=0)
 
     def draw_modal(self, layout):
+        tr = bpy.app.translations.pgettext
         padding_size = 0.01
         content_size = 1.0 - 2 * padding_size
         box = layout.box()
@@ -107,16 +108,18 @@ class Acon3dRenderWarningOperator(BlockingModalOperator):
         row.label(text="")
         row = row.split(factor=content_size)
         col = row.column()
-        col.label(text="Render selected scenes?")
+        col.label(text="Render Selected Scenes?")
         col.label(text="High quality render may take a long time to be finished.")
-        col.label(text=f"Selected Scenes : {self.scene_count}")
+        col.label(
+            text=tr("Selected Scenes: $(sceneCount)").replace(
+                "$(sceneCount)", str(self.scene_count)
+            )
+        )
         if bpy.data.is_dirty:
             col.operator("acon3d.render_save", text="Save and Render")
         else:
-            col.operator("acon3d.render_high_quality", text="Render Selected Scenes")
-        col.operator(
-            "acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler"
-        ).description_text = "Cancel"
+            col.operator("acon3d.render_high_quality", text="Render", text_ctxt="abler")
+        col.operator("acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler")
         row.label(text="")
 
         main.label(text="")
@@ -144,6 +147,7 @@ def render_save_handler(dummy):
 class Acon3dRenderSaveOpertor(bpy.types.Operator):
     bl_idname = "acon3d.render_save"
     bl_label = "Save and Render"
+    bl_description = "Save and render with high quality according to the set pixel"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -426,6 +430,10 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
     def poll(self, context):
         return len(context.selected_objects)
 
+    def invoke(self, context, event):
+        with file_view_title("RENDER"):
+            return super().invoke(context, event)
+
     def prepare_render(self):
         if len(self.render_queue) == 3:
             render.clear_compositor()
@@ -707,7 +715,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 class Acon3dCloseProgressOperator(bpy.types.Operator):
     bl_idname = "acon3d.close_progress"
     bl_label = "OK"
-    bl_description = "Close Progress Panel"
+    bl_description = "Finish render and close render progress module"
     bl_translation_context = "abler"
 
     @classmethod

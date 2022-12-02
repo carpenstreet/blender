@@ -121,11 +121,7 @@ class Acon3dCameraControlPanel(bpy.types.Panel):
 
         cam = context.scene.camera
         if cam is not None:
-            layout.prop(
-                cam.data,
-                "lens",
-                text="Focal Length",
-            )
+            layout.prop(cam.data, "lens", text="Focal Length", text_ctxt="abler")
 
         return
 
@@ -164,13 +160,13 @@ class Acon3dDOFPanel(bpy.types.Panel):
             layout.active = dof.use_dof
 
             col = layout.column()
-            col.prop(dof, "focus_object", text="Focus on Object")
+            col.prop(dof, "focus_object", text="Focus on Object", text_ctxt="abler")
             sub = col.column()
             sub.active = dof.focus_object is None
-            sub.prop(dof, "focus_distance", text="Focus Distance")
+            sub.prop(dof, "focus_distance", text="Focus Distance", text_ctxt="abler")
             sub = col.column()
             sub.active = True
-            sub.prop(dof, "aperture_fstop", text="F-stop")
+            sub.prop(dof, "aperture_fstop", text="F-stop", text_ctxt="abler")
 
 
 classes = (

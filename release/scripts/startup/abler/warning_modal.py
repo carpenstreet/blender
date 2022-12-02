@@ -164,6 +164,7 @@ class BlockingModalOperator(bpy.types.Operator):
 class CloseBlockingModalOperator(bpy.types.Operator):
     bl_idname = "acon3d.close_blocking_modal"
     bl_label = "OK"
+    bl_description = "Cancel executing selected file"
 
     description_text: bpy.props.StringProperty("")
 

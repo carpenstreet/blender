@@ -139,9 +139,11 @@ manager = GroupNavigationManager()
 
 
 class GroupNavigateTopOperator(bpy.types.Operator):
+    """Move to top group"""
+
     bl_idname = "acon3d.group_navigate_top"
-    bl_label = "Go Top"
-    bl_translation_context = "*"
+    bl_label = "Top Group"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.group_navigate_top()
@@ -150,9 +152,11 @@ class GroupNavigateTopOperator(bpy.types.Operator):
 
 
 class GroupNavigateUpOperator(bpy.types.Operator):
+    """Move to upper group"""
+
     bl_idname = "acon3d.group_navigate_up"
-    bl_label = "Go Up"
-    bl_translation_context = "*"
+    bl_label = "Upper Group"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.group_navigate_up()
@@ -161,9 +165,11 @@ class GroupNavigateUpOperator(bpy.types.Operator):
 
 
 class GroupNavigateDownOperator(bpy.types.Operator):
+    """Move to lower group"""
+
     bl_idname = "acon3d.group_navigate_down"
-    bl_label = "Go Down"
-    bl_translation_context = "*"
+    bl_label = "Lower Group"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.group_navigate_down()
@@ -172,9 +178,11 @@ class GroupNavigateDownOperator(bpy.types.Operator):
 
 
 class GroupNavigateBottomOperator(bpy.types.Operator):
+    """Move to bottom group/object"""
+
     bl_idname = "acon3d.group_navigate_bottom"
-    bl_label = "Go Bottom"
-    bl_translation_context = "*"
+    bl_label = "Bottom Group"
+    bl_translation_context = "abler"
 
     def execute(self, context):
         tracker.group_navigate_bottom()
@@ -244,7 +252,7 @@ class Acon3dGroupNavigationPanel(bpy.types.Panel):
             col.scale_x = 3
             col.separator()
             col = row.column()
-            col.label(text="No selected object")
+            col.label(text="No selected object", text_ctxt="abler")
 
 
 # Camera, Sun 제외 전체 선택

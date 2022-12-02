@@ -95,6 +95,7 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_close"
     bl_label = "OK"
+    bl_description = "Close tutorial guide"
 
     def execute(self, context):
         bpy.ops.wm.splash_tutorial_close("INVOKE_DEFAULT")
@@ -106,6 +107,7 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_1"
     bl_label = "Mouse Mode"
+    bl_description = "Explain how to navigate with mouse control"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -119,6 +121,7 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_2"
     bl_label = "Fly Mode"
+    bl_description = "Explain how to navigate with WASD+QE"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -132,6 +135,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_3"
     bl_label = "Scene Control"
+    bl_description = "Explain how to control object and viewport"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -471,8 +475,8 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
     """Import Blender file according to the current settings"""
 
     bl_idname = "acon3d.import_blend"
-    bl_label = "Import Blender"
-    bl_translation_context = "*"
+    bl_label = "Import BLEND"
+    bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
     use_filter = True
@@ -568,6 +572,11 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
         except Exception as e:
             tracker.import_blend_fail()
             self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import selected file.",
+            )
         else:
             tracker.import_blend()
 
@@ -630,7 +639,12 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
         except Exception as e:
             tracker.import_fbx_fail()
-            raise e
+            self.report({"ERROR"}, f"Fail to import blend file. Check filepath.")
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="Import Failure",
+                message_1="Cannot import selected file.",
+            )
         else:
             tracker.import_fbx()
 
@@ -702,9 +716,7 @@ class ImportSKPModalOperator(BlockingModalOperator):
         import_skp_props.filepath = self.filepath
         import_skp_props.import_lookatme = self.import_lookatme
 
-        col.operator(
-            "acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler"
-        ).description_text = "Cancel"
+        col.operator("acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler")
 
         row.label(text="")
         main.label(text="")

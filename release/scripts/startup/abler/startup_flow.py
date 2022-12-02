@@ -434,6 +434,7 @@ class LoginTask(AsyncTask):
 class Acon3dLoginOperator(bpy.types.Operator):
     bl_idname = "acon3d.login"
     bl_label = "Login"
+    bl_description = "Click to login"
     bl_translation_context = "*"
 
     def execute(self, context):
@@ -527,9 +528,7 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
             text="When using an older version of ABLER, some features may not work properly."
         )
         col.operator("acon3d.update_abler", text="Update ABLER")
-        col.operator(
-            "acon3d.close_blocking_modal", text="Close"
-        ).description_text = "Close"
+        col.operator("acon3d.close_blocking_modal", text="Close")
         row.label(text="")
 
         main.label(text="")
@@ -612,11 +611,9 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
             emboss=False,
             invert_checkbox=True,
         )
-        row.label(text="Don’t show this message again.")
+        row.label(text="Don't show this message again")
 
-        col.operator(
-            "acon3d.close_blocking_modal", text="Close"
-        ).description_text = "Close"
+        col.operator("acon3d.close_blocking_modal", text="Close")
         row.label(text="")
 
         main.label(text="")
