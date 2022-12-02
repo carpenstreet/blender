@@ -967,7 +967,7 @@ class WM_OT_context_modal_mouse(Operator):
 
 
 class WM_OT_url_open(Operator):
-    """Open a website in the web browser"""
+    """Open ABLER Guide"""
     bl_idname = "wm.url_open"
     bl_label = ""
     bl_options = {'INTERNAL'}
@@ -984,10 +984,10 @@ class WM_OT_url_open(Operator):
 
 
 class WM_OT_url_open_support(Operator):
-    """Open local ACON3D support website in the web browser"""
+    """Open ACON3D web support"""
     bl_idname = "wm.url_open_support"
     bl_label = "Support"
-    bl_description = "Open local ACON3D support website in the web browser"
+    bl_description = "Open ACON3D web support"
     bl_options = {'INTERNAL'}
 
     def execute(self, _context):
@@ -3021,7 +3021,7 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
-notices = ('READY', None) 
+notices = ('READY', None)
 
 def fetch_notices():
     # 전에 이미 성공/실패했으면 일찍 종료
@@ -3276,7 +3276,7 @@ class WM_MT_splash_tutorial(Menu):
         row.alignment = "RIGHT"
         row.label(text="Always Show")
         layout.separator()
-        
+
 
 class WM_OT_drop_blend_file(Operator):
     bl_idname = "wm.drop_blend_file"

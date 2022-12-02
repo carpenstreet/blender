@@ -2731,7 +2731,7 @@ static char *wm_open_mainfile_description(struct bContext *UNUSED(C),
 
   BLI_stat_t stats;
   if (BLI_stat(path, &stats) == -1) {
-    return BLI_sprintfN("%s\n\n%s", path, N_("File Not Found"));
+    return BLI_sprintfN("%s\n\n%s", path, N_("File not found"));
   }
 
   /* Date. */

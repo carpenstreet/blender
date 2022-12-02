@@ -255,7 +255,7 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
         filepath = properties.filepath
 
         if not os.path.isfile(filepath):
-            return f"{filepath}\n\nFile Not Found"
+            return f"{filepath}\n\nFile not found"
 
         modified_datetime = datetime.fromtimestamp(os.path.getmtime(filepath))
         time_distance = datetime.today().date() - modified_datetime.date()
