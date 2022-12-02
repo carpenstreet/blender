@@ -417,7 +417,7 @@ class LoginTask(AsyncTask):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
                 title="Login failed",
-                message_1="The number of consecutive password error count exceeded.",
+                message_1="Login error count exceeded.",
                 message_2="Please try again in few minutes.",
             )
         else:
