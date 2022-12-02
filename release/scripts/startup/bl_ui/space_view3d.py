@@ -6651,8 +6651,8 @@ class VIEW3D_PT_overlay_weight_paint(Panel):
 class VIEW3D_PT_snapping(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'HEADER'
-    bl_label = "Snapping"
-
+    bl_label = ""
+    
     def draw(self, context):
         tool_settings = context.tool_settings
         snap_elements = tool_settings.snap_elements

@@ -30,6 +30,7 @@ class EventKind(enum.Enum):
     import_fbx = "Import FBX"
     import_fbx_fail = "Import FBX Fail"
     import_skp = "Import SKP"
+    import_skp_success = "Import SKP Success"
     import_skp_fail = "Import SKP Fail"
     toggle_toolbar = "Toggle Toolbar"
     fly_mode = "Fly Mode"
@@ -217,8 +218,11 @@ class Tracker(metaclass=ABCMeta):
     def import_skp(self):
         self._track(EventKind.import_skp.value)
 
-    def import_skp_fail(self):
-        self._track(EventKind.import_skp_fail.value)
+    def import_skp_success(self, data):
+        self._track(EventKind.import_skp_success.value, data)
+
+    def import_skp_fail(self, data):
+        self._track(EventKind.import_skp_fail.value, data)
 
     def scene_add(self):
         self._track(EventKind.scene_add.value)
