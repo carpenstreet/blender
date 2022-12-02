@@ -986,7 +986,8 @@ class WM_OT_url_open(Operator):
 class WM_OT_url_open_support(Operator):
     """Open local ACON3D support website in the web browser"""
     bl_idname = "wm.url_open_support"
-    bl_label = ""
+    bl_label = "Support"
+    bl_description = "Open local ACON3D support website in the web browser"
     bl_options = {'INTERNAL'}
 
     def execute(self, _context):
@@ -3268,7 +3269,7 @@ class WM_MT_splash_tutorial(Menu):
         row = column.row()
         row.prop(userInfo.ACON_prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
         row.alignment = "RIGHT"
-        row.label(text="Show ABLER Starts")
+        row.label(text="Always Show")
         layout.separator()
         
 

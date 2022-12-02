@@ -95,6 +95,7 @@ class AconTutorialGuideCloseOperator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_close"
     bl_label = "OK"
+    bl_description = "Close tutorial guide"
 
     def execute(self, context):
         bpy.ops.wm.splash_tutorial_close("INVOKE_DEFAULT")
@@ -106,6 +107,7 @@ class AconTutorialGuide1Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_1"
     bl_label = "Mouse Mode"
+    bl_description = "Explain how to navigate with mouse control"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -119,6 +121,7 @@ class AconTutorialGuide2Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_2"
     bl_label = "Fly Mode"
+    bl_description = "Explain how to navigate with WASD+QE"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -132,6 +135,7 @@ class AconTutorialGuide3Operator(bpy.types.Operator):
 
     bl_idname = "acon3d.tutorial_guide_3"
     bl_label = "Scene Control"
+    bl_description = "Explain how to control object and viewport"
     bl_translation_context = "abler"
 
     def execute(self, context):

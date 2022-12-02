@@ -29,7 +29,7 @@ from .scene_tab import object_control
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(
         name="Scenes",
-        description="Click to apply scene and double click to rename.",
+        description="Click to apply and double click to rename.",
         default="",
         update=scenes.change_scene_name,
     )
@@ -668,10 +668,10 @@ class AconMeshProperty(bpy.types.PropertyGroup):
         else:
             self.password = self.password_shown
 
-    username: bpy.props.StringProperty(name="Username", description="Username")
+    username: bpy.props.StringProperty(name="Username", description="Insert username")
 
     password: bpy.props.StringProperty(
-        name="Password", description="Password", subtype="PASSWORD"
+        name="Password", description="Insert password", subtype="PASSWORD"
     )
 
     password_shown: bpy.props.StringProperty(
@@ -679,11 +679,11 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     )
 
     show_password: bpy.props.BoolProperty(
-        name="Show Password", default=False, update=toggle_show_password
+        name="Show Password", description="Show password (Use only in private environment)", default=False, update=toggle_show_password
     )
 
     # TODO: description 달기
-    remember_username: bpy.props.BoolProperty(name="Remember Username", default=True)
+    remember_username: bpy.props.BoolProperty(name="Remember Username", description="Autofill this username next time", default=True)
 
     login_status: bpy.props.StringProperty(
         name="Login Status",
@@ -691,7 +691,7 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     )
 
     show_guide: bpy.props.BoolProperty(
-        name="Show Guide", default=True, update=remember_show_guide
+        name="", description="Always show tutorial guide when starting ABLER", default=True, update=remember_show_guide
     )
 
 
