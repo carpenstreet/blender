@@ -288,6 +288,7 @@ class FILEBROWSER_PT_bookmarks_system(Panel):
 
 class FILEBROWSER_MT_bookmarks_context_menu(Menu):
     bl_label = "Bookmarks Specials"
+    bl_description = "Show menu for bookmark"
 
     def draw(self, _context):
         layout = self.layout

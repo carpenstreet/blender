@@ -29,7 +29,7 @@ from .scene_tab import object_control
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(
         name="Scenes",
-        description="Click to apply scene and double click to rename.",
+        description="Click to apply and double click to rename.",
         default="",
         update=scenes.change_scene_name,
     )
