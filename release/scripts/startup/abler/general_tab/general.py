@@ -32,6 +32,7 @@ bl_info = {
 import os
 
 import bpy
+import platform
 from datetime import datetime, timedelta
 from time import time
 from bpy_extras.io_utils import ExportHelper
@@ -44,6 +45,7 @@ from ..lib.import_file import AconImportHelper, AconExportHelper
 from ..lib.user_info import get_or_init_user_info
 from ..lib.string_helper import timestamp_to_string
 from ..warning_modal import BlockingModalOperator
+import ctypes
 
 
 def split_filepath(filepath):
@@ -80,13 +82,29 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     bl_translation_context = "abler"
 
     def execute(self, context):
-        tracker.tutorial_guide_on()
+        if platform.system() == "Windows":
+            user32 = ctypes.windll.user32
+            user32.SetProcessDPIAware()
+            width = user32.GetSystemMetrics(0)
+            height = user32.GetSystemMetrics(1)
 
-        userInfo = get_or_init_user_info()
-        prop = userInfo.ACON_prop
-        prop.show_guide = read_remembered_show_guide()
+            print(width, height)
 
-        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+            bpy.context.preferences.view.ui_scale += 0.1
+        bpy.ops.acon3d.alert(
+            "INVOKE_DEFAULT",
+            title="Login failed",
+            message_1="The number of consecutive password error count exceeded.",
+            message_2="Please try again in few minutes.",
+        )
+
+        # tracker.tutorial_guide_on()
+        #
+        # userInfo = get_or_init_user_info()
+        # prop = userInfo.ACON_prop
+        # prop.show_guide = read_remembered_show_guide()
+        #
+        # bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
