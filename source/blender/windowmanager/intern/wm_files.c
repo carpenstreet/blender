@@ -2492,7 +2492,7 @@ void WM_OT_read_homefile(wmOperatorType *ot)
   PropertyRNA *prop;
   ot->name = "Reload Start-Up File";
   ot->idname = "WM_OT_read_homefile";
-  ot->description = "Open the default file (doesn't save the current file)";
+  ot->description = "Open default file (Do not save current file)";
 
   ot->invoke = wm_homefile_read_invoke;
   ot->exec = wm_homefile_read_exec;
@@ -2954,7 +2954,7 @@ void WM_OT_recover_last_session(wmOperatorType *ot)
 {
   ot->name = "Recover Last Session";
   ot->idname = "WM_OT_recover_last_session";
-  ot->description = "Open the last closed file (\"" BLENDER_QUIT_FILE "\")";
+  ot->description = "Open the last closed file";
 
   ot->invoke = wm_recover_last_session_invoke;
   ot->exec = wm_recover_last_session_exec;
