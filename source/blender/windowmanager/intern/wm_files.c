@@ -3013,7 +3013,7 @@ void WM_OT_recover_auto_save(wmOperatorType *ot)
 {
   ot->name = "Recover Auto Save";
   ot->idname = "WM_OT_recover_auto_save";
-  ot->description = "Open an automatically saved file to recover it";
+  ot->description = "Open automatically saved file to recover";
 
   ot->invoke = wm_recover_auto_save_invoke;
   ot->exec = wm_recover_auto_save_exec;
