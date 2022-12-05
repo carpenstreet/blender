@@ -218,7 +218,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
 class Acon3dNoticeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice"
     bl_label = ""
-    bl_description = "ABLER Service Notice"
+    bl_description = "Link to ABLER service notice"
     title: bpy.props.StringProperty(name="Title")
     content: bpy.props.StringProperty(name="Content", description="content")
     link: bpy.props.StringProperty(name="Link", description="link")
