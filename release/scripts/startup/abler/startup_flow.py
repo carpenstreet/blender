@@ -528,7 +528,9 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
             text="When using an older version of ABLER, some features may not work properly."
         )
         col.operator("acon3d.update_abler", text="Update ABLER")
-        col.operator("acon3d.close_blocking_modal", text="Close")
+        col.operator(
+            "acon3d.close_blocking_modal", text="Close"
+        ).description_text = "Close"
         row.label(text="")
 
         main.label(text="")
@@ -613,7 +615,9 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
         )
         row.label(text="Don't show this message again")
 
-        col.operator("acon3d.close_blocking_modal", text="Close")
+        col.operator(
+            "acon3d.close_blocking_modal", text="Close"
+        ).description_text = "Close"
         row.label(text="")
 
         main.label(text="")

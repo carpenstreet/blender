@@ -61,8 +61,9 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
     )
 
     hide_low_version_warning: bpy.props.BoolProperty(
-        name="Hide Low Version Warning",
-        description="Don’t show this message again.",
+        # name="Hide Low Version Warning",
+        name="",
+        description="Don't show this message again",
         default=False,
         update=version.remember_low_version_warning_hidden,
     )
