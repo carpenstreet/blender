@@ -967,7 +967,7 @@ class WM_OT_context_modal_mouse(Operator):
 
 
 class WM_OT_url_open(Operator):
-    """Open a website in the web browser"""
+    """Open ABLER Guide"""
     bl_idname = "wm.url_open"
     bl_label = ""
     bl_options = {'INTERNAL'}
@@ -984,10 +984,10 @@ class WM_OT_url_open(Operator):
 
 
 class WM_OT_url_open_support(Operator):
-    """Open local ACON3D support website in the web browser"""
+    """Open ACON3D web support"""
     bl_idname = "wm.url_open_support"
     bl_label = "Support"
-    bl_description = "Open local ACON3D support website in the web browser"
+    bl_description = "Open ACON3D web support"
     bl_options = {'INTERNAL'}
 
     def execute(self, _context):
@@ -3021,7 +3021,7 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
-notices = ('READY', None) 
+notices = ('READY', None)
 
 def fetch_notices():
     # 전에 이미 성공/실패했으면 일찍 종료
@@ -3137,16 +3137,21 @@ class WM_MT_splash(Menu):
 
         col1 = split.column()
         anchor = col1.operator("acon3d.anchor", text="See ACON3D models!", icon='EVENT_A')
-        anchor.href = 'https://acon3d.com'
         anchor.description_text = "Link to ACON3D"
+        anchor.href = 'https://acon3d.com'
         anchor = col1.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
         anchor.description_text = "Sign up for ACON3D"
         anchor.href = 'https://www.acon3d.com/member/join'
 
+        # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
-        col2.operator("wm.url_open_preset", text="Blender Release Notes", icon='URL',
-                      text_ctxt="*").type = 'RELEASE_NOTES'
-        col2.operator("wm.url_open_preset", text="Blender Development Fund", icon='FUND', text_ctxt="*").type = 'FUND'
+        anchor = col2.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
+        anchor.description_text = "Link to Blender Foundation and check release notes"
+        anchor.href = 'https://www.blender.org/download/releases/'
+        anchor = col2.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
+        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
+        anchor.href = 'https://fund.blender.org/'
+
         # 공지사항 파트
         fetch_notices()
         global notices
@@ -3271,7 +3276,7 @@ class WM_MT_splash_tutorial(Menu):
         row.alignment = "RIGHT"
         row.label(text="Always Show")
         layout.separator()
-        
+
 
 class WM_OT_drop_blend_file(Operator):
     bl_idname = "wm.drop_blend_file"

@@ -343,8 +343,8 @@ const EnumPropertyItem rna_enum_fileselect_params_sort_items[] = {
      "FILE_SORT_TIME",
      ICON_NONE,
      "Modified Date",
-     "Sort files by modification time"},
-    {FILE_SORT_SIZE, "FILE_SORT_SIZE", ICON_NONE, "Size", "Sort files by size"},
+     "Sort the file list by modification time"},
+    {FILE_SORT_SIZE, "FILE_SORT_SIZE", ICON_NONE, "Size", "Sort the file list by size"},
     {0, NULL, 0, NULL, NULL},
 };
 
@@ -491,7 +491,7 @@ static const EnumPropertyItem buttons_context_items[] = {
 };
 
 static const EnumPropertyItem fileselectparams_recursion_level_items[] = {
-    {0, "NONE", 0, "None", "Only list current directory's content, with no recursion"},
+    {0, "NONE", 0, "None", "List only current directory's content, with no recursion"},
     {1, "BLEND", 0, "Blend File", "List .blend files' content"},
     {2, "ALL_1", 0, "One Level", "List all sub-directories' content, one level of recursion"},
     {3, "ALL_2", 0, "Two Levels", "List all sub-directories' content, two levels of recursion"},
@@ -6576,7 +6576,7 @@ static void rna_def_fileselect_params(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "show_hidden", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_negative_sdna(prop, NULL, "flag", FILE_HIDE_DOT);
-  RNA_def_property_ui_text(prop, "Show Hidden", "Show hidden dot files");
+  RNA_def_property_ui_text(prop, "Show Hidden", "Show hidden folders or files");
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_FILE_PARAMS, NULL);
 
   prop = RNA_def_property(srna, "sort_method", PROP_ENUM, PROP_NONE);
@@ -6588,7 +6588,7 @@ static void rna_def_fileselect_params(BlenderRNA *brna)
   prop = RNA_def_property(srna, "use_sort_invert", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "flag", FILE_SORT_INVERT);
   RNA_def_property_ui_text(
-      prop, "Reverse Sorting", "Sort items descending, from highest value to lowest");
+      prop, "Reverse Sorting", "Reverse the order of the list");
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_FILE_PARAMS, NULL);
 
   prop = RNA_def_property(srna, "use_filter_image", PROP_BOOLEAN, PROP_NONE);

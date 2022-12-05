@@ -456,7 +456,7 @@ class Acon3dAnchorOperator(bpy.types.Operator):
     @classmethod
     def description(cls, context, properties):
         if properties.description_text:
-            return properties.description_text
+            return bpy.app.translations.pgettext(properties.description_text)
         else:
             return None
 
