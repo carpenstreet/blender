@@ -2492,7 +2492,7 @@ void WM_OT_read_homefile(wmOperatorType *ot)
   PropertyRNA *prop;
   ot->name = "Reload Start-Up File";
   ot->idname = "WM_OT_read_homefile";
-  ot->description = "Open the default file (doesn't save the current file)";
+  ot->description = "Open default file (Do not save current file)";
 
   ot->invoke = wm_homefile_read_invoke;
   ot->exec = wm_homefile_read_exec;
@@ -2731,7 +2731,7 @@ static char *wm_open_mainfile_description(struct bContext *UNUSED(C),
 
   BLI_stat_t stats;
   if (BLI_stat(path, &stats) == -1) {
-    return BLI_sprintfN("%s\n\n%s", path, N_("File Not Found"));
+    return BLI_sprintfN("%s\n\n%s", path, N_("File not found"));
   }
 
   /* Date. */
@@ -2954,7 +2954,7 @@ void WM_OT_recover_last_session(wmOperatorType *ot)
 {
   ot->name = "Recover Last Session";
   ot->idname = "WM_OT_recover_last_session";
-  ot->description = "Open the last closed file (\"" BLENDER_QUIT_FILE "\")";
+  ot->description = "Open the last closed file";
 
   ot->invoke = wm_recover_last_session_invoke;
   ot->exec = wm_recover_last_session_exec;
@@ -3013,7 +3013,7 @@ void WM_OT_recover_auto_save(wmOperatorType *ot)
 {
   ot->name = "Recover Auto Save";
   ot->idname = "WM_OT_recover_auto_save";
-  ot->description = "Open an automatically saved file to recover it";
+  ot->description = "Open automatically saved file to recover";
 
   ot->invoke = wm_recover_auto_save_invoke;
   ot->exec = wm_recover_auto_save_exec;
