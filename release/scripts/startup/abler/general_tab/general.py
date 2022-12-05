@@ -253,9 +253,12 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
     @classmethod
     def description(cls, context, properties):
         filepath = properties.filepath
+        tr = bpy.app.translations.pgettext
 
         if not os.path.isfile(filepath):
-            return f"{filepath}\n\nFile Not Found"
+            return tr("$(filepath)\n\nFile not found").replace(
+                "$(filepath)", str(filepath)
+            )
 
         modified_datetime = datetime.fromtimestamp(os.path.getmtime(filepath))
         time_distance = datetime.today().date() - modified_datetime.date()
@@ -267,12 +270,18 @@ class FileRecentOpenOperator(bpy.types.Operator, BaseFileOpenOperator):
         else:
             modified_time = modified_datetime.strftime("%d %b %Y %H:%M")
 
-        modified_time = f"Modified: {modified_time}"
-
         size = round(os.path.getsize(filepath) / 1000000.0, 1)
-        size = f"Size: {size} MB"
+        text = "$(filepath)\n\nModified: $(modified_time)\nSize: $(size) MB"
+        text_replace_dict = {
+            "$(filepath)": str(filepath),
+            "$(modified_time)": str(modified_time),
+            "$(size)": str(size),
+        }
 
-        return f"{filepath}\n\n{modified_time}\n{size}"
+        for key, value in text_replace_dict.items():
+            text = tr(text).replace(key, value)
+
+        return text
 
     def execute(self, context):
         self.open_file()

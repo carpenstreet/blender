@@ -634,7 +634,7 @@ class TOPBAR_MT_file_context_menu(Menu):
 
         layout.operator_context = 'INVOKE_AREA'
         layout.menu("TOPBAR_MT_file_new", text="New", icon='FILE_NEW')
-        layout.operator("acon3d.file_open", text="Open...", icon='FILE_FOLDER')
+        layout.operator("acon3d.file_open", text="Open", icon='FILE_FOLDER')
 
         layout.separator()
 
