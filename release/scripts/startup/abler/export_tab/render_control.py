@@ -628,7 +628,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         bpy.context.window_manager.progress_prop.total_render_num += 1
 
         scene.name = f"{base_scene.name}_{render_type}"
-        scene.eevee.use_bloom = False
+        if render_type != "full":
+            scene.eevee.use_bloom = False
         scene.render.use_lock_interface = True
 
         # scene_info - UI 에 이름과 진행 상황을 보여주기 위한 데이터
