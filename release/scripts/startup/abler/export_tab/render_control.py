@@ -153,7 +153,7 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         bpy.app.handlers.save_post.append(render_save_handler)
-        return bpy.ops.acon3d.save("INVOKE_DEFAULT")
+        return bpy.ops.acon3d.save("INVOKE_DEFAULT", is_render=True)
 
 
 class Acon3dRenderOperator(bpy.types.Operator):

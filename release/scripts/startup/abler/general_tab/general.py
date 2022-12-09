@@ -313,6 +313,8 @@ class SaveOperator(bpy.types.Operator, AconExportHelper):
 
     filename_ext = ".blend"
 
+    is_render: bpy.props.BoolProperty(default=False)
+
     # invoke() 사용을 하지 않고 execute() 분리 시도 방법은 현재 어렵습니다.
     # Helper 함수에서는 invoke()가 호출되어서 파일 브라우저 관리를 하는데,
     # 파일이 최초 저장될 때는 invoke()를 활용해서 파일 브라우저에서 파일명을 관리를 해야하지만,
@@ -353,6 +355,29 @@ class SaveOperator(bpy.types.Operator, AconExportHelper):
             tracker.save()
 
         return {"FINISHED"}
+
+    def draw(self, context):
+        super().draw(context)
+
+        if self.is_render:
+            layout = self.layout
+            box = layout.box()
+            box.scale_y = 0.8
+            box.use_property_split = True
+            box.use_property_decorate = False
+            box.label(
+                icon="ERROR",
+                text="This file has never been saved",
+            )
+            box.label(
+                text="before. Saving file before rendering is",
+            )
+            box.label(
+                text="required. Please select the folder in",
+            )
+            box.label(
+                text="which the file will be saved.",
+            )
 
 
 class SaveAsOperator(bpy.types.Operator, AconExportHelper):
