@@ -92,7 +92,7 @@ def init_logger():
     logging.basicConfig(
         filename=f"{os.path.normpath(os.path.expanduser('~/Desktop'))}/abler_tracker.log",
         level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s"
+        format="%(asctime)s - %(levelname)s - %(message)s",
     )
 
 
@@ -154,7 +154,12 @@ class Tracker(metaclass=ABCMeta):
         try:
             self._enqueue_event(event_name, next_properties)
             if "--log" in sys.argv:
-                logging.log(logging.INFO, f"Tracker: {event_name} {properties}" if properties else f"Tracker: {event_name}")
+                logging.log(
+                    logging.INFO,
+                    f"Tracker: {event_name} {properties}"
+                    if properties
+                    else f"Tracker: {event_name}",
+                )
         except Exception as e:
             print(e)
             return False
