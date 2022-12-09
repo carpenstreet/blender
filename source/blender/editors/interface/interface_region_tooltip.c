@@ -835,7 +835,8 @@ static uiTooltipData *ui_tooltip_data_from_button_or_extra_icon(bContext *C,
                                                  .style = UI_TIP_STYLE_NORMAL,
                                                  .color_id = UI_TIP_LC_NORMAL,
                                              });
-      field->text = BLI_strdup(TIP_("(Shift-Click/Drag to select multiple)"));
+      // 다국어 작업을 진행하면서 Snap Element 공통 툴팁을 제외함
+      // field->text = BLI_strdup(TIP_("(Shift-Click/Drag to select multiple)"));
     }
   }
   /* Enum field label & tip */
