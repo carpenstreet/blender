@@ -836,7 +836,7 @@ void RNA_api_wm(StructRNA *srna)
 
   func = RNA_def_function(srna, "set_fileselect_title", "WM_set_fileselect_title");
   RNA_def_function_ui_description(func, "Set fileselect title");
-  RNA_def_enum(func, "title_enum", file_view_title_items, 0, "title enum", "title enum for file selector");
+  parm = RNA_def_enum(func, "title_enum", file_view_title_items, 0, "title enum", "title enum for file selector");
   RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
 
   func = RNA_def_function(srna, "get_progress", "WM_get_progress");
