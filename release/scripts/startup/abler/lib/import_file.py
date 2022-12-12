@@ -71,6 +71,17 @@ class AconExportHelper(ExportHelper):
         super().__init__()
         self.set_option = None
 
+    def check_path(self, save_check: bool, default_name: str = "untitled.blend"):
+        """
+        :param save_check: 저장 유무를 판단할 것인지
+        :param default_name: 기본 이름
+
+        :return:
+            filepath 가 디렉토리인 경우 filepath 에 default_name 추가
+        """
+        if not (save_check and bpy.data.is_saved) and os.path.isdir(self.filepath):
+            self.filepath = os.path.join(self.filepath, default_name)
+
     def draw(self, context):
         # FileBrowser UI 설정이 맨처음에만 적용되게끔
         if not self.set_option:

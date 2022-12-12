@@ -245,6 +245,11 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
             return super().invoke(context, event)
 
     def execute(self, context):
+        self.check_path(
+            save_check=False,
+            default_name=f"{context.scene.name}{self.filename_ext}",
+        )
+
         # Get basename without file extension
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
