@@ -572,18 +572,18 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
         # bpy.data.materials가 전체 씬에 대해 적용되기 때문에
         # 렌더 씬마다 적용하기 위해 재질의 상태를 렌더하기 전 pre_render에서 적용
-        if render_type != "full":
+        if render_type == "full":
+            pass
+        elif render_type == "line":
             for mat in bpy.data.materials:  # scene
-                if render_type == "line":
-                    mat.blend_method = "OPAQUE"
-                    mat.shadow_method = "OPAQUE"
-                    if toonNode := mat.node_tree.nodes.get(
-                        "ACON_nodeGroup_combinedToon"
-                    ):
-                        toonNode.inputs[1].default_value = 0
-                        toonNode.inputs[3].default_value = 1
-                else:
-                    materials_handler.set_material_parameters_by_type(mat)
+                mat.blend_method = "OPAQUE"
+                mat.shadow_method = "OPAQUE"
+                if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
+                    toonNode.inputs[1].default_value = 0
+                    toonNode.inputs[3].default_value = 1
+        else:  # Shadow / Texture
+            for mat in bpy.data.materials:  # scene
+                materials_handler.set_material_parameters_by_type(mat)
 
     def post_render(self, dummy, dum):
         base_scene_name, scene, render_type = self.render_queue[0]
