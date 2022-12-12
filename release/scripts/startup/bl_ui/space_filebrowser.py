@@ -292,7 +292,7 @@ class FILEBROWSER_MT_bookmarks_context_menu(Menu):
 
     def draw(self, _context):
         layout = self.layout
-        layout.operator("file.bookmark_cleanup", icon='X', text="Cleanup")
+        layout.operator("file.bookmark_cleanup", icon='X', text="Cleanup", text_ctxt="abler")
 
         layout.separator()
         layout.operator("file.bookmark_move", icon='TRIA_UP_BAR',

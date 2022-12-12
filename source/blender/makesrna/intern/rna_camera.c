@@ -253,12 +253,12 @@ static void rna_def_camera_background_image(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "use_flip_x", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "flag", CAM_BGIMG_FLAG_FLIP_X);
-  RNA_def_property_ui_text(prop, "Flip_X-axis", "Flip the background image horizontally");
+  RNA_def_property_ui_text(prop, "Flip X-axis", "Flip the background image horizontally");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "use_flip_y", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "flag", CAM_BGIMG_FLAG_FLIP_Y);
-  RNA_def_property_ui_text(prop, "Flip_Y-axis", "Flip the background image vertically");
+  RNA_def_property_ui_text(prop, "Flip Y-axis", "Flip the background image vertically");
   RNA_def_property_update(prop, NC_CAMERA | ND_DRAW_RENDER_VIEWPORT, NULL);
 
   prop = RNA_def_property(srna, "alpha", PROP_FLOAT, PROP_NONE);

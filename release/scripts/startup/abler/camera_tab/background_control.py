@@ -209,8 +209,8 @@ class Acon3dBackgroundImagesPanel(bpy.types.Panel):
                     row = box.row()
                     row.prop(bg, "scale", text="Scale", text_ctxt="abler")
                     row = box.row(heading="Flip")
-                    row.prop(bg, "use_flip_x", text="X")
-                    row.prop(bg, "use_flip_y", text="Y")
+                    row.prop(bg, "use_flip_x", text="Flip X-axis")
+                    row.prop(bg, "use_flip_y", text="Flip Y-axis")
 
 
 classes = (

@@ -61,8 +61,9 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
     )
 
     hide_low_version_warning: bpy.props.BoolProperty(
-        name="Hide Low Version Warning",
-        description="Don’t show this message again.",
+        # name="Hide Low Version Warning",
+        name="",
+        description="Don't show this message again",
         default=False,
         update=version.remember_low_version_warning_hidden,
     )
@@ -679,11 +680,18 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     )
 
     show_password: bpy.props.BoolProperty(
-        name="Show Password", description="Show password (Use only in private environment)", default=False, update=toggle_show_password
+        name="Show Password",
+        description="Show password (Use only in private environment)",
+        default=False,
+        update=toggle_show_password,
     )
 
     # TODO: description 달기
-    remember_username: bpy.props.BoolProperty(name="Remember Username", description="Autofill this username next time", default=True)
+    remember_username: bpy.props.BoolProperty(
+        name="Remember Username",
+        description="Autofill this username next time",
+        default=True,
+    )
 
     login_status: bpy.props.StringProperty(
         name="Login Status",
@@ -691,7 +699,10 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     )
 
     show_guide: bpy.props.BoolProperty(
-        name="", description="Always show tutorial guide when starting ABLER", default=True, update=remember_show_guide
+        name="",
+        description="Always show tutorial guide when starting ABLER",
+        default=True,
+        update=remember_show_guide,
     )
 
 

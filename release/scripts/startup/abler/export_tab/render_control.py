@@ -153,7 +153,7 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         bpy.app.handlers.save_post.append(render_save_handler)
-        return bpy.ops.acon3d.save("INVOKE_DEFAULT")
+        return bpy.ops.acon3d.save("INVOKE_DEFAULT", is_render=True)
 
 
 class Acon3dRenderOperator(bpy.types.Operator):
@@ -245,6 +245,11 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
             return super().invoke(context, event)
 
     def execute(self, context):
+        self.check_path(
+            save_check=False,
+            default_name=f"{context.scene.name}{self.filename_ext}",
+        )
+
         # Get basename without file extension
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
@@ -628,7 +633,8 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         bpy.context.window_manager.progress_prop.total_render_num += 1
 
         scene.name = f"{base_scene.name}_{render_type}"
-        scene.eevee.use_bloom = False
+        if render_type != "full":
+            scene.eevee.use_bloom = False
         scene.render.use_lock_interface = True
 
         # scene_info - UI 에 이름과 진행 상황을 보여주기 위한 데이터

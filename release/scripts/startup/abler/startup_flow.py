@@ -218,7 +218,7 @@ class Acon3dNoticeInvokeOperator(bpy.types.Operator):
 class Acon3dNoticeOperator(bpy.types.Operator):
     bl_idname = "acon3d.notice"
     bl_label = ""
-    bl_description = "ABLER Service Notice"
+    bl_description = "Link to ABLER service notice"
     title: bpy.props.StringProperty(name="Title")
     content: bpy.props.StringProperty(name="Content", description="content")
     link: bpy.props.StringProperty(name="Link", description="link")
@@ -417,7 +417,7 @@ class LoginTask(AsyncTask):
             bpy.ops.acon3d.alert(
                 "INVOKE_DEFAULT",
                 title="Login failed",
-                message_1="The number of consecutive password error count exceeded.",
+                message_1="Login error count exceeded.",
                 message_2="Please try again in few minutes.",
             )
         else:
@@ -528,7 +528,9 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
             text="When using an older version of ABLER, some features may not work properly."
         )
         col.operator("acon3d.update_abler", text="Update ABLER")
-        col.operator("acon3d.close_blocking_modal", text="Close")
+        col.operator(
+            "acon3d.close_blocking_modal", text="Close"
+        ).description_text = "Close"
         row.label(text="")
 
         main.label(text="")
@@ -613,7 +615,9 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
         )
         row.label(text="Don't show this message again")
 
-        col.operator("acon3d.close_blocking_modal", text="Close")
+        col.operator(
+            "acon3d.close_blocking_modal", text="Close"
+        ).description_text = "Close"
         row.label(text="")
 
         main.label(text="")

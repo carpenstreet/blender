@@ -3153,10 +3153,7 @@ static void rna_def_tool_settings(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "use_snap_grid_absolute", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "snap_flag", SCE_SNAP_ABS_GRID);
-  RNA_def_property_ui_text(
-      prop,
-      "Absolute Grid Snap",
-      "Absolute grid alignment while translating (based on the pivot center)");
+  RNA_def_property_ui_text(prop, "Absolute Grid Snap", "Snap to increment of absolute grid");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   prop = RNA_def_property(srna, "use_snap_sequencer", PROP_BOOLEAN, PROP_NONE);
@@ -3171,7 +3168,8 @@ static void rna_def_tool_settings(BlenderRNA *brna)
   RNA_def_property_enum_items(prop, rna_enum_snap_element_items);
   RNA_def_property_enum_funcs(prop, NULL, "rna_ToolSettings_snap_mode_set", NULL);
   RNA_def_property_flag(prop, PROP_ENUM_FLAG);
-  RNA_def_property_ui_text(prop, "Snap Element", "Type of element to snap to");
+  // 다국어 작업을 진행하면서 Snap Element 공통 툴팁을 제외함
+  // RNA_def_property_ui_text(prop, "Snap Element", "Type of element to snap to");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   /* node editor uses own set of snap modes */
@@ -3190,16 +3188,14 @@ static void rna_def_tool_settings(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "use_snap_uv_grid_absolute", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "snap_uv_flag", SCE_SNAP_ABS_GRID);
-  RNA_def_property_ui_text(
-      prop,
-      "Absolute Grid Snap",
-      "Absolute grid alignment while translating (based on the pivot center)");
+  RNA_def_property_ui_text(prop, "Absolute Grid Snap", "Snap to increment of absolute grid");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   prop = RNA_def_property(srna, "snap_target", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "snap_target");
   RNA_def_property_enum_items(prop, rna_enum_snap_target_items);
-  RNA_def_property_ui_text(prop, "Snap Target", "Which part to snap onto the target");
+  // 다국어 작업을 진행하면서 Snap Target 공통 툴팁을 제외함
+  // RNA_def_property_ui_text(prop, "Snap Target", "Which part to snap onto the target");
   RNA_def_property_update(prop, NC_SCENE | ND_TOOLSETTINGS, NULL); /* header redraw */
 
   prop = RNA_def_property(srna, "use_snap_peel_object", PROP_BOOLEAN, PROP_NONE);

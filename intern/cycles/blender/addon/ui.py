@@ -910,7 +910,7 @@ class CYCLES_CAMERA_PT_dof(CyclesButtonsPanel, Panel):
         split = layout.split()
 
         col = split.column()
-        col.prop(dof, "focus_object", text="Focus Object")
+        col.prop(dof, "focus_object", text="Focus on Object")
 
         sub = col.row()
         sub.active = dof.focus_object is None
