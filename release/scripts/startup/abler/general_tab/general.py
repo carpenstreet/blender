@@ -461,6 +461,7 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import"
     bl_label = "Import"
+    bl_options = {"UNDO"}
     bl_translation_context = "*"
 
     filter_glob: bpy.props.StringProperty(
@@ -516,6 +517,7 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_blend"
     bl_label = "Import BLEND"
+    bl_options = {"UNDO"}
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.blend", options={"HIDDEN"})
@@ -628,6 +630,7 @@ class ImportFBXOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_fbx"
     bl_label = "Import FBX"
+    bl_options = {"UNDO"}
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.fbx", options={"HIDDEN"})
@@ -696,6 +699,7 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
 
     bl_idname = "acon3d.import_skp_op"
     bl_label = "Import SKP"
+    bl_options = {"UNDO"}
     bl_translation_context = "abler"
 
     filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
