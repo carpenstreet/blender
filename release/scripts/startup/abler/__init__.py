@@ -43,6 +43,7 @@ from .scene_tab import scene_control, object_control, layer_control
 from .style_tab import styles_control
 from .export_tab import render_control
 from .export_tab import export_control
+from .cube_tab import create_cube
 from . import pref
 from . import operators
 from . import warning_modal
@@ -66,6 +67,7 @@ importedLibrary = [
     pref,
     operators,
     warning_modal,
+    create_cube,
 ]
 if "--background" not in sys.argv and "-b" not in sys.argv:
     from . import startup_flow
