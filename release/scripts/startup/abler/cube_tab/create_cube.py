@@ -29,22 +29,6 @@ class AconDeleteAllCubesOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class AconNameCubeOperator(bpy.types.Operator):
-    bl_idname = "acon3d.name_cube"
-    bl_label = "Name New Cube"
-    bl_translation_context = "abler"
-    bl_options = {"REGISTER", "UNDO"}
-
-    name: bpy.props.StringProperty(
-        name="Name", description="Write cube name", maxlen=10
-    )
-
-    def execute(self, context):
-        pass
-
-        return {"FINISHED"}
-
-
 class Acon3dCubePanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_cube"
     bl_label = "Cube"
@@ -70,11 +54,31 @@ class Acon3dCubePanel(bpy.types.Panel):
         row.operator("acon3d.delete_all_cubes", text="delete all")
 
 
+class ACON3dNameCubePanel(bpy.types.Panel):
+
+    bl_idname = "ACON3D_PT_NameCube"
+    bl_label = "Cube Name"
+    bl_category = "Cube"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+    bl_order = 1
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.label(icon="EVENT_B")
+
+    def draw(self, context):
+        layout = self.layout
+        prop = context.scene.ACON_prop
+        layout.prop(prop, "cube_name", text="name")
+
+
 classes = (
     Acon3dCubePanel,
     AconAddCubeOperator,
     AconDeleteAllCubesOperator,
-    AconNameCubeOperator,
+    ACON3dNameCubePanel,
 )
 
 

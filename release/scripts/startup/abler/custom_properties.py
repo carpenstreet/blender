@@ -593,6 +593,12 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_background_color,
     )
 
+    cube_name: bpy.props.StringProperty(
+        name="Cube Name",
+        description="custom cube name",
+        maxlen=10,
+    )
+
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod
