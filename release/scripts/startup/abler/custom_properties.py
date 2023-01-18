@@ -780,6 +780,30 @@ class AconObjectProperty(bpy.types.PropertyGroup):
 
     location_z: bpy.props.FloatProperty(name="z", update=objects.edit_state)
 
+    scale_x: bpy.props.FloatProperty(
+        name="x",
+        update=objects.edit_state,
+    )
+
+    scale_y: bpy.props.FloatProperty(
+        name="y",
+        update=objects.edit_state,
+    )
+
+    scale_z: bpy.props.FloatProperty(name="z", update=objects.edit_state)
+
+    rotate_x: bpy.props.FloatProperty(
+        name="x",
+        update=objects.edit_state,
+    )
+
+    rotate_y: bpy.props.FloatProperty(
+        name="y",
+        update=objects.edit_state,
+    )
+
+    rotate_z: bpy.props.FloatProperty(name="z", update=objects.edit_state)
+
 
 classes = (
     AconSceneColGroupProperty,

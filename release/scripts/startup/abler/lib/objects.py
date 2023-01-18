@@ -143,6 +143,14 @@ def edit_state(self, context):
     location_y = self.location_y
     location_z = self.location_z
 
+    scale_x = self.scale_x
+    scale_y = self.scale_y
+    scale_z = self.scale_z
+
+    rotate_x = self.rotate_x
+    rotate_y = self.rotate_y
+    rotate_z = self.rotate_z
+
     for obj in context.selected_objects:
 
         prop = obj.ACON_prop
@@ -153,3 +161,9 @@ def edit_state(self, context):
         obj.location[0] = location_x
         obj.location[1] = location_y
         obj.location[2] = location_z
+        obj.scale[0] = scale_x
+        obj.scale[1] = scale_y
+        obj.scale[2] = scale_z
+        obj.rotation_euler[0] = rotate_x
+        obj.rotation_euler[1] = rotate_y
+        obj.rotation_euler[2] = rotate_z
