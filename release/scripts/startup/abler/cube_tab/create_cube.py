@@ -13,7 +13,12 @@ class AconAddCubeOperator(bpy.types.Operator):
         y = random.randint(0, 12)
         z = random.randint(0, 12)
 
-        bpy.ops.mesh.primitive_cube_add(location=(x, y, z), size=2.0)
+        mesh = bpy.ops.mesh.primitive_cube_add(location=(x, y, z), size=2.0)
+        ob = bpy.context.object
+        me = ob.data
+        ob.name = "CUBEOBJ"
+        me.name = "CUBEMESH"
+
         return {"FINISHED"}
 
 
@@ -55,7 +60,6 @@ class Acon3dCubePanel(bpy.types.Panel):
 
 
 class ACON3dNameCubePanel(bpy.types.Panel):
-
     bl_idname = "ACON3D_PT_NameCube"
     bl_label = "Cube Name"
     bl_category = "Cube"
