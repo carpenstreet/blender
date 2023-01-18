@@ -112,7 +112,7 @@ class ACON3dScaleCubePanel(bpy.types.Panel):
 
     def draw_header(self, context):
         layout = self.layout
-        layout.label(icon="EVENT_B")
+        layout.label(icon="EVENT_C")
 
     def draw(self, context):
         layout = self.layout
@@ -134,7 +134,7 @@ class ACON3dRotateCubePanel(bpy.types.Panel):
 
     def draw_header(self, context):
         layout = self.layout
-        layout.label(icon="EVENT_B")
+        layout.label(icon="EVENT_D")
 
     def draw(self, context):
         layout = self.layout
