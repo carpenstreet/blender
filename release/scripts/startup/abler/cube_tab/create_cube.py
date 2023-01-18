@@ -79,9 +79,9 @@ class Acon3dCubePanel(bpy.types.Panel):
         row.operator("acon3d.delete_all_cubes", text="delete all")
 
 
-class ACON3dNameCubePanel(bpy.types.Panel):
-    bl_idname = "ACON3D_PT_NameCube"
-    bl_label = "Cube Name"
+class ACON3dMoveCubePanel(bpy.types.Panel):
+    bl_idname = "ACON3D_PT_MoveCube"
+    bl_label = "Move Cube"
     bl_category = "Cube"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -94,15 +94,18 @@ class ACON3dNameCubePanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        prop = context.scene.ACON_prop
-        layout.prop(prop, "cube_name", text="name")
+        obj = context.object
+        prop = obj.ACON_prop
+        layout.prop(prop, "location_x", text="x")
+        layout.prop(prop, "location_y", text="y")
+        layout.prop(prop, "location_z", text="z")
 
 
 classes = (
     Acon3dCubePanel,
     AconAddCubeOperator,
     AconDeleteAllCubesOperator,
-    ACON3dNameCubePanel,
+    ACON3dMoveCubePanel,
 )
 
 

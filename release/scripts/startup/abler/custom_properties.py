@@ -593,12 +593,6 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_background_color,
     )
 
-    cube_name: bpy.props.StringProperty(
-        name="Cube Name",
-        description="custom cube name",
-        maxlen=10,
-    )
-
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod
@@ -776,6 +770,15 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     state_begin: bpy.props.PointerProperty(type=AconObjectStateProperty)
 
     state_end: bpy.props.PointerProperty(type=AconObjectStateProperty)
+
+    location_x: bpy.props.FloatProperty(name="x", update=objects.edit_state)
+
+    location_y: bpy.props.FloatProperty(
+        name="y",
+        update=objects.edit_state,
+    )
+
+    location_z: bpy.props.FloatProperty(name="z", update=objects.edit_state)
 
 
 classes = (
