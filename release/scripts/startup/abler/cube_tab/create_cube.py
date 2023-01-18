@@ -8,6 +8,18 @@ class AconAddCubeOperator(bpy.types.Operator):
     bl_label = "Add Cube"
     bl_translation_context = "abler"
 
+    name: bpy.props.StringProperty(name="Name", description="Write scene name")
+
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.separator()
+        layout.prop(self, "name")
+        layout.separator()
+
     def execute(self, context):
         x = random.randint(0, 12)
         y = random.randint(0, 12)
