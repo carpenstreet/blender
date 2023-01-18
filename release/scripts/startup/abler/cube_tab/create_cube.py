@@ -9,6 +9,9 @@ class AconAddCubeOperator(bpy.types.Operator):
     bl_translation_context = "abler"
 
     name: bpy.props.StringProperty(name="Name", description="Write scene name")
+    x: bpy.props.IntProperty(name="x")
+    y: bpy.props.IntProperty(name="y")
+    z: bpy.props.IntProperty(name="z")
 
     def invoke(self, context, event):
         wm = context.window_manager
@@ -19,13 +22,18 @@ class AconAddCubeOperator(bpy.types.Operator):
         layout.separator()
         layout.prop(self, "name")
         layout.separator()
+        layout.prop(self, "x")
+        layout.separator()
+        layout.prop(self, "y")
+        layout.separator()
+        layout.prop(self, "z")
+        layout.separator()
 
     def execute(self, context):
-        x = random.randint(0, 12)
-        y = random.randint(0, 12)
-        z = random.randint(0, 12)
 
-        mesh = bpy.ops.mesh.primitive_cube_add(location=(x, y, z), size=2.0)
+        mesh = bpy.ops.mesh.primitive_cube_add(
+            location=(self.x, self.y, self.z), size=2.0
+        )
         ob = bpy.context.object
         me = ob.data
         ob.name = self.name
