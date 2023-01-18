@@ -28,7 +28,7 @@ class AconAddCubeOperator(bpy.types.Operator):
         mesh = bpy.ops.mesh.primitive_cube_add(location=(x, y, z), size=2.0)
         ob = bpy.context.object
         me = ob.data
-        ob.name = "CUBEOBJ"
+        ob.name = self.name
         me.name = "CUBEMESH"
 
         return {"FINISHED"}
