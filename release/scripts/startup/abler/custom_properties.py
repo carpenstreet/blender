@@ -731,7 +731,7 @@ class AconObjectProperty(bpy.types.PropertyGroup):
         del bpy.types.Object.ACON_prop
 
     def get_location_x(self, context):
-        return context.selected_object.location[0]
+        return context.selected_objects[0].location[0]
 
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
@@ -777,6 +777,7 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     location_x: bpy.props.FloatProperty(
         name="x",
         update=objects.edit_state,
+        get=get_location_x,
     )
 
     location_y: bpy.props.FloatProperty(
