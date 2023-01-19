@@ -35,10 +35,7 @@ class AconAddCubeOperator(bpy.types.Operator):
             location=(self.x, self.y, self.z), size=2.0
         )
         ob = bpy.context.object
-        me = ob.data
         ob.name = self.name
-        me.name = "CUBEMESH"
-
         return {"FINISHED"}
 
 
@@ -94,7 +91,7 @@ class ACON3dMoveCubePanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        obj = bpy.context.object
+        obj = bpy.context.active_object
         prop = obj.ACON_prop
         layout.prop(prop, "location_x", text="x")
         layout.prop(prop, "location_y", text="y")
