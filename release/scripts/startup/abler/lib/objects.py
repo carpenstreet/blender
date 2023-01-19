@@ -137,6 +137,13 @@ def move_state(self, context):
             prop.state_slider = state_slider
 
 
+def change_location_x(self, context):
+    obj = context.object
+    location = obj.location
+    prop = obj.ACON_prop
+    prop.location_x = location[0]
+
+
 def edit_state(self, context):
 
     location_x = self.location_x
@@ -151,19 +158,14 @@ def edit_state(self, context):
     rotate_y = self.rotate_y
     rotate_z = self.rotate_z
 
-    for obj in context.selected_objects:
+    obj = context.active_object
 
-        prop = obj.ACON_prop
-
-        if obj != context.object and not prop.use_state:
-            continue
-
-        obj.location[0] = location_x
-        obj.location[1] = location_y
-        obj.location[2] = location_z
-        obj.scale[0] = scale_x
-        obj.scale[1] = scale_y
-        obj.scale[2] = scale_z
-        obj.rotation_euler[0] = rotate_x
-        obj.rotation_euler[1] = rotate_y
-        obj.rotation_euler[2] = rotate_z
+    obj.location[0] = location_x
+    obj.location[1] = location_y
+    obj.location[2] = location_z
+    obj.scale[0] = scale_x
+    obj.scale[1] = scale_y
+    obj.scale[2] = scale_z
+    obj.rotation_euler[0] = rotate_x
+    obj.rotation_euler[1] = rotate_y
+    obj.rotation_euler[2] = rotate_z

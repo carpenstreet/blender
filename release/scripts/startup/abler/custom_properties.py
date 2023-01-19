@@ -777,7 +777,6 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     location_x: bpy.props.FloatProperty(
         name="x",
         update=objects.edit_state,
-        get=get_location_x,
     )
 
     location_y: bpy.props.FloatProperty(
@@ -793,16 +792,19 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     scale_x: bpy.props.FloatProperty(
         name="x",
         update=objects.edit_state,
+        default=1,
     )
 
     scale_y: bpy.props.FloatProperty(
         name="y",
         update=objects.edit_state,
+        default=1,
     )
 
     scale_z: bpy.props.FloatProperty(
         name="z",
         update=objects.edit_state,
+        default=1,
     )
 
     rotate_x: bpy.props.FloatProperty(

@@ -94,7 +94,7 @@ class ACON3dMoveCubePanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        obj = context.object
+        obj = bpy.context.object
         prop = obj.ACON_prop
         layout.prop(prop, "location_x", text="x")
         layout.prop(prop, "location_y", text="y")
