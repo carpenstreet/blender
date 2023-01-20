@@ -30,12 +30,22 @@ class AconAddCubeOperator(bpy.types.Operator):
         layout.separator()
 
     def execute(self, context):
+        bpy.ops.mesh.primitive_cube_add(location=(self.x, self.y, self.z), size=2.0)
 
-        mesh = bpy.ops.mesh.primitive_cube_add(
-            location=(self.x, self.y, self.z), size=2.0
-        )
-        ob = bpy.context.object
+        c1 = random.uniform(0.0, 1.0)
+        c2 = random.uniform(0.0, 1.0)
+        c3 = random.uniform(0.0, 1.0)
+        c4 = 1
+
+        color_mat = bpy.data.materials.new("Color Mat")
+        id = color_mat.name
+        bpy.data.materials[id].diffuse_color = (c1, c2, c3, c4)
+
+        ob = bpy.context.active_object
         ob.name = self.name
+        mesh = bpy.context.active_object.data
+        mesh.materials.append(color_mat)
+
         return {"FINISHED"}
 
 
