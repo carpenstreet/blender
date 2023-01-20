@@ -73,7 +73,7 @@ class LinePanel(bpy.types.Panel):
         layout = self.layout
         layout.prop(context.scene.ACON_prop, "toggle_toon_edge", text="")
 
-    def draw(selfo, context):
+    def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
         layout.use_property_decorate = False  # No animation.
