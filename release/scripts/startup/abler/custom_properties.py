@@ -95,7 +95,10 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         default=True,
     )
 
-    keyword_input: bpy.props.StringProperty(name="", options={"TEXTEDIT_UPDATE"})
+    keyword_input: bpy.props.StringProperty(
+        name="",
+        description="Search model in ACON3D",
+    )
 
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):

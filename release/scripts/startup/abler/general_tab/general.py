@@ -788,25 +788,6 @@ class ImportSKPAcceptOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class WM_OT_url_open(bpy.types.Operator):
-    """Open ABLER Guide"""
-
-    bl_idname = "wm.url_open"
-    bl_label = ""
-    bl_options = {"INTERNAL"}
-
-    url: bpy.props.StringProperty(
-        name="URL",
-        description="URL to open",
-    )
-
-    def execute(self, _context):
-        import webbrowser
-
-        webbrowser.open(self.url)
-        return {"FINISHED"}
-
-
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
     bl_label = "General"
@@ -826,20 +807,16 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("wm.url_open", text="Open Acon3d")
+        anchor = row.operator("wm.url_open_acon3d", text="Open Acon3d")
         lang = bpy.context.preferences.view.language.split("_")[0]
         anchor.url = f"https://www.acon3d.com/{lang}/toon"
 
         row = layout.row()
         row.scale_y = 1.0
         row.scale_x = 70
-        row.prop(
-            context.window_manager.ACON_prop,
-            "keyword_input",
-            icon="VIEWZOOM",
-        )
+        row.prop(context.window_manager.ACON_prop, "keyword_input", icon="VIEWZOOM")
         row.scale_x = 30
-        anchor = row.operator("wm.url_open", text="Search")
+        anchor = row.operator("wm.url_open_search_acon3d", text="Search")
         lang = bpy.context.preferences.view.language.split("_")[0]
         keyword = context.window_manager.ACON_prop.keyword_input
         anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}"
@@ -973,7 +950,6 @@ classes = (
     ImportSKPOperator,
     ImportSKPModalOperator,
     ImportSKPAcceptOperator,
-    WM_OT_url_open,
 )
 
 
