@@ -88,9 +88,9 @@ class Acon3dCubePanel(bpy.types.Panel):
         row.operator("acon3d.delete_all", text="delete all")
 
 
-class ACON3dMoveCubePanel(bpy.types.Panel):
+class ACON3dMovePanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_MoveCube"
-    bl_label = "Move Cube"
+    bl_label = "Move"
     bl_category = "Cube"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -110,9 +110,9 @@ class ACON3dMoveCubePanel(bpy.types.Panel):
         layout.prop(prop, "location_z", text="z")
 
 
-class ACON3dScaleCubePanel(bpy.types.Panel):
+class ACON3dScalePanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_ScaleCube"
-    bl_label = "Scale Cube"
+    bl_label = "Scale"
     bl_category = "Cube"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -132,9 +132,9 @@ class ACON3dScaleCubePanel(bpy.types.Panel):
         layout.prop(prop, "scale_z", text="z")
 
 
-class ACON3dRotateCubePanel(bpy.types.Panel):
+class ACON3dRotatePanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_RotateCube"
-    bl_label = "Rotate Cube"
+    bl_label = "Rotate"
     bl_category = "Cube"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -158,9 +158,9 @@ classes = (
     Acon3dCubePanel,
     AconAddCubeOperator,
     AconDeleteAllOperator,
-    ACON3dMoveCubePanel,
-    ACON3dScaleCubePanel,
-    ACON3dRotateCubePanel,
+    ACON3dMovePanel,
+    ACON3dScalePanel,
+    ACON3dRotatePanel,
 )
 
 
