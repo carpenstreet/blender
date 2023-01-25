@@ -15,7 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-
+import webbrowser
 
 bl_info = {
     "name": "ACON3D Panel",
@@ -788,6 +788,25 @@ class ImportSKPAcceptOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class WM_OT_url_open(bpy.types.Operator):
+    """Open ABLER Guide"""
+
+    bl_idname = "wm.url_open"
+    bl_label = ""
+    bl_options = {"INTERNAL"}
+
+    url: bpy.props.StringProperty(
+        name="URL",
+        description="URL to open",
+    )
+
+    def execute(self, _context):
+        import webbrowser
+
+        webbrowser.open(self.url)
+        return {"FINISHED"}
+
+
 class Acon3dGeneralPanel(bpy.types.Panel):
     bl_idname = "ACON3D_PT_general"
     bl_label = "General"
@@ -804,6 +823,11 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
+
+        row = layout.row()
+        row.scale_y = 1.0
+        anchor = row.operator("wm.url_open", text="Open Acon3d")
+        anchor.url = "https://acon3d.com"
 
         row = layout.row()
         row.scale_y = 1.0
@@ -934,6 +958,7 @@ classes = (
     ImportSKPOperator,
     ImportSKPModalOperator,
     ImportSKPAcceptOperator,
+    WM_OT_url_open,
 )
 
 
