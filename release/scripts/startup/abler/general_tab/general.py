@@ -827,7 +827,22 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 1.0
         anchor = row.operator("wm.url_open", text="Open Acon3d")
-        anchor.url = "https://acon3d.com"
+        lang = bpy.context.preferences.view.language.split("_")[0]
+        anchor.url = f"https://www.acon3d.com/{lang}/toon"
+
+        row = layout.row()
+        row.scale_y = 1.0
+        row.scale_x = 70
+        row.prop(
+            context.window_manager.ACON_prop,
+            "keyword_input",
+            icon="VIEWZOOM",
+        )
+        row.scale_x = 30
+        anchor = row.operator("wm.url_open", text="Search")
+        lang = bpy.context.preferences.view.language.split("_")[0]
+        keyword = context.window_manager.ACON_prop.keyword_input
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}"
 
         row = layout.row()
         row.scale_y = 1.0

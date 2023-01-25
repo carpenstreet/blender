@@ -95,6 +95,8 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         default=True,
     )
 
+    keyword_input: bpy.props.StringProperty(name="", options={"TEXTEDIT_UPDATE"})
+
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     @classmethod
