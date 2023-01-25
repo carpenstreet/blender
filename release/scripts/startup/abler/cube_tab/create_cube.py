@@ -9,9 +9,9 @@ class AconAddCubeOperator(bpy.types.Operator):
     bl_translation_context = "abler"
 
     name: bpy.props.StringProperty(name="Name", description="Write scene name")
-    x: bpy.props.IntProperty(name="x")
-    y: bpy.props.IntProperty(name="y")
-    z: bpy.props.IntProperty(name="z")
+    location_x: bpy.props.IntProperty(name="x")
+    location_y: bpy.props.IntProperty(name="y")
+    location_z: bpy.props.IntProperty(name="z")
 
     def invoke(self, context, event):
         wm = context.window_manager
@@ -22,24 +22,26 @@ class AconAddCubeOperator(bpy.types.Operator):
         layout.separator()
         layout.prop(self, "name")
         layout.separator()
-        layout.prop(self, "x")
+        layout.prop(self, "location_x")
         layout.separator()
-        layout.prop(self, "y")
+        layout.prop(self, "location_y")
         layout.separator()
-        layout.prop(self, "z")
+        layout.prop(self, "location_z")
         layout.separator()
 
     def execute(self, context):
-        bpy.ops.mesh.primitive_cube_add(location=(self.x, self.y, self.z), size=2.0)
+        bpy.ops.mesh.primitive_cube_add(
+            location=(self.location_x, self.location_y, self.location_z), size=2.0
+        )
 
-        c1 = random.uniform(0.0, 1.0)
-        c2 = random.uniform(0.0, 1.0)
-        c3 = random.uniform(0.0, 1.0)
-        c4 = 1
+        hue = random.uniform(0.0, 1.0)
+        saturation = random.uniform(0.0, 1.0)
+        value = random.uniform(0.0, 1.0)
+        alpha = 1
 
         color_mat = bpy.data.materials.new("Color Mat")
         id = color_mat.name
-        bpy.data.materials[id].diffuse_color = (c1, c2, c3, c4)
+        bpy.data.materials[id].diffuse_color = (hue, saturation, value, alpha)
 
         ob = bpy.context.active_object
         ob.name = self.name
@@ -49,9 +51,9 @@ class AconAddCubeOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class AconDeleteAllCubesOperator(bpy.types.Operator):
-    bl_idname = "acon3d.delete_all_cubes"
-    bl_label = "Delete All Cubes"
+class AconDeleteAllOperator(bpy.types.Operator):
+    bl_idname = "acon3d.delete_all"
+    bl_label = "Delete All"
     bl_translation_context = "abler"
 
     def execute(self, context):
@@ -83,7 +85,7 @@ class Acon3dCubePanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
-        row.operator("acon3d.delete_all_cubes", text="delete all")
+        row.operator("acon3d.delete_all", text="delete all")
 
 
 class ACON3dMoveCubePanel(bpy.types.Panel):
@@ -93,7 +95,7 @@ class ACON3dMoveCubePanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
-    bl_order = 1
+    bl_order = 2
 
     def draw_header(self, context):
         layout = self.layout
@@ -115,7 +117,7 @@ class ACON3dScaleCubePanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
-    bl_order = 1
+    bl_order = 3
 
     def draw_header(self, context):
         layout = self.layout
@@ -137,7 +139,7 @@ class ACON3dRotateCubePanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
-    bl_order = 1
+    bl_order = 4
 
     def draw_header(self, context):
         layout = self.layout
@@ -155,7 +157,7 @@ class ACON3dRotateCubePanel(bpy.types.Panel):
 classes = (
     Acon3dCubePanel,
     AconAddCubeOperator,
-    AconDeleteAllCubesOperator,
+    AconDeleteAllOperator,
     ACON3dMoveCubePanel,
     ACON3dScaleCubePanel,
     ACON3dRotateCubePanel,

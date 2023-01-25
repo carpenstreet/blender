@@ -730,9 +730,6 @@ class AconObjectProperty(bpy.types.PropertyGroup):
     def unregister(cls):
         del bpy.types.Object.ACON_prop
 
-    def get_location_x(self, context):
-        return context.selected_objects[0].location[0]
-
     group: bpy.props.CollectionProperty(type=AconObjectGroupProperty)
 
     group_list: bpy.props.EnumProperty(
@@ -776,50 +773,50 @@ class AconObjectProperty(bpy.types.PropertyGroup):
 
     location_x: bpy.props.FloatProperty(
         name="x",
-        update=objects.edit_state,
+        update=objects.edit_state_location,
     )
 
     location_y: bpy.props.FloatProperty(
         name="y",
-        update=objects.edit_state,
+        update=objects.edit_state_location,
     )
 
     location_z: bpy.props.FloatProperty(
         name="z",
-        update=objects.edit_state,
+        update=objects.edit_state_location,
     )
 
     scale_x: bpy.props.FloatProperty(
         name="x",
-        update=objects.edit_state,
+        update=objects.edit_state_scale,
         default=1,
     )
 
     scale_y: bpy.props.FloatProperty(
         name="y",
-        update=objects.edit_state,
+        update=objects.edit_state_scale,
         default=1,
     )
 
     scale_z: bpy.props.FloatProperty(
         name="z",
-        update=objects.edit_state,
+        update=objects.edit_state_scale,
         default=1,
     )
 
     rotate_x: bpy.props.FloatProperty(
         name="x",
-        update=objects.edit_state,
+        update=objects.edit_state_rotate,
     )
 
     rotate_y: bpy.props.FloatProperty(
         name="y",
-        update=objects.edit_state,
+        update=objects.edit_state_rotate,
     )
 
     rotate_z: bpy.props.FloatProperty(
         name="z",
-        update=objects.edit_state,
+        update=objects.edit_state_rotate,
     )
 
 
