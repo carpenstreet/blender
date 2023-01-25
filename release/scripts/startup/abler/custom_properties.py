@@ -97,7 +97,7 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
 
     keyword_input: bpy.props.StringProperty(
         name="",
-        description="Search model in ACON3D",
+        description="Search with keywords",
     )
 
 
