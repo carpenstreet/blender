@@ -71,6 +71,44 @@ def numbering_filepath(filepath, ext):
     return num_path, num_name
 
 
+class OpenAcon3dOperator(bpy.types.Operator):
+    """Link to ACON3D"""
+
+    bl_idname = "acon3d.open_acon3d"
+    bl_label = ""
+    bl_translation_context = "abler"
+
+    url: bpy.props.StringProperty(
+        name="URL",
+        description="URL to open",
+    )
+
+    def execute(self, _context):
+        import webbrowser
+
+        webbrowser.open(self.url)
+        return {"FINISHED"}
+
+
+class OpenAcon3dSearchOperator(bpy.types.Operator):
+    """Search on ACON3D"""
+
+    bl_idname = "acon3d.open_search_acon3d"
+    bl_label = ""
+    bl_translation_context = "abler"
+
+    url: bpy.props.StringProperty(
+        name="URL",
+        description="URL to open",
+    )
+
+    def execute(self, _context):
+        import webbrowser
+
+        webbrowser.open(self.url)
+        return {"FINISHED"}
+
+
 class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     """Show tutorial guide"""
 
@@ -806,7 +844,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("wm.url_open_acon3d", text="Open Acon3d")
+        anchor = row.operator("acon3d.open_acon3d", text="Open Acon3d")
         lang = bpy.context.preferences.view.language.split("_")[0]
         anchor.url = f"https://www.acon3d.com/{lang}/toon"
 
@@ -815,7 +853,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_x = 70
         row.prop(context.window_manager.ACON_prop, "keyword_input", icon="VIEWZOOM")
         row.scale_x = 30
-        anchor = row.operator("wm.url_open_search_acon3d", text="Search")
+        anchor = row.operator("acon3d.open_search_acon3d", text="Search")
         lang = bpy.context.preferences.view.language.split("_")[0]
         keyword = context.window_manager.ACON_prop.keyword_input
         anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}"
@@ -927,6 +965,8 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 
 classes = (
+    OpenAcon3dOperator,
+    OpenAcon3dSearchOperator,
     AconTutorialGuidePopUpOperator,
     AconTutorialGuideCloseOperator,
     AconTutorialGuide1Operator,

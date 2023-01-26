@@ -982,40 +982,6 @@ class WM_OT_url_open(Operator):
         webbrowser.open(self.url)
         return {'FINISHED'}
 
-class WM_OT_url_open_ACON3D(bpy.types.Operator):
-    """Link to ACON3D"""
-    bl_idname = "wm.url_open_acon3d"
-    bl_label = ""
-    bl_options = {"INTERNAL"}
-
-    url: bpy.props.StringProperty(
-        name="URL",
-        description="URL to open",
-    )
-
-    def execute(self, _context):
-        import webbrowser
-
-        webbrowser.open(self.url)
-        return {"FINISHED"}
-
-class WM_OT_url_open_search_ACON3D(bpy.types.Operator):
-    """Search on ACON3D"""
-    bl_idname = "wm.url_open_search_acon3d"
-    bl_label = ""
-    bl_options = {"INTERNAL"}
-
-    url: bpy.props.StringProperty(
-        name="URL",
-        description="URL to open",
-    )
-
-    def execute(self, _context):
-        import webbrowser
-
-        webbrowser.open(self.url)
-        return {"FINISHED"}
-
 
 class WM_OT_url_open_support(Operator):
     """Open ACON3D web support"""
@@ -3379,8 +3345,6 @@ classes = (
     WM_OT_owner_disable,
     WM_OT_owner_enable,
     WM_OT_url_open,
-    WM_OT_url_open_ACON3D,
-    WM_OT_url_open_search_ACON3D,
     WM_OT_url_open_support,
     WM_OT_url_open_preset,
     WM_OT_tool_set_by_id,
