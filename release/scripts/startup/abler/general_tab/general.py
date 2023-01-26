@@ -839,9 +839,10 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        cur_lang = bpy.context.preferences.view
-        lang = bpy.context.preferences.view.language.split("_")[0]
-        if cur_lang not in supported_locales:
+        cur_lang = bpy.context.preferences.view.language
+        if cur_lang in supported_locales:
+            lang = bpy.context.preferences.view.language.split("_")[0]
+        else:
             lang = "en"
 
         row = layout.row()
