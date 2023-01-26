@@ -15,6 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+from ..lib.locales import supported_locales
 
 bl_info = {
     "name": "ACON3D Panel",
@@ -838,9 +839,9 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
+        cur_lang = bpy.context.preferences.view
         lang = bpy.context.preferences.view.language.split("_")[0]
-        existing_lang = ["ko", "en", "ja", "zh"]
-        if lang not in existing_lang:
+        if cur_lang not in supported_locales:
             lang = "en"
 
         row = layout.row()
