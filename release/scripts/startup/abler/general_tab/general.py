@@ -838,10 +838,14 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
+        lang = bpy.context.preferences.view.language.split("_")[0]
+        existing_lang = ["ko", "en", "ja", "zh"]
+        if lang not in existing_lang:
+            lang = "en"
+
         row = layout.row()
         row.scale_y = 1.0
         anchor = row.operator("acon3d.open_acon3d", text="Open Acon3d")
-        lang = bpy.context.preferences.view.language.split("_")[0]
         anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA"
 
         row = layout.row()
@@ -850,7 +854,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.prop(context.window_manager.ACON_prop, "keyword_input", icon="VIEWZOOM")
         row.scale_x = 30
         anchor = row.operator("acon3d.open_search_acon3d", text="Search")
-        lang = bpy.context.preferences.view.language.split("_")[0]
         keyword = context.window_manager.ACON_prop.keyword_input
         anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_term={keyword}"
 
