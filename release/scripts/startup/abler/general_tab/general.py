@@ -76,7 +76,7 @@ class OpenAcon3dOperator(bpy.types.Operator):
     """Link to ACON3D"""
 
     bl_idname = "acon3d.open_acon3d"
-    bl_label = ""
+    bl_label = "Open ACON3D"
     bl_translation_context = "abler"
 
     url: bpy.props.StringProperty(
@@ -93,7 +93,7 @@ class OpenAcon3dSearchOperator(bpy.types.Operator):
     """Search on ACON3D"""
 
     bl_idname = "acon3d.open_search_acon3d"
-    bl_label = ""
+    bl_label = "Search"
     bl_translation_context = "abler"
 
     url: bpy.props.StringProperty(
@@ -846,7 +846,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("acon3d.open_acon3d", text="Open Acon3d")
+        anchor = row.operator("acon3d.open_acon3d", text="Open ACON3D")
         anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA"
 
         row = layout.row()
