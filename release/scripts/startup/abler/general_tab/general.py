@@ -29,7 +29,7 @@ bl_info = {
     "category": "ACON3D",
 }
 import os
-
+import webbrowser
 import bpy
 from datetime import datetime, timedelta
 from time import time
@@ -84,8 +84,6 @@ class OpenAcon3dOperator(bpy.types.Operator):
     )
 
     def execute(self, _context):
-        import webbrowser
-
         webbrowser.open(self.url)
         return {"FINISHED"}
 
@@ -103,8 +101,6 @@ class OpenAcon3dSearchOperator(bpy.types.Operator):
     )
 
     def execute(self, _context):
-        import webbrowser
-
         webbrowser.open(self.url)
         return {"FINISHED"}
 
