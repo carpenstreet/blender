@@ -841,7 +841,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         cur_lang = bpy.context.preferences.view.language
         if cur_lang in supported_locales:
-            lang = bpy.context.preferences.view.language.split("_")[0]
+            lang = cur_lang.split("_")[0]
         else:
             lang = "en"
 
