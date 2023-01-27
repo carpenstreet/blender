@@ -56,7 +56,7 @@ class EventKind(enum.Enum):
     group_navigate_up = "Group Navigate Up"
     tutorial_guide_on = "Quick Start Guide On"
     open_acon3d = "Open Acon3d"
-    open_search_acon3d = "Open Search Acon3d"
+    open_search_acon3d = "Search on Acon3d"
 
 
 def accumulate(interval=0):
