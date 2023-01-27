@@ -101,10 +101,11 @@ class OpenAcon3dSearchOperator(bpy.types.Operator):
         name="URL",
         description="URL to open",
     )
-    keyword = {bpy.ops.context.window_manager.ACON_prop.keyword_input}
 
     def execute(self, _context):
-        tracker.open_search_acon3d(self.keyword)
+        keyword = bpy.context.window_manager.ACON_prop.keyword_input
+        keyword_data = {"keyword": keyword}
+        tracker.open_search_acon3d(keyword_data)
         webbrowser.open(self.url)
         return {"FINISHED"}
 
