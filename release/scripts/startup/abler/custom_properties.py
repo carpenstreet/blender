@@ -97,7 +97,7 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
 
     keyword_input: bpy.props.StringProperty(
         name="",
-        description="Search with keywords",
+        description="Enter search keywords",
     )
 
 

@@ -73,10 +73,10 @@ def numbering_filepath(filepath, ext):
 
 
 class OpenAcon3dOperator(bpy.types.Operator):
-    """Link to ACON3D"""
+    """Buy 3D assets"""
 
     bl_idname = "acon3d.open_acon3d"
-    bl_label = "Open ACON3D"
+    bl_label = "ACON3D Asset Store"
     bl_translation_context = "abler"
 
     url: bpy.props.StringProperty(
@@ -90,7 +90,7 @@ class OpenAcon3dOperator(bpy.types.Operator):
 
 
 class OpenAcon3dSearchOperator(bpy.types.Operator):
-    """Search on ACON3D"""
+    """Find 3D assets on ACON3D"""
 
     bl_idname = "acon3d.open_search_acon3d"
     bl_label = "Search"
@@ -847,7 +847,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
 
         row = layout.row()
         row.scale_y = 1.0
-        anchor = row.operator("acon3d.open_acon3d", text="Open ACON3D")
+        anchor = row.operator("acon3d.open_acon3d", text="ACON3D Asset Store")
         anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA"
 
         row = layout.row()
