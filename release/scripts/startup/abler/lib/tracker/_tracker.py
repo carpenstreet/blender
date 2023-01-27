@@ -55,6 +55,8 @@ class EventKind(enum.Enum):
     group_navigate_down = "Group Navigate Down"
     group_navigate_up = "Group Navigate Up"
     tutorial_guide_on = "Quick Start Guide On"
+    open_acon3d = "Open Acon3d"
+    open_acon3d_search = "Open Acon3d Search"
 
 
 def accumulate(interval=0):
@@ -300,6 +302,12 @@ class Tracker(metaclass=ABCMeta):
 
     def tutorial_guide_on(self):
         self._track(EventKind.tutorial_guide_on.value)
+
+    def open_acon3d(self):
+        self._track(EventKind.open_acon3d.value)
+
+    def open_acon3d_search(self, data):
+        self._track(EventKind.open_acon3d_search.value, data)
 
 
 class DummyTracker(Tracker):
