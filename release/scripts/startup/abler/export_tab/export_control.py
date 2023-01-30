@@ -228,17 +228,18 @@ class Acon3dQuickRenderPanel(bpy.types.Panel):
         layout.label(icon="RESTRICT_RENDER_OFF")
 
     def draw(self, context):
-        scene = context.scene
+        if bpy.context.scene.camera:
+            scene = context.scene
 
-        layout = self.layout
-        row = layout.row(align=True)
-        row.use_property_split = True
-        row.use_property_decorate = False
-        row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
-        row.prop(scene.render, "resolution_x", text="")
-        row.prop(scene.render, "resolution_y", text="")
-        row = layout.row()
-        row.operator("acon3d.render_quick", text="Render Viewport")
+            layout = self.layout
+            row = layout.row(align=True)
+            row.use_property_split = True
+            row.use_property_decorate = False
+            row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
+            row.prop(scene.render, "resolution_x", text="")
+            row.prop(scene.render, "resolution_y", text="")
+            row = layout.row()
+            row.operator("acon3d.render_quick", text="Render Viewport")
 
 
 class Acon3dSnipRenderPanel(bpy.types.Panel):
@@ -258,17 +259,18 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
         layout.label(icon="XRAY")
 
     def draw(self, context):
-        scene = context.scene
+        if bpy.context.scene.camera:
+            scene = context.scene
 
-        layout = self.layout
-        row = layout.row(align=True)
-        row.use_property_split = True
-        row.use_property_decorate = False
-        row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
-        row.prop(scene.render, "resolution_x", text="")
-        row.prop(scene.render, "resolution_y", text="")
-        row = layout.row()
-        row.operator("acon3d.render_snip", text="Render Viewport")
+            layout = self.layout
+            row = layout.row(align=True)
+            row.use_property_split = True
+            row.use_property_decorate = False
+            row.operator("acon3d.camera_view", text="", icon="RESTRICT_VIEW_OFF")
+            row.prop(scene.render, "resolution_x", text="")
+            row.prop(scene.render, "resolution_y", text="")
+            row = layout.row()
+            row.operator("acon3d.render_snip", text="Render Viewport")
 
 
 classes = (
