@@ -146,7 +146,8 @@ def find_screen_acon3d() -> bool:
 
 @persistent
 def camera_length(dummy):
-    bpy.data.cameras[0].clip_end = 100000
+    for i in range(len(bpy.data.cameras)):
+        bpy.data.cameras[i].clip_end = 100000
 
 
 def register():
