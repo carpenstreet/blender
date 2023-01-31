@@ -52,6 +52,7 @@ def split_filepath(filepath):
 
     if "." in basename:
         basename = ".".join(basename.split(".")[:-1])
+        basename = basename.rstrip()
 
     return dirname, basename
 
