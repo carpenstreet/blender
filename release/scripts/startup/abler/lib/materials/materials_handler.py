@@ -465,7 +465,9 @@ def change_toon_shading_brightness(self, context: Context) -> None:
     if not node_group:
         return
     node_outline = node_group.nodes.get("ACON_nodeGroup_toonFace")
-    inputs = node_outline.inputs
+    if not node_outline:
+        return
+    inputs: List[NodeSocket] = node_outline.inputs
 
     prop: PropertyGroup = context.scene.ACON_prop
     value_1: FloatProperty = prop.toon_shading_brightness_1
