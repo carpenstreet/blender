@@ -848,7 +848,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 1.0
         anchor = row.operator("acon3d.open_acon3d", text="ACON3D Asset Store")
-        anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA&utm_term=none"
 
         row = layout.row()
         row.scale_y = 1.0
@@ -857,7 +857,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_x = 30
         anchor = row.operator("acon3d.open_search_acon3d", text="Search")
         keyword = context.window_manager.ACON_prop.keyword_input
-        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_term={keyword}"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA_search&utm_term={keyword}"
 
         row = layout.row()
         row.scale_y = 1.0
