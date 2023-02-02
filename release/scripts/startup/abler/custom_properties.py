@@ -95,6 +95,11 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         default=True,
     )
 
+    keyword_input: bpy.props.StringProperty(
+        name="",
+        description="Enter search keywords",
+    )
+
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     @classmethod
