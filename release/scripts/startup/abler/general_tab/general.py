@@ -839,16 +839,22 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
+        utm_source = "abler"
+        utm_medium = "program"
+        utm_campaign = "abler2acon"
+        utm_content = "button_CTA"
+        utm_content_for_search = "button_CTA_search"
         cur_lang = bpy.context.preferences.view.language
         if cur_lang in supported_locales:
             lang = cur_lang.split("_")[0]
         else:
             lang = "en"
 
+
         row = layout.row()
         row.scale_y = 1.0
         anchor = row.operator("acon3d.open_acon3d", text="ACON3D Asset Store")
-        anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA&utm_term=none"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content}&utm_term=none"
 
         row = layout.row()
         row.scale_y = 1.0
@@ -857,7 +863,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_x = 30
         anchor = row.operator("acon3d.open_search_acon3d", text="Search")
         keyword = context.window_manager.ACON_prop.keyword_input
-        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source=abler&utm_medium=program&utm_campaign=abler2acon&utm_content=button_CTA_search&utm_term={keyword}"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
 
         row = layout.row()
         row.scale_y = 1.0
