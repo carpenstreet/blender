@@ -15,7 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-
+from ..lib.locales import supported_locales
 
 bl_info = {
     "name": "ACON3D Panel",
@@ -30,7 +30,7 @@ bl_info = {
     "category": "ACON3D",
 }
 import os
-
+import webbrowser
 import bpy
 from datetime import datetime, timedelta
 from time import time
@@ -70,6 +70,44 @@ def numbering_filepath(filepath, ext):
         number += 1
 
     return num_path, num_name
+
+
+class OpenAcon3dOperator(bpy.types.Operator):
+    """Buy 3D assets"""
+
+    bl_idname = "acon3d.open_acon3d"
+    bl_label = "ACON3D Asset Store"
+    bl_translation_context = "abler"
+
+    url: bpy.props.StringProperty(
+        name="URL",
+        description="URL to open",
+    )
+
+    def execute(self, _context):
+        tracker.open_acon3d()
+        webbrowser.open(self.url)
+        return {"FINISHED"}
+
+
+class OpenAcon3dSearchOperator(bpy.types.Operator):
+    """Find 3D assets on ACON3D"""
+
+    bl_idname = "acon3d.open_search_acon3d"
+    bl_label = "Search"
+    bl_translation_context = "abler"
+
+    url: bpy.props.StringProperty(
+        name="URL",
+        description="URL to open",
+    )
+
+    def execute(self, _context):
+        keyword = bpy.context.window_manager.ACON_prop.keyword_input
+        keyword_data = {"keyword": keyword}
+        tracker.open_search_acon3d(keyword_data)
+        webbrowser.open(self.url)
+        return {"FINISHED"}
 
 
 class AconTutorialGuidePopUpOperator(bpy.types.Operator):
@@ -805,6 +843,32 @@ class Acon3dGeneralPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
+        utm_source = "abler"
+        utm_medium = "program"
+        utm_campaign = "abler2acon"
+        utm_content = "button_CTA"
+        utm_content_for_search = "button_CTA_search"
+        cur_lang = bpy.context.preferences.view.language
+        if cur_lang in supported_locales:
+            lang = cur_lang.split("_")[0]
+        else:
+            lang = "en"
+
+
+        row = layout.row()
+        row.scale_y = 1.0
+        anchor = row.operator("acon3d.open_acon3d", text="ACON3D Asset Store")
+        anchor.url = f"https://www.acon3d.com/{lang}/toon?utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content}&utm_term=none"
+
+        row = layout.row()
+        row.scale_y = 1.0
+        row.scale_x = 70
+        row.prop(context.window_manager.ACON_prop, "keyword_input", icon="VIEWZOOM")
+        row.scale_x = 30
+        anchor = row.operator("acon3d.open_search_acon3d", text="Search")
+        keyword = context.window_manager.ACON_prop.keyword_input
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
+
         row = layout.row()
         row.scale_y = 1.0
         row.operator("acon3d.tutorial_guide_popup")
@@ -912,6 +976,8 @@ class ApplyToonStyleOperator(bpy.types.Operator):
 
 
 classes = (
+    OpenAcon3dOperator,
+    OpenAcon3dSearchOperator,
     AconTutorialGuidePopUpOperator,
     AconTutorialGuideCloseOperator,
     AconTutorialGuide1Operator,
