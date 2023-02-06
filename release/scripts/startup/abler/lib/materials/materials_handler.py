@@ -219,6 +219,10 @@ def set_material_parameters_by_type(mat: Material) -> None:
 
     type: EnumProperty = mat.ACON_prop.type
 
+    toonNodeTree: Optional[Node] = mat.node_tree
+    if not toonNodeTree:
+        return
+
     toonNode: Optional[Node] = mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon")
     if not toonNode:
         return
