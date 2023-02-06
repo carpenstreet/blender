@@ -15,6 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+# 주석을 추가하는 테스트를 해보는 척을 한다.
 from ..lib.locales import supported_locales
 
 bl_info = {
