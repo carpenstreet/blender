@@ -191,7 +191,9 @@ class WM_MT_splash_modal(bpy.types.Menu):
     draw_func = None
 
     def draw(self, context):
-        self.draw_func(self.layout)
+        print(self.layout)
+        if self.layout:
+            self.draw_func(self.layout)
 
 
 classes = (
