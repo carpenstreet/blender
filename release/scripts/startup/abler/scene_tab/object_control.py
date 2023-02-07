@@ -76,8 +76,8 @@ class GroupNavigationManager:
 
     def go_top(self):
         obj = bpy.context.active_object
-        if obj.parent:
-            while obj.parent.parent:
+        if parent := obj.parent:
+            if parent.parent is not None:
                 self._selection_undo_stack.append(obj)
                 obj = obj.parent
         with self._programmatic_selection_scope():
