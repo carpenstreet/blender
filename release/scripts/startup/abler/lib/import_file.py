@@ -82,6 +82,23 @@ class AconExportHelper(ExportHelper):
         if not (save_check and bpy.data.is_saved) and os.path.isdir(self.filepath):
             self.filepath = os.path.join(self.filepath, default_name)
 
+    def check_filepath(self, save_check: bool):
+        # 가장 최근에 저장한 디렉토리 안에 untitled라는 새로운 파일을 만들고 저장합니다
+        # 파일명을 입력하지 않으면 dirname.blend으로 저장됩니다
+        # 발생할 수 있는 문제: untitled라는 파일안에 계속 파일이 생성 될 수 있다
+        dirname, basename = os.path.split(os.path.normpath(self.filepath))
+        if not os.path.isdir(dirname) and not (save_check and bpy.data.is_saved):
+            self.filepath = bpy.context.blend_data.filepath
+            history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
+            with open(history_path, 'r') as f:
+                last_line = f.readline()
+                recent_path = last_line.split('/')
+                recent_path.pop()
+                recent_dir = '/'.join(recent_path)
+                os.makedirs(recent_dir + "/untitled/", exist_ok=True)
+            f.close()
+            self.filepath = os.path.join(recent_dir + "/untitled/" + basename)
+
     def draw(self, context):
         # FileBrowser UI 설정이 맨처음에만 적용되게끔
         if not self.set_option:

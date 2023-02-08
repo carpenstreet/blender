@@ -364,6 +364,7 @@ class SaveOperator(bpy.types.Operator, AconExportHelper):
     def execute(self, context):
         try:
             self.check_path(save_check=True)
+            self.check_filepath(save_check=True)
 
             if bpy.data.is_saved:
                 self.filepath = context.blend_data.filepath
@@ -432,6 +433,7 @@ class SaveAsOperator(bpy.types.Operator, AconExportHelper):
     def execute(self, context):
         try:
             self.check_path(save_check=False)
+            self.check_filepath(save_check=True)
 
             numbered_filepath, numbered_filename = numbering_filepath(
                 self.filepath, self.filename_ext
