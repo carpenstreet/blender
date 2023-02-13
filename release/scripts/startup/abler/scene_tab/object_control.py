@@ -96,19 +96,27 @@ class GroupNavigationManager:
                         select_active_and_descendants()
 
     def go_down(self):
-        if len(self._selection_undo_stack) > 0:
-            with self._programmatic_selection_scope():
-                last_selected = self._selection_undo_stack.pop()
-                bpy.context.view_layer.objects.active = last_selected
-                select_active_and_descendants()
+        obj = bpy.context.active_object
+        if obj:
+            if parent := obj.parent:
+                if parent.parent is not None:
+                    if len(self._selection_undo_stack) > 0:
+                        with self._programmatic_selection_scope():
+                            last_selected = self._selection_undo_stack.pop()
+                            bpy.context.view_layer.objects.active = last_selected
+                            select_active_and_descendants()
 
     def go_bottom(self):
-        if len(self._selection_undo_stack) > 0:
-            with self._programmatic_selection_scope():
-                while len(self._selection_undo_stack) > 0:
-                    last_selected = self._selection_undo_stack.pop()
-                bpy.context.view_layer.objects.active = last_selected
-                select_active_and_descendants()
+        obj = bpy.context.active_object
+        if obj:
+            if parent := obj.parent:
+                if parent.parent is not None:
+                    if len(self._selection_undo_stack) > 0:
+                        with self._programmatic_selection_scope():
+                            while len(self._selection_undo_stack) > 0:
+                                last_selected = self._selection_undo_stack.pop()
+                            bpy.context.view_layer.objects.active = last_selected
+                            select_active_and_descendants()
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)
