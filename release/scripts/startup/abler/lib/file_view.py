@@ -7,6 +7,8 @@ def file_view_title(title_enum):
     """
     :param title_enum: WM_types.h 의 abler_fileViewTitle 참고
     """
+    # set_fileselect_title가 없어서 발생하는 에러로 인해 if문 추가
+    # 해당 이슈 링크: https://www.notion.so/acon3d/file_view_title-set_fileselect_title-98b55d3116f942f69759f0d63dd7be35?pvs=4
     if bpy.context.window_manager.set_fileselect_title:
         bpy.context.window_manager.set_fileselect_title(title_enum=title_enum)
         yield
