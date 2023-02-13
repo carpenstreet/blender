@@ -54,11 +54,7 @@ def setup_background_images_compositor(node_left=None, node_right=None, scene=No
     tree = scene.node_tree
     nodes = tree.nodes
 
-    if not scene.camer.data:
-        return
-    else:
-        cam = scene.camera.data
-
+    cam = scene.camera.data
     background_images = cam.background_images
     toggle_texture = context.scene.ACON_prop.toggle_texture
 
