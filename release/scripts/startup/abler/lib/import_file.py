@@ -96,7 +96,6 @@ class AconExportHelper(ExportHelper):
                 recent_path.pop()
                 recent_dir = '/'.join(recent_path)
                 os.makedirs(recent_dir + "/untitled/", exist_ok=True)
-            f.close()
             self.filepath = os.path.join(recent_dir + "/untitled/" + basename)
 
     def draw(self, context):
