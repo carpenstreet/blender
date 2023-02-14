@@ -54,7 +54,7 @@ def setup_background_images_compositor(node_left=None, node_right=None, scene=No
     tree = scene.node_tree
     nodes = tree.nodes
 
-    if not scene.camer.data:
+    if not scene.camera.data:
         return
     else:
         cam = scene.camera.data
