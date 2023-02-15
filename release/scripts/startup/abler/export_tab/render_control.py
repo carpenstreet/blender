@@ -587,7 +587,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                         bpy.ops.acon3d.alert(
                             "INVOKE_DEFAULT",
                             title="Please do not edit this node",
-                            message_1="It may cause unexpected error.",
+                            message_1="It may cause unexpected errors.",
                         )
         else:  # Shadow / Texture
             for mat in bpy.data.materials:  # scene
