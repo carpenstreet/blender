@@ -259,9 +259,8 @@ class Acon3dSnipRenderPanel(bpy.types.Panel):
         layout.label(icon="XRAY")
 
     def draw(self, context):
-        if bpy.context.scene.camera:
-            scene = context.scene
-
+        scene = context.scene
+        if scene.camera:
             layout = self.layout
             row = layout.row(align=True)
             row.use_property_split = True
