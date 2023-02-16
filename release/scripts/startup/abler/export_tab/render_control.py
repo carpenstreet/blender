@@ -386,7 +386,14 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
-                        os.makedirs(dirname_temp)
+                        try:
+                            os.makedirs(dirname_temp)
+                        except OSError:
+                            bpy.ops.acon3d.alert(
+                                "INVOKE_DEFAULT",
+                                title="Invalid Directory Name",
+                                message_1="Please rewrite your directory name",
+                            )
                 else:
                     dirname_temp = self.filepath
 
