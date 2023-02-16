@@ -141,6 +141,7 @@ def find_screen_acon3d() -> bool:
         "ACON3D" in bpy.data.screens.keys()
         and len(bpy.data.screens["ACON3D"].areas) > 0
         and len(bpy.data.screens["ACON3D"].areas[0].spaces) > 0
+        and bpy.data.screens["ACON3D"].areas[0].spaces[0].type == "VIEW_3D"
     )
 
 
