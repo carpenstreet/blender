@@ -81,7 +81,7 @@ def refresh_look_at_me() -> None:
     except Exception as e:
         # raise RuntimeError("Error while deselecting objects: " + str(e)) # TODO: 아직 어떻게 관리되어야 할지 모르겠어서 raise는 일단 주석처리
         pass
-    for obj in bpy.data.objects:
+    for obj in bpy.context.view_layer.objects:
         if obj.ACON_prop.constraint_to_camera_rotation_z:
             obj.select_set(True)
             context.view_layer.objects.active = obj
