@@ -129,8 +129,8 @@ def save_post_handler(dummy):
 
 @persistent
 def grid_on_when_selected(dummy):
-    if selected := bpy.context.selected_objects:
-        show_grid = len(selected) > 0
+    if selected_objects := bpy.context.selected_objects:
+        show_grid = len(selected_objects) > 0
     if find_screen_acon3d():
         viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
         viewport_overlay.show_ortho_grid = show_grid
