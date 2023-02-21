@@ -142,7 +142,7 @@ def load_scene_by_index(self, context: Context) -> None:
     # EnumProperty인 self.scene을 select scene으로 변경
     if len(scene_col) <= active_scene_index:
         pass
-    elif active_scene_index<0:
+    elif active_scene_index < 0:
         pass
     else:
         self.scene = scene_col[active_scene_index].name
