@@ -54,8 +54,9 @@ def add_group_list_from_collection(
     for item in draft_selection:
         icon_str = "OUTLINER_OB_MESH" if item.type == "MESH" else "OUTLINER_OB_EMPTY"
         items.append((item.name, item.name, "", icon_str, 0))
-    icon_str = "OUTLINER_OB_MESH" if obj.type == "MESH" else "OUTLINER_OB_EMPTY"
-    items.append((obj.name, obj.name, "", icon_str, 0))
+    if obj:
+        icon_str = "OUTLINER_OB_MESH" if obj.type == "MESH" else "OUTLINER_OB_EMPTY"
+        items.append((obj.name, obj.name, "", icon_str, 0))
     if obj.parent:
         while obj.parent.parent:
             icon_str = (
