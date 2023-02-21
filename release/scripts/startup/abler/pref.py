@@ -160,9 +160,9 @@ def register():
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(camera_length)
     bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)
     bpy.app.handlers.load_factory_startup_post.remove(init_setting)
-    bpy.app.handlers.depsgraph_update_post.remove(camera_length)
