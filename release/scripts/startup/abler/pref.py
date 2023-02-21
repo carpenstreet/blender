@@ -129,7 +129,7 @@ def save_post_handler(dummy):
 
 @persistent
 def grid_on_when_selected(dummy):
-    if not bpy.context.selected_objects:
+    if len(bpy.context.selected_objects) is None:
         return
     show_grid = len(bpy.context.selected_objects) > 0
     if find_screen_acon3d():
