@@ -1,9 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-finish the job started by macdeployqtfix
-"""
-
 import argparse
 import logging
 import os
@@ -63,9 +57,11 @@ def get_dependencies(filename):
     deps = []
     if proc_out.retcode == 0:
         # some string splitting
-        deps = [s.strip().split(' ')[0] for s in proc_out.stdout.splitlines()[1:] if s]
+        deps = [s.strip().split(b' ')[0] for s in proc_out.stdout.splitlines()[1:] if s]
+
         # prevent infinite recursion when a binary depends on itself (seen with QtWidgets)...
-        deps = [s for s in deps if os.path.basename(filename) not in s]
+        deps = [s for s in deps if os.path.basename(filename) not in s.decode('utf-8')]
+
     return deps
 
 
@@ -75,7 +71,7 @@ def is_qt_plugin(filename):
     Accepts absolute path as well as path containing @executable_path
     """
     qtlib_name_rgx = re.compile(QTPLUGIN_NAME_REGEX)
-    return qtlib_name_rgx.match(filename) is not None
+    return qtlib_name_rgx.match(filename.decode('utf-8')) is not None
 
 
 def is_qt_lib(filename):
@@ -84,7 +80,7 @@ def is_qt_lib(filename):
     Accepts absolute path as well as path containing @executable_path
     """
     qtlib_name_rgx = re.compile(QTLIB_NAME_REGEX)
-    return qtlib_name_rgx.match(filename) is not None
+    return qtlib_name_rgx.match(filename.decode('utf-8')) is not None
 
 
 def is_brew_lib(filename):
@@ -93,7 +89,7 @@ def is_brew_lib(filename):
     Accepts absolute path as well as path containing @executable_path
     """
     qtlib_name_rgx = re.compile(BREWLIB_REGEX)
-    return qtlib_name_rgx.match(filename) is not None
+    return qtlib_name_rgx.match(filename.decode('utf-8')) is not None
 
 
 def normalize_qtplugin_name(filename):
@@ -107,6 +103,7 @@ def normalize_qtplugin_name(filename):
             - abspath is the absolute path of the qt lib inside the app bundle of exepath
             - relpath is the correct rpath to a qt lib inside the app bundle
     """
+    filename = filename.decode('utf-8')
 
     GlobalConfig.logger.debug('normalize_plugin_name({0})'.format(filename))
 
@@ -151,6 +148,8 @@ def normalize_qtlib_name(filename):
             - abspath is the absolute path of the qt lib inside the app bundle of exepath
             - relpath is the correct rpath to a qt lib inside the app bundle
     """
+    filename = filename.decode('utf-8')
+
     GlobalConfig.logger.debug('normalize_qtlib_name({0})'.format(filename))
 
     qtlib_name_rgx = re.compile(QTLIB_NAME_REGEX)
@@ -193,6 +192,8 @@ def normalize_brew_name(filename):
             - abspath is the absolute path of the qt lib inside the app bundle of exepath
             - relpath is the correct rpath to a qt lib inside the app bundle
     """
+    filename = filename.decode('utf-8')
+
     GlobalConfig.logger.debug('normalize_brew_name({0})'.format(filename))
 
     brewlib_name_rgx = re.compile(BREWLIB_REGEX)

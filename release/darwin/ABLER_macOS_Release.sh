@@ -1,7 +1,7 @@
 # 사용되는 변수들 초기화
 testing=false
 arch_setting=false # arch_setting : false -> arm64, true -> x86_64
-_codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID Application: carpenstreet Inc." | awk '{print $2}')" # get codesign cert from keychain
+_codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID Application: carpenstreet Inc." | awk 'NR==1{print $2}')" # get codesign cert from keychain
 _mount_dir="../../../build_darwin/bin"
 _qt_loc=""
 
@@ -24,7 +24,7 @@ fi
 
 # 빌드
 make update
-make
+make -j $(nproc)
 cd ./release/darwin || exit
 
 # dylib 번들링 작업
@@ -37,9 +37,9 @@ if ! "${testing}"; then
     for f in $(find "${_mount_dir}/ABLER.app" -name "*.dylib"); do
         echo "fixing ${f}"
         if "${arch_setting}"; then
-          dylibbundler -cd -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /usr/local/lib
+          dylibbundler -cd -of -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /usr/local/lib
         fi
-        dylibbundler -cd -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /opt/homebrew/lib
+        dylibbundler -cd -of -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /opt/homebrew/lib
     done
 
     # dylibbundler가 제대로 작돋하지 않을 경우를 대비해서 아래와 같은 스크립트를 추가적으로 실행해줌 -> 링크는 https://github.com/arl/macdeployqtfix 참조
@@ -66,9 +66,9 @@ else
     for f in $(find "${_mount_dir}/ABLER.app" -name "*.dylib"); do
         echo "fixing ${f}"
         if "${arch_setting}"; then
-          dylibbundler -cd -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /usr/local/lib
+          dylibbundler -cd -of -od -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /usr/local/lib
         fi
-        dylibbundler -cd -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /opt/homebrew/lib
+        dylibbundler -cd -of -od -b -x "${f}" -d "${_mount_dir}"/ABLER.app/Contents/Frameworks/ -p @executable_path/../Frameworks/ -s /opt/homebrew/lib
     done
 
     # dylibbundler가 제대로 작돋하지 않을 경우를 대비해서 아래와 같은 스크립트를 추가적으로 실행해줌 -> 링크는 https://github.com/arl/macdeployqtfix 참조

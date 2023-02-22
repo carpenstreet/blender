@@ -111,7 +111,37 @@ if [ ! -z "${C_CERT}" ]; then
         codesign --remove-signature "${f}"
         codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
     done
+    # Codesigning .egg files
+    echo ; echo -n "Codesigning .egg files"
+    for f in $(find "${SRC_DIR}/ABLER.app" -name "*.egg"); do
+        echo "Processing file $f..."
+        # Get the file path and name without extension
+        file_path=$(dirname "$f")
+        file_name=$(basename "$f" .egg)
+        
+        # Rename the file to have a .zip extension
+        mv "$file_path/$file_name.egg" "$file_path/$file_name.zip"
 
+        temp_dir="$file_path/$file_name" # zip 실행시 상대경로 문제로 시스템 temp 폴더 사용 안함
+
+        unzip "$file_path/$file_name.zip" -d "$temp_dir"
+        rm "$file_path/$file_name.zip"
+
+        for so_file in "$temp_dir"/*.so; do 
+            codesign --remove-signature "$so_file"
+            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "$so_file"
+        done
+
+        pushd "$temp_dir"
+        zip -r "../$file_name.zip" "."
+        popd
+        mv "$file_path/$file_name.zip" "$file_path/$file_name.egg"
+
+        codesign --remove-signature "$file_path/$file_name.egg"
+        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "$file_path/$file_name.egg"
+
+        rm -rf "$temp_dir"
+    done
     echo ; echo -n "Codesigning .framework libraries"
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.framework"); do
         codesign --remove-signature "${f}/Versions/A"
@@ -145,7 +175,7 @@ echo
 
 # Create the disk image.
 _directory_size=$(du -sh ${_tmp_dir} | awk -F'[^0-9]*' '$0=$1')
-_image_size=$(echo "${_directory_size}" + 400 | bc) # extra 400 need for codesign to work (why on earth?)
+_image_size=$(echo "${_directory_size}" + 1400 | bc) # extra 400 need for codesign to work (why on earth?)
 
 echo
 echo -n "Creating disk image of size ${_image_size}M.."
