@@ -388,6 +388,12 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                     if not os.path.exists(dirname_temp):
                         try:
                             os.makedirs(dirname_temp)
+                        except FileNotFoundError:
+                            bpy.ops.acon3d.alert(
+                                "INVOKE_DEFAULT",
+                                title="This file path does not exist",
+                                message_1="Please select valid file path",
+                            )
                         except OSError:
                             bpy.ops.acon3d.alert(
                                 "INVOKE_DEFAULT",
