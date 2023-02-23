@@ -147,15 +147,23 @@ def find_screen_acon3d() -> bool:
     )
 
 
+@persistent
+def camera_length(dummy):
+    for camera in bpy.data.cameras:
+        camera.clip_end = 100000
+
+
 def register():
     bpy.app.handlers.load_factory_startup_post.append(init_setting)
     bpy.app.handlers.load_post.append(load_handler)
     bpy.app.handlers.save_pre.append(save_pre_handler)
     bpy.app.handlers.save_post.append(save_post_handler)
     bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
+    bpy.app.handlers.depsgraph_update_post.append(camera_length)
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(camera_length)
     bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
