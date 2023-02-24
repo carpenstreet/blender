@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Dict, List, Union, Tuple, Optional
 from bpy.types import Context
 import bpy
@@ -35,6 +36,8 @@ def add_group_list_from_collection(
 
 
 def set_constraint_to_camera_by_object(obj, context=None):
+
+    sys.setrecursionlimit(2147483647)
 
     if not context:
         context = bpy.context
