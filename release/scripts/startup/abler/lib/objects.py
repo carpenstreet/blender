@@ -37,8 +37,9 @@ def add_group_list_from_collection(
 
 def set_constraint_to_camera_by_object(obj, context=None):
 
-    # 2147483647는 C에서 max int 값
-    sys.setrecursionlimit(2147483647)
+    # 이것은 C의 최대 int값이다
+    MAX_C_INT = 2147483647
+    sys.setrecursionlimit(MAX_C_INT)
 
     if not context:
         context = bpy.context
