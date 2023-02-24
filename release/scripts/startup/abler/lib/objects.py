@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Dict, List, Union, Tuple, Optional
 from bpy.types import Context
 import bpy
@@ -35,6 +36,10 @@ def add_group_list_from_collection(
 
 
 def set_constraint_to_camera_by_object(obj, context=None):
+
+    # 이것은 C의 최대 int값이다
+    MAX_C_INT = 2147483647
+    sys.setrecursionlimit(MAX_C_INT)
 
     if not context:
         context = bpy.context
