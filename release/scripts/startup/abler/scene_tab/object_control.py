@@ -78,7 +78,7 @@ class GroupNavigationManager:
         obj = bpy.context.active_object
         if obj:
             if parent := obj.parent:
-                if parent.parent is not None:
+                while parent.parent:
                     self._selection_undo_stack.append(obj)
                     obj = obj.parent
             with self._programmatic_selection_scope():
