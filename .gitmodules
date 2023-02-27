@@ -28,3 +28,13 @@
 	url = git@github.com:carpenstreet/SKP_Converter.git
 	branch = main
 	ignore = all
+[submodule "release/scripts/addons_abler/page_transparency"]
+	path = release/scripts/addons_abler/page_transparency
+	url = git@github.com:carpenstreet/page_transparency.git
+	branch = main
+	ignore = all
+[submodule "release/scripts/addons_abler/camera_preset"]
+	path = release/scripts/addons_abler/camera_preset
+	url = git@github.com:carpenstreet/camera_preset.git
+	branch = main
+	ignore = all
