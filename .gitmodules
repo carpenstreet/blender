@@ -10,7 +10,7 @@
 	ignore = all
 [submodule "release/datafiles/locale"]
 	path = release/datafiles/locale
-	url = https://github.com/ACON3D/blender-translations.git
+	url = git@github.com:carpenstreet/blender-translations.git
 	branch = ABLER/main
 	ignore = all
 [submodule "source/tools"]
@@ -20,11 +20,11 @@
 	ignore = all
 [submodule "launcher_qt"]
 	path = launcher_qt
-	url = https://github.com/ACON3D/QT-Launcher.git
+	url = git@github.com:carpenstreet/QT-Launcher.git
 	branch = main
 	ignore = all
 [submodule "release/scripts/addons_abler/io_skp"]
 	path = release/scripts/addons_abler/io_skp
-	url = git@github.com:ACON3D/SKP_Converter.git
+	url = git@github.com:carpenstreet/SKP_Converter.git
 	branch = main
 	ignore = all

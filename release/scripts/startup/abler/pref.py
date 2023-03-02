@@ -129,8 +129,9 @@ def save_post_handler(dummy):
 
 @persistent
 def grid_on_when_selected(dummy):
-    if selected_objects := bpy.context.selected_objects:
-        show_grid = len(selected_objects) > 0
+    show_grid = False
+    if bpy.context.selected_objects is not None and len(bpy.context.selected_objects) > 0:
+        show_grid = True
     if find_screen_acon3d():
         viewport_overlay = bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay
         viewport_overlay.show_ortho_grid = show_grid
@@ -146,15 +147,23 @@ def find_screen_acon3d() -> bool:
     )
 
 
+@persistent
+def camera_length(dummy):
+    for camera in bpy.data.cameras:
+        camera.clip_end = 100000
+
+
 def register():
     bpy.app.handlers.load_factory_startup_post.append(init_setting)
     bpy.app.handlers.load_post.append(load_handler)
     bpy.app.handlers.save_pre.append(save_pre_handler)
     bpy.app.handlers.save_post.append(save_post_handler)
     bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
+    bpy.app.handlers.depsgraph_update_post.append(camera_length)
 
 
 def unregister():
+    bpy.app.handlers.depsgraph_update_post.remove(camera_length)
     bpy.app.handlers.depsgraph_update_post.remove(grid_on_when_selected)
     bpy.app.handlers.save_post.remove(save_post_handler)
     bpy.app.handlers.save_pre.remove(save_pre_handler)
