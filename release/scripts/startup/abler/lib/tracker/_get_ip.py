@@ -4,7 +4,8 @@ from requests import get
 
 def get_ip() -> Optional[str]:
     try:
-        return get("https://api.ipify.org", timeout=3).text
+        # https://www.ipify.org/에서 제공하는 API를 사용
+        return get("https://api64.ipify.org", timeout=3).text
     except ConnectionError:
         print("Unable to reach the ipify service")
     except:
