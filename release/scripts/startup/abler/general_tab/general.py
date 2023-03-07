@@ -594,7 +594,7 @@ class ImportProOperator(bpy.types.Operator, AconImportHelper):
             # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
             # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
             # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
-            bpy.ops.acon3d.import_skp_op(
+            bpy.ops.acon3d.import_skp_op_pro(
                 filepath=self.filepath, import_lookatme=self.import_lookatme
             )
 
@@ -818,6 +818,40 @@ class ImportSKPOperator(bpy.types.Operator, AconImportHelper):
         layout.prop(self, "import_lookatme", text="Import Look at me")
 
 
+class ImportSKPProOperator(bpy.types.Operator, AconImportHelper):
+    """Import SKP file according to the current settings"""
+
+    bl_idname = "acon3d.import_skp_op_pro"
+    bl_label = "Import SKP"
+    bl_options = {"UNDO"}
+    bl_translation_context = "abler"
+
+    filter_glob: bpy.props.StringProperty(default="*.skp", options={"HIDDEN"})
+    import_lookatme: bpy.props.BoolProperty(default=False)
+    use_filter = True
+
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
+
+    def execute(self, context):
+        if not self.check_path(accepted=["skp"]):
+            return {"FINISHED"}
+
+        bpy.ops.acon3d.import_skp_modal_pro(
+            "INVOKE_DEFAULT",
+            filepath=self.filepath,
+            import_lookatme=self.import_lookatme,
+        )
+
+        return {"FINISHED"}
+
+    def draw(self, context):
+        super().draw(context)
+
+        layout = self.layout
+        layout.prop(self, "import_lookatme", text="Import Look at me")
+
 class ImportSKPModalOperator(BlockingModalOperator):
     """Execute Selected File"""
 
@@ -854,6 +888,41 @@ class ImportSKPModalOperator(BlockingModalOperator):
         row.label(text="")
         main.label(text="")
 
+class ImportSKPModalProOperator(BlockingModalOperator):
+    """Execute Selected File"""
+
+    bl_idname = "acon3d.import_skp_modal_pro"
+    bl_label = "Import SKP"
+    bl_translation_context = "abler"
+
+    filepath: bpy.props.StringProperty(default="")
+    import_lookatme: bpy.props.BoolProperty(default=False)
+
+    def draw_modal(self, layout):
+        filename = self.filepath.split("/")[-1]
+
+        padding_size = 0.01
+        content_size = 1.0 - 2 * padding_size
+        box = layout.box()
+        main = box.column()
+
+        main.label(text="")
+
+        row = main.split(factor=padding_size)
+        row.label(text="")
+        row = row.split(factor=content_size)
+        col = row.column()
+        col.label(text="Import selected file")
+        col.label(text=filename)
+
+        import_skp_props = col.operator("acon3d.import_skp_accept_pro")
+        import_skp_props.filepath = self.filepath
+        import_skp_props.import_lookatme = self.import_lookatme
+
+        col.operator("acon3d.close_blocking_modal", text="Cancel", text_ctxt="abler")
+
+        row.label(text="")
+        main.label(text="")
 
 class ImportSKPAcceptOperator(bpy.types.Operator):
     """Import selected file"""
@@ -870,6 +939,27 @@ class ImportSKPAcceptOperator(bpy.types.Operator):
         bpy.ops.acon3d.close_skp_progress()
         bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
         bpy.ops.acon3d.import_skp(
+            "INVOKE_DEFAULT",
+            filepath=self.filepath,
+            import_lookatme=self.import_lookatme,
+        )
+        return {"FINISHED"}
+
+class ImportSKPAcceptProOperator(bpy.types.Operator):
+    """Import selected file"""
+
+    bl_idname = "acon3d.import_skp_accept_pro"
+    bl_label = "Import"
+    bl_translation_context = "abler"
+
+    filepath: bpy.props.StringProperty(default="")
+    import_lookatme: bpy.props.BoolProperty(default=False)
+
+    def execute(self, context):
+        tracker.import_skp()
+        bpy.ops.acon3d.close_skp_progress()
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        bpy.ops.acon3d.import_skp_pro(
             "INVOKE_DEFAULT",
             filepath=self.filepath,
             import_lookatme=self.import_lookatme,
@@ -1055,6 +1145,10 @@ classes = (
     ImportSKPOperator,
     ImportSKPModalOperator,
     ImportSKPAcceptOperator,
+    ImportProOperator,
+    ImportSKPProOperator,
+    ImportSKPModalProOperator,
+    ImportSKPAcceptProOperator,
 )
 
 
