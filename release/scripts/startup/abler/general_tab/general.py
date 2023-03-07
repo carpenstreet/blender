@@ -552,6 +552,55 @@ class ImportOperator(bpy.types.Operator, AconImportHelper):
         return {"FINISHED"}
 
 
+class ImportProOperator(bpy.types.Operator, AconImportHelper):
+    """Import file according to the current settings (.skp)"""
+
+    bl_idname = "acon3d.import_pro"
+    bl_label = "Import PRO"
+    bl_options = {"UNDO"}
+    bl_translation_context = "*"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.blend;*.fbx;*.skp", options={"HIDDEN"}
+    )
+    import_lookatme: bpy.props.BoolProperty(
+        default=False,
+    )
+    use_filter = True
+
+    def draw(self, context):
+        super().draw(context)
+
+        layout = self.layout
+        row = layout.row()
+        row.label(text="Import files onto the viewport.")
+        row = layout.row()
+        row.label(text="Sketchup File (.skp)", icon="DOT")
+        row = layout.row()
+        self.path_ext = self.filepath.rsplit(".")[-1]
+        if self.path_ext == "skp":
+            row = layout.row()
+            row.prop(self, "import_lookatme", text="Import Look at me")
+
+    def invoke(self, context, event):
+        with file_view_title("IMPORT"):
+            return super().invoke(context, event)
+
+    def execute(self, context):
+        if not self.check_path(accepted=["skp"]):
+            return {"FINISHED"}
+
+        if self.path_ext == "skp":
+            # skp importer 관련하여 감싸는 skp operator를 만들어서 트래킹과 exception 핸들링을 더 잘 할 수 있도록 함.
+            # TODO: 다른 유관 프로젝트들과의 dependency와 legacy가 청산되면 위와 같은 네이밍 컨벤션으로 갈 수 있도록 리팩토링 할 것.
+            # 관련 논의 : https://github.com/ACON3D/blender/pull/204#discussion_r1015104073
+            bpy.ops.acon3d.import_skp_op(
+                filepath=self.filepath, import_lookatme=self.import_lookatme
+            )
+
+        return {"FINISHED"}
+
+
 class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
     """Import Blender file according to the current settings"""
 
@@ -961,6 +1010,10 @@ class Acon3dGeneralBottomPanel(bpy.types.Panel):
         row.prop(view, "language")
         row = layout.row()
         row.operator("acon3d.fly_mode")
+
+        row = layout.row()
+        row.scale_y = 1.0
+        row.operator("acon3d.import_pro", text="SKP Import Pro")
 
 
 class ApplyToonStyleOperator(bpy.types.Operator):

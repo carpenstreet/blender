@@ -38,3 +38,8 @@
 	url = git@github.com:carpenstreet/camera_preset.git
 	branch = main
 	ignore = all
+[submodule "release/scripts/addons_abler/io_skp_pro"]
+	path = release/scripts/addons_abler/io_skp_pro
+	url = git@github.com:carpenstreet/SKP_Converter.git
+	branch = feature/SWTASK-73--abler-paid-addon-camera-preset
+	ignore = all
