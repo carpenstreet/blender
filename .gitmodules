@@ -26,7 +26,7 @@
 [submodule "release/scripts/addons_abler/io_skp"]
 	path = release/scripts/addons_abler/io_skp
 	url = git@github.com:carpenstreet/SKP_Converter.git
-	branch = main
+	branch = feature/SWTASK-73--abler-paid-addon-camera-preset
 	ignore = all
 [submodule "release/scripts/addons_abler/page_transparency"]
 	path = release/scripts/addons_abler/page_transparency
