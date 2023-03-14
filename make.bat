@@ -83,6 +83,13 @@ if "%BUILD_SKP%" == "1" (
     goto EOF
 )
 
+if "%BUILD_TP%" == "1" (
+    call "%BLENDER_DIR%\build_files\windows\make_tp.cmd"
+    if errorlevel 1 goto EOF
+
+    goto EOF
+)
+
 call "%BLENDER_DIR%\build_files\windows\set_build_dir.cmd"
 
 :convenience_targets

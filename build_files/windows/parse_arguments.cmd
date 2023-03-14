@@ -96,6 +96,8 @@ if NOT "%1" == "" (
 		SET BUILD_ACP=1
 	) else if "%1" == "skp" (
 	    SET BUILD_SKP=1
+	) else if "%1" == "tp" (
+	    SET BUILD_TP=1
 	) else if "%1" == "ninja" (
 		SET BUILD_WITH_NINJA=1
 	) else if "%1" == "sccache" (

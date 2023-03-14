@@ -12,7 +12,7 @@ def copy_scripts(src, dest):
 
 
 if platform.system() == "Windows":
-    dest_path_heading = "../build_windows_x64_vc17_Release/bin/Release/"
+    dest_path_heading = "../build_windows_x64_vc16_Release/bin/Release/"
     dest_path = os.path.join(dest_path_heading, dest_path_ending)
 elif platform.system() == "Darwin":
     dest_path_heading = "../build_darwin/bin/ABLER.app/Contents/Resources/"
