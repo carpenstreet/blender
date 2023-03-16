@@ -242,6 +242,41 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
 
     prop = new_scene.ACON_prop
 
+    if type == "Default":
+
+        prop.toggle_toon_edge = True
+        prop.edge_min_line_width = 1
+        prop.edge_max_line_width = 1
+        prop.edge_line_detail = 1
+        prop.toggle_toon_face = True
+        prop.toggle_texture = True
+        prop.toggle_shading = True
+        prop.toon_shading_depth = "3"
+        prop.toon_shading_brightness_1 = 3
+        prop.toon_shading_brightness_2 = 5
+        prop.toggle_sun = True
+        prop.sun_strength = 1.5
+        prop.toggle_shadow = True
+        prop.sun_rotation_x = radians(20)
+        prop.sun_rotation_z = radians(130)
+        prop.image_adjust_brightness = 0
+        prop.image_adjust_contrast = 0
+        prop.image_adjust_color_r = 1
+        prop.image_adjust_color_g = 1
+        prop.image_adjust_color_b = 1
+        prop.image_adjust_hue = 0.5
+        prop.image_adjust_saturation = 1
+        prop.use_bloom = True
+        prop.bloom_threshold = 1
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 4
+        prop.bloom_color = (1, 1, 1)
+        prop.bloom_intensity = 0.5
+        prop.bloom_clamp = 0
+        new_scene.render.resolution_x = 4800
+        new_scene.render.resolution_y = 2700
+
+
     if type == "Indoor Daytime":
 
         prop.toggle_toon_edge = True
