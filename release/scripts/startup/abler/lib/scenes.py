@@ -161,7 +161,10 @@ def change_scene_name(self, context):
 
         scene_col = prop.scene_col
         active_scene_index = prop.active_scene_index
-        bpy.context.scene.name = scene_col[active_scene_index].name
+        if active_scene_index < len(bpy.data.scenes):
+            bpy.context.scene.name = scene_col[active_scene_index].name
+        else:
+            return
 
     is_scene_renamed = True
 
