@@ -207,6 +207,10 @@ class MATERIAL_UL_List(bpy.types.UIList):
             layout.prop(ma, "name", text="", emboss=False, icon_value=icon)
             layout.prop(ma.ACON_prop, "type", text="")
 
+            # exception handling code added due to error from link below
+            # https://carpenstreet-np.sentry.io/issues/3974831978/?project=4504597190803456&referrer=slack
+            if not ma.node_tree:
+                return
             toonNode = ma.node_tree.nodes.get("ACON_nodeGroup_combinedToon")
 
             if not toonNode:
