@@ -161,13 +161,10 @@ def change_scene_name(self, context):
 
         scene_col = prop.scene_col
         active_scene_index = prop.active_scene_index
-        if active_scene_index < len(bpy.data.scenes):
-            bpy.context.scene.name = scene_col[active_scene_index].name
-        else:
-            return
+        bpy.context.scene.name = scene_col[active_scene_index].name
+        add_scene_items_to_collection()
 
     is_scene_renamed = True
-
 
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
