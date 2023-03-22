@@ -4,6 +4,6 @@ keyboard
 sentry-sdk==1.4.3
 python-dotenv
 psutil
-pywin32
 photoshop-python-api
 pillow
+pywin32
