@@ -1,0 +1,6 @@
+psd-tools
+mixpanel==4.9.0
+keyboard
+sentry-sdk==1.4.3
+python-dotenv
+psutil
