@@ -24,7 +24,7 @@ fi
 
 # 빌드
 make update
-make -j $(nproc)
+make -j $(sysctl -n hw.physicalcpu)
 cd ./release/darwin || exit
 
 # dylib 번들링 작업
@@ -56,7 +56,7 @@ if ! "${testing}"; then
     fi
 
     # bundle.sh 실행
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}"
+    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-passwords" --codesign "${_codesign_cert}"
 else
     # qt 기본 제공 번들러
     macdeployqt ${_mount_dir}/ABLER.app -verbose=3
