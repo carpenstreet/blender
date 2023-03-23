@@ -106,7 +106,8 @@ def toggle_texture(self, context: Context) -> None:
     texture: BoolProperty = context.scene.ACON_prop.toggle_texture
     textureFactorValue: int = int(not texture)
 
-    if context.scene.camera:
+    camera = context.scene.camera
+    if camera and (type(camera.data) == bpy.types.Camera):
         for image in context.scene.camera.data.background_images:
             image.show_background_image = texture
 
