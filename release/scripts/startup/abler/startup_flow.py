@@ -563,7 +563,8 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
                     is_launcher_open = False
                     break
         elif sys.platform == "darwin":
-            raise NotImplementedError("Not implemented yet for %s." % sys.platform)
+            # raise NotImplementedError("Not implemented yet for %s." % sys.platform)
+            pass
         else:
             raise Exception("Unsupported platform")
 
