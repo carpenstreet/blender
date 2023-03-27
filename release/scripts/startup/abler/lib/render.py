@@ -23,7 +23,6 @@ import bpy
 def setup_snip_compositor(
     node_left=None, node_right=None, snip_layer=None, shade_image=None
 ):
-
     if not node_left or not node_right:
         node_left, node_right = clear_compositor()
 
@@ -43,7 +42,6 @@ def setup_snip_compositor(
 
 
 def setup_background_images_compositor(node_left=None, node_right=None, scene=None):
-
     if not node_left or not node_right:
         node_left, node_right = clear_compositor()
 
@@ -66,7 +64,6 @@ def setup_background_images_compositor(node_left=None, node_right=None, scene=No
         return
 
     for background_image in reversed(background_images):
-
         image = background_image.image
 
         # 배경 이미지를 추가하지 않았을 때는 알림을 표시하지 않습니다.
@@ -145,7 +142,6 @@ def setup_background_images_compositor(node_left=None, node_right=None, scene=No
 
 
 def clear_compositor(scene=None):
-
     context = bpy.context
 
     if not scene:

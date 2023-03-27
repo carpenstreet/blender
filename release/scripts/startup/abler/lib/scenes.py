@@ -67,7 +67,6 @@ def gen_scene_name(name: str, i: int = 1) -> str:
 
 
 def refresh_look_at_me() -> None:
-
     context = bpy.context
     prev_active_object = context.active_object
     # 기존에 있는 bpy.ops.object.select_all(action='DESELECT')를 사용하면 가끔 크래시가 나는 경우가 있음
@@ -166,6 +165,7 @@ def change_scene_name(self, context):
 
     is_scene_renamed = True
 
+
 def add_scene_items(self, context: Context) -> List[Tuple[str, str, str]]:
     scene_items.clear()
     for scene in bpy.data.scenes:
@@ -181,7 +181,6 @@ def snap_to_face():
 
 
 def load_scene(self, context: Context) -> None:
-
     if not context:
         context = bpy.context
 
@@ -243,7 +242,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
     prop = new_scene.ACON_prop
 
     if type == "Default":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -276,9 +274,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-
     if type == "Indoor Daytime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -312,7 +308,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Indoor Sunset":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -346,7 +341,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Indoor Nighttime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -380,7 +374,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Daytime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -414,7 +407,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Sunset":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -448,7 +440,6 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_y = 2700
 
     if type == "Outdoor Nighttime":
-
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1

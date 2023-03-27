@@ -4,7 +4,6 @@ import mathutils
 
 
 def change_and_reset_value() -> None:
-
     # 파일 맨 처음 열었을때 custom properties의 속성들이 업데이트 되지 않는 문제를 해결하기 위해
     # 만들어둔 함수
 

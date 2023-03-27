@@ -81,7 +81,6 @@ class LinePanel(bpy.types.Panel):
         prop = context.scene.ACON_prop
 
         if prop.toggle_toon_edge:
-
             layout.prop(prop, "edge_min_line_width", text="Min Line Width", slider=True)
             layout.prop(prop, "edge_max_line_width", text="Max Line Width", slider=True)
             layout.prop(prop, "edge_line_detail", text="Line Detail", slider=True)
@@ -176,7 +175,6 @@ class ShadingPanel(bpy.types.Panel):
         layout.use_property_decorate = False  # No animation.
 
         if context.scene.ACON_prop.toggle_toon_face:
-
             prop = context.scene.ACON_prop
 
             col = layout.column()

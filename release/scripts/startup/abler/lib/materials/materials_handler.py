@@ -146,7 +146,6 @@ def toggle_shading(self, context: Context) -> None:
 
 
 def toggle_each_shading(self, context: Context) -> None:
-
     if not context:
         context = bpy.context
 
@@ -173,7 +172,6 @@ def toggle_each_shading(self, context: Context) -> None:
 
 
 def toggle_each_shadow(self, context: Context) -> None:
-
     if not context:
         context = bpy.context
 
@@ -217,7 +215,6 @@ def change_toon_depth(self, context: Context) -> None:
 
 
 def set_material_parameters_by_type(mat: Material) -> None:
-
     type: EnumProperty = mat.ACON_prop.type
 
     toonNodeTree: Optional[Node] = mat.node_tree
