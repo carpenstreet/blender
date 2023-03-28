@@ -84,9 +84,7 @@ class Acon3dExplodeGroupOperator(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-
         for selected_object in context.selected_objects:
-
             group_props = selected_object.ACON_prop.group
 
             if not len(group_props):

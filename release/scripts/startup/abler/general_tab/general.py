@@ -597,7 +597,6 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
                 data_to.objects = list(data_from.objects)
 
             for coll in data_to.collections:
-
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -855,7 +854,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
             lang = cur_lang.split("_")[0]
         else:
             lang = "en"
-
 
         row = layout.row()
         row.scale_y = 1.0

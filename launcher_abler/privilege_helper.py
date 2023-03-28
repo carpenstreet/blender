@@ -15,7 +15,6 @@ from ctypes import wintypes
 
 
 def isUserAdmin():
-
     if os.name == "nt":
         import ctypes
 

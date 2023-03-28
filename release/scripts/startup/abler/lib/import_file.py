@@ -90,11 +90,11 @@ class AconExportHelper(ExportHelper):
         if not os.path.isdir(dirname) and not bpy.data.is_saved:
             self.filepath = bpy.context.blend_data.filepath
             history_path = bpy.utils.user_resource("CONFIG") + "/recent-files.txt"
-            with open(history_path, 'r') as f:
+            with open(history_path, "r") as f:
                 last_line = f.readline()
-                recent_path = last_line.split('/')
+                recent_path = last_line.split("/")
                 recent_path.pop()
-                recent_dir = '/'.join(recent_path)
+                recent_dir = "/".join(recent_path)
                 os.makedirs(recent_dir + "/untitled/", exist_ok=True)
             self.filepath = os.path.join(recent_dir + "/untitled/" + basename)
 

@@ -368,7 +368,6 @@ class LoginTask(AsyncTask):
         )
 
     def _on_success(self):
-
         tracker.login()
         tracker.update_profile(self.username, user_ip)
 
