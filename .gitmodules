@@ -28,3 +28,8 @@
 	url = git@github.com:carpenstreet/SKP_Converter.git
 	branch = main
 	ignore = all
+[submodule "release/scripts/addons_abler/import_image"]
+	path = release/scripts/addons_abler/import_image
+	url = git@github.com:carpenstreet/import_image.git
+	branch = main
+	ignore = all
