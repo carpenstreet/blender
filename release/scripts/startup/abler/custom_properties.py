@@ -716,7 +716,6 @@ class AconObjectGroupProperty(bpy.types.PropertyGroup):
 
 
 class AconObjectStateProperty(bpy.types.PropertyGroup):
-
     location: bpy.props.FloatVectorProperty(
         name="location", description="location", subtype="TRANSLATION", unit="LENGTH"
     )

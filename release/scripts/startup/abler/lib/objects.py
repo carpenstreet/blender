@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Dict, List, Union, Tuple, Optional
 from bpy.types import Context
 import bpy
@@ -35,6 +36,9 @@ def add_group_list_from_collection(
 
 
 def set_constraint_to_camera_by_object(obj, context=None):
+    # 이것은 C의 최대 int값이다
+    MAX_C_INT = 2147483647
+    sys.setrecursionlimit(MAX_C_INT)
 
     if not context:
         context = bpy.context
@@ -42,12 +46,10 @@ def set_constraint_to_camera_by_object(obj, context=None):
     look_at_me = obj.ACON_prop.constraint_to_camera_rotation_z
 
     for obj in context.selected_objects:
-
         prop = obj.ACON_prop
         const = obj.constraints.get("ACON_const_copyRotation")
 
         if look_at_me:
-
             if not const:
                 const = obj.constraints.new(type="COPY_ROTATION")
                 const.name = "ACON_const_copyRotation"
@@ -59,7 +61,6 @@ def set_constraint_to_camera_by_object(obj, context=None):
             const.mute = False
 
         elif const:
-
             const.mute = True
 
         if prop.constraint_to_camera_rotation_z != look_at_me:
@@ -71,7 +72,6 @@ def step(edge0: tuple[float], edge1: tuple[float], x: float) -> tuple[float]:
 
 
 def toggle_use_state(self, context):
-
     use_state = self.use_state
 
     prop = context.object.ACON_prop
@@ -81,14 +81,11 @@ def toggle_use_state(self, context):
         tracker.use_state_off()
 
     if use_state:
-
         for obj in context.selected_objects:
-
             prop = obj.ACON_prop
 
             if (obj == context.object or not prop.use_state) and not prop.state_exists:
                 for att in ["location", "rotation_euler", "scale"]:
-
                     vector = getattr(obj, att)
                     setattr(prop.state_begin, att, vector)
                     setattr(prop.state_end, att, vector)
@@ -96,37 +93,30 @@ def toggle_use_state(self, context):
                 prop.state_exists = True
 
             if not prop.use_state:
-
                 prop.use_state = True
 
         prop.state_slider = 1
 
     else:
-
         context.object.ACON_prop.state_slider = 0
 
         for obj in context.selected_objects:
-
             prop = obj.ACON_prop
 
             if prop.use_state:
-
                 prop.use_state = False
 
 
 def move_state(self, context):
-
     state_slider = self.state_slider
 
     for obj in context.selected_objects:
-
         prop = obj.ACON_prop
 
         if obj != context.object and not prop.use_state:
             continue
 
         for att in ["location", "rotation_euler", "scale"]:
-
             vector_begin = getattr(prop.state_begin, att)
             vector_end = getattr(prop.state_end, att)
             vector_mid = step(vector_begin, vector_end, state_slider)

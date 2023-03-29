@@ -24,7 +24,6 @@ from .. import cameras
 
 
 def create_outline_node_group():
-
     node_group = bpy.data.node_groups.new("ACON_nodeGroup_outline", "ShaderNodeTree")
 
     nodes = node_group.nodes
@@ -164,7 +163,6 @@ def create_outline_node_group():
 
 
 def create_toon_face_node_group():
-
     node_group = bpy.data.node_groups.new("ACON_nodeGroup_toonFace", "ShaderNodeTree")
 
     nodes = node_group.nodes
@@ -258,7 +256,6 @@ def create_toon_face_node_group():
 
 
 def create_ACON_mat_node_groups():
-
     node_group_data_outline = create_outline_node_group()
 
     node_group_data_toonFace = create_toon_face_node_group()
@@ -443,7 +440,6 @@ def create_ACON_mat_node_groups():
 
 
 def remove_ACON_mat_node_groups():
-
     ACON_node_group_names = [
         "ACON_nodeGroup_outline",
         "ACON_nodeGroup_toonFace",
@@ -458,17 +454,14 @@ def remove_ACON_mat_node_groups():
 
 
 def apply_ACON_toon_style():
-
     remove_ACON_mat_node_groups()
     node_group_data_combined = create_ACON_mat_node_groups()
 
     for obj in bpy.data.objects:
-
         if (obj.type == "MESH") and ("ACON_mod_edgeSplit" not in obj.modifiers):
             obj.modifiers.new("ACON_mod_edgeSplit", type="EDGE_SPLIT")
 
     for mat in bpy.data.materials:
-
         mat.use_nodes = True
 
         nodes = mat.node_tree.nodes
@@ -479,7 +472,6 @@ def apply_ACON_toon_style():
         node_combinedToon = None
 
         for node in nodes:
-
             default_value_list = {}
 
             if node.name == "ACON_nodeGroup_combinedToon":
@@ -522,7 +514,6 @@ def apply_ACON_toon_style():
                 out_node = node
 
         if node_combinedToon:
-
             if node_texImage:
                 mat.node_tree.links.new(
                     node_texImage.outputs[0], node_combinedToon.inputs[0]
@@ -577,7 +568,6 @@ def apply_ACON_toon_style():
                 mat.node_tree.nodes.remove(node)
 
         if "ACON_mat" in mat.name:
-
             if "mirror" in mat.name:
                 mat.ACON_prop.type = "Mirror"
 

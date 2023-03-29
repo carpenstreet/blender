@@ -42,9 +42,7 @@ bl_info = {
 
 
 def open_directory(path):
-
     if platform.system() == "Windows":
-
         FILEBROWSER_PATH = os.path.join(os.getenv("WINDIR"), "explorer.exe")
         path = os.path.normpath(path)
 
@@ -157,7 +155,6 @@ class Acon3dRenderSaveOpertor(bpy.types.Operator):
 
 
 class Acon3dRenderOperator(bpy.types.Operator):
-
     show_on_completion: bpy.props.BoolProperty(
         name="Show in folder on completion", default=True
     )
@@ -187,7 +184,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"FINISHED"}
 
     def prepare_queue(self, context):
-
         for scene in bpy.data.scenes:
             self.render_queue.append((None, scene))
 
@@ -254,7 +250,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
         if "." in self.basename:
-            self.basename = ".".join(self.basename.split(".")[:-1])
+            self.basename = ".".join(self.basename.split(".")[:-1]).rstrip()
 
         return super().execute(context)
 
@@ -271,11 +267,8 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
         return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
-
         if event.type == "TIMER":
-
             if not self.render_queue or self.render_canceled is True:
-
                 bpy.app.handlers.render_pre.remove(self.pre_render)
                 bpy.app.handlers.render_post.remove(self.post_render)
                 bpy.app.handlers.render_cancel.remove(self.on_render_cancel)
@@ -299,7 +292,6 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
                 return self.on_render_finish(context)
 
             elif self.rendering is False:
-
                 check_file_numbering(self, context)
 
                 self.prepare_render()
@@ -331,7 +323,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
             self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
             if "." in self.basename:
-                self.basename = ".".join(self.basename.split(".")[:-1])
+                self.basename = ".".join(self.basename.split(".")[:-1]).rstrip()
 
             self.filepath = self.basename
 
@@ -355,9 +347,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
 
     def modal(self, context, event):
         if event.type == "TIMER":
-
             if not self.render_queue or self.render_canceled is True:
-
                 bpy.app.handlers.render_pre.remove(self.pre_render)
                 bpy.app.handlers.render_post.remove(self.post_render)
                 bpy.app.handlers.render_cancel.remove(self.on_render_cancel)
@@ -381,12 +371,24 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 return self.on_render_finish(context)
 
             elif self.rendering is False:
-
                 name_item, qitem, *_ = self.render_queue[0]
                 if name_item:
                     dirname_temp = os.path.join(self.filepath, name_item)
                     if not os.path.exists(dirname_temp):
-                        os.makedirs(dirname_temp)
+                        try:
+                            os.makedirs(dirname_temp)
+                        except FileNotFoundError:
+                            bpy.ops.acon3d.alert(
+                                "INVOKE_DEFAULT",
+                                title="This file path does not exist",
+                                message_1="Please select valid file path",
+                            )
+                        except OSError:
+                            bpy.ops.acon3d.alert(
+                                "INVOKE_DEFAULT",
+                                title="Invalid Directory Name",
+                                message_1="Please rewrite your directory name",
+                            )
                 else:
                     dirname_temp = self.filepath
 
@@ -580,8 +582,15 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                 mat.blend_method = "OPAQUE"
                 mat.shadow_method = "OPAQUE"
                 if toonNode := mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon"):
-                    toonNode.inputs[1].default_value = 0
-                    toonNode.inputs[3].default_value = 1
+                    try:
+                        toonNode.inputs[1].default_value = 0
+                        toonNode.inputs[3].default_value = 1
+                    except AttributeError:
+                        bpy.ops.acon3d.alert(
+                            "INVOKE_DEFAULT",
+                            title="Please do not edit this node",
+                            message_1="It may cause unexpected errors.",
+                        )
         else:  # Shadow / Texture
             for mat in bpy.data.materials:  # scene
                 if mat.ACON_prop.type == "Mirror":

@@ -51,7 +51,7 @@ def split_filepath(filepath):
     dirname, basename = os.path.split(os.path.normpath(filepath))
 
     if "." in basename:
-        basename = ".".join(basename.split(".")[:-1])
+        basename = ".".join(basename.split(".")[:-1]).rstrip()
 
     return dirname, basename
 
@@ -368,6 +368,7 @@ class SaveOperator(bpy.types.Operator, AconExportHelper):
     def execute(self, context):
         try:
             self.check_path(save_check=True)
+            self.check_filepath()
 
             if bpy.data.is_saved:
                 self.filepath = context.blend_data.filepath
@@ -436,6 +437,7 @@ class SaveAsOperator(bpy.types.Operator, AconExportHelper):
     def execute(self, context):
         try:
             self.check_path(save_check=False)
+            self.check_filepath()
 
             numbered_filepath, numbered_filename = numbering_filepath(
                 self.filepath, self.filename_ext
@@ -595,7 +597,6 @@ class ImportBlenderOperator(bpy.types.Operator, AconImportHelper):
                 data_to.objects = list(data_from.objects)
 
             for coll in data_to.collections:
-
                 if "ACON_col" in coll.name:
                     data_to.collections.remove(coll)
                     break
@@ -853,7 +854,6 @@ class Acon3dGeneralPanel(bpy.types.Panel):
             lang = cur_lang.split("_")[0]
         else:
             lang = "en"
-
 
         row = layout.row()
         row.scale_y = 1.0

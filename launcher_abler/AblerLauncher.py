@@ -593,7 +593,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(url)
 
     def about(self) -> None:
-
         blender_download_url = (
             "https://builder.blender.org/download/"  # TODO: ABLER download url
         )

@@ -335,6 +335,7 @@ class LoginTask(AsyncTask):
         # TODO 추후 api 변경된 후 수정 필요
         # TODO api 변경이 된다면, status code 및 error code 등으로 에러 처리 필요
         wrong_messages = [
+            "회원정보를 찾을 수 없습니다.",
             "아이디 또는 비밀번호를 다시한번 확인해 주시기 바랍니다.",
             "로그인을 7회 실패하셨습니다. 10회 이상 실패 시 접속이 제한됩니다.",
         ]
@@ -367,7 +368,6 @@ class LoginTask(AsyncTask):
         )
 
     def _on_success(self):
-
         tracker.login()
         tracker.update_profile(self.username, user_ip)
 

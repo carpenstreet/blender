@@ -54,8 +54,9 @@ def add_group_list_from_collection(
     for item in draft_selection:
         icon_str = "OUTLINER_OB_MESH" if item.type == "MESH" else "OUTLINER_OB_EMPTY"
         items.append((item.name, item.name, "", icon_str, 0))
-    icon_str = "OUTLINER_OB_MESH" if obj.type == "MESH" else "OUTLINER_OB_EMPTY"
-    items.append((obj.name, obj.name, "", icon_str, 0))
+    if obj:
+        icon_str = "OUTLINER_OB_MESH" if obj.type == "MESH" else "OUTLINER_OB_EMPTY"
+        items.append((obj.name, obj.name, "", icon_str, 0))
     if obj.parent:
         while obj.parent.parent:
             icon_str = (
@@ -76,37 +77,47 @@ class GroupNavigationManager:
 
     def go_top(self):
         obj = bpy.context.active_object
-        if obj.parent:
-            while obj.parent.parent:
-                self._selection_undo_stack.append(obj)
-                obj = obj.parent
-        with self._programmatic_selection_scope():
-            bpy.context.view_layer.objects.active = obj
-            select_active_and_descendants()
+        if obj:
+            if parent := obj.parent:
+                while parent.parent:
+                    self._selection_undo_stack.append(obj)
+                    obj = obj.parent
+            with self._programmatic_selection_scope():
+                bpy.context.view_layer.objects.active = obj
+                select_active_and_descendants()
 
     def go_up(self):
         obj = bpy.context.active_object
-        if parent := obj.parent:
-            if parent.parent is not None:
-                with self._programmatic_selection_scope():
-                    self._selection_undo_stack.append(obj)
-                    bpy.context.view_layer.objects.active = parent
-                    select_active_and_descendants()
+        if obj:
+            if parent := obj.parent:
+                if parent.parent is not None:
+                    with self._programmatic_selection_scope():
+                        self._selection_undo_stack.append(obj)
+                        bpy.context.view_layer.objects.active = parent
+                        select_active_and_descendants()
 
     def go_down(self):
-        if len(self._selection_undo_stack) > 0:
-            with self._programmatic_selection_scope():
-                last_selected = self._selection_undo_stack.pop()
-                bpy.context.view_layer.objects.active = last_selected
-                select_active_and_descendants()
+        obj = bpy.context.active_object
+        if obj:
+            if parent := obj.parent:
+                if parent.parent is not None:
+                    if len(self._selection_undo_stack) > 0:
+                        with self._programmatic_selection_scope():
+                            last_selected = self._selection_undo_stack.pop()
+                            bpy.context.view_layer.objects.active = last_selected
+                            select_active_and_descendants()
 
     def go_bottom(self):
-        if len(self._selection_undo_stack) > 0:
-            with self._programmatic_selection_scope():
-                while len(self._selection_undo_stack) > 0:
-                    last_selected = self._selection_undo_stack.pop()
-                bpy.context.view_layer.objects.active = last_selected
-                select_active_and_descendants()
+        obj = bpy.context.active_object
+        if obj:
+            if parent := obj.parent:
+                if parent.parent is not None:
+                    if len(self._selection_undo_stack) > 0:
+                        with self._programmatic_selection_scope():
+                            while len(self._selection_undo_stack) > 0:
+                                last_selected = self._selection_undo_stack.pop()
+                            bpy.context.view_layer.objects.active = last_selected
+                            select_active_and_descendants()
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)

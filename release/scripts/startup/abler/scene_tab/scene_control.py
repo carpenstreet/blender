@@ -72,6 +72,7 @@ class CreateSceneOperator(bpy.types.Operator):
         description="Select scene preset",
         items=[
             ("None", "Use Current Scene Settings", ""),
+            ("Default", "Default", ""),
             ("Indoor Daytime", "Indoor Daytime", ""),
             ("Indoor Sunset", "Indoor Sunset", ""),
             ("Indoor Nighttime", "Indoor Nighttime", ""),
