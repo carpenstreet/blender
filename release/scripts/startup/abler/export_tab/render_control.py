@@ -250,7 +250,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
         self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
         if "." in self.basename:
-            self.basename = ".".join(self.basename.split(".")[:-1]).rstrip()
+            self.basename = ".".join(self.basename.split(".")[:-1])
 
         return super().execute(context)
 
@@ -323,7 +323,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
             self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
 
             if "." in self.basename:
-                self.basename = ".".join(self.basename.split(".")[:-1]).rstrip()
+                self.basename = ".".join(self.basename.split(".")[:-1])
 
             self.filepath = self.basename
 
