@@ -20,7 +20,7 @@
 from typing import List, Tuple, Optional
 import bpy
 from bpy.types import Scene, Context
-from . import shadow, layers, objects
+from . import shadow, layers, bloom
 from .materials import materials_handler
 from math import radians
 from .tracker import tracker
@@ -203,6 +203,12 @@ def load_scene(self, context: Context) -> None:
     materials_handler.change_image_adjust_color(None, context)
     materials_handler.change_image_adjust_hue(None, context)
     materials_handler.change_image_adjust_saturation(None, context)
+    bloom.change_bloom_threshold(None, context)
+    bloom.change_bloom_knee(None, context)
+    bloom.change_bloom_radius(None, context)
+    bloom.change_bloom_color(None, context)
+    bloom.change_bloom_intensity(None, context)
+    bloom.change_bloom_clamp(None, context)
 
     layers.handle_layer_visibility_on_scene_change(oldScene, newScene)
 
