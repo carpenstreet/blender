@@ -221,7 +221,7 @@ def set_material_parameters_by_type(mat: Material) -> None:
     if not toonNodeTree:
         return
 
-    toonNode: Optional[Node] = mat.node_tree.nodes.get("ACON_nodeGroup_combinedToon")
+    toonNode: Optional[Node] =toonNodeTree.nodes.get("ACON_nodeGroup_combinedToon")
     if not toonNode:
         return
 
