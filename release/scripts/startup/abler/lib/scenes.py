@@ -20,7 +20,7 @@
 from typing import List, Tuple, Optional
 import bpy
 from bpy.types import Scene, Context
-from . import shadow, layers, objects
+from . import shadow, layers, bloom
 from .materials import materials_handler
 from math import radians
 from .tracker import tracker
@@ -203,6 +203,12 @@ def load_scene(self, context: Context) -> None:
     materials_handler.change_image_adjust_color(None, context)
     materials_handler.change_image_adjust_hue(None, context)
     materials_handler.change_image_adjust_saturation(None, context)
+    bloom.change_bloom_threshold(None, context)
+    bloom.change_bloom_knee(None, context)
+    bloom.change_bloom_radius(None, context)
+    bloom.change_bloom_color(None, context)
+    bloom.change_bloom_intensity(None, context)
+    bloom.change_bloom_clamp(None, context)
 
     layers.handle_layer_visibility_on_scene_change(oldScene, newScene)
 
@@ -297,13 +303,13 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1.05
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
-        new_scene.eevee.use_bloom = True
-        new_scene.eevee.bloom_threshold = 2
-        new_scene.eevee.bloom_knee = 0.5
-        new_scene.eevee.bloom_radius = 6.5
-        new_scene.eevee.bloom_color = (1, 1, 1)
-        new_scene.eevee.bloom_intensity = 0.1
-        new_scene.eevee.bloom_clamp = 0
+        prop.use_bloom = True
+        prop.bloom_threshold = 2
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 6.5
+        prop.bloom_color = (1, 1, 1)
+        prop.bloom_intensity = 0.1
+        prop.bloom_clamp = 0
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
@@ -330,13 +336,13 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
-        new_scene.eevee.use_bloom = True
-        new_scene.eevee.bloom_threshold = 1
-        new_scene.eevee.bloom_knee = 0.5
-        new_scene.eevee.bloom_radius = 6.5
-        new_scene.eevee.bloom_color = (1, 1, 1)
-        new_scene.eevee.bloom_intensity = 0.5
-        new_scene.eevee.bloom_clamp = 0
+        prop.use_bloom = True
+        prop.bloom_threshold = 1
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 6.5
+        prop.bloom_color = (1, 1, 1)
+        prop.bloom_intensity = 0.5
+        prop.bloom_clamp = 0
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
@@ -363,13 +369,13 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.95
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
-        new_scene.eevee.use_bloom = True
-        new_scene.eevee.bloom_threshold = 1
-        new_scene.eevee.bloom_knee = 0.5
-        new_scene.eevee.bloom_radius = 6.5
-        new_scene.eevee.bloom_color = (0.9, 0.9, 1)
-        new_scene.eevee.bloom_intensity = 0.5
-        new_scene.eevee.bloom_clamp = 0
+        prop.use_bloom = True
+        prop.bloom_threshold = 1
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 6.5
+        prop.bloom_color = (0.9, 0.9, 1)
+        prop.bloom_intensity = 0.5
+        prop.bloom_clamp = 0
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
@@ -396,13 +402,13 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
-        new_scene.eevee.use_bloom = False
-        new_scene.eevee.bloom_threshold = 1
-        new_scene.eevee.bloom_knee = 0.5
-        new_scene.eevee.bloom_radius = 6.5
-        new_scene.eevee.bloom_color = (1, 1, 1)
-        new_scene.eevee.bloom_intensity = 0.1
-        new_scene.eevee.bloom_clamp = 0
+        prop.use_bloom = False
+        prop.bloom_threshold = 1
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 6.5
+        prop.bloom_color = (1, 1, 1)
+        prop.bloom_intensity = 0.1
+        prop.bloom_clamp = 0
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
@@ -429,13 +435,13 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
-        new_scene.eevee.use_bloom = True
-        new_scene.eevee.bloom_threshold = 0.8
-        new_scene.eevee.bloom_knee = 0.5
-        new_scene.eevee.bloom_radius = 6.5
-        new_scene.eevee.bloom_color = (1, 0.9, 0.8)
-        new_scene.eevee.bloom_intensity = 0.5
-        new_scene.eevee.bloom_clamp = 0
+        prop.use_bloom = True
+        prop.bloom_threshold = 0.8
+        prop.bloom_knee = 0.5
+        prop.bloom_radius = 6.5
+        prop.bloom_color = (1, 0.9, 0.8)
+        prop.bloom_intensity = 0.5
+        prop.bloom_clamp = 0
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
