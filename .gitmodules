@@ -28,3 +28,6 @@
 	url = git@github.com:carpenstreet/SKP_Converter.git
 	branch = main
 	ignore = all
+[submodule "release/scripts/addons_abler/make_abler_transparent"]
+	path = release/scripts/addons_abler/make_abler_transparent
+	url = git@github.com:carpenstreet/page_transparency.git
