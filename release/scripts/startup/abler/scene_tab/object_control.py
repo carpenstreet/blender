@@ -77,24 +77,26 @@ class GroupNavigationManager:
 
     def go_top(self):
         obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                while parent.parent:
-                    self._selection_undo_stack.append(obj)
-                    obj = obj.parent
-            with self._programmatic_selection_scope():
-                bpy.context.view_layer.objects.active = obj
-                select_active_and_descendants()
+        if obj is None:
+            return
+        if obj.parent:
+            while obj.parent.parent:
+                self._selection_undo_stack.append(obj)
+                obj = obj.parent
+        with self._programmatic_selection_scope():
+            bpy.context.view_layer.objects.active = obj
+            select_active_and_descendants()
 
     def go_up(self):
         obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                if parent.parent is not None:
-                    with self._programmatic_selection_scope():
-                        self._selection_undo_stack.append(obj)
-                        bpy.context.view_layer.objects.active = parent
-                        select_active_and_descendants()
+        if obj is None:
+            return
+        if parent := obj.parent:
+            if parent.parent is not None:
+                with self._programmatic_selection_scope():
+                    self._selection_undo_stack.append(obj)
+                    bpy.context.view_layer.objects.active = parent
+                    select_active_and_descendants()
 
     def go_down(self):
         obj = bpy.context.active_object
