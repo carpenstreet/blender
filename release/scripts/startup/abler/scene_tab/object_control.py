@@ -90,12 +90,11 @@ class GroupNavigationManager:
         obj = bpy.context.active_object
         if not obj:
             return
-        if parent := obj.parent:
-            if parent.parent:
-                with self._programmatic_selection_scope():
-                    self._selection_undo_stack.append(obj)
-                    bpy.context.view_layer.objects.active = parent
-                    select_active_and_descendants()
+        if obj.parent:
+            with self._programmatic_selection_scope():
+                self._selection_undo_stack.append(obj)
+                bpy.context.view_layer.objects.active = obj.parent
+                select_active_and_descendants()
 
     def go_down(self):
         if len(self._selection_undo_stack) > 0:
