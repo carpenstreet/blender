@@ -79,10 +79,9 @@ class GroupNavigationManager:
         obj = bpy.context.active_object
         if not obj:
             return
-        if obj.parent:
-            while obj.parent:
-                self._selection_undo_stack.append(obj)
-                obj = obj.parent
+        while obj.parent:
+            self._selection_undo_stack.append(obj)
+            obj = obj.parent
         with self._programmatic_selection_scope():
             bpy.context.view_layer.objects.active = obj
             select_active_and_descendants()
