@@ -77,47 +77,49 @@ class GroupNavigationManager:
 
     def go_top(self):
         obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                while parent.parent:
-                    self._selection_undo_stack.append(obj)
-                    obj = obj.parent
-            with self._programmatic_selection_scope():
-                bpy.context.view_layer.objects.active = obj
-                select_active_and_descendants()
+        if not obj:
+            return
+        while obj.parent:
+            self._selection_undo_stack.append(obj)
+            obj = obj.parent
+        with self._programmatic_selection_scope():
+            bpy.context.view_layer.objects.active = obj
+            select_active_and_descendants()
 
     def go_up(self):
         obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                if parent.parent is not None:
-                    with self._programmatic_selection_scope():
-                        self._selection_undo_stack.append(obj)
-                        bpy.context.view_layer.objects.active = parent
-                        select_active_and_descendants()
+        if not obj:
+            return
+        if obj.parent:
+            with self._programmatic_selection_scope():
+                self._selection_undo_stack.append(obj)
+                bpy.context.view_layer.objects.active = obj.parent
+                select_active_and_descendants()
 
     def go_down(self):
-        obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                if parent.parent is not None:
-                    if len(self._selection_undo_stack) > 0:
-                        with self._programmatic_selection_scope():
-                            last_selected = self._selection_undo_stack.pop()
-                            bpy.context.view_layer.objects.active = last_selected
-                            select_active_and_descendants()
+        if len(self._selection_undo_stack) > 0:
+            with self._programmatic_selection_scope():
+                last_selected = self._selection_undo_stack.pop()
+                bpy.context.view_layer.objects.active = last_selected
+                select_active_and_descendants()
+        else:
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="This is the bottom object",
+            )
 
     def go_bottom(self):
-        obj = bpy.context.active_object
-        if obj:
-            if parent := obj.parent:
-                if parent.parent is not None:
-                    if len(self._selection_undo_stack) > 0:
-                        with self._programmatic_selection_scope():
-                            while len(self._selection_undo_stack) > 0:
-                                last_selected = self._selection_undo_stack.pop()
-                            bpy.context.view_layer.objects.active = last_selected
-                            select_active_and_descendants()
+        if len(self._selection_undo_stack) > 0:
+            with self._programmatic_selection_scope():
+                while len(self._selection_undo_stack) > 0:
+                    last_selected = self._selection_undo_stack.pop()
+                bpy.context.view_layer.objects.active = last_selected
+                select_active_and_descendants()
+        else:
+            bpy.ops.acon3d.alert(
+                "INVOKE_DEFAULT",
+                title="This is the bottom object",
+            )
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)
