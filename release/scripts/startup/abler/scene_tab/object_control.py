@@ -97,18 +97,33 @@ class GroupNavigationManager:
                 select_active_and_descendants()
 
     def go_down(self):
+        obj = bpy.context.active_object
+        i = 0
         if len(self._selection_undo_stack) > 0:
             with self._programmatic_selection_scope():
                 last_selected = self._selection_undo_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
         else:
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="This is the bottom object",
-            )
+            if len(self._selection_undo_stack) == 0:
+                if len(obj.children) > 0:
+                    if i < len(obj.children):
+                        with self._programmatic_selection_scope():
+                            self._selection_undo_stack.append(obj.children[i])
+                            bpy.context.view_layer.objects.active = obj.children[i]
+                            select_active_and_descendants()
+                            i += 1
+                else:
+
+                    bpy.ops.acon3d.alert(
+                        "INVOKE_DEFAULT",
+                        title="This is the bottom object",
+                    )
+
 
     def go_bottom(self):
+        obj = bpy.context.active_object
+        i = 0
         if len(self._selection_undo_stack) > 0:
             with self._programmatic_selection_scope():
                 while len(self._selection_undo_stack) > 0:
@@ -116,10 +131,19 @@ class GroupNavigationManager:
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
         else:
-            bpy.ops.acon3d.alert(
-                "INVOKE_DEFAULT",
-                title="This is the bottom object",
-            )
+            if len(self._selection_undo_stack) == 0:
+                if len(obj.children) > 0:
+                    with self._programmatic_selection_scope():
+                        if i < len(obj.children):
+                            with self._programmatic_selection_scope():
+                                self._selection_undo_stack.append(obj.children[i])
+                        bpy.context.view_layer.objects.active = obj.children[-1]
+                        select_active_and_descendants()
+                else:
+                    bpy.ops.acon3d.alert(
+                        "INVOKE_DEFAULT",
+                        title="This is the bottom object",
+                    )
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)
