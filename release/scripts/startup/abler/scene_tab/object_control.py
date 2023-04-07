@@ -75,8 +75,15 @@ class GroupNavigationManager:
     def __repr__(self):
         return repr(self._selection_undo_stack)
 
+    def refresh_stack(self):
+        obj = bpy.context.active_object
+        if obj.parent or obj.children not in self._selection_undo_stack:
+            self._selection_undo_stack = []
+            print(self._selection_undo_stack)
+
     def go_top(self):
         obj = bpy.context.active_object
+        self.refresh_stack()
         if not obj:
             return
         while obj.parent:
@@ -88,6 +95,7 @@ class GroupNavigationManager:
 
     def go_up(self):
         obj = bpy.context.active_object
+        self.refresh_stack()
         if not obj:
             return
         if obj.parent:
@@ -99,6 +107,7 @@ class GroupNavigationManager:
     def go_down(self):
         obj = bpy.context.active_object
         i = 0
+        self.refresh_stack()
         if len(self._selection_undo_stack) > 0:
             with self._programmatic_selection_scope():
                 last_selected = self._selection_undo_stack.pop()
@@ -124,6 +133,7 @@ class GroupNavigationManager:
     def go_bottom(self):
         obj = bpy.context.active_object
         i = 0
+        self.refresh_stack()
         if len(self._selection_undo_stack) > 0:
             with self._programmatic_selection_scope():
                 while len(self._selection_undo_stack) > 0:
