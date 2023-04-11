@@ -75,15 +75,14 @@ class GroupNavigationManager:
     def __repr__(self):
         return repr(self._selection_undo_stack)
 
-    def refresh_stack(self):
-        obj = bpy.context.active_object
+    def refresh_stack(self, obj):
+        # obj.children[0].children[0]/ obj.parent.parent 이렇게 확인을 해야 하는데 그게 안되고 있음
         if obj.parent or obj.children not in self._selection_undo_stack:
             self._selection_undo_stack = []
-            print(self._selection_undo_stack)
 
     def go_top(self):
         obj = bpy.context.active_object
-        self.refresh_stack()
+        self.refresh_stack(obj)
         if not obj:
             return
         while obj.parent:
@@ -95,7 +94,7 @@ class GroupNavigationManager:
 
     def go_up(self):
         obj = bpy.context.active_object
-        self.refresh_stack()
+        self.refresh_stack(obj)
         if not obj:
             return
         if obj.parent:
@@ -107,53 +106,37 @@ class GroupNavigationManager:
     def go_down(self):
         obj = bpy.context.active_object
         i = 0
-        self.refresh_stack()
-        if len(self._selection_undo_stack) > 0:
+        self.refresh_stack(obj)
+        if self._selection_undo_stack:
             with self._programmatic_selection_scope():
                 last_selected = self._selection_undo_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
         else:
-            if len(self._selection_undo_stack) == 0:
-                if len(obj.children) > 0:
-                    if i < len(obj.children):
-                        with self._programmatic_selection_scope():
-                            self._selection_undo_stack.append(obj.children[i])
-                            bpy.context.view_layer.objects.active = obj.children[i]
-                            select_active_and_descendants()
-                            i += 1
-                else:
-
-                    bpy.ops.acon3d.alert(
-                        "INVOKE_DEFAULT",
-                        title="This is the bottom object",
-                    )
-
+            while obj.children:
+                with self._programmatic_selection_scope():
+                    self._selection_undo_stack.append(obj.children[0])
+                    bpy.context.view_layer.objects.active = obj.children[0]
+                    select_active_and_descendants()
+                    obj = obj.children
 
     def go_bottom(self):
         obj = bpy.context.active_object
         i = 0
-        self.refresh_stack()
-        if len(self._selection_undo_stack) > 0:
+        self.refresh_stack(obj)
+        if self._selection_undo_stack:
             with self._programmatic_selection_scope():
                 while len(self._selection_undo_stack) > 0:
                     last_selected = self._selection_undo_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
         else:
-            if len(self._selection_undo_stack) == 0:
-                if len(obj.children) > 0:
-                    with self._programmatic_selection_scope():
-                        if i < len(obj.children):
-                            with self._programmatic_selection_scope():
-                                self._selection_undo_stack.append(obj.children[i])
-                        bpy.context.view_layer.objects.active = obj.children[-1]
-                        select_active_and_descendants()
-                else:
-                    bpy.ops.acon3d.alert(
-                        "INVOKE_DEFAULT",
-                        title="This is the bottom object",
-                    )
+            while obj.children:
+                with self._programmatic_selection_scope():
+                    self._selection_undo_stack.append(obj.children[0])
+                    obj = obj.children
+            bpy.context.view_layer.objects.active = obj.children[-1]
+            select_active_and_descendants()
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)
