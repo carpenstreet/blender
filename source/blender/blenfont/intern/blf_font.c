@@ -458,39 +458,40 @@ static void blf_font_draw_ex(FontBLF *font,
   }
 
   blf_batch_draw_begin(font);
-  uint strstr[str_len];
+  unsigned int unicode_array[str_len];
   while ((i < str_len) && str[i]) {
-    uint charcode = BLI_str_utf8_as_unicode_step(str, str_len, &i);
+    unsigned int charcode = BLI_str_utf8_as_unicode_step(str, str_len, &i);
     BLI_assert(charcode != BLI_UTF8_ERR);
-    strstr[index] = charcode;
+    unicode_array[index] = charcode;
     index++;
   }
-  strstr[index] = 0;
+  unicode_array[index] = 0;
   index = 0;
   i = 0;
-  uint str_new[str_len];
-  join_jamos(strstr, str_new);
+  unsigned int filtered_str[str_len];
+  join_jamos(unicode_array, filtered_str);
 
-  while ((i < str_len) && str_new[i]) {
-    g = blf_glyph_search(gc, str_new[i]);
+  while ((i < str_len) && filtered_str[i]) {
+    c = filtered_str[i];
+    g = blf_glyph_search(gc, c);
     if (UNLIKELY(g == NULL)) {
-      g = blf_glyph_add(font, gc, FT_Get_Char_Index(font->face, str_new[i]), str_new[i]);
+      g = blf_glyph_add(font, gc, FT_Get_Char_Index(font->face, c), c);
     }
     i++;
-    if (UNLIKELY(str_new[i] == BLI_UTF8_ERR)) {
+    if (UNLIKELY(c == BLI_UTF8_ERR)) {
       break;
     }
     if (UNLIKELY(g == NULL)) {
       continue;
     }
-    blf_kerning_step_fast(font, g_prev, g, c_prev, str_new[i], &pen_x);
+    blf_kerning_step_fast(font, g_prev, g, c_prev, c, &pen_x);
 
     /* do not return this loop if clipped, we want every character tested */
     blf_glyph_render(font, gc, g, (float)pen_x, (float)pen_y);
 
     pen_x += g->advance_i;
     g_prev = g;
-    c_prev = str_new[i];
+    c_prev = c;
   }
 
   blf_batch_draw_end();
