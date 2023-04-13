@@ -62,3 +62,5 @@ release/scripts/addons_abler/io_skp
 /launcher_abler/res_rc.py
 /launcher_venv
 /cmake-build-debug
+/cmake-build-debug-visual-studio
+/cmake-build-release-visual-studio

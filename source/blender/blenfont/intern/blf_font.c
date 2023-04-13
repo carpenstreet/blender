@@ -458,8 +458,13 @@ static void blf_font_draw_ex(FontBLF *font,
   }
 
   blf_batch_draw_begin(font);
+#ifndef _WIN32
   unsigned int unicode_array[str_len];
+#endif
   while ((i < str_len) && str[i]) {
+#ifdef _WIN32
+    g = blf_utf8_next_fast(font, gc, str, str_len, &i, &c);
+#else
     unsigned int charcode = BLI_str_utf8_as_unicode_step(str, str_len, &i);
     BLI_assert(charcode != BLI_UTF8_ERR);
     unicode_array[index] = charcode;
@@ -478,6 +483,7 @@ static void blf_font_draw_ex(FontBLF *font,
       g = blf_glyph_add(font, gc, FT_Get_Char_Index(font->face, c), c);
     }
     i++;
+#endif
     if (UNLIKELY(c == BLI_UTF8_ERR)) {
       break;
     }
