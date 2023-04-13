@@ -35,6 +35,7 @@
 #  include "GHOST_IXrContext.h"
 #  include "intern/GHOST_XrSession.h"
 #endif
+#include "GHOST_System.h"
 #include "intern/GHOST_CallbackEventConsumer.h"
 #include "intern/GHOST_XrException.h"
 
@@ -45,6 +46,17 @@ GHOST_SystemHandle GHOST_CreateSystem(void)
 
   return (GHOST_SystemHandle)system;
 }
+
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+void GHOST_UseSparkleUpdater(GHOST_SystemHandle systemhandle)
+{
+  GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;
+
+  system->createUpdater();
+  system->checkForUpdates();
+}
+#endif
 
 void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled)
 {

@@ -43,7 +43,12 @@
 #  include "GHOST_SystemWin32.h"
 #elif defined(__APPLE__)
 #  include "GHOST_SystemCocoa.h"
+#  include "GHOST_SparkleUpdater.h"
 #endif
+
+
+#include <iostream>
+using namespace std;
 
 GHOST_ISystem *GHOST_ISystem::m_system = NULL;
 
@@ -105,3 +110,20 @@ GHOST_ISystem *GHOST_ISystem::getSystem()
 {
   return m_system;
 }
+
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+void GHOST_ISystem::createUpdater()
+{
+  if (updater == NULL)
+  {
+    updater = new SparkleUpdater();
+  }
+}
+
+// ABLER: Updater for MacOS
+void GHOST_ISystem::checkForUpdates()
+{
+  updater->checkForUpdates();
+}
+#endif
