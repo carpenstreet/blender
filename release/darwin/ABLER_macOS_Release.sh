@@ -5,6 +5,9 @@ _codesign_cert="$(security find-identity -v -p codesigning | grep "Developer ID 
 _mount_dir="../../../build_darwin/bin"
 _qt_loc=""
 
+# dmg가 저장될 로컬 경로
+_dmg_dir="$HOME/Desktop/abler-release/latest.dmg"
+
 # test 아규먼트 처리
 while [[ $# -gt 0 ]]; do
     key=$1
@@ -43,7 +46,7 @@ if ! "${testing}"; then
     done
 
     # bundle.sh 실행
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}"
+    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}"
 else
     # qt 기본 제공 번들러
     macdeployqt ${_mount_dir}/ABLER.app -verbose=3
@@ -59,5 +62,8 @@ else
     done
 
     # bundle.sh 실행
-    sh ./bundle.sh --source "${_mount_dir}" --dmg ~/Desktop/ABLER.dmg --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --test
+    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --test
 fi
+
+# generate_appcast.sh 실행
+sh ./generate_appcast.sh --dmg "${_dmg_dir}"
