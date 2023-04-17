@@ -32,7 +32,10 @@
 #include "GHOST_ITimerTask.h"
 #include "GHOST_IWindow.h"
 #include "GHOST_Types.h"
-#include "intern/GHOST_SparkleUpdater.h"
+
+#if defined(__APPLE__)
+#  include "intern/GHOST_SparkleUpdater.h"
+#endif
 
 class GHOST_IEventConsumer;
 
