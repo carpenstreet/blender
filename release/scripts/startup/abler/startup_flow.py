@@ -112,7 +112,8 @@ def start_check_file_version():
 
 
 def start_check_server_version():
-    if is_first_run and has_server_update():
+    is_apple = (sys.platform == 'darwin')
+    if not is_apple and is_first_run and has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
         start_authentication()
@@ -563,7 +564,7 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
                     is_launcher_open = False
                     break
         elif sys.platform == "darwin":
-            # raise NotImplementedError("Not implemented yet for %s." % sys.platform)
+            # cannot be reached
             pass
         else:
             raise Exception("Unsupported platform")
