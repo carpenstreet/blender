@@ -144,16 +144,16 @@ if [ ! -z "${C_CERT}" ]; then
     done
     echo ; echo -n "Codesigning .framework libraries"
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.framework"); do
-        codesign --remove-signature "${f}/Versions/A"
-        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
+        if [ -d "${f}/Versions/A" ]; then
+            codesign --remove-signature "${f}/Versions/A"
+            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
+        elif [ -d "${f}/Versions/B" ]; then
+            codesign --remove-signature "${f}/Versions/B"
+            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/B"
+        fi
     done
 
     sleep 30
-
-    echo ; echo -n "Codesigning AblerLauncher"
-    codesign --remove-signature "${SRC_DIR}/ABLER.app/Contents/macOS/AblerLauncher"
-    codesign --deep -vvv --strict --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app/Contents/macOS/AblerLauncher"
-    echo
 
     echo ; echo -n "Codesigning ABLER"
     codesign --remove-signature "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"

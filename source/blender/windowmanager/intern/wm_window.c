@@ -1601,6 +1601,11 @@ void wm_ghost_init(bContext *C)
     g_system = GHOST_CreateSystem();
     GHOST_SystemInitDebug(g_system, G.debug & G_DEBUG_GHOST);
 
+    // ABLER: Updater for MacOS
+#if defined(__APPLE__)
+    GHOST_CreateAndCheckUpdater(g_system);
+#endif
+
     if (C != NULL) {
       GHOST_AddEventConsumer(g_system, consumer);
     }
