@@ -46,10 +46,6 @@
 #  include "GHOST_SparkleUpdater.h"
 #endif
 
-
-#include <iostream>
-using namespace std;
-
 GHOST_ISystem *GHOST_ISystem::m_system = NULL;
 
 GHOST_TSuccess GHOST_ISystem::createSystem()

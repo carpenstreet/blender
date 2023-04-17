@@ -168,6 +168,7 @@ elseif(APPLE AND NOT WITH_GHOST_X11)
     intern/GHOST_WindowCocoa.h
     intern/GHOST_WindowViewCocoa.h
 
+    # ABLER: Updater for MacOS
     intern/GHOST_SparkleUpdater.h
     intern/GHOST_SparkleUpdater.mm
   )

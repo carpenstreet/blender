@@ -9,7 +9,6 @@
 # sparkle Framework 경로
 _sparkle_dir="/opt/homebrew/Caskroom/sparkle"
 # dmg 파일이 올라갈 서버 주소
-#_dmg_url="https://download.abler.world/mac/dmg/latest.dmg"
 _dmg_url="https://abler-dev-assets.s3.ap-northeast-2.amazonaws.com/macos-updater/latest.dmg"
 _version="0.3.3"
 

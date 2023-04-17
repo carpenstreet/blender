@@ -950,7 +950,7 @@ extern void GHOST_EndIME(GHOST_WindowHandle windowhandle);
 
 // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-extern void GHOST_UseSparkleUpdater(GHOST_SystemHandle systemhandle);
+extern void GHOST_CreateAndCheckUpdater(GHOST_SystemHandle systemhandle);
 #endif
 
 #ifdef WITH_XR_OPENXR
