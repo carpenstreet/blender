@@ -46,6 +46,17 @@ GHOST_SystemHandle GHOST_CreateSystem(void)
   return (GHOST_SystemHandle)system;
 }
 
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+void GHOST_CreateAndCheckUpdater(GHOST_SystemHandle systemhandle)
+{
+  GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;
+
+  system->createUpdater();
+  system->checkForUpdates();
+}
+#endif
+
 void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled)
 {
   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;

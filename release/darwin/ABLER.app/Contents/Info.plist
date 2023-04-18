@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>AblerLauncher</string>
+	<string>ABLER</string>
 	<key>CFBundleGetInfoString</key>
 	<string>${MACOSX_BUNDLE_LONG_VERSION_STRING}, Carpenstreet Inc.</string>
 	<key>CFBundleIconFile</key>
@@ -82,5 +82,16 @@
 			</dict>
 		</dict>
 	</array>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ko</string>
+    </array>
+    <key>SUPublicEDKey</key>
+    <string>HoBKxzaYoI9Z9ctrOCkAPhkwuLHPH9qlPn9De6aE64k=</string>
+	<key>SUFeedURL</key>
+    <string>https://abler-dev-assets.s3.ap-northeast-2.amazonaws.com/macos-updater/appcast.xml</string>
+    <key>SUEnableAutomaticChecks</key>
+	<true/>
 </dict>
 </plist>

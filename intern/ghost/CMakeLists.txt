@@ -167,7 +167,21 @@ elseif(APPLE AND NOT WITH_GHOST_X11)
     intern/GHOST_SystemCocoa.h
     intern/GHOST_WindowCocoa.h
     intern/GHOST_WindowViewCocoa.h
+
+    # ABLER: Updater for MacOS
+    intern/GHOST_SparkleUpdater.h
+    intern/GHOST_SparkleUpdater.mm
   )
+
+  set(SPARKLE_PATH /opt/homebrew/Caskroom/sparkle/2.4.0)
+
+  list(APPEND CMAKE_PREFIX_PATH ${SPARKLE_PATH})
+  find_library(SPARKLE NAMES Sparkle HINTS ${SPARKLE_PATH})
+  if(SPARKLE)
+      link_libraries(${SPARKLE})
+  else()
+    message(FATAL_ERROR "Sparkle not found")
+  endif()
 
   if(NOT WITH_GL_EGL)
     list(APPEND SRC

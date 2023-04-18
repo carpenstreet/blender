@@ -1043,10 +1043,19 @@ elseif(APPLE)
                   OUTPUT_VARIABLE BLENDER_DATE
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  # Set Abler version
+  set(ABLER_VERSION 0.3.3)
   set_target_properties(blender PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${OSX_APP_SOURCEDIR}/Contents/Info.plist
-    MACOSX_BUNDLE_SHORT_VERSION_STRING "${BLENDER_VERSION}.${BLENDER_VERSION_PATCH}"
-    MACOSX_BUNDLE_LONG_VERSION_STRING "${BLENDER_VERSION}.${BLENDER_VERSION_PATCH} ${BLENDER_DATE}")
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${ABLER_VERSION}"
+    MACOSX_BUNDLE_LONG_VERSION_STRING "${ABLER_VERSION}")
+
+  # Set Sparkle for updating Abler
+  set(SPARKLE_PATH /opt/homebrew/Caskroom/sparkle/2.4.0)
+  install(
+    DIRECTORY "${SPARKLE_PATH}/Sparkle.framework"
+    DESTINATION "${MAC_BLENDER_TARGET_DYLIBS_DIR}"
+  )
 
   # Gather the date in finder-style
   execute_process(COMMAND date "+%m/%d/%Y/%H:%M"
@@ -1066,14 +1075,6 @@ elseif(APPLE)
     TARGETS blender
     DESTINATION "."
   )
-  install(
-    FILES ${CMAKE_SOURCE_DIR}/launcher_qt/build/AblerLauncher
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-    DESTINATION ABLER.app/Contents/MacOS
-  )
-    # ADD_CUSTOM_COMMAND(TARGET blender POST_BUILD
-    # COMMAND macdeployqt ${EXECUTABLE_OUTPUT_PATH}/ABLER.app
-    # )
 
   # install release and app files
   set(BLENDER_TEXT_FILES_DESTINATION ABLER.app/Contents/Resources/text)
