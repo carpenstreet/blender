@@ -112,8 +112,8 @@ def start_check_file_version():
 
 
 def start_check_server_version():
-    is_apple = (sys.platform == 'darwin')
-    if not is_apple and is_first_run and has_server_update():
+    is_window = (sys.platform == 'win32')
+    if is_window and is_first_run and has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
         start_authentication()
