@@ -69,18 +69,40 @@ def add_group_list_from_collection(
 
 
 class GroupNavigationManager:
-    _selection_undo_stack = []
+    _selection_visited_stack = []
     _user_event_disabled = False
 
     def __repr__(self):
-        return repr(self._selection_undo_stack)
+        return repr(self._selection_visited_stack)
+
+    def _check_and_clear_visited_stack(self, obj):
+        """
+        Check if the parent or one of children of current selection is in the visited stack.
+        If it is, clear the stack.
+        :param obj: the object that is currently active
+        :return:
+        """
+        if obj.parent not in self._selection_visited_stack and all(
+            child not in self._selection_visited_stack for child in obj.children
+        ):
+            self._selection_visited_stack.clear()
+
+    def _check_and_put_obj_in_visited_stack(self, obj):
+        """
+        Check if the object is in the visited stack. If it is not, put it in the stack.
+        :param obj: the object that is currently active
+        :return: None
+        """
+        if obj not in self._selection_visited_stack:
+            self._selection_visited_stack.append(obj)
 
     def go_top(self):
         obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
         if not obj:
             return
         while obj.parent:
-            self._selection_undo_stack.append(obj)
+            self._check_and_put_obj_in_visited_stack(obj)
             obj = obj.parent
         with self._programmatic_selection_scope():
             bpy.context.view_layer.objects.active = obj
@@ -88,35 +110,52 @@ class GroupNavigationManager:
 
     def go_up(self):
         obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
         if not obj:
             return
         if obj.parent:
             with self._programmatic_selection_scope():
-                self._selection_undo_stack.append(obj)
+                self._check_and_put_obj_in_visited_stack(obj)
                 bpy.context.view_layer.objects.active = obj.parent
                 select_active_and_descendants()
 
     def go_down(self):
-        if len(self._selection_undo_stack) > 0:
+        obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
+        if self._selection_visited_stack:
             with self._programmatic_selection_scope():
-                last_selected = self._selection_undo_stack.pop()
+                last_selected = self._selection_visited_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
+                select_active_and_descendants()
+        elif obj.children:
+            with self._programmatic_selection_scope():
+                self._selection_visited_stack.append(obj.children[0])
+                bpy.context.view_layer.objects.active = obj.children[0]
                 select_active_and_descendants()
 
     def go_bottom(self):
-        if len(self._selection_undo_stack) > 0:
+        obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
+        if self._selection_visited_stack:
             with self._programmatic_selection_scope():
-                while len(self._selection_undo_stack) > 0:
-                    last_selected = self._selection_undo_stack.pop()
+                while self._selection_visited_stack:
+                    last_selected = self._selection_visited_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
+        else:
+            while obj.children:
+                with self._programmatic_selection_scope():
+                    self._check_and_put_obj_in_visited_stack(obj.children[0])
+                    obj = obj.children[0]
+            bpy.context.view_layer.objects.active = obj
+            bpy.context.view_layer.objects.active.select_set(True)
 
     def _programmatic_selection_scope(self):
         return ProgrammaticSelectionScope(self)
 
     @property
     def selection_undo_stack(self):
-        return self._selection_undo_stack
+        return self._selection_visited_stack
 
 
 class ProgrammaticSelectionScope:
@@ -147,6 +186,7 @@ class GroupNavigateTopOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_top"
     bl_label = "Top Group"
     bl_translation_context = "abler"
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         tracker.group_navigate_top()
@@ -160,6 +200,7 @@ class GroupNavigateUpOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_up"
     bl_label = "Upper Group"
     bl_translation_context = "abler"
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         tracker.group_navigate_up()
@@ -173,6 +214,7 @@ class GroupNavigateDownOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_down"
     bl_label = "Lower Group"
     bl_translation_context = "abler"
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         tracker.group_navigate_down()
@@ -186,6 +228,7 @@ class GroupNavigateBottomOperator(bpy.types.Operator):
     bl_idname = "acon3d.group_navigate_bottom"
     bl_label = "Bottom Group"
     bl_translation_context = "abler"
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         tracker.group_navigate_bottom()
