@@ -3,7 +3,7 @@
 #include "Sparkle/SPUUpdater.h"
 #include "Sparkle/SPUStandardUpdaterController.h"
 
-SPUUpdater *spuUpdater;
+SPUUpdater *spuUpdater = nil;
 
 @interface SparkleDelegate : NSObject <SPUUpdaterDelegate> {
 }
@@ -29,6 +29,7 @@ SparkleUpdater::SparkleUpdater() {
 }
 
 SparkleUpdater::~SparkleUpdater() {
+  [spuUpdater release];
   spuUpdater = nil;
 }
 
