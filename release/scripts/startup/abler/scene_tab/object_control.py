@@ -75,7 +75,7 @@ class GroupNavigationManager:
     def __repr__(self):
         return repr(self._selection_visited_stack)
 
-    def _check_and_clear_visited_stack(self, obj=None):
+    def _check_and_clear_visited_stack(self, obj):
         """
         Check if the parent or one of children of current selection is in the visited stack.
         If it is, clear the stack.
@@ -87,13 +87,22 @@ class GroupNavigationManager:
         ):
             self._selection_visited_stack.clear()
 
+    def _check_and_put_obj_in_visited_stack(self, obj):
+        """
+        Check if the object is in the visited stack. If it is not, put it in the stack.
+        :param obj: the object that is currently active
+        :return: None
+        """
+        if obj not in self._selection_visited_stack:
+            self._selection_visited_stack.append(obj)
+
     def go_top(self):
         obj = bpy.context.active_object
         self._check_and_clear_visited_stack(obj)
         if not obj:
             return
         while obj.parent:
-            self._selection_visited_stack.append(obj)
+            self._check_and_put_obj_in_visited_stack(obj)
             obj = obj.parent
         with self._programmatic_selection_scope():
             bpy.context.view_layer.objects.active = obj
@@ -106,7 +115,7 @@ class GroupNavigationManager:
             return
         if obj.parent:
             with self._programmatic_selection_scope():
-                self._selection_visited_stack.append(obj)
+                self._check_and_put_obj_in_visited_stack(obj)
                 bpy.context.view_layer.objects.active = obj.parent
                 select_active_and_descendants()
 
@@ -129,14 +138,14 @@ class GroupNavigationManager:
         self._check_and_clear_visited_stack(obj)
         if self._selection_visited_stack:
             with self._programmatic_selection_scope():
-                while len(self._selection_visited_stack) > 0:
+                while self._selection_visited_stack:
                     last_selected = self._selection_visited_stack.pop()
                 bpy.context.view_layer.objects.active = last_selected
                 select_active_and_descendants()
         else:
             while obj.children:
                 with self._programmatic_selection_scope():
-                    self._selection_visited_stack.append(obj.children[0])
+                    self._check_and_put_obj_in_visited_stack(obj.children[0])
                     obj = obj.children[0]
             bpy.context.view_layer.objects.active = obj
             bpy.context.view_layer.objects.active.select_set(True)
