@@ -18,11 +18,6 @@
 	url = https://github.com/blender/blender-dev-tools.git
 	branch = blender-v3.0-release
 	ignore = all
-[submodule "launcher_qt"]
-	path = launcher_qt
-	url = git@github.com:carpenstreet/QT-Launcher.git
-	branch = main
-	ignore = all
 [submodule "release/scripts/addons_abler/io_skp"]
 	path = release/scripts/addons_abler/io_skp
 	url = git@github.com:carpenstreet/SKP_Converter.git

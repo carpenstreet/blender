@@ -339,7 +339,6 @@ endif
 # -----------------------------------------------------------------------------
 # Build Blender
 all: .FORCE
-	@cd $(BLENDER_DIR)/launcher_qt ; make ; cd $(BLENDER_DIR)
 	@echo Configuring Blender in \"$(BUILD_DIR)\" ...
 
 #	# if test ! -f $(BUILD_DIR)/CMakeCache.txt ; then \

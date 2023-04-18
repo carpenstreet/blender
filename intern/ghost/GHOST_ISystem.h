@@ -33,6 +33,10 @@
 #include "GHOST_IWindow.h"
 #include "GHOST_Types.h"
 
+#if defined(__APPLE__)
+#  include "intern/GHOST_SparkleUpdater.h"
+#endif
+
 class GHOST_IEventConsumer;
 
 /**
@@ -148,6 +152,13 @@ class GHOST_ISystem {
    * \return A pointer to the system.
    */
   static GHOST_ISystem *getSystem();
+
+    // ABLER: Updater for MacOS
+#if defined(__APPLE__)
+  void createUpdater();
+
+  void checkForUpdates();
+#endif
 
  protected:
   /**
@@ -488,6 +499,11 @@ class GHOST_ISystem {
 
   /** The one and only system */
   static GHOST_ISystem *m_system;
+
+  // ABLER: Updater for MacOS
+#if defined(__APPLE__)
+  SparkleUpdater* updater;
+#endif
 
 #ifdef WITH_CXX_GUARDEDALLOC
   MEM_CXX_CLASS_ALLOC_FUNCS("GHOST:GHOST_ISystem")
