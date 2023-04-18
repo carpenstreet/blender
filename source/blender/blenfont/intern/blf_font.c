@@ -353,7 +353,138 @@ BLI_INLINE void blf_kerning_step_fast(FontBLF *font,
     *pen_x_p += blf_unscaled_F26Dot6_to_pixels(font, delta.x);
   }
 }
+/** \} */
 
+/* -------------------------------------------------------------------- */
+/** \name Korean Jamo Filtering Utilities (Internal)
+ * \{ */
+
+#pragma region Korean magic numbers
+#define KOR_UNICODE_INITIAL_CONSONANT_START 0x1100
+#define KOR_UNICODE_INITIAL_CONSONANT_END 0x115E
+#define KOR_UNICODE_VOWEL_START 0x1161
+#define KOR_UNICODE_VOWEL_END 0x1175
+#define KOR_UNICODE_FINAL_CONSONANT_START 0x11A8
+#define KOR_UNICODE_FINAL_CONSONANT_END 0x11C2
+
+#define KOR_UNICODE_SYLLABLE_START 0xAC00
+
+#define KOR_NUM_FINAL_CONSONANTS 28
+#define KOR_NUM_VOWELS 21
+
+enum kor_unicode_type {
+  KOR_UNICODE_TYPE_INITIAL_CONSONANT,
+  KOR_UNICODE_TYPE_VOWEL,
+  KOR_UNICODE_TYPE_FINAL_CONSONANT,
+  KOR_UNICODE_TYPE_INVALID = -1,
+};
+#pragma endregion
+
+/*
+ * Returns the type of Korean jamo character.
+ * Returns -1 if the character is not a Korean jamo.
+ * Returns 0 for a consonant, 1 for a vowel, and 2 for a final consonant.
+ * See https://en.wikipedia.org/wiki/Korean_language_and_computers#Hangul_in_Unicode
+ * for more information.
+ *
+ * This function is not intended to be used for general Unicode character classification.
+ * It is only intended to be used for Korean jamo characters.
+ */
+static int blf_korean_get_jamo_type(uint jamo)
+{
+  // returns 0 for a consonant, 1 for a vowel, and 2 for a final consonant
+  if (jamo >= KOR_UNICODE_INITIAL_CONSONANT_START && jamo <= KOR_UNICODE_INITIAL_CONSONANT_END) {
+    return KOR_UNICODE_TYPE_INITIAL_CONSONANT;  // initial consonants
+  }
+  if (jamo >= KOR_UNICODE_VOWEL_START && jamo <= KOR_UNICODE_VOWEL_END) {
+    return KOR_UNICODE_TYPE_VOWEL;  // vowels
+  }
+  if (jamo >= KOR_UNICODE_FINAL_CONSONANT_START && jamo <= KOR_UNICODE_FINAL_CONSONANT_END) {
+    return KOR_UNICODE_TYPE_FINAL_CONSONANT;  // final consonants}
+  }
+  return KOR_UNICODE_TYPE_INVALID;  // not a valid jamo
+}
+
+/*
+ * Returns the Unicode syllable point for the given Unicode jamo characters.
+ * This function fills the given array with the Unicode syllable points.
+ * The array must be large enough to hold all the syllables.
+ * The array must be zero-terminated.
+ *
+ */
+static void blf_korean_join_jamos(const uint *jamos, uint *syllables)
+{
+  // joins the given Unicode jamo characters into Korean syllables and writes the result to the
+  // given array
+  int i = 0, j = 0;
+  while (LIKELY(jamos[i] != 0)) {
+    uint32_t c = jamos[i];
+    int type = blf_korean_get_jamo_type(c);
+    if (type == KOR_UNICODE_TYPE_INITIAL_CONSONANT) {
+      // initial consonant
+      uint next_c = jamos[i + 1];
+      int next_type = blf_korean_get_jamo_type(next_c);
+      if (next_type == KOR_UNICODE_TYPE_VOWEL) {
+        // consonant + vowel
+        uint next_next_c = jamos[i + 2];
+        int next_next_type = blf_korean_get_jamo_type(next_next_c);
+        if (next_next_type == KOR_UNICODE_TYPE_FINAL_CONSONANT) {
+          // consonant + vowel + final consonant
+          int cho = c - KOR_UNICODE_INITIAL_CONSONANT_START;
+          int jung = next_c - KOR_UNICODE_VOWEL_START;
+          int jong = next_next_c - KOR_UNICODE_FINAL_CONSONANT_START + 1;
+          syllables[j++] = (uint)(KOR_UNICODE_SYLLABLE_START +
+                                  (cho * KOR_NUM_VOWELS + jung) * KOR_NUM_FINAL_CONSONANTS + jong);
+          i += 3;
+          continue;
+        }
+        else {
+          int cho = c - KOR_UNICODE_INITIAL_CONSONANT_START;
+          int jung = next_c - KOR_UNICODE_VOWEL_START;
+          syllables[j++] = (uint)(KOR_UNICODE_SYLLABLE_START +
+                                  (cho * KOR_NUM_VOWELS + jung) * KOR_NUM_FINAL_CONSONANTS);
+          i += 2;
+        }
+      }
+      else {
+        // single consonant
+        syllables[j++] = c;
+        i++;
+      }
+    }
+    else if (type == KOR_UNICODE_TYPE_VOWEL) {
+      // vowel
+      syllables[j++] = c;
+      i++;
+    }
+    else if (type == KOR_UNICODE_TYPE_FINAL_CONSONANT) {
+      // final consonant
+      uint prev_c = syllables[j - 1];
+      int prev_type = blf_korean_get_jamo_type(prev_c);
+      if (prev_type == KOR_UNICODE_TYPE_VOWEL) {
+        // vowel + final consonant
+        int cho = (prev_c - KOR_UNICODE_SYLLABLE_START) / KOR_NUM_FINAL_CONSONANTS /
+                  KOR_NUM_VOWELS;
+        int jung = (prev_c - KOR_UNICODE_SYLLABLE_START) / KOR_NUM_FINAL_CONSONANTS %
+                   KOR_NUM_VOWELS;
+        int jong = c - KOR_UNICODE_FINAL_CONSONANT_START + 1;
+        syllables[j - 1] = (uint)(KOR_UNICODE_SYLLABLE_START +
+                                  (cho * KOR_NUM_VOWELS + jung) * KOR_NUM_FINAL_CONSONANTS + jong);
+        i++;
+      }
+      else {
+        // final consonant only (invalid)
+        i++;
+      }
+    }
+    else {
+      // invalid jamo
+      syllables[j++] = c;
+      i++;
+    }
+  }
+  syllables[j] = 0;
+}
 /** \} */
 
 /* -------------------------------------------------------------------- */
@@ -371,6 +502,7 @@ static void blf_font_draw_ex(FontBLF *font,
   GlyphBLF *g, *g_prev = NULL;
   int pen_x = 0;
   size_t i = 0;
+  size_t index = 0;
 
   if (str_len == 0) {
     /* early output, don't do any IMM OpenGL. */
@@ -378,10 +510,32 @@ static void blf_font_draw_ex(FontBLF *font,
   }
 
   blf_batch_draw_begin(font);
-
+#ifndef _WIN32
+  unsigned int unicode_array[str_len];
+#endif
   while ((i < str_len) && str[i]) {
+#ifdef _WIN32
     g = blf_utf8_next_fast(font, gc, str, str_len, &i, &c);
+#else
+    unsigned int charcode = BLI_str_utf8_as_unicode_step(str, str_len, &i);
+    BLI_assert(charcode != BLI_UTF8_ERR);
+    unicode_array[index] = charcode;
+    index++;
+  }
+  unicode_array[index] = 0;
+  index = 0;
+  i = 0;
+  unsigned int filtered_str[str_len];
+  blf_korean_join_jamos(unicode_array, filtered_str);
 
+  while ((i < str_len) && filtered_str[i]) {
+    c = filtered_str[i];
+    g = blf_glyph_search(gc, c);
+    if (UNLIKELY(g == NULL)) {
+      g = blf_glyph_add(font, gc, FT_Get_Char_Index(font->face, c), c);
+    }
+    i++;
+#endif
     if (UNLIKELY(c == BLI_UTF8_ERR)) {
       break;
     }

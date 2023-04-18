@@ -57,13 +57,13 @@ def add_group_list_from_collection(
     if obj:
         icon_str = "OUTLINER_OB_MESH" if obj.type == "MESH" else "OUTLINER_OB_EMPTY"
         items.append((obj.name, obj.name, "", icon_str, 0))
-    if obj.parent:
-        while obj.parent.parent:
-            icon_str = (
-                "OUTLINER_OB_MESH" if obj.parent.type == "MESH" else "OUTLINER_OB_EMPTY"
-            )
-            items.append((obj.parent.name, obj.parent.name, "", icon_str, 0))
-            obj = obj.parent
+        if obj.parent:
+            while obj.parent.parent:
+                icon_str = (
+                    "OUTLINER_OB_MESH" if obj.parent.type == "MESH" else "OUTLINER_OB_EMPTY"
+                )
+                items.append((obj.parent.name, obj.parent.name, "", icon_str, 0))
+                obj = obj.parent
 
     return items
 
