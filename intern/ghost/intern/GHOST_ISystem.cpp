@@ -93,6 +93,10 @@ GHOST_TSuccess GHOST_ISystem::disposeSystem()
 {
   GHOST_TSuccess success = GHOST_kSuccess;
   if (m_system) {
+#if defined(__APPLE__)
+    m_system->disposeUpdater();
+#endif
+
     delete m_system;
     m_system = NULL;
   }
@@ -115,6 +119,13 @@ void GHOST_ISystem::createUpdater()
   {
     updater = new SparkleUpdater();
   }
+}
+
+// ABLER: Updater for MacOS
+void GHOST_ISystem::disposeUpdater()
+{
+  delete updater;
+  updater = NULL;
 }
 
 // ABLER: Updater for MacOS
