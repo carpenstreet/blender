@@ -157,6 +157,8 @@ class GHOST_ISystem {
 #if defined(__APPLE__)
   void createUpdater();
 
+  void disposeUpdater();
+
   void checkForUpdates();
 #endif
 
