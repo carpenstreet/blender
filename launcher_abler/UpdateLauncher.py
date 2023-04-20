@@ -115,54 +115,18 @@ def get_req_from_url(
     return is_release, req, state_ui, launcher_installed
 
 
-def get_results_from_req(req: dict, results: list) -> None:
+def get_results_from_req(req: str, results: list) -> None:
     """req에서 필요한 info를 results에 추가"""
 
-    for asset in req["assets"]:
-        target = asset["browser_download_url"]
-        filename = target.split("/")[-1]
-        target_type = "Launcher"
-        version_tag = filename.split("_")[-1][1:-4]
+    target = get_target_url(InstallType.launcher)
+    filename = target.split("/")[-1]
+    version_tag = req.split("v")[-1]
 
-        if sys.platform == "win32":
-            if "Windows" in target and "zip" in target and target_type in target:
-                info = {
-                    "url": target,
-                    "os": "Windows",
-                    "filename": filename,
-                    "version": version_tag,
-                    "arch": "x64",
-                }
-                results.append(info)
-
-        elif sys.platform == "darwin":
-            if os.system("sysctl -in sysctl.proc_translated") == 1:
-                if (
-                    "macOS" in target
-                    and "zip" in target
-                    and target_type in target
-                    and "M1" in target
-                ):
-                    info = {
-                        "url": target,
-                        "os": "macOS",
-                        "filename": filename,
-                        "version": version_tag,
-                        "arch": "arm64",
-                    }
-                    results.append(info)
-            else:
-                if (
-                    "macOS" in target
-                    and "zip" in target
-                    and target_type in target
-                    and "Intel" in target
-                ):
-                    info = {
-                        "url": target,
-                        "os": "macOS",
-                        "filename": filename,
-                        "version": version_tag,
-                        "arch": "x86_64",
-                    }
-                    results.append(info)
+    info = {
+        "url": target,
+        "os": "Windows",
+        "filename": filename,
+        "version": version_tag,
+        "arch": "x64",
+    }
+    results.append(info)

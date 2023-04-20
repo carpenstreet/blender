@@ -15,7 +15,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import privilege_helper
 from PySide2 import QtWidgets, QtCore, QtGui
 import qdarkstyle
 import mainwindow
@@ -36,6 +35,8 @@ from enum import Enum
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
+    import privilege_helper
+
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
