@@ -48,12 +48,12 @@ GHOST_SystemHandle GHOST_CreateSystem(void)
 
 // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-void GHOST_CreateAndCheckUpdater(GHOST_SystemHandle systemhandle)
+void GHOST_CreateAndCheckSparkleUpdater(GHOST_SystemHandle systemhandle)
 {
   GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;
 
-  system->createUpdater();
-  system->checkForUpdates();
+  system->createSparkleUpdater();
+  system->sparkleCheckForUpdates();
 }
 #endif
 
