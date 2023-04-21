@@ -284,7 +284,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Daytime":
+    elif type == "Indoor Daytime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -319,7 +319,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Sunset":
+    elif type == "Indoor Sunset":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -354,7 +354,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Nighttime":
+    elif type == "Indoor Nighttime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -389,7 +389,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Daytime":
+    elif type == "Outdoor Daytime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -424,7 +424,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Sunset":
+    elif type == "Outdoor Sunset":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -459,7 +459,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Nighttime":
+    elif type == "Outdoor Nighttime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
