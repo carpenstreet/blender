@@ -34,7 +34,6 @@ from bpy.app.handlers import persistent
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
 from .lib.read_cookies import *
-from .lib.user_info import get_or_init_user_info
 from .lib.tracker import tracker
 from .lib.tracker._get_ip import user_ip
 from .warning_modal import BlockingModalOperator

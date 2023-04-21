@@ -4,7 +4,6 @@ import bpy
 from .lib.tracker import tracker
 from .lib.materials import materials_setup
 from .lib.read_cookies import read_remembered_checkbox, read_remembered_username
-from .lib.user_info import get_or_init_user_info
 
 
 class Acon3dToonStyleOperator(bpy.types.Operator):

@@ -41,7 +41,6 @@ from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper, AconExportHelper
-from ..lib.user_info import get_or_init_user_info
 from ..lib.string_helper import timestamp_to_string
 from ..warning_modal import BlockingModalOperator
 
