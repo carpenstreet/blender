@@ -244,8 +244,6 @@ class Acon3dModalOperator(BlockingModalOperator):
         bpy.ops.wm.splash("INVOKE_DEFAULT")
 
     def should_close(self, context, event) -> bool:
-        user_info = get_or_init_user_info()
-
         splash_closing = event.type in (
             "LEFTMOUSE",
             "MIDDLEMOUSE",
@@ -256,7 +254,7 @@ class Acon3dModalOperator(BlockingModalOperator):
         if event.type == "WINDOW_DEACTIVATE":
             return False
 
-        if user_info.ACON_prop.login_status == "SUCCESS" and (
+        if context.window_manager.ACON_prop.login_status == "SUCCESS" and (
             splash_closing or is_blend_open()
         ):
             return True
@@ -312,7 +310,7 @@ class LoginTask(AsyncTask):
     def __init__(self):
         super().__init__(timeout=10)
 
-        self.prop = get_or_init_user_info().ACON_prop
+        self.prop = bpy.context.window_manager.ACON_prop
         self.username = self.prop.username
         self.password = (
             self.prop.password_shown if self.prop.show_password else self.prop.password
@@ -472,8 +470,7 @@ def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
-    userInfo = get_or_init_user_info()
-    prop = userInfo.ACON_prop
+    prop = bpy.context.window_manager.ACON_prop
     prop.login_status = "IDLE"
 
     try:
