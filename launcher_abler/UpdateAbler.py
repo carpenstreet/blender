@@ -43,9 +43,9 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
-    print(f"> url : {url}")
 
     is_release, req, state_ui = get_req_from_url(url, state_ui, dir_)
+
     if state_ui != StateUI.none:
         return state_ui, finallist
 
@@ -61,7 +61,6 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
 
         # ABLER 릴리즈 버전 > 설치 버전
         if StrictVersion(results[0]["version"]) > StrictVersion(installedversion):
-            print(f"> New ABLER Ver. : {results[0]['version']}")
             state_ui = StateUI.update_abler
             finallist = results
             return state_ui, finallist
@@ -115,4 +114,6 @@ def get_results_from_req(req: str, results: list) -> None:
         "version": version_tag,
         "arch": "x64",
     }
+    # TODO: print 제거해야함
+    print(info)
     results.append(info)

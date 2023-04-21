@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from xml.etree.ElementTree import fromstring, Element
+
 import requests
 import logging
 import os
@@ -34,46 +38,44 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
 
     finallist = None
     results = []
-    state_ui = None
+    state_ui = StateUI.none
 
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
 
-    is_release, req, state_ui, launcher_installed = get_req_from_url(
+    is_release, req, state_ui, launcher_installed = get_req_from_url_launcher(
         url, state_ui, launcher_installed, dir_
     )
 
-    if state_ui == StateUI.error:
+    if state_ui != StateUI.none:
         return state_ui, finallist
 
     if not is_release:
         state_ui = StateUI.empty_repo
         return state_ui, finallist
 
-    else:
-        get_results_from_req(req, results)
+    get_results_from_req_launcher(req, results)
 
-        if results:
-            if launcher_installed is None or launcher_installed == "":
-                launcher_installed = "0.0.0"
+    if results:
+        if launcher_installed is None or not launcher_installed:
+            launcher_installed = "0.0.0"
 
-            # Launcher 릴리즈 버전 > 설치 버전
-            # -> finallist = results 반환
-            if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
-                print(f"> New Launcher Ver. : {results[0]['version']}")
-                state_ui = StateUI.update_launcher
-                finallist = results
-                return state_ui, finallist
+        # Launcher 릴리즈 버전 > 설치 버전
+        # -> finallist = results 반환
+        if StrictVersion(results[0]["version"]) > StrictVersion(launcher_installed):
+            state_ui = StateUI.update_launcher
+            finallist = results
+            return state_ui, finallist
 
-        # Launcher 릴리즈 버전 == 설치 버전
-        # -> finallist = None가 반환
-        return state_ui, finallist
+    # Launcher 릴리즈 버전 == 설치 버전
+    # -> finallist = None가 반환
+    return state_ui, finallist
 
 
-def get_req_from_url(
+def get_req_from_url_launcher(
     url: str, state_ui: Enum, launcher_installed: str, dir_: str
-) -> Tuple[bool, Optional[dict], Enum, str]:
+) -> tuple[bool, str | None, Enum, str]:
     """깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수"""
 
     # Do path settings save here, in case user has manually edited it
@@ -85,37 +87,21 @@ def get_req_from_url(
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)
-
+    req_version = ""
+    is_release = True
     try:
-        req = requests.get(url).json()
+        req: str = requests.get(url).text
+        req_elem: Element = fromstring(req)
+        req_version: str | None = req_elem[0][1][2].text
+
     except Exception as e:
-        # self.statusBar().showMessage(
-        #     "Error reaching server - check your internet connection"
-        # )
-        # logger.error(e)
-        # self.frm_start.show()
         logger.error(e)
         state_ui = StateUI.error
-
-    is_release = True
-
-    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
-    if pre_rel:
-        req = req[0]
-    elif new_repo_pre_rel:
-        # 새 저장소가 비어있으면 requests.get(url).json() 정보가 없어 req = []
-        # 따라서 len(req) == 0 이고, is_release를 False로 업데이트
-        is_release = False if len(req) == 0 else is_release
-
-    try:
-        is_release = req["message"] != "Not Found"
-    except Exception as e:
-        logger.debug("Release found")
-
-    return is_release, req, state_ui, launcher_installed
+        return False, req_version, state_ui, launcher_installed
+    return is_release, req_version, state_ui, launcher_installed
 
 
-def get_results_from_req(req: str, results: list) -> None:
+def get_results_from_req_launcher(req: str, results: list) -> None:
     """req에서 필요한 info를 results에 추가"""
 
     target = get_target_url(InstallType.launcher)
@@ -129,4 +115,6 @@ def get_results_from_req(req: str, results: list) -> None:
         "version": version_tag,
         "arch": "x64",
     }
+    # TODO: print 제거해야함
+    print(info)
     results.append(info)
