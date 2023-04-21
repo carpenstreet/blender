@@ -115,6 +115,4 @@ def get_results_from_req_launcher(req: str, results: list) -> None:
         "version": version_tag,
         "arch": "x64",
     }
-    # TODO: print 제거해야함
-    print(info)
     results.append(info)
