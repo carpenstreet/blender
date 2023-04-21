@@ -203,6 +203,8 @@ def load_scene(self, context: Context) -> None:
     materials_handler.change_image_adjust_color(None, context)
     materials_handler.change_image_adjust_hue(None, context)
     materials_handler.change_image_adjust_saturation(None, context)
+    materials_handler.change_exposure(None, context)
+    materials_handler.change_gamma(None, context)
     bloom.change_bloom_threshold(None, context)
     bloom.change_bloom_knee(None, context)
     bloom.change_bloom_radius(None, context)
