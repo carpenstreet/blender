@@ -122,7 +122,6 @@ class WorkerThread(QtCore.QThread):
                 # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
                 # shortcut.save()
             else:
-                # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
                 try:
                     # TODO: copy_tree가 현재 작동하지 않고 바로 except로 넘어감
                     copy_tree(source[0], self.path)
@@ -287,7 +286,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
             lambda throwaway=0, entry=self.entry: self.download(
-                entry, dir_name=launcherdir_
+                entry, dir_name=str(launcherdir_)
             )
         )
 

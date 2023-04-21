@@ -6,7 +6,6 @@ import psutil
 import requests
 from enum import Enum, auto
 
-
 # 테스트용 argument 추가
 pre_rel = None
 new_repo_rel = None
@@ -29,7 +28,7 @@ def set_url() -> str:
 
     # GitHub API에는 접근 횟수 60회가 있어, 캐시를 받아오는 URL로 대체
     # url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
-    url = "https://download.abler.world/windows/latest.zip"
+    url = "https://download.abler.world/windows/latest.zip"  # 이거 사실 xml임
 
     # TODO: Pre-Release, Test Repository Release API 등에 대해서도 교체 필요
     if pre_rel:
@@ -44,8 +43,10 @@ def set_url() -> str:
 
 def get_target_url(install_type: Enum) -> str | None:
     if install_type == InstallType.launcher:
+        # TODO: 진짜 정해지는 URL로 교체
         return "https://download.abler.world/windows/launcher/latest.zip"
     elif install_type == InstallType.abler:
+        # TODO: 진짜 정해지는 URL로 교체
         return "https://download.abler.world/windows/release/latest.zip"
     else:
         return None
