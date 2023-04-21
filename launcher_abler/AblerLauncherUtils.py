@@ -44,10 +44,10 @@ def set_url() -> str:
 def get_target_url(install_type: Enum) -> str | None:
     if install_type == InstallType.launcher:
         # TODO: 진짜 정해지는 URL로 교체
-        return "https://download.abler.world/windows/launcher/latest.zip"
+        return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Launcher_Windows_v0.0.15.zip"
     elif install_type == InstallType.abler:
         # TODO: 진짜 정해지는 URL로 교체
-        return "https://download.abler.world/windows/release/latest.zip"
+        return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Release_Windows_v0.3.3.zip"
     else:
         return None
 

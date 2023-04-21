@@ -167,7 +167,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.parse_launcher_state(state_ui)
 
                 # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-                state_ui = None if state_ui == StateUI.empty_repo else state_ui
+                state_ui = None if (state_ui == StateUI.empty_repo or state_ui == StateUI.none) else state_ui
 
                 if not state_ui:
                     state_ui, finallist = UpdateAbler.check_abler(
@@ -214,7 +214,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
 
-        elif state_ui == StateUI.execute:
+        elif state_ui == StateUI.execute or state_ui == StateUI.none:
             self.setup_execute_ui()
 
         else:
@@ -495,6 +495,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.set("main", "flavor", entry["arch"])
             config.set("main", "installed", entry["version"])
         else:
+            print("passed")
             config.set("main", "launcher", entry["version"])
             logger.info(f"1 {config.get('main', 'installed')}")
 
@@ -505,6 +506,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         """다운로드 실행 중인 UI"""
 
         url = entry["url"]
+        print(url)
         version = entry["version"]
 
         file = urllib.request.urlopen(url)
