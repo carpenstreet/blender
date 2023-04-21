@@ -270,6 +270,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -303,6 +305,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1.05
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 2
         prop.bloom_knee = 0.5
@@ -336,6 +340,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -369,6 +375,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.95
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -402,6 +410,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = False
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -435,6 +445,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 0.8
         prop.bloom_knee = 0.5
@@ -468,6 +480,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1.1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1.2
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         new_scene.eevee.use_bloom = True
         new_scene.eevee.bloom_threshold = 1
         new_scene.eevee.bloom_knee = 0.5
