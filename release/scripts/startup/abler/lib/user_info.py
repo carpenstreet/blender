@@ -6,7 +6,7 @@ def get_or_init_user_info():
     if userInfo := bpy.data.meshes.get("ACON_userInfo"):
         return userInfo
     userInfo = bpy.data.meshes.new("ACON_userInfo")
-    prop = userInfo.ACON_prop
+    prop = bpy.context.window_manager.ACON_prop
     prop.remember_username = read_remembered_checkbox()
 
     if prop.remember_username:

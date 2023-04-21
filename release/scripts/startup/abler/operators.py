@@ -28,7 +28,7 @@ class Acon3dLogoutOperator(bpy.types.Operator):
 
     def execute(self, context):
         # prop를 업데이트 하면 ACON_userInfo도 업데이트
-        prop = get_or_init_user_info().ACON_prop
+        prop = context.window_manager.ACON_prop
         path = bpy.utils.resource_path("USER")
         path_cookiesFolder = os.path.join(path, "cookies")
         path_cookiesFile = os.path.join(path_cookiesFolder, "acon3d_session")

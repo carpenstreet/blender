@@ -100,6 +100,40 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         description="Enter search keywords",
     )
 
+    def toggle_show_password(self, context):
+        if self.show_password:
+            self.password_shown = self.password
+        else:
+            self.password = self.password_shown
+
+    username: bpy.props.StringProperty(name="Username", description="Insert username")
+
+    password: bpy.props.StringProperty(
+        name="Password", description="Insert password", subtype="PASSWORD"
+    )
+
+    password_shown: bpy.props.StringProperty(
+        name="Password", description="Password", subtype="NONE"
+    )
+
+    show_password: bpy.props.BoolProperty(
+        name="Show Password",
+        description="Show password (Use only in private environment)",
+        default=False,
+        update=toggle_show_password,
+    )
+
+    remember_username: bpy.props.BoolProperty(
+        name="Remember Username",
+        description="Autofill this username next time",
+        default=True,
+    )
+
+    login_status: bpy.props.StringProperty(
+        name="Login Status",
+        description="Login Status",
+    )
+
     show_guide: bpy.props.BoolProperty(
         name="",
         description="Always show tutorial guide when starting ABLER",
@@ -674,41 +708,6 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     @classmethod
     def unregister(cls):
         del bpy.types.Mesh.ACON_prop
-
-    def toggle_show_password(self, context):
-        if self.show_password:
-            self.password_shown = self.password
-        else:
-            self.password = self.password_shown
-
-    username: bpy.props.StringProperty(name="Username", description="Insert username")
-
-    password: bpy.props.StringProperty(
-        name="Password", description="Insert password", subtype="PASSWORD"
-    )
-
-    password_shown: bpy.props.StringProperty(
-        name="Password", description="Password", subtype="NONE"
-    )
-
-    show_password: bpy.props.BoolProperty(
-        name="Show Password",
-        description="Show password (Use only in private environment)",
-        default=False,
-        update=toggle_show_password,
-    )
-
-    # TODO: description 달기
-    remember_username: bpy.props.BoolProperty(
-        name="Remember Username",
-        description="Autofill this username next time",
-        default=True,
-    )
-
-    login_status: bpy.props.StringProperty(
-        name="Login Status",
-        description="Login Status",
-    )
 
 
 class AconObjectGroupProperty(bpy.types.PropertyGroup):

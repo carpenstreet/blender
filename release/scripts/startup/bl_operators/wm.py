@@ -3058,67 +3058,65 @@ class WM_MT_splash(Menu):
         layout.operator_context = 'EXEC_DEFAULT'
 
         row = layout.row()
+        prop = context.window_manager.ACON_prop
 
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
-        if userInfo:
+        if prop.login_status == 'SUCCESS':
+            row.label(text="Welcome!")
+            row = layout.row()
+            row.label(text="Please click outside the popup box to start ABLER.")
 
-            if userInfo.ACON_prop.login_status == 'SUCCESS':
-                row.label(text="Welcome!")
-                row = layout.row()
-                row.label(text="Please click outside the popup box to start ABLER.")
+        elif prop.login_status == 'LOADING':
+            row.label(text="Hold on...")
 
-            elif userInfo.ACON_prop.login_status == 'LOADING':
-                row.label(text="Hold on...")
+        else:
 
+            if prop.login_status == 'FAIL':
+                row.label(text="Login failed. Please try again.")
             else:
+                row.label(text="Please login with your ACON3D account.")
 
-                if userInfo.ACON_prop.login_status == 'FAIL':
-                    row.label(text="Login failed. Please try again.")
-                else:
-                    row.label(text="Please login with your ACON3D account.")
+            layout.separator()
 
-                layout.separator()
+            row_outside = layout.row()
 
-                row_outside = layout.row()
+            column = row_outside.column()
+            row = column.row()
+            row.prop(prop, "username")
+            row = column.row()
+            if prop.show_password:
+                row.prop(prop, "password_shown")
+            else:
+                row.prop(prop, "password")
+            column.separator()
+            row = column.row()
+            row.prop(
+                prop,
+                "remember_username",
+                text="",
+                icon="CHECKBOX_HLT",
+                emboss=False,
+                invert_checkbox=True,
+            )
+            row.label(text="Remember Username")
 
-                column = row_outside.column()
-                row = column.row()
-                row.prop(userInfo.ACON_prop, "username")
-                row = column.row()
-                if userInfo.ACON_prop.show_password:
-                    row.prop(userInfo.ACON_prop, "password_shown")
-                else:
-                    row.prop(userInfo.ACON_prop, "password")
-                column.separator()
-                row = column.row()
-                row.prop(
-                    userInfo.ACON_prop,
-                    "remember_username",
-                    text="",
-                    icon="CHECKBOX_HLT",
-                    emboss=False,
-                    invert_checkbox=True,
-                )
-                row.label(text="Remember Username")
+            column = row_outside.column()
+            column.separator()
+            column.separator()
+            column.separator()
+            row = column.row()
+            row.prop(
+                prop,
+                "show_password",
+                text="",
+                icon="HIDE_OFF",
+                emboss=False,
+                invert_checkbox=True,
+            )
 
-                column = row_outside.column()
-                column.separator()
-                column.separator()
-                column.separator()
-                row = column.row()
-                row.prop(
-                    userInfo.ACON_prop,
-                    "show_password",
-                    text="",
-                    icon="HIDE_OFF",
-                    emboss=False,
-                    invert_checkbox=True,
-                )
-
-                column = row_outside.column()
-                column.scale_x = 0.5
-                column.scale_y = 2
-                column.operator("acon3d.login", text="  Submit", depress=True)
+            column = row_outside.column()
+            column.scale_x = 0.5
+            column.scale_y = 2
+            column.operator("acon3d.login", text="  Submit", depress=True)
 
         layout.separator()
 
@@ -3244,9 +3242,6 @@ class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
 
     def draw(self, context):
-
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
-
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
