@@ -544,8 +544,8 @@ static CurveProfile but_copypaste_profile = {0};
 static bool but_copypaste_profile_alive = false;
 
 /** \} */
-const char *SkipIdentifierKeywords[] = {
-    "password", "password_shown", "username", "show_password", "remember_username"};
+// 추후 WindowManager에서 못 만드는 프로퍼티가 생길 경우를 대비해 변수를 없애지 않음
+const char *SkipIdentifierKeywords[] = {""};
 /* -------------------------------------------------------------------- */
 /** \name UI Queries
  * \{ */
