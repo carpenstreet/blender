@@ -544,7 +544,8 @@ static CurveProfile but_copypaste_profile = {0};
 static bool but_copypaste_profile_alive = false;
 
 /** \} */
-const char *SkipIdentifierKeywords[] = {"password", "password_shown", "username", "show_password", "remember_username", "show_guide"};
+const char *SkipIdentifierKeywords[] = {
+    "password", "password_shown", "username", "show_password", "remember_username"};
 /* -------------------------------------------------------------------- */
 /** \name UI Queries
  * \{ */

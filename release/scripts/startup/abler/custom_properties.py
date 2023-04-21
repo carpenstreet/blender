@@ -100,6 +100,13 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         description="Enter search keywords",
     )
 
+    show_guide: bpy.props.BoolProperty(
+        name="",
+        description="Always show tutorial guide when starting ABLER",
+        default=True,
+        update=remember_show_guide,
+    )
+
 
 class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
     @classmethod
@@ -701,13 +708,6 @@ class AconMeshProperty(bpy.types.PropertyGroup):
     login_status: bpy.props.StringProperty(
         name="Login Status",
         description="Login Status",
-    )
-
-    show_guide: bpy.props.BoolProperty(
-        name="",
-        description="Always show tutorial guide when starting ABLER",
-        default=True,
-        update=remember_show_guide,
     )
 
 
