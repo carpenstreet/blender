@@ -47,11 +47,6 @@ appversion = "1.9.8"
 dir_ = ""
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
 
-if sys.platform == "darwin":
-    dir_ = "/Applications"
-elif sys.platform == "win32":
-    dir_ = "C:/Program Files (x86)/ABLER"
-
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
 )
@@ -167,7 +162,11 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.parse_launcher_state(state_ui)
 
                 # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-                state_ui = None if (state_ui == StateUI.empty_repo or state_ui == StateUI.none) else state_ui
+                state_ui = (
+                    None
+                    if (state_ui == StateUI.empty_repo or state_ui == StateUI.none)
+                    else state_ui
+                )
 
                 if not state_ui:
                     state_ui, finallist = UpdateAbler.check_abler(
@@ -312,10 +311,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.btn_execute.clicked.connect(self.exec_windows)
             else:
                 self.btn_execute.clicked.connect(self.exec_no_network)
-        elif sys.platform == "darwin":
-            self.btn_execute.clicked.connect(self.exec_osx)
-        elif sys.platform == "linux":
-            self.btn_execute.clicked.connect(self.exec_linux)
 
     def download(self, entry: dict, dir_name: str) -> None:
         """ABLER/Launcher 최신 릴리즈 다운로드"""
@@ -495,7 +490,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             config.set("main", "flavor", entry["arch"])
             config.set("main", "installed", entry["version"])
         else:
-            print("passed")
             config.set("main", "launcher", entry["version"])
             logger.info(f"1 {config.get('main', 'installed')}")
 
@@ -506,7 +500,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         """다운로드 실행 중인 UI"""
 
         url = entry["url"]
-        print(url)
         version = entry["version"]
 
         file = urllib.request.urlopen(url)
@@ -617,26 +610,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
 
-def macos_prework():
-    if sys.platform != "darwin":
-        return
-    if len(sys.argv) > 1 and sys.argv[1].endswith(".blend"):
-        try:
-            if getattr(sys, "frozen", False):
-                application_path = os.path.dirname(sys.executable)
-            elif __file__:
-                application_path = os.path.dirname(__file__)
-            BlenderOSXPath = os.path.join(f"{application_path}/ABLER")
-            os.system(f"chmod +x {BlenderOSXPath}")
-            _ = subprocess.Popen([BlenderOSXPath, sys.argv[1]])
-            logger.info(f"Executing {BlenderOSXPath}")
-            sys.exit()
-        except Exception as e:
-            logger.error(e)
-
-
 def main():
-    macos_prework()
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
     window = BlenderUpdater()
     window.setWindowTitle("ABLER Launcher")
