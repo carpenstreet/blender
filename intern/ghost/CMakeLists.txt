@@ -173,10 +173,8 @@ elseif(APPLE AND NOT WITH_GHOST_X11)
     intern/GHOST_SparkleUpdater.mm
   )
 
-  set(SPARKLE_PATH /opt/homebrew/Caskroom/sparkle/2.4.0)
-
-  list(APPEND CMAKE_PREFIX_PATH ${SPARKLE_PATH})
-  find_library(SPARKLE NAMES Sparkle HINTS ${SPARKLE_PATH})
+  list(APPEND CMAKE_PREFIX_PATH ${SPARKLE_DIR})
+  find_library(SPARKLE NAMES Sparkle HINTS ${SPARKLE_DIR})
   if(SPARKLE)
       link_libraries(${SPARKLE})
   else()

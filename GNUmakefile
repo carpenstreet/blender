@@ -177,7 +177,34 @@ OS:=$(shell uname -s)
 OS_NCASE:=$(shell uname -s | tr '[A-Z]' '[a-z]')
 CPU:=$(shell uname -m)
 
+# -----------------------------------------------------------------------------
+# Set Abler arguments
 
+# Load environment variables from env files
+COMMON_ENVS:=release/darwin/envs/.env-macos
+ifeq ($(CPU),x86_64)
+	ENVS:=release/darwin/envs/.env-intel
+else
+	ENVS:=release/darwin/envs/.env-silicon
+endif
+
+include $(COMMON_ENVS)
+export $(shell sed 's/=.*//' $(COMMON_ENVS))
+
+include $(ENVS)
+export $(shell sed 's/=.*//' $(ENVS))
+
+# Sparkle Recent Version DIR (XXX/sparkle/0.0.0)
+SPARKLE_BASE_DIR:=$(shell readlink -f $(shell whereis sparkle))
+SPARKLE_DIR:=$(shell dirname $(shell dirname $(shell dirname $(shell dirname $(SPARKLE_BASE_DIR)))))
+
+ABLER_ARGS:=-DSPARKLE_DIR:STRING=$(SPARKLE_DIR) \
+	-DABLER_VERSION=$(ABLER_VERSION) \
+	-DSPARKLE_PUBLIC_ED_KEY=$(SPARKLE_PUBLIC_ED_KEY) \
+	-DSPARKLE_FEED_ADDRESS=$(SPARKLE_FEED_ADDRESS) \
+	-DABLER_MINIMUM_SYSTEM_VERSION=$(ABLER_MINIMUM_SYSTEM_VERSION)
+
+# -----------------------------------------------------------------------------
 # Source and Build DIR's
 BLENDER_DIR:=$(shell pwd -P)
 BUILD_TYPE:=Release
@@ -322,7 +349,8 @@ endif
 CMAKE_CONFIG = cmake $(CMAKE_CONFIG_ARGS) \
                      -H"$(BLENDER_DIR)" \
                      -B"$(BUILD_DIR)" \
-                     -DCMAKE_BUILD_TYPE_INIT:STRING=$(BUILD_TYPE)
+                     -DCMAKE_BUILD_TYPE_INIT:STRING=$(BUILD_TYPE) \
+                     $(ABLER_ARGS)
 
 
 # -----------------------------------------------------------------------------
@@ -550,7 +578,7 @@ acp: .FORCE
 	$(PYTHON) ./abler_dev_build.py
 
 deploy: .FORCE
-	sh ./release/darwin/ABLER_macOS_Release.sh
+	sh ./release/darwin/ABLER_macOS_Release.sh --version "$(ABLER_VERSION)" --sparkle-dir "$(SPARKLE_DIR)" --image-address "$(ABLER_IMAGE_ADDRESS)"
 
 skp: .FORCE
 	$(PYTHON) ./abler_skp_build.py

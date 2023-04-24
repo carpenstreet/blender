@@ -17,6 +17,26 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
+        -v|--version)
+            ABLER_VERSION="$2"
+            shift
+            shift
+            ;;
+        -s|--sparkle-dir)
+            SPARKLE_DIR="$2"
+            shift
+            shift
+            ;;
+        -i|--image-address)
+            ABLER_IMAGE_ADDRESS="$2"
+            shift
+            shift
+            ;;
+        -h|--help)
+            echo "Usage:"
+            echo " $(basename "$0") (--test) --version ABLER_VERSION --sparkle-dir SPARKLE_DIR --image-address ABLER_IMAGE_ADDRESS"
+            exit 1
+            ;;
     esac
 done
 
@@ -66,4 +86,4 @@ else
 fi
 
 # generate_appcast.sh 실행
-sh ./generate_appcast.sh --dmg "${_dmg_dir}"
+sh ./generate_appcast.sh --dmg "${_dmg_dir}" --version "${ABLER_VERSION}" --sparkle-dir "${SPARKLE_DIR}"

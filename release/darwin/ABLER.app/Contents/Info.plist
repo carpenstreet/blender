@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.9.0</string>
+	<string>${ABLER_MINIMUM_SYSTEM_VERSION}</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -88,9 +88,9 @@
         <string>ko</string>
     </array>
     <key>SUPublicEDKey</key>
-    <string>HoBKxzaYoI9Z9ctrOCkAPhkwuLHPH9qlPn9De6aE64k=</string>
+    <string>${SPARKLE_PUBLIC_ED_KEY}</string>
 	<key>SUFeedURL</key>
-    <string>https://abler-dev-assets.s3.ap-northeast-2.amazonaws.com/macos-updater/appcast.xml</string>
+    <string>${SPARKLE_FEED_ADDRESS}</string>
     <key>SUEnableAutomaticChecks</key>
 	<true/>
 </dict>
