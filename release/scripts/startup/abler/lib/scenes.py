@@ -203,6 +203,8 @@ def load_scene(self, context: Context) -> None:
     materials_handler.change_image_adjust_color(None, context)
     materials_handler.change_image_adjust_hue(None, context)
     materials_handler.change_image_adjust_saturation(None, context)
+    materials_handler.change_exposure(None, context)
+    materials_handler.change_gamma(None, context)
     bloom.change_bloom_threshold(None, context)
     bloom.change_bloom_knee(None, context)
     bloom.change_bloom_radius(None, context)
@@ -270,6 +272,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -280,7 +284,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Daytime":
+    elif type == "Indoor Daytime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -303,6 +307,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1.05
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 2
         prop.bloom_knee = 0.5
@@ -313,7 +319,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Sunset":
+    elif type == "Indoor Sunset":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -336,6 +342,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -346,7 +354,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Indoor Nighttime":
+    elif type == "Indoor Nighttime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -369,6 +377,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.95
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -379,7 +389,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Daytime":
+    elif type == "Outdoor Daytime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -402,6 +412,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = False
         prop.bloom_threshold = 1
         prop.bloom_knee = 0.5
@@ -412,7 +424,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Sunset":
+    elif type == "Outdoor Sunset":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -435,6 +447,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 0.9
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         prop.use_bloom = True
         prop.bloom_threshold = 0.8
         prop.bloom_knee = 0.5
@@ -445,7 +459,7 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         new_scene.render.resolution_x = 4800
         new_scene.render.resolution_y = 2700
 
-    if type == "Outdoor Nighttime":
+    elif type == "Outdoor Nighttime":
         prop.toggle_toon_edge = True
         prop.edge_min_line_width = 1
         prop.edge_max_line_width = 1
@@ -468,6 +482,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         prop.image_adjust_color_b = 1.1
         prop.image_adjust_hue = 0.5
         prop.image_adjust_saturation = 1.2
+        prop.exposure = 0.0
+        prop.gamma = 1.0
         new_scene.eevee.use_bloom = True
         new_scene.eevee.bloom_threshold = 1
         new_scene.eevee.bloom_knee = 0.5
