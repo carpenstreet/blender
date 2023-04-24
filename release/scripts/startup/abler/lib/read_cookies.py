@@ -31,9 +31,9 @@ def read_remembered_checkbox() -> bool:
 
 
 def remember_show_guide(self, context) -> None:
-    prop = context.window_manager.ACON_prop
-    with open(path_cookies_tutorial_guide, "wb") as cookies_tutorial_guide:
-        pickle.dump(prop.show_guide, cookies_tutorial_guide)
+    if prop := context.window_manager.ACON_prop:
+        with open(path_cookies_tutorial_guide, "wb") as cookies_tutorial_guide:
+            pickle.dump(prop.show_guide, cookies_tutorial_guide)
 
 
 def read_remembered_show_guide() -> bool:

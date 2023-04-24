@@ -3059,6 +3059,8 @@ class WM_MT_splash(Menu):
 
         row = layout.row()
         prop = context.window_manager.ACON_prop
+        if not prop:
+            return
 
         if prop.login_status == 'SUCCESS':
             row.label(text="Welcome!")
@@ -3268,6 +3270,8 @@ class WM_MT_splash_tutorial(Menu):
         column = layout.column()
         row = column.row()
         prop = context.window_manager.ACON_prop
+        if not prop:
+            return
         row.prop(prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
         row.alignment = "RIGHT"
         row.label(text="Always Show")

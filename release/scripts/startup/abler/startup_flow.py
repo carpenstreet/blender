@@ -309,11 +309,14 @@ class LoginTask(AsyncTask):
     def __init__(self):
         super().__init__(timeout=10)
 
-        self.prop = bpy.context.window_manager.ACON_prop
-        self.username = self.prop.username
-        self.password = (
-            self.prop.password_shown if self.prop.show_password else self.prop.password
-        )
+        if prop := bpy.context.window_manager.ACON_prop:
+            self.prop = prop
+            self.username = self.prop.username
+            self.password = (
+                self.prop.password_shown
+                if self.prop.show_password
+                else self.prop.password
+            )
 
     def request_login(self):
         prop = self.prop
@@ -470,6 +473,8 @@ def start_authentication():
     prefs.view.show_splash = True
 
     prop = bpy.context.window_manager.ACON_prop
+    if not prop:
+        return
     prop.login_status = "IDLE"
 
     try:
@@ -603,8 +608,11 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
         )
 
         row = col.row()
+        prop = bpy.context.window_manager.ACON_prop
+        if not prop:
+            return
         row.prop(
-            bpy.context.window_manager.ACON_prop,
+            prop,
             "hide_low_version_warning",
             text="",
             icon="CHECKBOX_HLT",

@@ -119,10 +119,10 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     def execute(self, context):
         tracker.tutorial_guide_on()
 
-        prop = context.window_manager.ACON_prop
-        prop.show_guide = read_remembered_show_guide()
+        if prop := context.window_manager.ACON_prop:
+            prop.show_guide = read_remembered_show_guide()
 
-        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+            bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
