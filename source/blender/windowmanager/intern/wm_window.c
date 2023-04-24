@@ -1603,7 +1603,7 @@ void wm_ghost_init(bContext *C)
 
     // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-    GHOST_CreateAndCheckUpdater(g_system);
+    GHOST_CreateAndCheckSparkleUpdater(g_system);
 #endif
 
     if (C != NULL) {

@@ -33,26 +33,6 @@ SparkleUpdater::~SparkleUpdater() {
   spuUpdater = nil;
 }
 
-bool SparkleUpdater::getAutomaticDownload() const {
-  return spuUpdater.automaticallyDownloadsUpdates;
-}
-
-void SparkleUpdater::setAutomaticDownload(bool value) {
-  spuUpdater.automaticallyDownloadsUpdates = value;
-}
-
-void SparkleUpdater::checkAndShowUI() {
-  [spuUpdater checkForUpdates];
-}
-
-void SparkleUpdater::checkAndMaybeShowUI() {
-  [spuUpdater checkForUpdatesInBackground];
-}
-
-void SparkleUpdater::checkWithoutUI() {
-  [spuUpdater checkForUpdateInformation];
-}
-
 void SparkleUpdater::checkForUpdates() {
   [spuUpdater checkForUpdates];
 }

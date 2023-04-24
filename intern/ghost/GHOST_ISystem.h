@@ -153,13 +153,13 @@ class GHOST_ISystem {
    */
   static GHOST_ISystem *getSystem();
 
-    // ABLER: Updater for MacOS
+  // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-  void createUpdater();
+  void createSparkleUpdater();
 
-  void disposeUpdater();
+  void disposeSparkleUpdater();
 
-  void checkForUpdates();
+  void sparkleCheckForUpdates();
 #endif
 
  protected:
@@ -504,7 +504,7 @@ class GHOST_ISystem {
 
   // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-  SparkleUpdater* updater;
+  SparkleUpdater* sparkleUpdater;
 #endif
 
 #ifdef WITH_CXX_GUARDEDALLOC
