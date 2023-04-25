@@ -106,8 +106,8 @@ if [ ! -z "${C_CERT}" ]; then
             codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
         fi
     done
-    echo ; echo -n "Codesigning .dylib and .so libraries"
-    for f in $(find "${SRC_DIR}/ABLER.app" -name "*.dylib" -o -name "*.so"); do
+    echo ; echo -n "Codesigning .dylib, .so and .o libraries"
+    for f in $(find "${SRC_DIR}/ABLER.app" -name "*.dylib" -o -name "*.so" -o -name "*.o"); do
         codesign --remove-signature "${f}"
         codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
     done
@@ -241,8 +241,8 @@ if [ ! -z "${N_USERNAME}" ] && [ ! -z "${N_PASSWORD}" ] && [ ! -z "${N_BUNDLE_ID
     if [ ! -z "${_requuid}" ]; then
         # Wait for Apple to confirm notarization is complete
         echo "Waiting for notarization to be complete.."
-        for c in {20..0};do
-            sleep 600
+        for c in {200..0};do
+            sleep 60
             xcrun altool --notarization-info "${_requuid}" --username "${N_USERNAME}" --password "${N_PASSWORD}" >${_tmpout} 2>&1
             _status=$(cat "${_tmpout}" | grep "Status:" | awk '{ print $2 }')
             if [ "${_status}" == "invalid" ]; then
