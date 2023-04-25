@@ -63,19 +63,16 @@ def get_datadir() -> pathlib.Path:
     Returns a parent directory path
     where persistent application data can be stored.
 
-    linux: ~/.local/share
-    macOS: ~/Library/Application Support
     windows: C:/Users/<USER>/AppData/Roaming
     """
 
-    home = pathlib.Path.home()
-
     if sys.platform == "win32":
+        home = pathlib.Path.home()
         return home / "AppData/Roaming/Blender Foundation"
 
 
 def hbytes(num) -> str:
-    """Translate to human readable file size."""
+    """Translate to human-readable file size."""
     for x in [" bytes", " KB", " MB", " GB"]:
         if num < 1024.0:
             return "%3.1f%s" % (num, x)
