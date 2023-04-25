@@ -552,8 +552,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         try:
             if privilege_helper.isUserAdmin():
                 _ = privilege_helper.runas_shell_user(
-                    os.path.join('"' + dir_ + "/blender.exe" + '"')
-                )  # pid와 tid를 리턴함
+                    os.path.join(f'"{dir_}/blender.exe"')
+                )
             logger.info(f"Executing {dir_}blender.exe")
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
