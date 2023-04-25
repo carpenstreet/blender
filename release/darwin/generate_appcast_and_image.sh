@@ -40,6 +40,8 @@ _work_dir="$(dirname "${DMG_DIR}")"
 mkdir -p "${_work_dir}"
 cd "${_work_dir}"
 
+[[ "$(uname -m)" = "x86_64" ]] && _cpu="intel" || _cpu="silicon"
+
 # Move old versions
 echo "Moving old versions..."
 
@@ -56,10 +58,10 @@ echo "Generating appcast..."
 "${SPARKLE_DIR}"/bin/generate_appcast . --download-url-prefix="${ABLER_IMAGE_ADDRESS}"
 
 # Change image name
-mv "${DMG_DIR}" ./ABLER_MacOS_v"${ABLER_VERSION}".dmg
+mv "${DMG_DIR}" ./ABLER_MacOS_"${_cpu}"_v"${ABLER_VERSION}".dmg
 
 # Change appcast name
-mv ./appcast.xml ./appcast_v"${ABLER_VERSION}".xml
+mv ./*.xml ./appcast_"${_cpu}"_v"${ABLER_VERSION}".xml
 
 echo "Successfully generated appcast. Please upload dmg and appcast via Abler Deploy Manager website."
 

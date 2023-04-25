@@ -85,5 +85,5 @@ else
     sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --test
 fi
 
-# generate_appcast.sh 실행
-sh ./generate_appcast.sh --dmg "${_dmg_dir}" --version "${ABLER_VERSION}" --sparkle-dir "${SPARKLE_DIR}"
+# generate_appcast_and_image.sh 실행
+sh ./generate_appcast_and_image.sh --dmg "${_dmg_dir}" --version "${ABLER_VERSION}" --sparkle-dir "${SPARKLE_DIR}"
