@@ -2207,11 +2207,6 @@ class VIEW3D_MT_add(Menu):
 
         layout.separator()
 
-        layout.menu("VIEW3D_MT_light_add", icon='OUTLINER_OB_LIGHT')
-        layout.menu("VIEW3D_MT_lightprobe_add", icon='OUTLINER_OB_LIGHTPROBE')
-
-        layout.separator()
-
         if VIEW3D_MT_camera_add.is_extended():
             layout.menu("VIEW3D_MT_camera_add", icon='OUTLINER_OB_CAMERA')
         else:
