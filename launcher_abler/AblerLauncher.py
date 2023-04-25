@@ -163,9 +163,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
                 # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
                 state_ui = (
-                    None
-                    if (state_ui == StateUI.empty_repo or state_ui == StateUI.none)
-                    else state_ui
+                    None if state_ui in [StateUI.empty_repo, StateUI.none] else state_ui
                 )
 
                 if not state_ui:
@@ -213,7 +211,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
 
-        elif state_ui == StateUI.execute or state_ui == StateUI.none:
+        elif state_ui in [StateUI.execute, StateUI.none]:
             self.setup_execute_ui()
 
         else:
