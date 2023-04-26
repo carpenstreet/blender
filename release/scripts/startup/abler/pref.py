@@ -35,6 +35,7 @@ def init_setting(dummy):
             init_screen.show_gizmo_tool = True
             init_screen.show_gizmo_context = True
             init_screen.overlay.show_ortho_grid = False
+            init_screen.overlay.show_extras = True
 
         except:
             print("Failed to find screen 'ACON3D'")
