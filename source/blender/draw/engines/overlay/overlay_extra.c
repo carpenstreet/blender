@@ -654,9 +654,6 @@ void OVERLAY_light_cache_populate(OVERLAY_Data *vedata, Object *ob)
     instdata.area_size_x = instdata.area_size_y = la->area_size;
     DRW_buffer_add_entry(cb->light_point, color, &instdata);
   }
-  else if (la->type == LA_SUN) {
-    DRW_buffer_add_entry(cb->light_sun, color, &instdata);
-  }
   else if (la->type == LA_SPOT) {
     /* Previous implementation was using the clipend distance as cone size.
      * We cannot do this anymore so we use a fixed size of 10. (see T72871) */

@@ -445,33 +445,11 @@ static void OVERLAY_cache_populate(void *vedata, Object *ob)
         break;
     }
   }
-  /* Non-Meshes */
-  if (draw_extras) {
-    switch (ob->type) {
-      case OB_EMPTY:
-        OVERLAY_empty_cache_populate(vedata, ob);
-        break;
-      case OB_LAMP:
-        OVERLAY_light_cache_populate(vedata, ob);
-        break;
-      case OB_CAMERA:
-        OVERLAY_camera_cache_populate(vedata, ob);
-        break;
-      case OB_SPEAKER:
-        OVERLAY_speaker_cache_populate(vedata, ob);
-        break;
-      case OB_LIGHTPROBE:
-        OVERLAY_lightprobe_cache_populate(vedata, ob);
-        break;
-      case OB_LATTICE: {
-        /* Unlike the other types above, lattices actually have a bounding box defined, so hide the
-         * lattice wires if only the bounding-box is requested. */
-        if (ob->dt > OB_BOUNDBOX) {
-          OVERLAY_lattice_cache_populate(vedata, ob);
-        }
-        break;
-      }
-    }
+
+  /* [modification of Overlay Logic for ABLER viewport] */
+  /* only overlay light objects (except sun) when show_extras is enabled */
+  if (draw_extras && ob->type == OB_LAMP) {
+      OVERLAY_light_cache_populate(vedata, ob);
   }
 
   if (!BLI_listbase_is_empty(&ob->particlesystem)) {
