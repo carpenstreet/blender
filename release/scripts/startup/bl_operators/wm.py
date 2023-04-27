@@ -3260,6 +3260,8 @@ class WM_MT_splash_tutorial(Menu):
 
         row = layout.row()
         anchor = row.operator("wm.url_open", text="ABLER Guide", icon='URL')
+        # general.py에 언어 설정 코드가 있긴 하지만 __init__.py가 달라 재활용할 수 없음
+        # 따라서 여기서 언어 설정 코드를 따로 지정
         cur_lang = bpy.context.preferences.view.language
         if cur_lang == "ko_KR":
             anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
