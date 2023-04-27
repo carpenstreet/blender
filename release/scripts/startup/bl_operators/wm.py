@@ -3260,7 +3260,15 @@ class WM_MT_splash_tutorial(Menu):
 
         row = layout.row()
         anchor = row.operator("wm.url_open", text="ABLER Guide", icon='URL')
-        anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
+        cur_lang = bpy.context.preferences.view.language
+        if cur_lang == "ko_KR":
+            anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
+        elif cur_lang == "ja_JP":
+            anchor.url = 'https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2'
+        elif cur_lang == "zh_CN" or cur_lang == "zh_TW":
+            anchor.url = 'https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68'
+        else: # en_US + 지원되지 않는 언어는 영어로
+            anchor.url = 'https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c'  
         layout.separator()
 
         row = layout.row()
