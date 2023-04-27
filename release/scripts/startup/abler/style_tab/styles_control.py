@@ -127,6 +127,89 @@ class SunlightPanel(bpy.types.Panel):
             )
 
 
+class LightsPanel(bpy.types.Panel):
+    bl_parent_id = "ACON_PT_Styles"
+    bl_idname = "ACON3D_PT_Lights"
+    bl_label = "Lights"
+    bl_category = "Style"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_translation_context = "abler"
+
+    def draw_header(self, context):
+        layout = self.layout
+        layout.prop(context.scene.ACON_prop, "toggle_lights", text="")
+
+    def draw(self, context):
+        if context.scene.ACON_prop.toggle_lights:
+            layout = self.layout
+            layout.use_property_decorate = False  # No animation.
+            layout.use_property_split = True
+            row = layout.row(align=True)
+            # Add Light
+            row.label(text="Add Light")
+
+            # PointLight 생성버튼
+            col = row.column()
+            col.operator(AddPointLightOperator.bl_idname, text="", icon="LIGHT_POINT")
+
+            # SpotLight 생성버튼
+            col = row.column()
+            col.operator(AddSpotLightOperator.bl_idname, text="", icon="LIGHT_SPOT")
+
+            # AreaLight 생성버튼
+            col = row.column()
+            col.operator(AddAreaLightOperator.bl_idname, text="", icon="LIGHT_AREA")
+
+class AddLightOperatorBase(bpy.types.Operator):
+    bl_options = {"REGISTER", "UNDO"}
+    bl_translation_context = "abler"
+    bl_idname: bpy.props.StringProperty()
+    bl_label: bpy.props.StringProperty()
+
+    # 자식클래스에서 정의해줄 light type
+    light_type = 'SUN'
+    scene: bpy.types.Scene
+
+    def invoke(self, context, event):
+        if not bpy.context.scene:
+            return {"FINISHED"}
+
+        self.scene = bpy.context.scene
+        return self.execute(context)
+
+    def __create_light_on_scene(self, scene: bpy.types.Scene, light_name: bpy.props.StringProperty(name="Light Name")):
+        acon_light_data: Light = bpy.data.lights.new("ACON_" + scene.name + "_" + light_name, type=self.light_type)
+        acon_light_data.energy = 10
+
+        # object 생성
+        acon_light: Object = bpy.data.objects.new("ACON_" + light_name, acon_light_data)
+        scene.collection.objects.link(acon_light)
+        return {"FINISHED"}
+
+    def execute(self, context):
+        light_name = "TEST_LIGHT_NAME"
+        return self.__create_light_on_scene(self.scene, light_name)
+
+
+class AddPointLightOperator(AddLightOperatorBase):
+    bl_idname = "acon3d.add_light_point"
+    bl_label = "Add Point Light"
+    light_type = 'POINT'
+
+
+class AddSpotLightOperator(AddLightOperatorBase):
+    bl_idname = "acon3d.add_light_spot"
+    bl_label = "Add Spot Light"
+    light_type = 'SPOT'
+
+
+class AddAreaLightOperator(AddLightOperatorBase):
+    bl_idname = "acon3d.add_light_area"
+    bl_label = "Add Area Light"
+    light_type = 'AREA'
+
+
 class ShadowShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
     bl_idname = "ACON3D_PT_ShadowShading"
@@ -449,6 +532,10 @@ classes = (
     Acon3dStylesPanel,
     LinePanel,
     SunlightPanel,
+    LightsPanel,
+    AddPointLightOperator,
+    AddSpotLightOperator,
+    AddAreaLightOperator,
     ShadowShadingPanel,
     ShadingPanel,
     MATERIAL_UL_List,
