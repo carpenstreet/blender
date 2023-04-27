@@ -15,6 +15,8 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+import urllib
+
 from ..lib.locales import supported_locales
 
 bl_info = {
@@ -865,7 +867,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_x = 30
         anchor = row.operator("acon3d.open_search_acon3d", text="Search")
         keyword = context.window_manager.ACON_prop.keyword_input
-        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={urllib.parse.quote(keyword)}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
 
         row = layout.row()
         row.scale_y = 1.0
