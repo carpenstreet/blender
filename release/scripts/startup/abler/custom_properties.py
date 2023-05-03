@@ -42,6 +42,64 @@ class AconSceneColGroupProperty(bpy.types.PropertyGroup):
     )
 
 
+class AconLightProperty(bpy.types.PropertyGroup):
+    @classmethod
+    def register(cls):
+        bpy.types.Light.ACON_prop = bpy.props.PointerProperty(
+            type=AconLightProperty
+        )
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Light.ACON_prop
+
+    color: bpy.props.FloatVectorProperty(
+        name="Light Color",
+        description="Change light color",
+        subtype="COLOR",
+        default=(1.0, 1.0, 1.0),
+        min=0.0,
+        max=100.0,
+        update=scenes.change_light_data
+    )
+
+    power: bpy.props.FloatProperty(
+        name="Light Power",
+        description="Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000)",
+        default=10.0,
+        min=-1000.0,
+        max=1000.0,
+        update=scenes.change_light_data
+    )
+
+    diffuse_factor: bpy.props.FloatProperty(
+        name="Light Diffuse",
+        description="Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000)",
+        default=1.0,
+        min=0,
+        max=100.0,
+        update=scenes.change_light_data
+    )
+
+    specular_factor: bpy.props.FloatProperty(
+        name="Light Specular",
+        description="Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000)",
+        default=1.0,
+        min=0,
+        max=100.0,
+        update=scenes.change_light_data
+    )
+
+    volume_factor: bpy.props.FloatProperty(
+        name="Light Volume",
+        description="Adjust maximum intensity of bloom effect that each pixel can have (0 to disable) (Range: 0 ~ 1000)",
+        default=0,
+        min=0,
+        max=100.0,
+        update=scenes.change_light_data
+    )
+
+
 class AconWindowManagerProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -269,6 +327,9 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
         ],
     )
 
+
+class AconLightWrapper(bpy.types.PropertyGroup):
+    obj: bpy.props.PointerProperty(type=bpy.types.Object)
 
 class AconSceneProperty(bpy.types.PropertyGroup):
     @classmethod
@@ -647,6 +708,13 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_background_color,
     )
 
+    lights: bpy.props.CollectionProperty(type=AconLightWrapper)
+    light_index: bpy.props.IntProperty(
+        name="light index",
+        default=0,
+        update=scenes.change_ui_to_show_selected_light
+    )
+
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod
@@ -788,6 +856,8 @@ classes = (
     AconWindowManagerProperty,
     CollectionLayerExcludeProperties,
     AconSceneSelectedGroupProperty,
+    AconLightProperty,
+    AconLightWrapper,
     AconSceneProperty,
     AconMaterialProperty,
     AconMeshProperty,
