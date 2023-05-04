@@ -97,18 +97,6 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_primary = background_color
     ui.transparent_checker_secondary = background_color
 
-
-def change_light_data(self, context: Context) -> None:
-    index = context.scene.ACON_prop.light_index
-    data = context.scene.ACON_prop.lights[index].obj.data
-    prop = context.scene.ACON_prop.lights[index].ACON_prop
-
-    data.color = prop.color
-    data.energy = prop.power
-    data.diffuse_factor = prop.diffuse_factor
-    data.specular_factor = prop.specular_factor
-    data.volume_factor = prop.volume_factor
-
 def change_ui_to_show_selected_light(self, context: Context) -> None:
     print("change_prop_to_show...")
     if not context.scene.ACON_prop.lights:
@@ -118,12 +106,12 @@ def change_ui_to_show_selected_light(self, context: Context) -> None:
     index = context.scene.ACON_prop.light_index
     data = context.scene.ACON_prop.lights[index].obj.data
 
-    prop = context.scene.ACON_prop.lights[index].ACON_prop
-    prop.color = data.color
-    prop.power = data.energy
-    prop.diffuse_factor = data.diffuse_factor
-    prop.volume_factor = data.volume_factor
-    prop.specular_factor = data.specular_factor
+    light = context.scene.ACON_prop.lights[index]
+    light.color = data.color
+    light.power = data.energy
+    light.diffuse_factor = data.diffuse_factor
+    light.volume_factor = data.volume_factor
+    light.specular_factor = data.specular_factor
 
     # select current light item
     bpy.ops.object.select_all(action='DESELECT')
