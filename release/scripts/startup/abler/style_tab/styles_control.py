@@ -140,11 +140,12 @@ class LIGHT_UL_List(bpy.types.UIList):
             light_type = item.obj.data.type
             obj = item.obj
             if light_type == 'POINT':
-                row.prop(obj, "name", icon='LIGHT_POINT', emboss=False)
+                row.label(icon='LIGHT_POINT', text=obj.name)
             elif light_type == 'SPOT':
-                row.prop(obj, "name", icon='LIGHT_SPOT', emboss=False)
+                row.label(icon='LIGHT_SPOT', text=obj.name)
             elif light_type == 'AREA':
-                row.prop(obj, "name", icon='LIGHT_AREA', emboss=False)
+                row.label(icon='LIGHT_AREA', text=obj.name)
+            row.prop(item, "hide", text="", icon='HIDE_ON' if item.hide else 'HIDE_OFF')
 
 class LightPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
@@ -202,17 +203,17 @@ class LightPanel(bpy.types.Panel):
 
             if scene_prop.lights:
                 index = scene_prop.light_index
-                light_prop = scene_prop.lights[index].ACON_prop
+                light = scene_prop.lights[index]
                 row = layout.row(align=True)
-                row.prop(light_prop, "color", text="Color", slider=False)
+                row.prop(light, "color", text="Color", slider=True)
                 row = layout.row(align=True)
-                row.prop(light_prop, "power", text="Power", slider=True)
+                row.prop(light, "power", text="Power", slider=True)
                 row = layout.row(align=True)
-                row.prop(light_prop, "diffuse_factor", text="Diffuse", slider=True)
+                row.prop(light, "diffuse_factor", text="Diffuse", slider=True)
                 row = layout.row(align=True)
-                row.prop(light_prop, "specular_factor", text="Specular", slider=True)
+                row.prop(light, "specular_factor", text="Specular", slider=True)
                 row = layout.row(align=True)
-                row.prop(light_prop, "volume_factor", text="Volume", slider=True)
+                row.prop(light, "volume_factor", text="Volume", slider=True)
 
 
 
@@ -288,8 +289,6 @@ class RemoveLightOperator(bpy.types.Operator):
     bl_options = {"REGISTER"}
     bl_translation_context = "abler"
 
-    scene: bpy.types.Scene
-
     def execute(self, context):
         scene = context.scene
         index = scene.ACON_prop.light_index
@@ -307,7 +306,6 @@ class RemoveLightOperator(bpy.types.Operator):
         scene.ACON_prop.lights.remove(index)
 
         return {"FINISHED"}
-
 
 class ShadowShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"

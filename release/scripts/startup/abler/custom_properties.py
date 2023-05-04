@@ -270,19 +270,22 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
     )
 
 
-class AconLightWrapper(bpy.types.PropertyGroup):
+class AconLight(bpy.types.PropertyGroup):
     obj: bpy.props.PointerProperty(type=bpy.types.Object)
 
-class AconLightProperty(bpy.types.PropertyGroup):
-    @classmethod
-    def register(cls):
-        AconLightWrapper.ACON_prop = bpy.props.PointerProperty(
-            type=AconLightProperty
-        )
+    def change_light_data(self, context: bpy.types.Context) -> None:
+        index = context.scene.ACON_prop.light_index
+        data = context.scene.ACON_prop.lights[index].obj.data
+        prop = context.scene.ACON_prop.lights[index]
 
-    @classmethod
-    def unregister(cls):
-        del AconLightWrapper.Light.ACON_prop
+        data.color = prop.color
+        data.energy = prop.power
+        data.diffuse_factor = prop.diffuse_factor
+        data.specular_factor = prop.specular_factor
+        data.volume_factor = prop.volume_factor
+
+    def toggle_light(self, context: bpy.types.Context) -> None:
+        self.obj.hide_set(self.hide)
 
     color: bpy.props.FloatVectorProperty(
         name="Light Color",
@@ -291,7 +294,7 @@ class AconLightProperty(bpy.types.PropertyGroup):
         default=(1.0, 1.0, 1.0),
         min=0.0,
         max=100.0,
-        update=scenes.change_light_data
+        update=change_light_data
     )
 
     power: bpy.props.FloatProperty(
@@ -300,7 +303,7 @@ class AconLightProperty(bpy.types.PropertyGroup):
         default=10.0,
         min=0,
         max=1000.0,
-        update=scenes.change_light_data
+        update=change_light_data
     )
 
     diffuse_factor: bpy.props.FloatProperty(
@@ -309,7 +312,7 @@ class AconLightProperty(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=scenes.change_light_data
+        update=change_light_data
     )
 
     specular_factor: bpy.props.FloatProperty(
@@ -318,7 +321,7 @@ class AconLightProperty(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=scenes.change_light_data
+        update=change_light_data
     )
 
     volume_factor: bpy.props.FloatProperty(
@@ -327,7 +330,14 @@ class AconLightProperty(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=scenes.change_light_data
+        update=change_light_data
+    )
+
+    hide: bpy.props.BoolProperty(
+        name="Hide Light",
+        description="True means hide off,and False means hide on",
+        default=False,
+        update=toggle_light
     )
 
 
@@ -708,7 +718,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_background_color,
     )
 
-    lights: bpy.props.CollectionProperty(type=AconLightWrapper)
+    lights: bpy.props.CollectionProperty(type=AconLight)
     light_index: bpy.props.IntProperty(
         name="light index",
         default=0,
@@ -856,8 +866,7 @@ classes = (
     AconWindowManagerProperty,
     CollectionLayerExcludeProperties,
     AconSceneSelectedGroupProperty,
-    AconLightWrapper,
-    AconLightProperty,
+    AconLight,
     AconSceneProperty,
     AconMaterialProperty,
     AconMeshProperty,
