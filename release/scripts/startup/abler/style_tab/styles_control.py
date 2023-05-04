@@ -136,8 +136,10 @@ class LIGHT_UL_List(bpy.types.UIList):
             self, context, layout, data, item, icon, active_data, active_propname
     ):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
-            row = layout.row(align=True)
+            if not item.obj.data:
+                return
             light_type = item.obj.data.type
+            row = layout.row(align=True)
             obj = item.obj
             if light_type == 'POINT':
                 row.label(icon='LIGHT_POINT', text=obj.name)
