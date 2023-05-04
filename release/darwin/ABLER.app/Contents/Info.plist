@@ -91,7 +91,7 @@
     <string>${SPARKLE_PUBLIC_ED_KEY}</string>
 	<key>SUFeedURL</key>
     <string>${SPARKLE_FEED_ADDRESS}</string>
-    <key>SUEnableAutomaticChecks</key>
-	<true/>
+	<key>SUEnableInstallerLauncherService</key>
+    <true/>
 </dict>
 </plist>

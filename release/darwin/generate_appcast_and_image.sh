@@ -46,7 +46,7 @@ cd "${_work_dir}"
 echo "Moving old versions..."
 
 mkdir -p ./old_versions
-mv ./*.dmg ./old_versions
+find . -name "ABLER_MacOS_*.dmg" -exec mv {} ./old_versions \;
 mv ./*.xml ./old_versions
 
 # Generate appcast
