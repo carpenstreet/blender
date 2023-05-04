@@ -138,12 +138,13 @@ class LIGHT_UL_List(bpy.types.UIList):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             row = layout.row(align=True)
             light_type = item.obj.data.type
+            obj = item.obj
             if light_type == 'POINT':
-                row.prop(item.obj, "name", icon='LIGHT_POINT', emboss=False)
+                row.prop(obj, "name", icon='LIGHT_POINT', emboss=False)
             elif light_type == 'SPOT':
-                row.prop(item.obj, "name", icon='LIGHT_SPOT', emboss=False)
+                row.prop(obj, "name", icon='LIGHT_SPOT', emboss=False)
             elif light_type == 'AREA':
-                row.prop(item.obj, "name", icon='LIGHT_AREA', emboss=False)
+                row.prop(obj, "name", icon='LIGHT_AREA', emboss=False)
 
 class LightPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
@@ -197,11 +198,10 @@ class LightPanel(bpy.types.Panel):
                 "light_index"
             )
             col = row.column()
-            col.operator(AddAreaLightOperator.bl_idname, text="", icon="REMOVE")
+            col.operator(RemoveLightOperator.bl_idname, text="", icon="REMOVE")
 
             if scene_prop.lights and bpy.data.lights:
                 light_prop = bpy.data.lights[0].ACON_prop
-                self.__load_selected_light_data(context)
                 row = layout.row(align=True)
                 row.prop(light_prop, "color", text="Color", slider=False)
                 row = layout.row(align=True)
@@ -216,7 +216,7 @@ class LightPanel(bpy.types.Panel):
 
 
 class AddLightOperatorBase(bpy.types.Operator):
-    bl_options = {"REGISTER", "UNDO"}
+    bl_options = {"REGISTER"}
     bl_translation_context = "abler"
     bl_idname: bpy.props.StringProperty()
     bl_label: bpy.props.StringProperty()
@@ -258,8 +258,8 @@ class AddLightOperatorBase(bpy.types.Operator):
     def execute(self, context):
         light_name = self.__generate_light_name()
         light = self.__create_light_on_scene(light_name)
-        context.scene.collection.objects.link(light)
-        item = context.scene.ACON_prop.lights.add()
+        self.scene.collection.objects.link(light)
+        item = self.scene.ACON_prop.lights.add()
         item.obj = light
         return {"FINISHED"}
 
@@ -280,6 +280,34 @@ class AddAreaLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_area"
     bl_label = "Add Area Light"
     light_type = 'AREA'
+
+class RemoveLightOperator(bpy.types.Operator):
+    bl_idname = "acon3d.remove_light"
+    bl_label = "Remove Light"
+    bl_options = {"REGISTER"}
+    bl_translation_context = "abler"
+
+    scene: bpy.types.Scene
+
+    def invoke(self, context, event):
+        if not bpy.context.scene:
+            return {"FINISHED"}
+
+        self.scene = bpy.context.scene
+        return self.execute(context)
+
+    def execute(self, context):
+        index = self.scene.ACON_prop.light_index
+        light_obj = self.scene.ACON_prop.lights[index].obj
+
+        # 실제 오브젝트 제거 (data block 정리는 블렌더가 함)
+        bpy.data.objects.remove(light_obj)
+
+        # ACON_prop.lights 데이터 제거
+        self.scene.ACON_prop.lights.remove(index)
+
+
+        return {"FINISHED"}
 
 
 class ShadowShadingPanel(bpy.types.Panel):
@@ -609,6 +637,7 @@ classes = (
     AddPointLightOperator,
     AddSpotLightOperator,
     AddAreaLightOperator,
+    RemoveLightOperator,
     ShadowShadingPanel,
     ShadingPanel,
     MATERIAL_UL_List,
