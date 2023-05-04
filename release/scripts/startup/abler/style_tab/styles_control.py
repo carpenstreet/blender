@@ -200,8 +200,9 @@ class LightPanel(bpy.types.Panel):
             col = row.column()
             col.operator(RemoveLightOperator.bl_idname, text="", icon="REMOVE")
 
-            if scene_prop.lights and bpy.data.lights:
-                light_prop = bpy.data.lights[0].ACON_prop
+            if scene_prop.lights:
+                index = scene_prop.light_index
+                light_prop = scene_prop.lights[index].ACON_prop
                 row = layout.row(align=True)
                 row.prop(light_prop, "color", text="Color", slider=False)
                 row = layout.row(align=True)
@@ -289,23 +290,21 @@ class RemoveLightOperator(bpy.types.Operator):
 
     scene: bpy.types.Scene
 
-    def invoke(self, context, event):
-        if not bpy.context.scene:
+    def execute(self, context):
+        scene = context.scene
+        index = scene.ACON_prop.light_index
+        lights = scene.ACON_prop.lights
+
+        if not index in range(0,len(lights)):
             return {"FINISHED"}
 
-        self.scene = bpy.context.scene
-        return self.execute(context)
-
-    def execute(self, context):
-        index = self.scene.ACON_prop.light_index
-        light_obj = self.scene.ACON_prop.lights[index].obj
+        light_obj = scene.ACON_prop.lights[index].obj
 
         # 실제 오브젝트 제거 (data block 정리는 블렌더가 함)
         bpy.data.objects.remove(light_obj)
 
         # ACON_prop.lights 데이터 제거
-        self.scene.ACON_prop.lights.remove(index)
-
+        scene.ACON_prop.lights.remove(index)
 
         return {"FINISHED"}
 

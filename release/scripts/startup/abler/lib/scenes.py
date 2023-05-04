@@ -101,7 +101,7 @@ def change_background_color(self, context: Context) -> None:
 def change_light_data(self, context: Context) -> None:
     index = context.scene.ACON_prop.light_index
     data = context.scene.ACON_prop.lights[index].obj.data
-    prop = bpy.data.lights[0].ACON_prop
+    prop = context.scene.ACON_prop.lights[index].ACON_prop
 
     data.color = prop.color
     data.energy = prop.power
@@ -118,9 +118,7 @@ def change_ui_to_show_selected_light(self, context: Context) -> None:
     index = context.scene.ACON_prop.light_index
     data = context.scene.ACON_prop.lights[index].obj.data
 
-    print(index)
-
-    prop = bpy.data.lights[0].ACON_prop
+    prop = context.scene.ACON_prop.lights[index].ACON_prop
     prop.color = data.color
     prop.power = data.energy
     prop.diffuse_factor = data.diffuse_factor
