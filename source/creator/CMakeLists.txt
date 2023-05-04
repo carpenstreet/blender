@@ -1056,6 +1056,7 @@ elseif(APPLE)
   install(
     DIRECTORY "${SPARKLE_DIR}/Sparkle.framework"
     DESTINATION "${MAC_BLENDER_TARGET_DYLIBS_DIR}"
+    USE_SOURCE_PERMISSIONS
   )
 
   # Gather the date in finder-style
