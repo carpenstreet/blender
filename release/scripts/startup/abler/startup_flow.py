@@ -111,8 +111,8 @@ def start_check_file_version():
 
 
 def start_check_server_version():
-    is_window = (sys.platform == 'win32')
-    if is_window and is_first_run and has_server_update():
+    is_windows = sys.platform == "win32"
+    if is_windows and is_first_run and has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
         start_authentication()
@@ -547,31 +547,38 @@ class Acon3dUpdateAblerOperator(bpy.types.Operator):
     bl_description = "Update ABLER with ABLER Launcher"
     bl_translation_context = "*"
 
-    def execute(self, context):
+    def update_windows(self):
         launcher = get_launcher()
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
         launcher_process = subprocess.Popen(launcher, shell=True)
         is_launcher_open = True
 
-        # AblerLauncher.exe가 실행되면 ABLER 종료
-        if sys.platform == "win32":
-            while get_launcher_process_count("AblerLauncher") < 1:
-                time.sleep(1)
+        while get_launcher_process_count("AblerLauncher") < 1:
+            time.sleep(1)
 
-                # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
-                # 실행되면 None이 아닌 값을 return
-                if launcher_process.poll() is not None:
-                    is_launcher_open = False
-                    break
-        elif sys.platform == "darwin":
-            # cannot be reached
-            pass
-        else:
-            raise Exception("Unsupported platform")
+            # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
+            # 실행되면 None이 아닌 값을 return
+            if launcher_process.poll() is not None:
+                is_launcher_open = False
+                break
 
         if is_launcher_open:
             bpy.ops.wm.quit_blender()
+
+    def update_macOS(self):
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        if check_sparkle_updater := bpy.context.window.check_sparkle_updater:
+            check_sparkle_updater()
+
+    def execute(self, context):
+        # AblerLauncher.exe가 실행되면 ABLER 종료
+        if sys.platform == "win32":
+            self.update_windows()
+        elif sys.platform == "darwin":
+            self.update_macOS()
+        else:
+            raise Exception("Unsupported platform")
 
         return {"FINISHED"}
 
