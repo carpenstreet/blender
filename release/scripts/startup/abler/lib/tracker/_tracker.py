@@ -8,8 +8,8 @@ from typing import Any, Optional
 import bpy
 
 from ._versioning import get_version
-from ._get_ip import user_ip
-from ._get_os import get_os
+from ._user_info_utils import user_ip
+from ._user_info_utils import user_os
 
 
 class EventKind(enum.Enum):
@@ -117,7 +117,7 @@ class Tracker(metaclass=ABCMeta):
 
         if user_ip is not None:
             self._default_properties["ip"] = user_ip
-        if user_os := get_os():
+        if user_os is not None:
             self._default_properties["os"] = user_os
 
     def turn_on(self):
