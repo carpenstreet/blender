@@ -160,10 +160,6 @@ class LightPanel(bpy.types.Panel):
     def __init__(self):
         super().__init__()
 
-    def draw_header(self, context):
-        layout = self.layout
-        layout.prop(context.scene.ACON_prop, "toggle_lights", icon="LIGHT", text="")
-
     def draw(self, context):
         # update scene
         scene = context.scene
@@ -203,8 +199,13 @@ class LightPanel(bpy.types.Panel):
             col = row.column()
             col.operator(RemoveLightOperator.bl_idname, text="", icon="REMOVE")
 
+
             if scene_prop.lights:
                 index = scene_prop.light_index
+
+                if index not in range(0,len(scene_prop.lights)):
+                    return
+
                 light = scene_prop.lights[index]
                 row = layout.row(align=True)
                 row.prop(light, "color", text="Color", slider=True)

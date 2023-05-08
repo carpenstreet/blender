@@ -98,12 +98,12 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_secondary = background_color
 
 def change_ui_to_show_selected_light(self, context: Context) -> None:
+    index = context.scene.ACON_prop.light_index
+
     if not context.scene.ACON_prop.lights:
         return
 
-    index = context.scene.ACON_prop.light_index
     data = context.scene.ACON_prop.lights[index].obj.data
-
     light = context.scene.ACON_prop.lights[index]
     light.color = data.color
     light.power = data.energy
