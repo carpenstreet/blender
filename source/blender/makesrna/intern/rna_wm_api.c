@@ -783,6 +783,12 @@ void RNA_api_window(StructRNA *srna)
   RNA_def_boolean(func, "oskey", 0, "OS Key", "");
   parm = RNA_def_pointer(func, "event", "Event", "Item", "Added key map item");
   RNA_def_function_return(func, parm);
+
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+  RNA_def_function(srna, "check_sparkle_updater", "WM_check_sparkle_updater");
+  RNA_def_function_ui_description(func, "Check Sparkle Updater");
+#endif
 }
 
 void RNA_api_wm(StructRNA *srna)

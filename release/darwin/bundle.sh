@@ -64,6 +64,11 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
+        --sparkle-dir)
+            SPARKLE_DIR="$2"
+            shift
+            shift
+            ;;
         -h|--help)
             echo "Usage:"
             echo " $(basename "$0") --source DIR --dmg IMAGENAME "
@@ -72,6 +77,7 @@ while [[ $# -gt 0 ]]; do
             echo "    --username <username>"
             echo "    --password <password>"
             echo "    --bundle-id <bundleid>"
+            echo "    --sparkle-dir <sparkle dir>"
             echo " Check https://developer.apple.com/documentation/security/notarizing_your_app_before_distribution/customizing_the_notarization_workflow "
             exit 1
             ;;
@@ -103,13 +109,13 @@ if [ ! -z "${C_CERT}" ]; then
     for f in $(find "${SRC_DIR}/ABLER.app/Contents/Resources" -name "python*"); do
         if [ -x ${f} ] && [ ! -d ${f} ]; then
             codesign --remove-signature "${f}"
-            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+            codesign --deep --force --verbose --timestamp --options runtime --sign "${C_CERT}" "${f}"
         fi
     done
     echo ; echo -n "Codesigning .dylib, .so and .o libraries"
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.dylib" -o -name "*.so" -o -name "*.o"); do
         codesign --remove-signature "${f}"
-        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}"
+        codesign --deep --force --verbose --timestamp --options runtime --sign "${C_CERT}" "${f}"
     done
     # Codesigning .egg files
     echo ; echo -n "Codesigning .egg files"
@@ -118,7 +124,7 @@ if [ ! -z "${C_CERT}" ]; then
         # Get the file path and name without extension
         file_path=$(dirname "$f")
         file_name=$(basename "$f" .egg)
-        
+
         # Rename the file to have a .zip extension
         mv "$file_path/$file_name.egg" "$file_path/$file_name.zip"
 
@@ -127,9 +133,9 @@ if [ ! -z "${C_CERT}" ]; then
         unzip "$file_path/$file_name.zip" -d "$temp_dir"
         rm "$file_path/$file_name.zip"
 
-        for so_file in "$temp_dir"/*.so; do 
+        for so_file in "$temp_dir"/*.so; do
             codesign --remove-signature "$so_file"
-            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "$so_file"
+            codesign --deep --force --verbose --timestamp --options runtime --sign "${C_CERT}" "$so_file"
         done
 
         pushd "$temp_dir"
@@ -138,7 +144,7 @@ if [ ! -z "${C_CERT}" ]; then
         mv "$file_path/$file_name.zip" "$file_path/$file_name.egg"
 
         codesign --remove-signature "$file_path/$file_name.egg"
-        codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "$file_path/$file_name.egg"
+        codesign --deep --force --verbose --timestamp --options runtime --sign "${C_CERT}" "$file_path/$file_name.egg"
 
         rm -rf "$temp_dir"
     done
@@ -146,10 +152,24 @@ if [ ! -z "${C_CERT}" ]; then
     for f in $(find "${SRC_DIR}/ABLER.app" -name "*.framework"); do
         if [ -d "${f}/Versions/A" ]; then
             codesign --remove-signature "${f}/Versions/A"
-            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/A"
+            codesign --deep --force --verbose --timestamp --options runtime --sign "${C_CERT}" "${f}/Versions/A"
         elif [ -d "${f}/Versions/B" ]; then
-            codesign --remove-signature "${f}/Versions/B"
-            codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${f}/Versions/B"
+            if [ "${f##*/}" = "Sparkle.framework" ]; then
+              codesign --remove-signature "${f}/Versions/B/XPCServices/Installer.xpc"
+              codesign --force --options runtime --sign "${C_CERT}" "${f}/Versions/B/XPCServices/Installer.xpc"
+
+              codesign --remove-signature "${f}/Versions/B/XPCServices/Downloader.xpc"
+              codesign --force --options runtime --entitlements="${SPARKLE_DIR}/Entitlements/Downloader.entitlements" --sign "${C_CERT}" "${f}/Versions/B/XPCServices/Downloader.xpc"
+
+              codesign --remove-signature "${f}/Versions/B/Autoupdate"
+              codesign --force --options runtime --sign "${C_CERT}" "${f}/Versions/B/Autoupdate"
+
+              codesign --remove-signature "${f}/Versions/B/Updater.app"
+              codesign --force --options runtime --sign "${C_CERT}" "${f}/Versions/B/Updater.app"
+            fi
+
+            codesign --remove-signature "${f}"
+            codesign --force --options runtime --sign "${C_CERT}" "${f}"
         fi
     done
 
@@ -157,12 +177,12 @@ if [ ! -z "${C_CERT}" ]; then
 
     echo ; echo -n "Codesigning ABLER"
     codesign --remove-signature "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"
-    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"
+    codesign --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app/Contents/macOS/ABLER"
     echo
 
     echo ; echo -n "Codesigning ABLER.app"
     codesign --remove-signature "${SRC_DIR}/ABLER.app"
-    codesign --deep --force --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app"
+    codesign --verbose --timestamp --options runtime --entitlements="${_entitlements}" --sign "${C_CERT}" "${SRC_DIR}/ABLER.app"
     echo
 else
     echo "No codesigning cert given, skipping..."

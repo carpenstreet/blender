@@ -252,6 +252,11 @@ void WM_paint_cursor_tag_redraw(struct wmWindow *win, struct ARegion *region);
 void WM_cursor_warp(struct wmWindow *win, int x, int y);
 void WM_cursor_compatible_xy(wmWindow *win, int *x, int *y);
 
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+void WM_check_sparkle_updater(struct wmWindow *win);
+#endif
+
 /* handlers */
 
 typedef bool (*EventHandlerPoll)(const ARegion *region, const struct wmEvent *event);
