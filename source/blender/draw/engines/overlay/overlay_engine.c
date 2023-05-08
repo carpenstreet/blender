@@ -448,8 +448,16 @@ static void OVERLAY_cache_populate(void *vedata, Object *ob)
 
   /* [modification of Overlay Logic for ABLER viewport] */
   /* only overlay light objects (except sun) when show_extras is enabled */
-  if (draw_extras && ob->type == OB_LAMP) {
-      OVERLAY_light_cache_populate(vedata, ob);
+  /* Non-Meshes */
+  if (draw_extras) {
+      switch (ob->type) {
+          case OB_LAMP:
+              OVERLAY_light_cache_populate(vedata, ob);
+              break;
+          case OB_CAMERA:
+              OVERLAY_camera_cache_populate(vedata, ob);
+              break;
+      }
   }
 
   if (!BLI_listbase_is_empty(&ob->particlesystem)) {
