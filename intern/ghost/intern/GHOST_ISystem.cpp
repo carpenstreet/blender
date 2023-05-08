@@ -121,14 +121,12 @@ void GHOST_ISystem::createSparkleUpdater()
   }
 }
 
-// ABLER: Updater for MacOS
 void GHOST_ISystem::disposeSparkleUpdater()
 {
   delete sparkleUpdater;
   sparkleUpdater = NULL;
 }
 
-// ABLER: Updater for MacOS
 void GHOST_ISystem::sparkleCheckForUpdates()
 {
   sparkleUpdater->checkForUpdates();
