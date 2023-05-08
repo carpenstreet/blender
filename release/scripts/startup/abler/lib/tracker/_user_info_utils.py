@@ -20,7 +20,7 @@ def get_os() -> str:
     """
     full_info = platform.uname()
     if full_info.system == "Darwin":
-        return "MacOS Intel" if full_info.machine == "x86_64" else "MacOS Silicon"
+        return "macOS Intel" if full_info.machine == "x86_64" else "macOS Silicon"
     elif full_info.system == "Windows":
         return "Windows"
     else:
