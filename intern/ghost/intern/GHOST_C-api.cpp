@@ -55,6 +55,12 @@ void GHOST_CreateAndCheckSparkleUpdater(GHOST_SystemHandle systemhandle)
   system->createSparkleUpdater();
   system->sparkleCheckForUpdates();
 }
+
+void GHOST_CheckSparkleUpdater(GHOST_SystemHandle systemhandle)
+{
+  GHOST_ISystem *system = (GHOST_ISystem *)systemhandle;
+  system->sparkleCheckForUpdates();
+}
 #endif
 
 void GHOST_SystemInitDebug(GHOST_SystemHandle systemhandle, int is_debug_enabled)
