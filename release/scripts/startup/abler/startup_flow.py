@@ -500,7 +500,7 @@ def start_authentication():
         if token := responseData["accessToken"]:
             if is_process_single() and not bpy.data.filepath:
                 tracker.login_auto()
-                # login_auto() 이후에 update_profile()이 호출되지 않아서, 호출이 됨.
+                # login_auto() 이후에 update_profile()이 호출되지 않아서, 추가를 함.
                 # 또한 username에 접근하기 위한 가장 쉬운 방법은 read_remembered_username()이기 때문에 추가됨.
                 tracker.update_profile(read_remembered_username(), user_ip, user_os)
             prop.login_status = "SUCCESS"
