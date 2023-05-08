@@ -500,6 +500,7 @@ def start_authentication():
         if token := responseData["accessToken"]:
             if is_process_single() and not bpy.data.filepath:
                 tracker.login_auto()
+                tracker.update_profile(read_remembered_username(), user_ip, user_os)
             prop.login_status = "SUCCESS"
 
     except:
