@@ -544,7 +544,7 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
 class Acon3dUpdateAblerOperator(bpy.types.Operator):
     bl_idname = "acon3d.update_abler"
     bl_label = ""
-    bl_description = "Update ABLER with ABLER Launcher"
+    bl_description = "Update ABLER"
     bl_translation_context = "*"
 
     def update_windows(self):

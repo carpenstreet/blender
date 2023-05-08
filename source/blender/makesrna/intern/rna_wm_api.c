@@ -787,7 +787,7 @@ void RNA_api_window(StructRNA *srna)
 // ABLER: Updater for MacOS
 #if defined(__APPLE__)
   RNA_def_function(srna, "check_sparkle_updater", "WM_check_sparkle_updater");
-  RNA_def_function_ui_description(func, "Check Sparkle Updater");
+  RNA_def_function_ui_description(func, "Check for Updates");
 #endif
 }
 
