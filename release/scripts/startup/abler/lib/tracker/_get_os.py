@@ -3,7 +3,6 @@ import platform
 
 def get_os() -> str:
     """
-    Returns the name of the operating system and architecture.
     :return: The name of the operating system and architecture.
     """
     full_info = platform.uname()
