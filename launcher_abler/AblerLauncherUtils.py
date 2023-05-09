@@ -6,54 +6,43 @@ import psutil
 import requests
 from enum import Enum, auto
 
-# 테스트용 argument 추가
-pre_rel = None
-new_repo_rel = None
-new_repo_pre_rel = None
+# TODO: 필요시에 Dev 환경에서 테스트하기
+# https://acontainer.slack.com/archives/C02K1NPTV42/p1683614079788509
+"""
+dev = None
 
 if len(sys.argv) > 1:
-    pre_rel = sys.argv[1] == "--pre-release"
-    new_repo_rel = sys.argv[1] == "--new-repo-release"
-    new_repo_pre_rel = sys.argv[1] == "--new-repo-pre-release"
+    dev = sys.argv[1] == "--dev"
+"""
 
 
 def set_url() -> str:
-    """GitHub Repo의 URL 세팅"""
+    """ABLER 최신 버전 확인을 위한 URL 세팅"""
 
-    # GitHub API에는 접근 횟수 60회가 있어, 캐시를 받아오는 URL로 대체
-    # url = "https://api.github.com/repos/ACON3D/blender/releases/latest"
-    url = "https://download.abler.world/windows/latest.zip"  # 이거 사실 xml임
+    # ABLER의 최신 버전에 대한 XML 확인
+    url = "https://download.abler.world/windows/latest.zip"
 
-    # TODO: Pre-Release, Test Repository Release API 등에 대해서도 교체 필요
-    if pre_rel:
-        url = "https://download.abler.world/windows/latest.zip"
-    elif new_repo_rel:
-        url = "https://download.abler.world/windows/latest.zip"
-    elif new_repo_pre_rel:
-        url = "https://download.abler.world/windows/latest.zip"
+    """
+    if dev:
+        url = "https://download.dev.abler.world/windows/latest.zip"
+    """
 
     return url
 
 
 def get_target_url(install_type: Enum) -> str | None:
     if install_type == InstallType.launcher:
-        # TODO: 진짜 정해지는 URL로 교체
-        if pre_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Launcher_Windows_v0.0.15.zip"
-        elif new_repo_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Launcher_Windows_v0.0.15.zip"
-        elif new_repo_pre_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Launcher_Windows_v0.0.15.zip"
-        return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Launcher_Windows_v0.0.15.zip"
+        """
+        if dev:
+            return "https://download.dev.abler.world/windows/launcher/latest.zip"
+        """
+        return "https://download.abler.world/windows/launcher/latest.zip"
     elif install_type == InstallType.abler:
-        # TODO: 진짜 정해지는 URL로 교체
-        if pre_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Release_Windows_v0.3.3.zip"
-        elif new_repo_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Release_Windows_v0.3.3.zip"
-        elif new_repo_pre_rel:
-            return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Release_Windows_v0.3.3.zip"
-        return "https://github.com/carpenstreet/blender/releases/download/ABLER%2Fv0.3.3/ABLER_Release_Windows_v0.3.3.zip"
+        """
+        if dev:
+            return "https://download.dev.abler.world/windows/release/latest.zip"
+        """
+        return "https://download.abler.world/windows/release/latest.zip"
     else:
         return None
 
