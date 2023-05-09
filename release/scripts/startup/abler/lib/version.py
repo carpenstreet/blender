@@ -55,22 +55,11 @@ def get_local_version_windows() -> Optional[str]:
     return version
 
 
-def find_info_plist() -> Optional[str]:
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    last_dir = None
-    while last_dir != current_dir:
-        check_path = os.path.join(current_dir, "info.plist")
-        if os.path.isfile(check_path):
-            return check_path
-
-        parent_dir = os.path.abspath(os.path.join(current_dir, os.path.pardir))
-        last_dir, current_dir = current_dir, parent_dir
-
-    return check_path
-
-
 def get_local_version_macos() -> Optional[str]:
-    plist_path = find_info_plist()
+    # Six Levels Up
+    contents_dir = os.path.dirname(os.path.abspath(os.path.join(__file__, "../../../../../..")))
+    plist_path = os.path.join(contents_dir, "info.plist")
+
     try:
         with open(plist_path, "rb") as fp:
             import plistlib
@@ -83,6 +72,7 @@ def get_local_version_macos() -> Optional[str]:
     return version
 
 
+# Local Version 을 재사용하기 위한 전역 변수
 local_ver = None
 
 
