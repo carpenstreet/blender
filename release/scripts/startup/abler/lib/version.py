@@ -85,6 +85,7 @@ def get_local_version() -> str:
             local_ver = get_local_version_macos()
 
         if not local_ver:
+            # TODO: 아래 값 상수화해야할 수 있음
             local_ver = "0.0.0"
 
     return local_ver
