@@ -7,7 +7,7 @@ tell application "Finder"
         set the bounds of container window to {100, 100, 640, 472}
         set theViewOptions to icon view options of container window
         set arrangement of theViewOptions to not arranged
-        set icon size of theViewOptions to 64
+        set icon size of theViewOptions to 100
         set background picture of theViewOptions to file ".background:background.tif"
         set position of item " " of container window to {400, 190}
         set position of item ".background" of container window to {135, 100}
