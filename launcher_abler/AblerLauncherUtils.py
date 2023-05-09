@@ -65,10 +65,8 @@ def get_datadir() -> pathlib.Path:
 
     windows: C:/Users/<USER>/AppData/Roaming
     """
-
-    if sys.platform == "win32":
-        home = pathlib.Path.home()
-        return home / "AppData/Roaming/Blender Foundation"
+    home = pathlib.Path.home()
+    return home / "AppData/Roaming/Blender Foundation"
 
 
 def hbytes(num) -> str:

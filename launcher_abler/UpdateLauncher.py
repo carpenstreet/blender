@@ -58,7 +58,7 @@ def check_launcher(dir_: str, launcher_installed: str) -> Tuple[Enum, Optional[l
     get_results_from_req_launcher(req, results)
 
     if results:
-        if launcher_installed is None or not launcher_installed:
+        if launcher_installed is None or launcher_installed == "":
             launcher_installed = "0.0.0"
 
         # Launcher 릴리즈 버전 > 설치 버전
