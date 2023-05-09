@@ -44,7 +44,7 @@ app = QtWidgets.QApplication(sys.argv)
 app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 appversion = "1.9.8"
-dir_ = ""
+dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
 
 LOG_FORMAT = (
