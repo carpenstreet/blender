@@ -213,7 +213,7 @@ if ! test -z "${_background_image}"; then
     cp "${_background_image}" "${_mount_dir}/.background/${_background_image_NAME}"
 fi
 
-echo "Copying README.txt.."
+echo "Copying README.txt ..."
 cp "${_script_dir}/README_EULA.txt" "${_mount_dir}/README.txt"
 
 echo "Creating link to /Applications ..."
