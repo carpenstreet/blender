@@ -116,7 +116,9 @@ class MixpanelTracker(Tracker):
         self._r.mp.track(self._r.tid, event_name, properties)
 
     @_nonblock
-    def _enqueue_profile_update(self, email: str, ip: str):
+    def _enqueue_profile_update(self, email: str, ip: str, os: str):
         self._ensure_resource()
-        self._r.mp.people_set(self._r.tid, {"$email": email}, meta={"$ip": ip})
-        self._r.mp.alias(self._r.tid, email, meta={"$ip": ip})
+        self._r.mp.people_set(
+            self._r.tid, {"$email": email}, meta={"$ip": ip, "$os": os}
+        )
+        self._r.mp.alias(self._r.tid, email, meta={"$ip": ip, "$os": os})

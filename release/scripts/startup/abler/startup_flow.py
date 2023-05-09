@@ -36,6 +36,7 @@ from .lib.login import is_process_single
 from .lib.read_cookies import *
 from .lib.tracker import tracker
 from .lib.tracker._get_ip import user_ip
+from .lib.tracker._get_os import user_os
 from .warning_modal import BlockingModalOperator
 import subprocess
 from .lib.version import (
@@ -370,7 +371,7 @@ class LoginTask(AsyncTask):
 
     def _on_success(self):
         tracker.login()
-        tracker.update_profile(self.username, user_ip)
+        tracker.update_profile(self.username, user_ip, user_os)
 
         prop = self.prop
         path = bpy.utils.resource_path("USER")
