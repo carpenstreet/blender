@@ -423,42 +423,26 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         try:
             path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
 
-            if pre_rel:
-                _ = subprocess.Popen([path, "--pre-release"])
+            # TODO: 필요시에 Dev 환경에서 테스트하기
+            # https://acontainer.slack.com/archives/C02K1NPTV42/p1683614079788509
+            """
+            if dev:
+                _ = subprocess.Popen([path, "--dev"])
+            """
 
-            elif new_repo_rel:
-                # 빈 repo를 사용할 때는 pyinstaller를 계속 사용하기 때문에
-                # ~/blender/launcher_abler/dist/AblerLauncher.exe를 실행하면 파일 복사 불필요
-                # $ pyinstaller --icon=icon.ico --onefile --uac-admin AblerLauncher.py
-                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                _ = subprocess.Popen([path, "--new-repo-release"])
-
-            elif new_repo_pre_rel:
-                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                _ = subprocess.Popen([path, "--new-repo-pre-release"])
-
-            else:
-                _ = subprocess.Popen(path)
+            _ = subprocess.Popen(path)
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
             logger.error(e)
             try:
                 path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
 
-                if pre_rel:
-                    _ = subprocess.Popen([path, "--pre-release"])
+                """
+                if dev:
+                    _ = subprocess.Popen([path, "--dev"])
+                """
 
-                elif new_repo_rel:
-                    # try의 이유와 동일
-                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                    _ = subprocess.Popen([path, "--new-repo-release"])
-
-                elif new_repo_pre_rel:
-                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                    _ = subprocess.Popen([path, "--new-repo-pre-release"])
-
-                else:
-                    _ = subprocess.Popen(path)
+                _ = subprocess.Popen(path)
                 QtCore.QCoreApplication.instance().quit()
             except Exception as ee:
                 logger.error(ee)
