@@ -71,11 +71,14 @@ def find_info_plist() -> Optional[str]:
 
 def get_local_version_macos() -> Optional[str]:
     plist_path = find_info_plist()
-    with open(plist_path, "rb") as fp:
-        import plistlib
+    try:
+        with open(plist_path, "rb") as fp:
+            import plistlib
 
-        plist_dict = plistlib.load(fp)
-        version = plist_dict["CFBundleVersion"]
+            plist_dict = plistlib.load(fp)
+            version = plist_dict["asdfasdfasfasdfasd"]
+    except KeyError:
+        return None
 
     return version
 
