@@ -7,7 +7,6 @@ import configparser
 import psutil
 from distutils.version import StrictVersion
 from typing import Optional
-from enum import Enum
 
 # GitHub Repo의 URL 세팅
 url = "https://cms.abler3d.biz/abler_update_info"
@@ -46,26 +45,63 @@ def get_launcher_process_count(proc) -> int:
     return proc_count
 
 
-def get_local_version() -> str:
+def get_local_version_windows() -> Optional[str]:
+    version = None
     config = configparser.ConfigParser()
     if os.path.isfile(os.path.join(set_updater(), "config.ini")):
         config.read(os.path.join(set_updater(), "config.ini"))
-        abler_ver = config["main"]["installed"]
-    else:
-        abler_ver = "0.0.0"
+        version = config["main"]["installed"]
 
-    # config.ini에 installed 정보가 없을 때 버전 처리
-    if abler_ver == (None or ""):
-        abler_ver = "0.0.0"
+    return version
 
-    return abler_ver
+
+def find_info_plist() -> Optional[str]:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    last_dir = None
+    while last_dir != current_dir:
+        check_path = os.path.join(current_dir, "info.plist")
+        if os.path.isfile(check_path):
+            return check_path
+
+        parent_dir = os.path.abspath(os.path.join(current_dir, os.path.pardir))
+        last_dir, current_dir = current_dir, parent_dir
+
+    return check_path
+
+
+def get_local_version_macos() -> Optional[str]:
+    plist_path = find_info_plist()
+    with open(plist_path, "rb") as fp:
+        import plistlib
+
+        plist_dict = plistlib.load(fp)
+        version = plist_dict["CFBundleVersion"]
+
+    return version
+
+
+local_ver = None
+
+
+def get_local_version() -> str:
+    global local_ver
+    if local_ver is None:
+        if sys.platform == "win32":
+            local_ver = get_local_version_windows()
+        elif sys.platform == "darwin":
+            local_ver = get_local_version_macos()
+
+        if not local_ver:
+            local_ver = "0.0.0"
+
+    return local_ver
 
 
 def get_server_version(url) -> Optional[str]:
     # Pre-Release 고려하지 않고 url 정보 받아오기
     req = None
     is_release = None
-    abler_ver = None
+    server_ver = None
 
     try:
         req = requests.get(url, timeout=5).json()
@@ -81,11 +117,11 @@ def get_server_version(url) -> Optional[str]:
             version_tag = filename.split("_")[-1][1:-4]
 
             if "Release" in target:
-                abler_ver = version_tag
+                server_ver = version_tag
     else:
         print("GitHub API URL Error.")
 
-    return abler_ver
+    return server_ver
 
 
 def has_server_update() -> bool:
