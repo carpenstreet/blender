@@ -8,8 +8,7 @@ from typing import Any, Optional
 import bpy
 
 from ._versioning import get_version
-from ._user_info_utils import user_ip
-from ._user_info_utils import user_os
+from ._user_info_utils import user_ip, user_os
 
 
 class EventKind(enum.Enum):
