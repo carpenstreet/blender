@@ -332,7 +332,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Do the actual download #
         ##########################
 
-        logger.info(f"Starting download thread for {url}{version}")
+        logger.info(f"Starting download thread for {url}/{version}")
 
         if process_count("blender") == 0:
             self.setup_download_ui(entry, dir_name)
