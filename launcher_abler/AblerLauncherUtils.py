@@ -20,12 +20,11 @@ def set_url() -> str:
     """ABLER 최신 버전 확인을 위한 URL 세팅"""
 
     # ABLER의 최신 버전에 대한 XML 확인
-    url = "https://download.abler.world/windows/latest.zip"
-
     """
     if dev:
-        url = "https://download.dev.abler.world/windows/latest.zip"
+        url = "https://download.dev.abler.world/windows/info/latest.xml"
     """
+    url = "https://download.abler.world/windows/info/latest.xml"
 
     return url
 
