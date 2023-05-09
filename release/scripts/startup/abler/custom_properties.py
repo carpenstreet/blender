@@ -24,6 +24,7 @@ from .lib.layers import get_first_layer_name_of_object
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
 from .scene_tab import object_control
+from bpy.app.handlers import persistent
 
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
@@ -269,9 +270,43 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
         ],
     )
 
+@persistent
+def renew_aconlights(_dummy):
+    scene = bpy.context.scene
+    cnt = len(scene.collection.objects)
+
+    if scene == AconLight.scene_cache and cnt == AconLight.obj_cnt_cache:
+        return
+
+    AconLight.scene_cache = scene
+    AconLight.obj_cnt_cache = cnt
+
+    delete_indices = []
+    lights = scene.ACON_prop.lights
+
+    for index in range(len(lights.values())):
+        if not lights[index].obj.users_collection:
+            delete_indices.append(index)
+
+    counter = 0
+    for index in delete_indices:
+        lights.remove(index - counter)
+        cnt = cnt + 1
 
 class AconLight(bpy.types.PropertyGroup):
     obj: bpy.props.PointerProperty(type=bpy.types.Object)
+    @classmethod
+    def register(cls):
+        bpy.app.handlers.depsgraph_update_post.append(renew_aconlights)
+
+    @classmethod
+    def unregister(cls):
+        bpy.app.handlers.depsgraph_update_post.remove(renew_aconlights)
+
+    # used to check if renew is needed
+    scene_cache = None
+    obj_cnt_cache = 0
+
 
     def change_light_data(self, context: bpy.types.Context) -> None:
         index = context.scene.ACON_prop.light_index
