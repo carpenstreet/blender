@@ -56,7 +56,7 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
     get_results_from_req(req, results)
 
     if results:
-        if installedversion is None or not installedversion:
+        if installedversion is None or installedversion == "":
             installedversion = "0.0.0"
 
         # ABLER 릴리즈 버전 > 설치 버전
