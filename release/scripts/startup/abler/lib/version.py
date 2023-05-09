@@ -76,7 +76,7 @@ def get_local_version_macos() -> Optional[str]:
             import plistlib
 
             plist_dict = plistlib.load(fp)
-            version = plist_dict["asdfasdfasfasdfasd"]
+            version = plist_dict["CFBundleVersion"]
     except KeyError:
         return None
 
