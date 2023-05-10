@@ -93,5 +93,9 @@
     <string>${SPARKLE_FEED_ADDRESS}</string>
     <key>SUEnableInstallerLauncherService</key>
     <true/>
+    <key>SUAllowsAutomaticUpdates</key>
+    <false/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>0</integer>
 </dict>
 </plist>
