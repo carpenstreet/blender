@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from enum import Enum
+
 import requests
+from xml.etree.ElementTree import fromstring, Element
 import logging
 import os
 import os.path
@@ -7,7 +12,6 @@ from typing import Tuple, Optional
 from distutils.version import StrictVersion
 import configparser
 from AblerLauncherUtils import *
-
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
@@ -34,15 +38,15 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
 
     finallist = None
     results = []
-    state_ui = None
+    state_ui = StateUI.none
 
     # URL settings
     # Pre-Release 테스트 시에는 req = req[0]으로 pre-release 데이터 받아오기
     url = set_url()
-    print(f"> url : {url}")
 
     is_release, req, state_ui = get_req_from_url(url, state_ui, dir_)
-    if state_ui:
+
+    if state_ui != StateUI.none:
         return state_ui, finallist
 
     if not is_release:
@@ -57,7 +61,6 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
 
         # ABLER 릴리즈 버전 > 설치 버전
         if StrictVersion(results[0]["version"]) > StrictVersion(installedversion):
-            print(f"> New ABLER Ver. : {results[0]['version']}")
             state_ui = StateUI.update_abler
             finallist = results
             return state_ui, finallist
@@ -66,16 +69,14 @@ def check_abler(dir_: str, installedversion: str) -> Tuple[Enum, Optional[list]]
         else:
             state_ui = StateUI.execute
 
-    # 통신 오류로 results가 없어서 바로 ABLER 실행
     else:
         state_ui = StateUI.execute
-
     return state_ui, finallist
 
 
 def get_req_from_url(
     url: str, state_ui: Enum, dir_: str
-) -> Tuple[bool, Optional[dict], Enum]:
+) -> tuple[bool, str | None, Enum]:
     """깃헙 서버에서 url의 릴리즈 정보를 받아오는 함수"""
 
     # Do path settings save here, in case user has manually edited it
@@ -84,79 +85,33 @@ def get_req_from_url(
     config.set("main", "path", dir_)
     with open(get_datadir() / "Blender/2.96/updater/config.ini", "w") as f:
         config.write(f)
-
-    try:
-        req = requests.get(url).json()
-    except Exception as e:
-        # self.statusBar().showMessage(
-        #     "Error reaching server - check your internet connection"
-        # )
-        # logger.error(e)
-        # self.frm_start.show()
-        logger.error(e)
-        state_ui = StateUI.error
-
-    # Pre-Release에서는 req[0]이 pre-release 정보를 가지고 있음
-    if pre_rel or new_repo_pre_rel:
-        req = req[0]
-
+    req_version = ""
     is_release = True
     try:
-        is_release = req["message"] != "Not Found"
+        req: str = requests.get(url).text
+        req_elem: Element = fromstring(req)
+        req_version = req_elem[0][1][1].text
+
     except Exception as e:
-        logger.debug("Release found")
+        logger.error(e)
+        state_ui = StateUI.error
+        return False, req_version, state_ui
 
-    return is_release, req, state_ui
+    return is_release, req_version, state_ui
 
 
-def get_results_from_req(req: dict, results: list) -> None:
+def get_results_from_req(req: str, results: list) -> None:
     """req에서 필요한 info를 results에 추가"""
 
-    for asset in req["assets"]:
-        target = asset["browser_download_url"]
-        filename = target.split("/")[-1]
-        target_type = "Release"
-        version_tag = req["name"][1:]
+    target = get_target_url(InstallType.abler)
+    filename = target.split("/")[-1]
+    version_tag = req.split("v")[-1]
 
-        if sys.platform == "win32":
-            if "Windows" in target and "zip" in target and target_type in target:
-                info = {
-                    "url": target,
-                    "os": "Windows",
-                    "filename": filename,
-                    "version": version_tag,
-                    "arch": "x64",
-                }
-                results.append(info)
-
-        elif sys.platform == "darwin":
-            if os.system("sysctl -in sysctl.proc_translated") == 1:
-                if (
-                    "macOS" in target
-                    and "zip" in target
-                    and target_type in target
-                    and "M1" in target
-                ):
-                    info = {
-                        "url": target,
-                        "os": "macOS",
-                        "filename": filename,
-                        "version": version_tag,
-                        "arch": "arm64",
-                    }
-                    results.append(info)
-            else:
-                if (
-                    "macOS" in target
-                    and "zip" in target
-                    and target_type in target
-                    and "Intel" in target
-                ):
-                    info = {
-                        "url": target,
-                        "os": "macOS",
-                        "filename": filename,
-                        "version": version_tag,
-                        "arch": "x86_64",
-                    }
-                    results.append(info)
+    info = {
+        "url": target,
+        "os": "Windows",
+        "filename": filename,
+        "version": version_tag,
+        "arch": "x64",
+    }
+    results.append(info)

@@ -9,12 +9,5 @@ class SparkleUpdater {
   SparkleUpdater();
   ~SparkleUpdater();
 
-  bool getAutomaticDownload() const;
-  void setAutomaticDownload(bool value);
-
-  void checkAndShowUI();
-  void checkAndMaybeShowUI();
-  void checkWithoutUI();
-
   void checkForUpdates();
 };

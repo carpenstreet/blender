@@ -4198,6 +4198,14 @@ def km_object_mode(params):
             ("object.data_transfer", {"type": 'T', "value": 'PRESS', "shift": True, "ctrl": True}, None),
         ])
 
+    if params.apple:
+        items.extend([
+            ("object.delete", {"type": 'BACK_SPACE', "value": 'PRESS'},
+             {"properties": [("use_global", False), ("confirm", False)]}),
+            ("object.delete", {"type": 'BACK_SPACE', "value": 'PRESS', "oskey": True},
+             {"properties": [("use_global", True), ("confirm", False)]}),
+        ])
+
     return keymap
 
 

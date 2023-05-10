@@ -15,6 +15,8 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+import urllib
+
 from ..lib.locales import supported_locales
 
 bl_info = {
@@ -41,7 +43,6 @@ from ..lib.materials import materials_setup
 from ..lib.tracker import tracker
 from ..lib.read_cookies import read_remembered_show_guide
 from ..lib.import_file import AconImportHelper, AconExportHelper
-from ..lib.user_info import get_or_init_user_info
 from ..lib.string_helper import timestamp_to_string
 from ..warning_modal import BlockingModalOperator
 
@@ -120,11 +121,10 @@ class AconTutorialGuidePopUpOperator(bpy.types.Operator):
     def execute(self, context):
         tracker.tutorial_guide_on()
 
-        userInfo = get_or_init_user_info()
-        prop = userInfo.ACON_prop
-        prop.show_guide = read_remembered_show_guide()
+        if prop := context.window_manager.ACON_prop:
+            prop.show_guide = read_remembered_show_guide()
 
-        bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
+            bpy.ops.wm.splash_tutorial_1("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
@@ -867,7 +867,7 @@ class Acon3dGeneralPanel(bpy.types.Panel):
         row.scale_x = 30
         anchor = row.operator("acon3d.open_search_acon3d", text="Search")
         keyword = context.window_manager.ACON_prop.keyword_input
-        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={keyword}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
+        anchor.url = f"https://www.acon3d.com/{lang}/toon/search?keyword={urllib.parse.quote(keyword)}&utm_source={utm_source}&utm_medium={utm_medium}&utm_campaign={utm_campaign}&utm_content={utm_content_for_search}&utm_term={keyword}"
 
         row = layout.row()
         row.scale_y = 1.0

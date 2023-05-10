@@ -8,7 +8,7 @@ from typing import Any, Optional
 import bpy
 
 from ._versioning import get_version
-from ._get_ip import user_ip
+from ._user_info_utils import user_ip, user_os
 
 
 class EventKind(enum.Enum):
@@ -116,6 +116,8 @@ class Tracker(metaclass=ABCMeta):
 
         if user_ip is not None:
             self._default_properties["ip"] = user_ip
+        if user_os is not None:
+            self._default_properties["os"] = user_os
 
     def turn_on(self):
         self._enabled = True
@@ -133,7 +135,7 @@ class Tracker(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _enqueue_profile_update(self, email: str, ip: str):
+    def _enqueue_profile_update(self, email: str, ip: str, os: str):
         """
         Enqueue update of user email and ip.
 
@@ -171,8 +173,8 @@ class Tracker(metaclass=ABCMeta):
     def login(self):
         self._track(EventKind.login.value)
 
-    def update_profile(self, email: str, ip: str):
-        self._enqueue_profile_update(email, ip)
+    def update_profile(self, email: str, ip: str, os: str):
+        self._enqueue_profile_update(email, ip, os)
 
     def login_fail(self, reason: str):
         self._track(EventKind.login_fail.value, {"reason": reason})
@@ -318,7 +320,7 @@ class DummyTracker(Tracker):
     def _enqueue_event(self, event_name: str, properties: dict[str, Any]):
         pass
 
-    def _enqueue_profile_update(self, email: str, ip: str):
+    def _enqueue_profile_update(self, email: str, ip: str, os: str):
         pass
 
 
@@ -331,6 +333,6 @@ class AggregateTracker(Tracker):
         for t in self.trackers:
             t._enqueue_event(event_name, properties)
 
-    def _enqueue_profile_update(self, email: str, ip: str):
+    def _enqueue_profile_update(self, email: str, ip: str, os: str):
         for t in self.trackers:
-            t._enqueue_profile_update(email, ip)
+            t._enqueue_profile_update(email, ip, os)

@@ -15,7 +15,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import privilege_helper
 from PySide2 import QtWidgets, QtCore, QtGui
 import qdarkstyle
 import mainwindow
@@ -36,6 +35,8 @@ from enum import Enum
 
 if sys.platform == "win32":
     from win32com.client import Dispatch
+    import privilege_helper
+
 
 os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
@@ -43,13 +44,8 @@ app = QtWidgets.QApplication(sys.argv)
 app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 appversion = "1.9.8"
-dir_ = ""
+dir_ = "C:/Program Files (x86)/ABLER"
 launcherdir_ = get_datadir() / "Blender/2.96/updater"
-
-if sys.platform == "darwin":
-    dir_ = "/Applications"
-elif sys.platform == "win32":
-    dir_ = "C:/Program Files (x86)/ABLER"
 
 LOG_FORMAT = (
     "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s"
@@ -121,7 +117,6 @@ class WorkerThread(QtCore.QThread):
                 # shortcut.Targetpath = self.path / "/AblerLauncher.exe"
                 # shortcut.save()
             else:
-                # TODO: 추후 macOS에서도 위의 작업과 동일한 작업을 해줘야함
                 try:
                     # TODO: copy_tree가 현재 작동하지 않고 바로 except로 넘어감
                     copy_tree(source[0], self.path)
@@ -167,7 +162,9 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.parse_launcher_state(state_ui)
 
                 # Launcher에서 릴리즈가 없는 빈 저장소임을 확인하면 ABLER에서 확인할 필요 없음
-                state_ui = None if state_ui == StateUI.empty_repo else state_ui
+                state_ui = (
+                    None if state_ui in [StateUI.empty_repo, StateUI.none] else state_ui
+                )
 
                 if not state_ui:
                     state_ui, finallist = UpdateAbler.check_abler(
@@ -214,7 +211,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         elif state_ui == StateUI.update_abler:
             self.setup_update_abler_ui()
 
-        elif state_ui == StateUI.execute:
+        elif state_ui in [StateUI.execute, StateUI.none]:
             self.setup_execute_ui()
 
         else:
@@ -286,7 +283,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.btn_execute.hide()
         self.btn_update_launcher.clicked.connect(
             lambda throwaway=0, entry=self.entry: self.download(
-                entry, dir_name=launcherdir_
+                entry, dir_name=str(launcherdir_)
             )
         )
 
@@ -312,10 +309,6 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.btn_execute.clicked.connect(self.exec_windows)
             else:
                 self.btn_execute.clicked.connect(self.exec_no_network)
-        elif sys.platform == "darwin":
-            self.btn_execute.clicked.connect(self.exec_osx)
-        elif sys.platform == "linux":
-            self.btn_execute.clicked.connect(self.exec_linux)
 
     def download(self, entry: dict, dir_name: str) -> None:
         """ABLER/Launcher 최신 릴리즈 다운로드"""
@@ -339,7 +332,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         # Do the actual download #
         ##########################
 
-        logger.info(f"Starting download thread for {url}{version}")
+        logger.info(f"Starting download thread for {url}/{version}")
 
         if process_count("blender") == 0:
             self.setup_download_ui(entry, dir_name)
@@ -430,42 +423,26 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         try:
             path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
 
-            if pre_rel:
-                _ = subprocess.Popen([path, "--pre-release"])
+            # TODO: 필요시에 Dev 환경에서 테스트하기
+            # https://acontainer.slack.com/archives/C02K1NPTV42/p1683614079788509
+            """
+            if dev:
+                _ = subprocess.Popen([path, "--dev"])
+            """
 
-            elif new_repo_rel:
-                # 빈 repo를 사용할 때는 pyinstaller를 계속 사용하기 때문에
-                # ~/blender/launcher_abler/dist/AblerLauncher.exe를 실행하면 파일 복사 불필요
-                # $ pyinstaller --icon=icon.ico --onefile --uac-admin AblerLauncher.py
-                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                _ = subprocess.Popen([path, "--new-repo-release"])
-
-            elif new_repo_pre_rel:
-                path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                _ = subprocess.Popen([path, "--new-repo-pre-release"])
-
-            else:
-                _ = subprocess.Popen(path)
+            _ = subprocess.Popen(path)
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
             logger.error(e)
             try:
                 path = f"{get_datadir()}/Blender/2.96/updater/AblerLauncher.exe"
 
-                if pre_rel:
-                    _ = subprocess.Popen([path, "--pre-release"])
+                """
+                if dev:
+                    _ = subprocess.Popen([path, "--dev"])
+                """
 
-                elif new_repo_rel:
-                    # try의 이유와 동일
-                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                    _ = subprocess.Popen([path, "--new-repo-release"])
-
-                elif new_repo_pre_rel:
-                    path = f"{os.getcwd()}/dist/AblerLauncher.exe"
-                    _ = subprocess.Popen([path, "--new-repo-pre-release"])
-
-                else:
-                    _ = subprocess.Popen(path)
+                _ = subprocess.Popen(path)
                 QtCore.QCoreApplication.instance().quit()
             except Exception as ee:
                 logger.error(ee)
@@ -559,8 +536,8 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         try:
             if privilege_helper.isUserAdmin():
                 _ = privilege_helper.runas_shell_user(
-                    os.path.join('"' + dir_ + "/blender.exe" + '"')
-                )  # pid와 tid를 리턴함
+                    os.path.join(f'"{dir_}/blender.exe"')
+                )
             logger.info(f"Executing {dir_}blender.exe")
             QtCore.QCoreApplication.instance().quit()
         except Exception as e:
@@ -615,26 +592,7 @@ class BlenderUpdater(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         QtWidgets.QMessageBox.about(self, "About", aboutText)
 
 
-def macos_prework():
-    if sys.platform != "darwin":
-        return
-    if len(sys.argv) > 1 and sys.argv[1].endswith(".blend"):
-        try:
-            if getattr(sys, "frozen", False):
-                application_path = os.path.dirname(sys.executable)
-            elif __file__:
-                application_path = os.path.dirname(__file__)
-            BlenderOSXPath = os.path.join(f"{application_path}/ABLER")
-            os.system(f"chmod +x {BlenderOSXPath}")
-            _ = subprocess.Popen([BlenderOSXPath, sys.argv[1]])
-            logger.info(f"Executing {BlenderOSXPath}")
-            sys.exit()
-        except Exception as e:
-            logger.error(e)
-
-
 def main():
-    macos_prework()
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
     window = BlenderUpdater()
     window.setWindowTitle("ABLER Launcher")

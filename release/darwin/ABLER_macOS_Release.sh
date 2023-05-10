@@ -17,6 +17,26 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
+        -v|--version)
+            ABLER_VERSION="$2"
+            shift
+            shift
+            ;;
+        -s|--sparkle-dir)
+            SPARKLE_DIR="$2"
+            shift
+            shift
+            ;;
+        -i|--image-address)
+            ABLER_IMAGE_ADDRESS="$2"
+            shift
+            shift
+            ;;
+        -h|--help)
+            echo "Usage:"
+            echo " $(basename "$0") (--test) --version ABLER_VERSION --sparkle-dir SPARKLE_DIR --image-address ABLER_IMAGE_ADDRESS"
+            exit 1
+            ;;
     esac
 done
 
@@ -46,7 +66,7 @@ if ! "${testing}"; then
     done
 
     # bundle.sh 실행
-    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}"
+    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --sparkle-dir "${SPARKLE_DIR}"
 else
     # qt 기본 제공 번들러
     macdeployqt ${_mount_dir}/ABLER.app -verbose=3
@@ -62,8 +82,8 @@ else
     done
 
     # bundle.sh 실행
-    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --test
+    sh ./bundle.sh --source "${_mount_dir}" --dmg "${_dmg_dir}" --bundle-id com.acon3d.abler.release --username global@acon3d.com --password "@keychain:altool-password" --codesign "${_codesign_cert}" --sparkle-dir "${SPARKLE_DIR}" --test
 fi
 
-# generate_appcast.sh 실행
-sh ./generate_appcast.sh --dmg "${_dmg_dir}"
+# generate_appcast_and_image.sh 실행
+sh ./generate_appcast_and_image.sh --dmg "${_dmg_dir}" --version "${ABLER_VERSION}" --sparkle-dir "${SPARKLE_DIR}"

@@ -34,9 +34,8 @@ from bpy.app.handlers import persistent
 from .lib.async_task import AsyncTask
 from .lib.login import is_process_single
 from .lib.read_cookies import *
-from .lib.user_info import get_or_init_user_info
 from .lib.tracker import tracker
-from .lib.tracker._get_ip import user_ip
+from .lib.tracker._user_info_utils import user_ip, user_os
 from .warning_modal import BlockingModalOperator
 import subprocess
 from .lib.version import (
@@ -112,8 +111,8 @@ def start_check_file_version():
 
 
 def start_check_server_version():
-    is_window = (sys.platform == 'win32')
-    if is_window and is_first_run and has_server_update():
+    is_windows = sys.platform == "win32"
+    if is_windows and is_first_run and has_server_update():
         bpy.ops.acon3d.update_alert("INVOKE_DEFAULT")
     else:
         start_authentication()
@@ -244,8 +243,6 @@ class Acon3dModalOperator(BlockingModalOperator):
         bpy.ops.wm.splash("INVOKE_DEFAULT")
 
     def should_close(self, context, event) -> bool:
-        user_info = get_or_init_user_info()
-
         splash_closing = event.type in (
             "LEFTMOUSE",
             "MIDDLEMOUSE",
@@ -256,7 +253,7 @@ class Acon3dModalOperator(BlockingModalOperator):
         if event.type == "WINDOW_DEACTIVATE":
             return False
 
-        if user_info.ACON_prop.login_status == "SUCCESS" and (
+        if context.window_manager.ACON_prop.login_status == "SUCCESS" and (
             splash_closing or is_blend_open()
         ):
             return True
@@ -312,11 +309,14 @@ class LoginTask(AsyncTask):
     def __init__(self):
         super().__init__(timeout=10)
 
-        self.prop = get_or_init_user_info().ACON_prop
-        self.username = self.prop.username
-        self.password = (
-            self.prop.password_shown if self.prop.show_password else self.prop.password
-        )
+        if prop := bpy.context.window_manager.ACON_prop:
+            self.prop = prop
+            self.username = self.prop.username
+            self.password = (
+                self.prop.password_shown
+                if self.prop.show_password
+                else self.prop.password
+            )
 
     def request_login(self):
         prop = self.prop
@@ -370,7 +370,7 @@ class LoginTask(AsyncTask):
 
     def _on_success(self):
         tracker.login()
-        tracker.update_profile(self.username, user_ip)
+        tracker.update_profile(self.username, user_ip, user_os)
 
         prop = self.prop
         path = bpy.utils.resource_path("USER")
@@ -472,8 +472,9 @@ def start_authentication():
     prefs = bpy.context.preferences
     prefs.view.show_splash = True
 
-    userInfo = get_or_init_user_info()
-    prop = userInfo.ACON_prop
+    prop = bpy.context.window_manager.ACON_prop
+    if not prop:
+        return
     prop.login_status = "IDLE"
 
     try:
@@ -498,6 +499,9 @@ def start_authentication():
         if token := responseData["accessToken"]:
             if is_process_single() and not bpy.data.filepath:
                 tracker.login_auto()
+                # login_auto() 이후에 update_profile()이 호출되지 않아서, 추가를 함.
+                # 또한 username에 접근하기 위한 가장 쉬운 방법은 read_remembered_username()이기 때문에 추가됨.
+                tracker.update_profile(read_remembered_username(), user_ip, user_os)
             prop.login_status = "SUCCESS"
 
     except:
@@ -543,34 +547,41 @@ class Acon3dUpdateAlertOperator(BlockingModalOperator):
 class Acon3dUpdateAblerOperator(bpy.types.Operator):
     bl_idname = "acon3d.update_abler"
     bl_label = ""
-    bl_description = "Update ABLER with ABLER Launcher"
+    bl_description = "Update ABLER"
     bl_translation_context = "*"
 
-    def execute(self, context):
+    def update_windows(self):
         launcher = get_launcher()
 
         # 관리자 권한이 필요한 프로그램을 실행하는 옵션
         launcher_process = subprocess.Popen(launcher, shell=True)
         is_launcher_open = True
 
-        # AblerLauncher.exe가 실행되면 ABLER 종료
-        if sys.platform == "win32":
-            while get_launcher_process_count("AblerLauncher") < 1:
-                time.sleep(1)
+        while get_launcher_process_count("AblerLauncher") < 1:
+            time.sleep(1)
 
-                # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
-                # 실행되면 None이 아닌 값을 return
-                if launcher_process.poll() is not None:
-                    is_launcher_open = False
-                    break
-        elif sys.platform == "darwin":
-            # cannot be reached
-            pass
-        else:
-            raise Exception("Unsupported platform")
+            # Popen.poll()이 런처 (child process) 가 실행 되었는지 확인함.
+            # 실행되면 None이 아닌 값을 return
+            if launcher_process.poll() is not None:
+                is_launcher_open = False
+                break
 
         if is_launcher_open:
             bpy.ops.wm.quit_blender()
+
+    def update_macOS(self):
+        bpy.ops.acon3d.close_blocking_modal("INVOKE_DEFAULT")
+        if check_sparkle_updater := bpy.context.window.check_sparkle_updater:
+            check_sparkle_updater()
+
+    def execute(self, context):
+        # AblerLauncher.exe가 실행되면 ABLER 종료
+        if sys.platform == "win32":
+            self.update_windows()
+        elif sys.platform == "darwin":
+            self.update_macOS()
+        else:
+            raise Exception("Unsupported platform")
 
         return {"FINISHED"}
 
@@ -607,8 +618,11 @@ class Acon3dLowFileVersionWarning(BlockingModalOperator):
         )
 
         row = col.row()
+        prop = bpy.context.window_manager.ACON_prop
+        if not prop:
+            return
         row.prop(
-            bpy.context.window_manager.ACON_prop,
+            prop,
             "hide_low_version_warning",
             text="",
             icon="CHECKBOX_HLT",

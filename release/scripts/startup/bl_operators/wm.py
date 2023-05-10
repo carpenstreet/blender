@@ -3058,67 +3058,67 @@ class WM_MT_splash(Menu):
         layout.operator_context = 'EXEC_DEFAULT'
 
         row = layout.row()
+        prop = context.window_manager.ACON_prop
+        if not prop:
+            return
 
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
-        if userInfo:
+        if prop.login_status == 'SUCCESS':
+            row.label(text="Welcome!")
+            row = layout.row()
+            row.label(text="Please click outside the popup box to start ABLER.")
 
-            if userInfo.ACON_prop.login_status == 'SUCCESS':
-                row.label(text="Welcome!")
-                row = layout.row()
-                row.label(text="Please click outside the popup box to start ABLER.")
+        elif prop.login_status == 'LOADING':
+            row.label(text="Hold on...")
 
-            elif userInfo.ACON_prop.login_status == 'LOADING':
-                row.label(text="Hold on...")
+        else:
 
+            if prop.login_status == 'FAIL':
+                row.label(text="Login failed. Please try again.")
             else:
+                row.label(text="Please login with your ACON3D account.")
 
-                if userInfo.ACON_prop.login_status == 'FAIL':
-                    row.label(text="Login failed. Please try again.")
-                else:
-                    row.label(text="Please login with your ACON3D account.")
+            layout.separator()
 
-                layout.separator()
+            row_outside = layout.row()
 
-                row_outside = layout.row()
+            column = row_outside.column()
+            row = column.row()
+            row.prop(prop, "username")
+            row = column.row()
+            if prop.show_password:
+                row.prop(prop, "password_shown")
+            else:
+                row.prop(prop, "password")
+            column.separator()
+            row = column.row()
+            row.prop(
+                prop,
+                "remember_username",
+                text="",
+                icon="CHECKBOX_HLT",
+                emboss=False,
+                invert_checkbox=True,
+            )
+            row.label(text="Remember Username")
 
-                column = row_outside.column()
-                row = column.row()
-                row.prop(userInfo.ACON_prop, "username")
-                row = column.row()
-                if userInfo.ACON_prop.show_password:
-                    row.prop(userInfo.ACON_prop, "password_shown")
-                else:
-                    row.prop(userInfo.ACON_prop, "password")
-                column.separator()
-                row = column.row()
-                row.prop(
-                    userInfo.ACON_prop,
-                    "remember_username",
-                    text="",
-                    icon="CHECKBOX_HLT",
-                    emboss=False,
-                    invert_checkbox=True,
-                )
-                row.label(text="Remember Username")
+            column = row_outside.column()
+            column.separator()
+            column.separator()
+            column.separator()
+            row = column.row()
+            row.prop(
+                prop,
+                "show_password",
+                text="",
+                icon="HIDE_OFF",
+                emboss=False,
+                invert_checkbox=True,
+            )
 
-                column = row_outside.column()
-                column.separator()
-                column.separator()
-                column.separator()
-                row = column.row()
-                row.prop(
-                    userInfo.ACON_prop,
-                    "show_password",
-                    text="",
-                    icon="HIDE_OFF",
-                    emboss=False,
-                    invert_checkbox=True,
-                )
-
-                column = row_outside.column()
-                column.scale_x = 0.5
-                column.scale_y = 2
-                column.operator("acon3d.login", text="  Submit", depress=True)
+            column = row_outside.column()
+            column.scale_x = 0.5
+            column.scale_y = 2
+            column.operator("acon3d.login", text="  Submit", depress=True)
 
         layout.separator()
 
@@ -3244,9 +3244,6 @@ class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
 
     def draw(self, context):
-
-        userInfo = bpy.data.meshes.get("ACON_userInfo")
-
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
 
@@ -3263,7 +3260,17 @@ class WM_MT_splash_tutorial(Menu):
 
         row = layout.row()
         anchor = row.operator("wm.url_open", text="ABLER Guide", icon='URL')
-        anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
+        # general.py에 언어 설정 코드가 있긴 하지만 __init__.py가 달라 재활용할 수 없음
+        # 따라서 여기서 언어 설정 코드를 따로 지정
+        cur_lang = bpy.context.preferences.view.language
+        if cur_lang == "ko_KR":
+            anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
+        elif cur_lang == "ja_JP":
+            anchor.url = 'https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2'
+        elif cur_lang == "zh_CN" or cur_lang == "zh_TW":
+            anchor.url = 'https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68'
+        else: # en_US + 지원되지 않는 언어는 영어로
+            anchor.url = 'https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c'  
         layout.separator()
 
         row = layout.row()
@@ -3272,7 +3279,10 @@ class WM_MT_splash_tutorial(Menu):
 
         column = layout.column()
         row = column.row()
-        row.prop(userInfo.ACON_prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
+        prop = context.window_manager.ACON_prop
+        if not prop:
+            return
+        row.prop(prop, "show_guide", text="", icon="CHECKBOX_HLT", emboss=False, invert_checkbox=True)
         row.alignment = "RIGHT"
         row.label(text="Always Show")
         layout.separator()

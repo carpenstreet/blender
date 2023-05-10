@@ -1589,6 +1589,17 @@ void wm_window_process_events(const bContext *C)
  * \note #bContext can be null in background mode because we don't
  * need to event handling.
  */
+
+// ABLER: Updater for MacOS
+#if defined(__APPLE__)
+void WM_check_sparkle_updater(wmWindow *win)
+{
+  if (win && win->ghostwin) {
+    GHOST_CheckSparkleUpdater(g_system);
+  }
+}
+#endif
+
 void wm_ghost_init(bContext *C)
 {
   if (!g_system) {
@@ -1603,7 +1614,7 @@ void wm_ghost_init(bContext *C)
 
     // ABLER: Updater for MacOS
 #if defined(__APPLE__)
-    GHOST_CreateAndCheckUpdater(g_system);
+    GHOST_CreateAndCheckSparkleUpdater(g_system);
 #endif
 
     if (C != NULL) {
