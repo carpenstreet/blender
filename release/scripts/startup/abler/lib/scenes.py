@@ -97,14 +97,19 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_primary = background_color
     ui.transparent_checker_secondary = background_color
 
+
 def change_ui_to_show_selected_light(self, context: Context) -> None:
     index = context.scene.ACON_prop.light_index
 
     if not context.scene.ACON_prop.lights:
         return
 
-    data = context.scene.ACON_prop.lights[index].obj.data
     light = context.scene.ACON_prop.lights[index]
+
+    if light.obj:
+        data = light.obj.data
+    else:
+        return
     light.color = data.color
     light.power = data.energy
     light.diffuse_factor = data.diffuse_factor
@@ -114,6 +119,7 @@ def change_ui_to_show_selected_light(self, context: Context) -> None:
     # select current light item
     bpy.ops.object.select_all(action='DESELECT')
     context.scene.ACON_prop.lights[index].obj.select_set(True)
+
 
 # scene_items should be a global variable due to a bug in EnumProperty
 scene_items: List[Tuple[str, str, str]] = []
@@ -269,9 +275,8 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
     # Light는 Object이긴 하지만, Scene별로 관리되도록 하기 위해 복사하지 않는다.
     for acon_light in prop.lights:
         new_scene.collection.objects.unlink(acon_light.obj)
-        
-    prop.lights.clear()
 
+    prop.lights.clear()
 
     if type == "Default":
         prop.toggle_toon_edge = True

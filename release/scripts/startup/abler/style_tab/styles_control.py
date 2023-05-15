@@ -149,6 +149,7 @@ class LIGHT_UL_List(bpy.types.UIList):
                 row.label(icon='LIGHT_AREA', text=obj.name)
             row.prop(item, "hide", text="", icon='HIDE_ON' if item.hide else 'HIDE_OFF')
 
+
 class LightPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
     bl_idname = "ACON3D_PT_Lights"
@@ -157,6 +158,7 @@ class LightPanel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_translation_context = "abler"
+
     def __init__(self):
         super().__init__()
 
@@ -199,11 +201,10 @@ class LightPanel(bpy.types.Panel):
             col = row.column()
             col.operator(RemoveLightOperator.bl_idname, text="", icon="REMOVE")
 
-
             if scene_prop.lights:
                 index = scene_prop.light_index
 
-                if index not in range(0,len(scene_prop.lights)):
+                if index not in range(0, len(scene_prop.lights)):
                     return
 
                 light = scene_prop.lights[index]
@@ -217,7 +218,6 @@ class LightPanel(bpy.types.Panel):
                 row.prop(light, "specular_factor", text="Specular", slider=True)
                 row = layout.row(align=True)
                 row.prop(light, "volume_factor", text="Volume", slider=True)
-
 
 
 class AddLightOperatorBase(bpy.types.Operator):
@@ -259,7 +259,8 @@ class AddLightOperatorBase(bpy.types.Operator):
 
         # object 생성
         acon_light: Object = bpy.data.objects.new(light_name, acon_light_data)
-        return(acon_light)
+        return (acon_light)
+
     def execute(self, context):
         light_name = self.__generate_light_name()
         light = self.__create_light_on_scene(light_name)
@@ -286,6 +287,7 @@ class AddAreaLightOperator(AddLightOperatorBase):
     bl_label = "Add Area Light"
     light_type = 'AREA'
 
+
 class RemoveLightOperator(bpy.types.Operator):
     bl_idname = "acon3d.remove_light"
     bl_label = "Remove Light"
@@ -297,7 +299,7 @@ class RemoveLightOperator(bpy.types.Operator):
         index = scene.ACON_prop.light_index
         lights = scene.ACON_prop.lights
 
-        if not index in range(0,len(lights)):
+        if not index in range(0, len(lights)):
             return {"FINISHED"}
 
         light_obj = scene.ACON_prop.lights[index].obj
@@ -309,6 +311,7 @@ class RemoveLightOperator(bpy.types.Operator):
         scene.ACON_prop.lights.remove(index)
 
         return {"FINISHED"}
+
 
 class ShadowShadingPanel(bpy.types.Panel):
     bl_parent_id = "ACON_PT_Styles"
