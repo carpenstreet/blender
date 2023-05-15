@@ -294,8 +294,10 @@ def renew_aconlights(_dummy):
         lights.remove(index - counter)
         cnt = cnt + 1
 
+
 class AconLight(bpy.types.PropertyGroup):
     obj: bpy.props.PointerProperty(type=bpy.types.Object)
+
     @classmethod
     def register(cls):
         bpy.app.handlers.depsgraph_update_post.append(renew_aconlights)
@@ -308,17 +310,16 @@ class AconLight(bpy.types.PropertyGroup):
     scene_cache = None
     obj_cnt_cache = 0
 
-
     def change_light_data(self, context: bpy.types.Context) -> None:
-        index = context.scene.ACON_prop.light_index
-        data = context.scene.ACON_prop.lights[index].obj.data
-        prop = context.scene.ACON_prop.lights[index]
+        prop = context.scene.ACON_prop
+        aconlight = prop.lights[prop.light_index]
+        data = aconlight.obj.data
 
-        data.color = prop.color
-        data.energy = prop.power
-        data.diffuse_factor = prop.diffuse_factor
-        data.specular_factor = prop.specular_factor
-        data.volume_factor = prop.volume_factor
+        data.color = aconlight.color
+        data.energy = aconlight.power
+        data.diffuse_factor = aconlight.diffuse_factor
+        data.specular_factor = aconlight.specular_factor
+        data.volume_factor = aconlight.volume_factor
 
     def toggle_light(self, context: bpy.types.Context) -> None:
         self.obj.hide_set(self.hide)
@@ -369,7 +370,7 @@ class AconLight(bpy.types.PropertyGroup):
         update=change_light_data
     )
 
-    hide: bpy.props.BoolProperty(
+    is_hidden: bpy.props.BoolProperty(
         name="Hide Light",
         description="True means hide off,and False means hide on",
         default=False,
