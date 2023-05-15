@@ -270,6 +270,7 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
         ],
     )
 
+
 @persistent
 def renew_aconlights(_dummy):
     scene = bpy.context.scene
@@ -516,7 +517,6 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         name="",
         description="Express additional lights",
         default=True,
-        update=materials_handler.toggle_lights,
     )
 
     toggle_shadow_shading: bpy.props.BoolProperty(
