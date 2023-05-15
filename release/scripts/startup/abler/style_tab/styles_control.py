@@ -133,7 +133,7 @@ class LIGHT_UL_List(bpy.types.UIList):
         self.use_filter_sort_reverse = True
 
     def draw_item(
-            self, context, layout, data, item, icon, active_data, active_propname
+        self, context, layout, data, item, icon, active_data, active_propname
     ):
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             if not item.obj.data:
@@ -142,12 +142,17 @@ class LIGHT_UL_List(bpy.types.UIList):
             row = layout.row(align=True)
             obj = item.obj
             if light_type == "POINT":
-                row.label(icon='LIGHT_POINT', text=obj.name)
+                row.label(icon="LIGHT_POINT", text=obj.name)
             elif light_type == "SPOT":
-                row.label(icon='LIGHT_SPOT', text=obj.name)
+                row.label(icon="LIGHT_SPOT", text=obj.name)
             elif light_type == "AREA":
-                row.label(icon='LIGHT_AREA', text=obj.name)
-            row.prop(item, "is_hidden", text="", icon='HIDE_ON' if item.is_hidden else "HIDE_OFF")
+                row.label(icon="LIGHT_AREA", text=obj.name)
+            row.prop(
+                item,
+                "is_hidden",
+                text="",
+                icon="HIDE_ON" if item.is_hidden else "HIDE_OFF",
+            )
 
 
 class LightPanel(bpy.types.Panel):
@@ -175,7 +180,9 @@ class LightPanel(bpy.types.Panel):
             # PointLight 생성버튼
             row = layout.row(align=True)
             col = row.column()
-            col.operator(AddPointLightOperator.bl_idname, text="Point", icon="LIGHT_POINT")
+            col.operator(
+                AddPointLightOperator.bl_idname, text="Point", icon="LIGHT_POINT"
+            )
 
             # SpotLight 생성버튼
             col = row.column()
@@ -193,7 +200,7 @@ class LightPanel(bpy.types.Panel):
                 scene_prop,
                 "lights",
                 scene_prop,
-                "light_index"
+                "light_index",
             )
             col = row.column()
             col.operator(RemoveLightOperator.bl_idname, text="", icon="REMOVE")
@@ -235,7 +242,9 @@ class AddLightOperatorBase(bpy.types.Operator):
         name = "ACON_light"
 
         # while 여러번 돌 수 있으므로. reference로 리스트를 먼저 한번 생성해준다.
-        light_names = [obj.name for obj in self.scene.collection.objects if obj.type == 'LIGHT']
+        light_names = [
+            obj.name for obj in self.scene.collection.objects if obj.type == "LIGHT"
+        ]
 
         while name in light_names:
             prefix = name.rsplit(".")[0]
@@ -254,7 +263,7 @@ class AddLightOperatorBase(bpy.types.Operator):
 
         # object 생성
         acon_light: Object = bpy.data.objects.new(light_name, acon_light_data)
-        return (acon_light)
+        return acon_light
 
     def execute(self, context):
         light_name = self.__generate_light_name()
@@ -375,7 +384,9 @@ class ShadingPanel(bpy.types.Panel):
 
 
 class MATERIAL_UL_List(bpy.types.UIList):
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+    def draw_item(
+        self, context, layout, data, item, icon, active_data, active_propname
+    ):
         layout.use_property_split = True
         layout.use_property_decorate = False
         ob = data

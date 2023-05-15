@@ -322,7 +322,7 @@ class AconLight(bpy.types.PropertyGroup):
         data.volume_factor = aconlight.volume_factor
 
     def toggle_light(self, context: bpy.types.Context) -> None:
-        self.obj.hide_set(self.hide)
+        self.obj.hide_set(self.is_hidden)
 
     color: bpy.props.FloatVectorProperty(
         name="Light Color",
@@ -331,7 +331,7 @@ class AconLight(bpy.types.PropertyGroup):
         default=(1.0, 1.0, 1.0),
         min=0.0,
         max=100.0,
-        update=change_light_data
+        update=change_light_data,
     )
 
     power: bpy.props.FloatProperty(
@@ -340,7 +340,7 @@ class AconLight(bpy.types.PropertyGroup):
         default=10.0,
         min=0,
         max=1000.0,
-        update=change_light_data
+        update=change_light_data,
     )
 
     diffuse_factor: bpy.props.FloatProperty(
@@ -349,7 +349,7 @@ class AconLight(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=change_light_data
+        update=change_light_data,
     )
 
     specular_factor: bpy.props.FloatProperty(
@@ -358,7 +358,7 @@ class AconLight(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=change_light_data
+        update=change_light_data,
     )
 
     volume_factor: bpy.props.FloatProperty(
@@ -367,14 +367,14 @@ class AconLight(bpy.types.PropertyGroup):
         default=1.0,
         min=0,
         max=100.0,
-        update=change_light_data
+        update=change_light_data,
     )
 
     is_hidden: bpy.props.BoolProperty(
         name="Hide Light",
         description="True means hide off,and False means hide on",
         default=False,
-        update=toggle_light
+        update=toggle_light,
     )
 
 
@@ -756,9 +756,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     lights: bpy.props.CollectionProperty(type=AconLight)
     light_index: bpy.props.IntProperty(
-        name="light index",
-        default=0,
-        update=scenes.change_ui_to_show_selected_light
+        name="light index", default=0, update=scenes.change_ui_to_show_selected_light
     )
 
 
