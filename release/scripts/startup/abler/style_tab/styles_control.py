@@ -177,8 +177,9 @@ class LightPanel(bpy.types.Panel):
             # Add Light
             row.label(text="Add Light")
 
-            # PointLight 생성버튼
             row = layout.row(align=True)
+
+            # PointLight 생성버튼
             col = row.column()
             col.operator(
                 AddPointLightOperator.bl_idname, text="Point", icon="LIGHT_POINT"
@@ -215,7 +216,7 @@ class LightPanel(bpy.types.Panel):
                 row = layout.row(align=True)
                 row.prop(light, "color", text="Color", slider=True)
                 row = layout.row(align=True)
-                row.prop(light, "power", text="Power", slider=True)
+                row.prop(light, "energy", text="Energy", slider=True)
                 row = layout.row(align=True)
                 row.prop(light, "diffuse_factor", text="Diffuse", slider=True)
                 row = layout.row(align=True)
@@ -237,7 +238,7 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene = bpy.context.scene
         return self.execute(context)
 
-    def __generate_light_name(self) -> str:
+    def _generate_light_name(self) -> str:
         # set default name
         name = "ACON_light"
 
@@ -257,7 +258,7 @@ class AddLightOperatorBase(bpy.types.Operator):
 
         return name
 
-    def __create_light_on_scene(self, light_name: str):
+    def _create_light_on_scene(self, light_name: str):
         acon_light_data: Light = bpy.data.lights.new(light_name, type=self.light_type)
         acon_light_data.energy = 10
 
@@ -266,8 +267,8 @@ class AddLightOperatorBase(bpy.types.Operator):
         return acon_light
 
     def execute(self, context):
-        light_name = self.__generate_light_name()
-        light = self.__create_light_on_scene(light_name)
+        light_name = self._generate_light_name()
+        light = self._create_light_on_scene(light_name)
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light

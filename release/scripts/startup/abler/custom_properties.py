@@ -316,7 +316,7 @@ class AconLight(bpy.types.PropertyGroup):
         data = aconlight.obj.data
 
         data.color = aconlight.color
-        data.energy = aconlight.power
+        data.energy = aconlight.energy
         data.diffuse_factor = aconlight.diffuse_factor
         data.specular_factor = aconlight.specular_factor
         data.volume_factor = aconlight.volume_factor
@@ -325,7 +325,7 @@ class AconLight(bpy.types.PropertyGroup):
         self.obj.hide_set(self.is_hidden)
 
     color: bpy.props.FloatVectorProperty(
-        name="Light Color",
+        name="",
         description="Adjust light color",
         subtype="COLOR",
         default=(1.0, 1.0, 1.0),
@@ -334,9 +334,9 @@ class AconLight(bpy.types.PropertyGroup):
         update=change_light_data,
     )
 
-    power: bpy.props.FloatProperty(
-        name="Light Power",
-        description="Adjust light power",
+    energy: bpy.props.FloatProperty(
+        name="",
+        description="Adjust light energy",
         default=10.0,
         min=0,
         max=1000.0,
@@ -344,7 +344,7 @@ class AconLight(bpy.types.PropertyGroup):
     )
 
     diffuse_factor: bpy.props.FloatProperty(
-        name="Light Diffuse",
+        name="",
         description="Adjust light diffuse",
         default=1.0,
         min=0,
@@ -353,7 +353,7 @@ class AconLight(bpy.types.PropertyGroup):
     )
 
     specular_factor: bpy.props.FloatProperty(
-        name="Light Specular",
+        name="",
         description="Adjust light specular",
         default=1.0,
         min=0,
@@ -362,7 +362,7 @@ class AconLight(bpy.types.PropertyGroup):
     )
 
     volume_factor: bpy.props.FloatProperty(
-        name="Light Volume",
+        name="",
         description="Adjust light volume",
         default=1.0,
         min=0,
@@ -371,8 +371,8 @@ class AconLight(bpy.types.PropertyGroup):
     )
 
     is_hidden: bpy.props.BoolProperty(
-        name="Hide Light",
-        description="True means hide off,and False means hide on",
+        name="",
+        description="Toggle selected light",
         default=False,
         update=toggle_light,
     )
@@ -514,9 +514,8 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     )
 
     toggle_lights: bpy.props.BoolProperty(
-        # name="Lights",
         name="",
-        description="Express additional lights",
+        description="Lights",
         default=True,
     )
 
