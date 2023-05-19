@@ -238,37 +238,16 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene = bpy.context.scene
         return self.execute(context)
 
-    def _generate_light_name(self) -> str:
-        # set default name
-        name = "ACON_light"
-
-        # while 여러번 돌 수 있으므로. reference로 리스트를 먼저 한번 생성해준다.
-        light_names = [
-            obj.name for obj in self.scene.collection.objects if obj.type == "LIGHT"
-        ]
-
-        while name in light_names:
-            prefix = name.rsplit(".")[0]
-            postfix = name.rsplit(".")[-1]
-            if postfix.isnumeric():
-                postfix = str(int(postfix) + 1).zfill(3)
-            else:
-                postfix = "001"
-            name = prefix + "." + postfix
-
-        return name
-
-    def _create_light_on_scene(self, light_name: str):
-        acon_light_data: Light = bpy.data.lights.new(light_name, type=self.light_type)
+    def _create_light_on_scene(self):
+        acon_light_data: Light = bpy.data.lights.new(name="ACON_light", type=self.light_type)
         acon_light_data.energy = 10
 
         # object 생성
-        acon_light: Object = bpy.data.objects.new(light_name, acon_light_data)
+        acon_light: Object = bpy.data.objects.new(acon_light_data.name, acon_light_data)
         return acon_light
 
     def execute(self, context):
-        light_name = self._generate_light_name()
-        light = self._create_light_on_scene(light_name)
+        light = self._create_light_on_scene()
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light
@@ -304,7 +283,7 @@ class RemoveLightOperator(bpy.types.Operator):
         index = scene.ACON_prop.light_index
         lights = scene.ACON_prop.lights
 
-        if not index in range(0, len(lights)):
+        if index >= len(lights):
             return {"FINISHED"}
 
         light_obj = scene.ACON_prop.lights[index].obj
@@ -314,6 +293,9 @@ class RemoveLightOperator(bpy.types.Operator):
 
         # ACON_prop.lights 데이터 제거
         scene.ACON_prop.lights.remove(index)
+
+        if index > 0:
+            index = index - 1
 
         return {"FINISHED"}
 
