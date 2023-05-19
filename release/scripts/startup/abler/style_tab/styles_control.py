@@ -239,7 +239,9 @@ class AddLightOperatorBase(bpy.types.Operator):
         return self.execute(context)
 
     def _create_light_on_scene(self):
-        acon_light_data: Light = bpy.data.lights.new(name="ACON_light", type=self.light_type)
+        acon_light_data: Light = bpy.data.lights.new(
+            name="ACON_light", type=self.light_type
+        )
         acon_light_data.energy = 10
 
         # object 생성
