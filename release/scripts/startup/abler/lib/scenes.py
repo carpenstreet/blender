@@ -97,8 +97,12 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_primary = background_color
     ui.transparent_checker_secondary = background_color
 
-
 def change_ui_to_show_selected_light(self, context: Context) -> None:
+    """
+    ACON_prop의 light_index가 변경되었을때 아래의 로직을 수행한다
+    1. 실제 조명의 data와 ui로 보여지는 properties를 동기화
+    2. 뷰포트 상에서 해당 조명을 조작할 수 있도록 선택 처리
+    """
     index = context.scene.ACON_prop.light_index
 
     if not context.scene.ACON_prop.lights:

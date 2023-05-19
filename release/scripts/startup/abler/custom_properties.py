@@ -272,7 +272,7 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
 
 
 @persistent
-def renew_aconlights(_dummy):
+def renew_acon_lights(_dummy):
     scene = bpy.context.scene
     cnt = len(scene.collection.objects)
 
@@ -300,11 +300,11 @@ class AconLight(bpy.types.PropertyGroup):
 
     @classmethod
     def register(cls):
-        bpy.app.handlers.depsgraph_update_post.append(renew_aconlights)
+        bpy.app.handlers.depsgraph_update_post.append(renew_acon_lights)
 
     @classmethod
     def unregister(cls):
-        bpy.app.handlers.depsgraph_update_post.remove(renew_aconlights)
+        bpy.app.handlers.depsgraph_update_post.remove(renew_acon_lights)
 
     # used to check if renew is needed
     scene_cache = None
@@ -755,7 +755,10 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     lights: bpy.props.CollectionProperty(type=AconLight)
     light_index: bpy.props.IntProperty(
-        name="light index", default=0, update=scenes.change_ui_to_show_selected_light
+        name="",
+        min=0,
+        default=0,
+        update=scenes.change_ui_to_show_selected_light
     )
 
 

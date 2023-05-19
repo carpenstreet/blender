@@ -252,7 +252,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
         if "." in self.basename:
             self.basename = ".".join(self.basename.split(".")[:-1])
 
-        bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_extras=False
+        context.screen.areas[0].spaces[0].overlay.show_extras = False
         res = super().execute(context)
         return res
 
@@ -280,7 +280,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
                 context.preferences.view.render_display_type = self.initial_display_type
 
                 self.report({"INFO"}, "RENDER QUEUE FINISHED")
-                bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_extras=True
+                context.screen.areas[0].spaces[0].overlay.show_extras = True
 
                 bpy.ops.acon3d.alert(
                     "INVOKE_DEFAULT",
