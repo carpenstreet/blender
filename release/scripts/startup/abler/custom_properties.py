@@ -274,13 +274,13 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
 @persistent
 def renew_acon_lights(_dummy):
     scene = bpy.context.scene
-    cnt = len(scene.collection.objects)
+    obj_cnt = len(scene.collection.objects)
 
-    if scene == AconLight.scene_cache and cnt == AconLight.obj_cnt_cache:
+    if scene == AconLight.scene_cache and obj_cnt == AconLight.obj_cnt_cache:
         return
 
     AconLight.scene_cache = scene
-    AconLight.obj_cnt_cache = cnt
+    AconLight.obj_cnt_cache = obj_cnt
 
     delete_indices = []
     lights = scene.ACON_prop.lights
@@ -292,7 +292,7 @@ def renew_acon_lights(_dummy):
     counter = 0
     for index in delete_indices:
         lights.remove(index - counter)
-        cnt = cnt + 1
+        counter = counter + 1
 
 
 class AconLight(bpy.types.PropertyGroup):

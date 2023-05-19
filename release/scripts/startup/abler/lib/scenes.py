@@ -97,6 +97,7 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_primary = background_color
     ui.transparent_checker_secondary = background_color
 
+
 def change_ui_to_show_selected_light(self, context: Context) -> None:
     """
     ACON_prop의 light_index가 변경되었을때 아래의 로직을 수행한다
@@ -115,13 +116,13 @@ def change_ui_to_show_selected_light(self, context: Context) -> None:
     else:
         return
     light.color = data.color
-    light.power = data.energy
+    light.energy = data.energy
     light.diffuse_factor = data.diffuse_factor
     light.volume_factor = data.volume_factor
     light.specular_factor = data.specular_factor
 
     # select current light item
-    bpy.ops.object.select_all(action='DESELECT')
+    bpy.ops.object.select_all(action="DESELECT")
     context.scene.ACON_prop.lights[index].obj.select_set(True)
 
 
