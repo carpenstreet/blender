@@ -981,7 +981,6 @@ class Acon3dPastebuffer(bpy.types.Operator):
     bl_idname = "acon3d.pastebuffer"
     bl_label = "Paste Objects"
     bl_description = "Objects from the clipboard are pasted"
-    bl_translation_context = "abler"
 
     def execute(self, context):
         bpy.ops.view3d.pastebuffer()
