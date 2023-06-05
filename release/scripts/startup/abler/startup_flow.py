@@ -375,6 +375,7 @@ class LoginTask(AsyncTask):
         prop = self.prop
         path = bpy.utils.resource_path("USER")
         path_cookiesFolder = os.path.join(path, "cookies")
+        os.makedirs(path_cookiesFolder, exist_ok=True)
         path_cookiesFile = os.path.join(path_cookiesFolder, "acon3d_session")
 
         with open(path_cookiesFile, "wb") as cookies_file:
