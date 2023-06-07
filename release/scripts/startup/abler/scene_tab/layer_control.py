@@ -189,17 +189,29 @@ class Acon3dLayersPanel(bpy.types.Panel):
 
             # Layer 생성 버튼
             col = row.column()
-            col.operator("object.link_to_collection", text="", icon="ADD")
+            col.operator("acon3d.create_collection", text="", icon="ADD")
         else:
             layout = self.layout
             row = layout.row(align=True)
             row.label(text="No 'Layers' collection in Outliner")
 
 
+class Acon3dCreateCollection(bpy.types.Operator):
+    bl_idname = "acon3d.create_collection"
+    bl_label = "Create Collection"
+    bl_description = "Create a new collection and link objects to a collection"
+
+    # TODO: 오브젝트가 선택되지 않으면 버튼 비활성 하기
+    def execute(self, context):
+        bpy.ops.object.link_to_collection(collection_index=1, is_new=True)
+        return {"FINISHED"}
+
+
 classes = (
     Acon3dCreateGroupOperator,
     Acon3dExplodeGroupOperator,
     Acon3dLayersPanel,
+    Acon3dCreateCollection,
 )
 
 
