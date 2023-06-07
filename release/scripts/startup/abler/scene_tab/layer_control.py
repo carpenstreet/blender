@@ -201,7 +201,10 @@ class Acon3dCreateCollection(bpy.types.Operator):
     bl_label = "Create Collection"
     bl_description = "Create a new collection and link objects to a collection"
 
-    # TODO: 오브젝트가 선택되지 않으면 버튼 비활성 하기
+    @classmethod
+    def poll(cls, context):
+        return len(context.selected_objects) > 0
+
     def execute(self, context):
         bpy.ops.object.link_to_collection(collection_index=1, is_new=True)
         return {"FINISHED"}
