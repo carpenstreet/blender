@@ -205,6 +205,9 @@ class Acon3dCreateCollection(bpy.types.Operator):
     def poll(cls, context):
         return len(context.selected_objects) > 0
 
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
     def execute(self, context):
         bpy.ops.object.link_to_collection(collection_index=1, is_new=True)
 
