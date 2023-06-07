@@ -201,6 +201,10 @@ class Acon3dCreateCollection(bpy.types.Operator):
     bl_label = "Create Collection"
     bl_description = "Create a new collection and link objects to a collection"
 
+    name: bpy.props.StringProperty(
+        name="Name", default="Collection", description="Write collection name"
+    )
+
     @classmethod
     def poll(cls, context):
         return len(context.selected_objects) > 0
@@ -209,7 +213,9 @@ class Acon3dCreateCollection(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
-        bpy.ops.object.link_to_collection(collection_index=1, is_new=True)
+        bpy.ops.object.link_to_collection(
+            collection_index=1, is_new=True, new_collection_name=self.name
+        )
 
         # Collection 목록을 Scene > Layers에 업데이트 하기
         # https://www.notion.so/acon3d/to-127d21725cc641b1a28d6451d3949bb1?pvs=4
