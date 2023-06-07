@@ -3037,7 +3037,7 @@ def fetch_notices():
         return
     if req is not None and req.status_code == 200:
         ret_list = json.loads(req.text)["results"]
-        notices = ('SUCCESS', ret_list)
+        notices = ('SUCCESS', ret_list[:1])
     else:
         notices = ('FAILED', None)
 
@@ -3134,23 +3134,38 @@ class WM_MT_splash(Menu):
         layout.emboss = 'PULLDOWN_MENU'
 
         split = layout.split()
+        lang = bpy.context.preferences.view.language
 
         col1 = split.column()
-        anchor = col1.operator("acon3d.anchor", text="See ACON3D models!", icon='EVENT_A')
-        anchor.description_text = "Link to ACON3D"
-        anchor.href = 'https://acon3d.com'
-        anchor = col1.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
-        anchor.description_text = "Sign up for ACON3D"
-        anchor.href = 'https://www.acon3d.com/member/join'
+        anchor = col1.operator("acon3d.anchor", text="Operating ABLER", icon='URL')
+        anchor.description_text = "Link to Operating ABLER"
+        if lang == "ko_KR":
+            anchor.href = 'https://acon3d.notion.site/27fd2c38710645e09d8bec304eb83505?pvs=4'
+        else:
+            anchor.href = 'https://acon3d.notion.site/Operating-ABLER-9ee94a8169a6400ab9c677dd312e5fdd?pvs=4'
+
+        anchor = col1.operator("acon3d.anchor", text="ABLER Instruction", icon='URL')
+        anchor.description_text = "Link to ABLER Instruction"
+        if lang == "ko_KR":
+            anchor.href = 'https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93?pvs=4'
+        else:
+            anchor.href = 'https://acon3d.notion.site/ABLER-Instructions-c4f25debe71b4fa0adcc7e87f8ccd7a1'
 
         # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
-        anchor = col2.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
-        anchor.description_text = "Link to Blender Foundation and check release notes"
-        anchor.href = 'https://www.blender.org/download/releases/'
-        anchor = col2.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
-        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
-        anchor.href = 'https://fund.blender.org/'
+        anchor = col2.operator("acon3d.anchor", text="ABLER feature Walkthrough", icon='URL')
+        anchor.description_text = "Link to ABLER feature Walkthrough"
+        if lang == "ko_KR":
+            anchor.href = 'https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93?pvs=4'
+        else:
+            anchor.href = 'https://acon3d.notion.site/ABLER-Feature-Walkthrough-33f7c23e06694137954bb3ea93ca992d?pvs=4'
+
+        anchor = col2.operator("acon3d.anchor", text="See ACON3D models!", icon='URL')
+        anchor.description_text = "Link to ACON3D"
+        if lang == "ko_KR":
+            anchor.href = 'https://www.acon3d.com/ko/toon'
+        else:
+            anchor.href = 'https://www.acon3d.com/en/toon'
 
         # 공지사항 파트
         fetch_notices()
