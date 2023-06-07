@@ -175,8 +175,10 @@ class Acon3dLayersPanel(bpy.types.Panel):
         if "Layers" in view_layer.layer_collection.children:
             layout = self.layout
             layout.use_property_split = False
-            box = layout.box()
+            row = layout.row()
 
+            # Layers list
+            box = row.column().box()
             self._draw_collection(
                 box,
                 view_layer,
@@ -184,6 +186,10 @@ class Acon3dLayersPanel(bpy.types.Panel):
                 view_layer.layer_collection.children["Layers"],
                 1,
             )
+
+            # Layer 생성 버튼
+            col = row.column()
+            col.operator("object.link_to_collection", text="", icon="ADD")
         else:
             layout = self.layout
             row = layout.row(align=True)
