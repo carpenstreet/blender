@@ -207,6 +207,17 @@ class Acon3dCreateCollection(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.link_to_collection(collection_index=1, is_new=True)
+
+        # Collection 목록을 Scene > Layers에 업데이트 하기
+        # https://www.notion.so/acon3d/to-127d21725cc641b1a28d6451d3949bb1?pvs=4
+        scene = context.scene
+        for _ in range(len(scene.l_exclude)):
+            scene.l_exclude.remove(0)
+
+        for l in bpy.data.collections["Layers"].children:
+            l_exclude = scene.l_exclude.add()
+            l_exclude.name = l.name
+
         return {"FINISHED"}
 
 
