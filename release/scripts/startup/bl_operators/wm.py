@@ -3021,28 +3021,21 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
-notices = ('READY', None)
-prev_lang = None
+lang_notice_map = {}
 
-def fetch_notices():
+def fetch_notices(lang: str):
     # 전에 이미 성공/실패했으면 일찍 종료
-    global notices
-    global prev_lang
+    global lang_notice_map
 
-    lang = bpy.context.preferences.view.language.split('_')[0]
-
-    if notices[0] != 'READY' and prev_lang == lang:
+    if lang in lang_notice_map.keys():
         return
-
-    prev_lang = lang
 
     req = None
     try:
-        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang.split('_')[0]}", timeout=5)
     except Exception as ex:
-        notices = ('FAILED', None)
         return
-    if req is not None and req.status_code == 200:
+    if req and req.status_code == 200:
         release_appeared = False
         result = []
         for item in json.loads(req.text)["results"]:
@@ -3056,9 +3049,7 @@ def fetch_notices():
             result.append(item)
             if len(result) >= 3:
                 break
-        notices = ('SUCCESS', result)
-    else:
-        notices = ('FAILED', None)
+        lang_notice_map[lang] = result
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
@@ -3192,18 +3183,19 @@ class WM_MT_splash(Menu):
             anchor.href = 'https://www.acon3d.com/en/toon'
 
         # 공지사항 파트
-        fetch_notices()
-        global notices
-        if notices[0] == 'SUCCESS':
+        global lang_notice_map
+        fetch_notices(lang)
+        if lang in lang_notice_map.keys():
+            notice = lang_notice_map[lang]
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
-            for notice in notices[1]:
-                but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
-                but.title = notice["title"]
-                but.content = notice["content"]
-                if notice["link"] is not None:
-                    but.link = notice["link"]["url"]
-                    but.link_name = notice["link"]["title"]
+            for item in notice:
+                but = layout.operator("acon3d.notice", text=item["title"], icon='URL')
+                but.title = item["title"]
+                but.content = item["content"]
+                if item["link"] is not None:
+                    but.link = item["link"]["url"]
+                    but.link_name = item["link"]["title"]
                 else:
                     but.link = ""
                     but.link_name = ""
