@@ -3043,8 +3043,20 @@ def fetch_notices():
         notices = ('FAILED', None)
         return
     if req is not None and req.status_code == 200:
-        ret_list = json.loads(req.text)["results"]
-        notices = ('SUCCESS', ret_list[:1])
+        release_appeared = False
+        result = []
+        for item in json.loads(req.text)["results"]:
+            if item["title"].count('.') >= 2:
+                # 릴리즈 노트 아이템 이미 추가
+                if release_appeared == True:
+                    continue
+                result.append(item)
+                release_appeared = True
+                continue
+            result.append(item)
+            if len(result) >= 3:
+                break
+        notices = ('SUCCESS', result)
     else:
         notices = ('FAILED', None)
 
@@ -3063,6 +3075,7 @@ class WM_MT_splash(Menu):
 
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
+        lang = bpy.context.preferences.view.language
 
         row = layout.row()
         prop = context.window_manager.ACON_prop
@@ -3097,7 +3110,8 @@ class WM_MT_splash(Menu):
             else:
                 row.prop(prop, "password")
             column.separator()
-            row = column.row()
+            row = layout.row(align=True)
+
             row.prop(
                 prop,
                 "remember_username",
@@ -3107,6 +3121,10 @@ class WM_MT_splash(Menu):
                 invert_checkbox=True,
             )
             row.label(text="Remember Username")
+
+            anchor = row.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
+            anchor.description_text = "Sign up for ACON3D"
+            anchor.href = "https://www.acon3d.com/users/join"
 
             column = row_outside.column()
             column.separator()
@@ -3141,7 +3159,6 @@ class WM_MT_splash(Menu):
         layout.emboss = 'PULLDOWN_MENU'
 
         split = layout.split()
-        lang = bpy.context.preferences.view.language
 
         col1 = split.column()
         anchor = col1.operator("acon3d.anchor", text="Operating ABLER", icon='URL')
@@ -3180,8 +3197,7 @@ class WM_MT_splash(Menu):
         if notices[0] == 'SUCCESS':
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
-            ret_list = notices[1]
-            for notice in ret_list[:3]:
+            for notice in notices[1]:
                 but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
                 but.title = notice["title"]
                 but.content = notice["content"]
@@ -3191,7 +3207,14 @@ class WM_MT_splash(Menu):
                 else:
                     but.link = ""
                     but.link_name = ""
-            layout.separator()
+
+        # blender 관련
+        anchor = layout.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
+        anchor.description_text = "Link to Blender Foundation and check release notes"
+        anchor.href = 'https://www.blender.org/download/releases/'
+        anchor = layout.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
+        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
+        anchor.href = 'https://fund.blender.org/'
 
         from abler.lib.version import get_local_version
         config_ver = get_local_version()
