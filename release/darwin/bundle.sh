@@ -34,18 +34,8 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
-        -b|--bundle-id)
-            N_BUNDLE_ID="$2"
-            shift
-            shift
-            ;;
-        -u|--username)
-            N_USERNAME="$2"
-            shift
-            shift
-            ;;
-        -p|--password)
-            N_PASSWORD="$2"
+        -p|--profile)
+            KEYCHAIN_PROFILE="$2"
             shift
             shift
             ;;
@@ -71,12 +61,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             echo "Usage:"
-            echo " $(basename "$0") --source DIR --dmg IMAGENAME "
+            echo " $(basename "$0") --source DIR --dmg IMAGENAME --profile KEYCHAIN_PROFILE"
             echo "    optional arguments:"
             echo "    --codesign <certname>"
-            echo "    --username <username>"
-            echo "    --password <password>"
-            echo "    --bundle-id <bundleid>"
             echo "    --sparkle-dir <sparkle dir>"
             echo " Check https://developer.apple.com/documentation/security/notarizing_your_app_before_distribution/customizing_the_notarization_workflow "
             exit 1
@@ -251,38 +238,23 @@ rm -rf "${_tmp_dir}"
 rm "${_tmp_dmg}"
 
 # Notarize
-if [ ! -z "${N_USERNAME}" ] && [ ! -z "${N_PASSWORD}" ] && [ ! -z "${N_BUNDLE_ID}" ] && ! "$testing"; then
+if [ ! -z "${KEYCHAIN_PROFILE}" ] && ! "$testing"; then
     # Send to Apple
     echo "Sending ${DEST_DMG} for notarization..."
     _tmpout=$(mktemp)
-    echo xcrun altool --notarize-app --verbose -f "${DEST_DMG}" --primary-bundle-id "${N_BUNDLE_ID}" --username "${N_USERNAME}" --password "${N_PASSWORD}"
-    xcrun altool --notarize-app --verbose -f "${DEST_DMG}" --primary-bundle-id "${N_BUNDLE_ID}" --username "${N_USERNAME}" --password "${N_PASSWORD}" >${_tmpout} 2>&1
 
-    # Parse request uuid
-    _requuid=$(cat "${_tmpout}" | grep "RequestUUID" | awk '{ print $3 }')
-    echo "RequestUUID: ${_requuid}"
-    if [ ! -z "${_requuid}" ]; then
-        # Wait for Apple to confirm notarization is complete
-        echo "Waiting for notarization to be complete.."
-        for c in {200..0};do
-            sleep 60
-            xcrun altool --notarization-info "${_requuid}" --username "${N_USERNAME}" --password "${N_PASSWORD}" >${_tmpout} 2>&1
-            _status=$(cat "${_tmpout}" | grep "Status:" | awk '{ print $2 }')
-            if [ "${_status}" == "invalid" ]; then
-                echo "Got invalid notarization!"
-                break;
-            fi
+    # Wait for notarization and parse status
+    xcrun notarytool submit "${DEST_DMG}" --wait --verbose --keychain-profile "${KEYCHAIN_PROFILE}" | tee "${_tmpout}"
+    _status=$(cat "${_tmpout}" | grep "status" | tail -1 | awk '{ print $2 }')
 
-            if [ "${_status}" == "success" ]; then
-                echo -n "Notarization successful! Stapling..."
-                xcrun stapler staple -v "${DEST_DMG}"
-                break;
-            fi
-            echo "Notarization in progress, waiting..."
-        done
+    if [ "${_status}" == "Accepted" ]; then
+        echo -n "Notarization successful! Stapling..."
+        xcrun stapler staple -v "${DEST_DMG}"
+    elif [ "${_status}" == "Rejected" ]; then
+        echo -n "Notarization Rejected!"
     else
-        cat ${_tmpout}
-        echo "Error getting RequestUUID, notarization unsuccessful"
+        # includes "Invalid"
+        echo "Got invalid notarization!"
     fi
 else
     echo "No notarization credentials supplied, skipping..."
