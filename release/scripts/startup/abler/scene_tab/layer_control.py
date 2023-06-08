@@ -214,11 +214,22 @@ class Acon3dCreateLayer(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
-        bpy.ops.object.link_to_collection(
-            collection_index=1, is_new=True, new_collection_name=self.name
-        )
+        # Blender의 컬렉션 데이터는 이름순으로 정렬되기 때문에 Outliner > View Layer의 index가 달라져서
+        # bpy.ops.object.link_to_collection(collection_index=...)을 사용하기가 힘듬.
+        # 그래서 "Layers" 하위에 컬렉션을 직접 생성하고, 여기에 선택된 오브젝트를 link 하는 방식을 사용함.
+        # https://devtalk.blender.org/t/where-to-find-collection-index-for-moving-an-object/3289/5
 
-        # Collection 목록을 Scene > Layers에 업데이트 하기
+        # 새로운 collection을 생성하고 "Layers" 하위로 link
+        layers = bpy.data.collections["Layers"]
+        collection = bpy.data.collections.new(name=self.name)
+        layers.children.link(collection)
+
+        # 선택된 objects를 새로 만든 collection에 link
+        if context.selected_objects:
+            for obj in context.selected_objects:
+                collection.objects.link(obj)
+
+        # Collection 목록을 Outliner > View Layer > Scene Collection > Layers에 업데이트 하기
         # https://www.notion.so/acon3d/to-127d21725cc641b1a28d6451d3949bb1?pvs=4
         scene = context.scene
         for _ in range(len(scene.l_exclude)):
