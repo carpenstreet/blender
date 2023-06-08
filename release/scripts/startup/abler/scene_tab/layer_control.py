@@ -189,20 +189,20 @@ class Acon3dLayersPanel(bpy.types.Panel):
 
             # Layer 생성 버튼
             col = row.column()
-            col.operator("acon3d.create_collection", text="", icon="ADD")
+            col.operator("acon3d.create_layer", text="", icon="ADD")
         else:
             layout = self.layout
             row = layout.row(align=True)
             row.label(text="No 'Layers' collection in Outliner")
 
 
-class Acon3dCreateCollection(bpy.types.Operator):
-    bl_idname = "acon3d.create_collection"
-    bl_label = "Create Collection"
-    bl_description = "Create a new collection and link objects to a collection"
+class Acon3dCreateLayer(bpy.types.Operator):
+    bl_idname = "acon3d.create_layer"
+    bl_label = "Create Layer"
+    bl_description = "Create a new layer and link objects to a layer"
 
     name: bpy.props.StringProperty(
-        name="Name", default="Collection", description="Write collection name"
+        name="Name", default="ACON_Layer", description="Write layer name"
     )
 
     @classmethod
@@ -234,7 +234,7 @@ classes = (
     Acon3dCreateGroupOperator,
     Acon3dExplodeGroupOperator,
     Acon3dLayersPanel,
-    Acon3dCreateCollection,
+    Acon3dCreateLayer,
 )
 
 
