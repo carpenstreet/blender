@@ -3022,13 +3022,20 @@ class WM_MT_splash_quick_setup(Menu):
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
 notices = ('READY', None)
+prev_lang = None
 
 def fetch_notices():
     # 전에 이미 성공/실패했으면 일찍 종료
     global notices
-    if notices[0] != 'READY':
-        return
+    global prev_lang
+
     lang = bpy.context.preferences.view.language.split('_')[0]
+
+    if notices[0] != 'READY' and prev_lang == lang:
+        return
+
+    prev_lang = lang
+
     req = None
     try:
         req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
