@@ -41,7 +41,7 @@ Bundle
 
 Then the bundle is created as follows:
 
-$ ./bundle.sh --source <sourcedir> --dmg <dmg> --bundle-id <bundleid> --username <apple-id> --password "@keychain:altool-password" --codesign <identity>
+$ ./bundle.sh --source <sourcedir> --dmg <dmg> --profile <profile keychain> --codesign <identity>
 
 <sourcedir>  directory where built ABLER.app is
 <dmg>	       location and name of the final disk image
@@ -52,4 +52,4 @@ $ ./bundle.sh --source <sourcedir> --dmg <dmg> --bundle-id <bundleid> --username
 When specifying only --sourcedir and --dmg, the build will not be signed.
 
 Example :
-$ ./bundle.sh --source /data/build/bin --dmg /data/Blender-2.8-alpha-macOS-10.11.dmg --bundle-id org.blenderfoundation.blender.release --username "foo@mac.com" --password "@keychain:altool-password" --codesign AE825E26F12D08B692F360133210AF46F4CF7B97
+$ ./bundle.sh --source /data/build/bin --dmg /data/Blender-2.8-alpha-macOS-10.11.dmg --username "foo@mac.com" --password "@keychain:altool-password" --codesign AE825E26F12D08B692F360133210AF46F4CF7B97
