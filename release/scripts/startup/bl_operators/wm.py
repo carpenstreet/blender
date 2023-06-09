@@ -3021,13 +3021,17 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
-lang_notice_map = {}
+lang_notice_dict = {}
 
-def fetch_notices(lang: str):
+def fetch_notices(lang: str = None):
+
+    if not lang or lang not in bpy.app.translations.locales:
+        return
+
     # 전에 이미 성공/실패했으면 일찍 종료
-    global lang_notice_map
+    global lang_notice_dict
 
-    if lang in lang_notice_map.keys():
+    if lang in lang_notice_dict.keys():
         return
 
     req = None
@@ -3049,7 +3053,7 @@ def fetch_notices(lang: str):
             result.append(item)
             if len(result) >= 3:
                 break
-        lang_notice_map[lang] = result
+        lang_notice_dict[lang] = result
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
@@ -3183,22 +3187,22 @@ class WM_MT_splash(Menu):
             anchor.href = 'https://www.acon3d.com/en/toon'
 
         # 공지사항 파트
-        global lang_notice_map
+        global lang_notice_dict
         fetch_notices(lang)
-        if lang in lang_notice_map.keys():
-            notice = lang_notice_map[lang]
+        if lang in lang_notice_dict.keys():
+            notice = lang_notice_dict[lang]
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
             for item in notice:
-                but = layout.operator("acon3d.notice", text=item["title"], icon='URL')
-                but.title = item["title"]
-                but.content = item["content"]
+                btn = layout.operator("acon3d.notice", text=item["title"], icon='URL')
+                btn.title = item["title"]
+                btn.content = item["content"]
                 if item["link"] is not None:
-                    but.link = item["link"]["url"]
-                    but.link_name = item["link"]["title"]
+                    btn.link = item["link"]["url"]
+                    btn.link_name = item["link"]["title"]
                 else:
-                    but.link = ""
-                    but.link_name = ""
+                    btn.link = ""
+                    btn.link_name = ""
 
         # blender 관련
         anchor = layout.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
