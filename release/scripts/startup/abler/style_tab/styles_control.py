@@ -181,17 +181,15 @@ class LightPanel(bpy.types.Panel):
 
             # PointLight 생성버튼
             col = row.column()
-            col.operator(
-                AddPointLightOperator.bl_idname, text="Point", icon="LIGHT_POINT"
-            )
+            col.operator(AddPointLightOperator.bl_idname, text="Point", text_ctxt="abler", icon="LIGHT_POINT")
 
             # SpotLight 생성버튼
             col = row.column()
-            col.operator(AddSpotLightOperator.bl_idname, text="Spot", icon="LIGHT_SPOT")
+            col.operator(AddSpotLightOperator.bl_idname, text="Spot", text_ctxt="abler", icon="LIGHT_SPOT")
 
             # AreaLight 생성버튼
             col = row.column()
-            col.operator(AddAreaLightOperator.bl_idname, text="Area", icon="LIGHT_AREA")
+            col.operator(AddAreaLightOperator.bl_idname, text="Area", text_ctxt="abler", icon="LIGHT_AREA")
 
             row = layout.row(align=True)
             col = row.column()
@@ -259,26 +257,30 @@ class AddLightOperatorBase(bpy.types.Operator):
 class AddPointLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_point"
     bl_label = "Add Point Light"
+    bl_description = "Add Point Light"
     light_type = "POINT"
 
 
 class AddSpotLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_spot"
     bl_label = "Add Spot Light"
+    bl_description = "Add Spot Light"
     light_type = "SPOT"
 
 
 class AddAreaLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_area"
     bl_label = "Add Area Light"
+    bl_description = "Add Area Light"
     light_type = "AREA"
 
 
 class RemoveLightOperator(bpy.types.Operator):
     bl_idname = "acon3d.remove_light"
-    bl_label = "Remove Light"
-    bl_options = {"REGISTER"}
     bl_translation_context = "abler"
+    bl_label = ""
+    bl_description = "Remove Selected Light"
+    bl_options = {"REGISTER"}
 
     def execute(self, context):
         scene = context.scene
