@@ -200,9 +200,10 @@ class Acon3dCreateLayer(bpy.types.Operator):
     bl_idname = "acon3d.create_layer"
     bl_label = "Create Layer"
     bl_description = "Create a new layer and link objects to a layer"
+    bl_translation_context = "abler"
 
     name: bpy.props.StringProperty(
-        name="Name", default="ACON_Layer", description="Write layer name"
+        name="Layer Name", default="ACON_Layer", description="Write layer name"
     )
 
     @classmethod
