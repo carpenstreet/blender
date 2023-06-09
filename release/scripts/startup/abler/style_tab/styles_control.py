@@ -128,6 +128,8 @@ class SunlightPanel(bpy.types.Panel):
 
 
 class LIGHT_UL_List(bpy.types.UIList):
+    bl_idname = "LIGHT_UL_List"
+    bl_description = "Click to select a light"
     def __init__(self):
         super().__init__()
         self.use_filter_sort_reverse = True
@@ -140,13 +142,12 @@ class LIGHT_UL_List(bpy.types.UIList):
                 return
             light_type = item.obj.data.type
             row = layout.row(align=True)
-            obj = item.obj
             if light_type == "POINT":
-                row.label(icon="LIGHT_POINT", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_POINT", emboss=False, text="")
             elif light_type == "SPOT":
-                row.label(icon="LIGHT_SPOT", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_SPOT", emboss=False, text="")
             elif light_type == "AREA":
-                row.label(icon="LIGHT_AREA", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_AREA", emboss=False, text="")
             row.prop(
                 item,
                 "is_hidden",
