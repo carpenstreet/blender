@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - ABLER/main
+      - ABLER/develop
   pull_request:
     branches:
       - ABLER/main
+      - ABLER/develop
   # allow manual dispatches
   workflow_dispatch:
 
