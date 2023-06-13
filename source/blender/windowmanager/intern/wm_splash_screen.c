@@ -379,7 +379,7 @@ void WM_OT_splash_about(wmOperatorType *ot)
 static char *Get_Current_Lang()
 {
   // 앞으로 다국어 관리를 더 쉽게 하기 위해서 아래와 같은 로직을 추가함.
-  const char *lang_list[2] = {"ko_KR", "en_US"};
+  const char *lang_list[3] = {"ko_KR", "en_US", "ja_JP"};
   int cmpout;
   const char *cur_lang = BLT_lang_get();
   for (int i = 0; i < sizeof(lang_list) / sizeof(lang_list[0]); i++) {
@@ -394,10 +394,22 @@ static char *Get_Current_Lang()
 static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_1_ko_KR_png[];
-  extern int datatoc_tutorial_guide_1_ko_KR_png_size;
-  extern char datatoc_tutorial_guide_1_en_US_png[];
-  extern int datatoc_tutorial_guide_1_en_US_png_size;
+#  if defined(WIN32)
+  extern char datatoc_tutorial_guide_1_ko_KR_Windows_png[];
+  extern int datatoc_tutorial_guide_1_ko_KR_Windows_png_size;
+  extern char datatoc_tutorial_guide_1_en_US_Windows_png[];
+  extern int datatoc_tutorial_guide_1_en_US_Windows_png_size;
+  extern char datatoc_tutorial_guide_1_ja_JP_Windows_png[];
+  extern int datatoc_tutorial_guide_1_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+  extern char datatoc_tutorial_guide_1_ko_KR_macOS_png[];
+  extern int datatoc_tutorial_guide_1_ko_KR_macOS_png_size;
+  extern char datatoc_tutorial_guide_1_en_US_macOS_png[];
+  extern int datatoc_tutorial_guide_1_en_US_macOS_png_size;
+  extern char datatoc_tutorial_guide_1_ja_JP_macOS_png[];
+  extern int datatoc_tutorial_guide_1_ja_JP_macOS_png_size;
+#  endif
 
   const char *current_lang = Get_Current_Lang();
 
@@ -410,6 +422,12 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
       char str[30];
       strcpy(str, "tutorial_guide_1_");
       strcat(str, current_lang);
+#  if defined(WIN32)
+      strcat(str, "_Windows");
+#  endif
+#  if defined(__APPLE__)
+      strcat(str, "_macOS");
+#  endif
       strcat(str, ".png");
       BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
@@ -420,12 +438,34 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
     const uchar *splash_data;
     size_t splash_data_size;
     if (strcmp(current_lang, "ko_KR") == 0) {
-      splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_png;
-      splash_data_size = datatoc_tutorial_guide_1_ko_KR_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_1_ko_KR_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_1_ko_KR_macOS_png_size;
+#  endif
+    }
+    else if (strcmp(current_lang, "ja_JP") == 0) {
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ja_JP_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_1_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_ja_JP_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_1_ja_JP_macOS_png_size;
+#  endif
     }
     else {
-      splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_png;
-      splash_data_size = datatoc_tutorial_guide_1_en_US_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_1_en_US_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_1_en_US_macOS_png_size;
+#  endif
     }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
@@ -542,10 +582,22 @@ void WM_OT_splash_tutorial_1(wmOperatorType *ot)
 static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_2_ko_KR_png[];
-  extern int datatoc_tutorial_guide_2_ko_KR_png_size;
-  extern char datatoc_tutorial_guide_2_en_US_png[];
-  extern int datatoc_tutorial_guide_2_en_US_png_size;
+#  if defined(WIN32)
+  extern char datatoc_tutorial_guide_2_ko_KR_Windows_png[];
+  extern int datatoc_tutorial_guide_2_ko_KR_Windows_png_size;
+  extern char datatoc_tutorial_guide_2_en_US_Windows_png[];
+  extern int datatoc_tutorial_guide_2_en_US_Windows_png_size;
+  extern char datatoc_tutorial_guide_2_ja_JP_Windows_png[];
+  extern int datatoc_tutorial_guide_2_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+  extern char datatoc_tutorial_guide_2_ko_KR_macOS_png[];
+  extern int datatoc_tutorial_guide_2_ko_KR_macOS_png_size;
+  extern char datatoc_tutorial_guide_2_en_US_macOS_png[];
+  extern int datatoc_tutorial_guide_2_en_US_macOS_png_size;
+  extern char datatoc_tutorial_guide_2_ja_JP_macOS_png[];
+  extern int datatoc_tutorial_guide_2_ja_JP_macOS_png_size;
+#  endif
 
   const char *current_lang = Get_Current_Lang();
 
@@ -558,6 +610,12 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
       char str[30];
       strcpy(str, "tutorial_guide_2_");
       strcat(str, current_lang);
+#  if defined(WIN32)
+      strcat(str, "_Windows");
+#  endif
+#  if defined(__APPLE__)
+      strcat(str, "_macOS");
+#  endif
       strcat(str, ".png");
       BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
@@ -568,12 +626,34 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
     const uchar *splash_data;
     size_t splash_data_size;
     if (strcmp(current_lang, "ko_KR") == 0) {
-      splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_png;
-      splash_data_size = datatoc_tutorial_guide_2_ko_KR_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_2_ko_KR_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_2_ko_KR_macOS_png_size;
+#  endif
+    }
+    else if (strcmp(current_lang, "ja_JP") == 0) {
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ja_JP_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_2_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_ja_JP_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_2_ja_JP_macOS_png_size;
+#  endif
     }
     else {
-      splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_png;
-      splash_data_size = datatoc_tutorial_guide_2_en_US_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_2_en_US_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_2_en_US_macOS_png_size;
+#  endif
     }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
@@ -690,10 +770,22 @@ void WM_OT_splash_tutorial_2(wmOperatorType *ot)
 static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 {
 #ifndef WITH_HEADLESS
-  extern char datatoc_tutorial_guide_3_ko_KR_png[];
-  extern int datatoc_tutorial_guide_3_ko_KR_png_size;
-  extern char datatoc_tutorial_guide_3_en_US_png[];
-  extern int datatoc_tutorial_guide_3_en_US_png_size;
+#  if defined(WIN32)
+  extern char datatoc_tutorial_guide_3_ko_KR_Windows_png[];
+  extern int datatoc_tutorial_guide_3_ko_KR_Windows_png_size;
+  extern char datatoc_tutorial_guide_3_en_US_Windows_png[];
+  extern int datatoc_tutorial_guide_3_en_US_Windows_png_size;
+  extern char datatoc_tutorial_guide_3_ja_JP_Windows_png[];
+  extern int datatoc_tutorial_guide_3_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+  extern char datatoc_tutorial_guide_3_ko_KR_macOS_png[];
+  extern int datatoc_tutorial_guide_3_ko_KR_macOS_png_size;
+  extern char datatoc_tutorial_guide_3_en_US_macOS_png[];
+  extern int datatoc_tutorial_guide_3_en_US_macOS_png_size;
+  extern char datatoc_tutorial_guide_3_ja_JP_macOS_png[];
+  extern int datatoc_tutorial_guide_3_ja_JP_macOS_png_size;
+#  endif
 
   const char *current_lang = Get_Current_Lang();
 
@@ -706,6 +798,12 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
       char str[30];
       strcpy(str, "tutorial_guide_3_");
       strcat(str, current_lang);
+#  if defined(WIN32)
+      strcat(str, "_Windows");
+#  endif
+#  if defined(__APPLE__)
+      strcat(str, "_macOS");
+#  endif
       strcat(str, ".png");
       BLI_join_dirfile(splash_filepath, sizeof(splash_filepath), template_directory, str);
       ibuf = IMB_loadiffname(splash_filepath, IB_rect, NULL);
@@ -716,12 +814,34 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
     const uchar *splash_data;
     size_t splash_data_size;
     if (strcmp(current_lang, "ko_KR") == 0) {
-      splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_png;
-      splash_data_size = datatoc_tutorial_guide_3_ko_KR_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_3_ko_KR_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_3_ko_KR_macOS_png_size;
+#  endif
+    }
+    else if (strcmp(current_lang, "ja_JP") == 0) {
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ja_JP_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_3_ja_JP_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_ja_JP_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_3_ja_JP_macOS_png_size;
+#  endif
     }
     else {
-      splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_png;
-      splash_data_size = datatoc_tutorial_guide_3_en_US_png_size;
+#  if defined(WIN32)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_Windows_png;
+      splash_data_size = datatoc_tutorial_guide_3_en_US_Windows_png_size;
+#  endif
+#  if defined(__APPLE__)
+      splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_macOS_png;
+      splash_data_size = datatoc_tutorial_guide_3_en_US_macOS_png_size;
+#  endif
     }
     ibuf = IMB_ibImageFromMemory(splash_data, splash_data_size, IB_rect, NULL, "<splash screen>");
   }
@@ -861,7 +981,8 @@ static int wm_stop_render_execute(bContext *C, wmOperator *op)
   return OPERATOR_FINISHED;
 }
 
-void WM_OT_stop_render(wmOperatorType *ot) {
+void WM_OT_stop_render(wmOperatorType *ot)
+{
   ot->name = "Stop Render";
   ot->idname = "WM_OT_stop_render";
   ot->description = "Stop Render";
