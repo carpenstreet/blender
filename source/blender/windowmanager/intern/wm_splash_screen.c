@@ -379,7 +379,7 @@ void WM_OT_splash_about(wmOperatorType *ot)
 static char *Get_Current_Lang()
 {
   // 앞으로 다국어 관리를 더 쉽게 하기 위해서 아래와 같은 로직을 추가함.
-  const char *lang_list[3] = {"ko_KR", "en_US", "ja_JP"};
+  const char *lang_list[3] = {"ko_KR", "ja_JP", "en_US"};
   int cmpout;
   const char *cur_lang = BLT_lang_get();
   for (int i = 0; i < sizeof(lang_list) / sizeof(lang_list[0]); i++) {
