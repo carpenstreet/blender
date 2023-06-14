@@ -33,6 +33,7 @@ bl_info = {
 
 import bpy
 from ..lib import layers
+from ..lib.tracker import tracker
 
 
 class Acon3dCreateGroupOperator(bpy.types.Operator):
@@ -218,6 +219,7 @@ class Acon3dCreateLayer(bpy.types.Operator):
         # bpy.ops.object.link_to_collection(collection_index=...)을 사용하기가 힘듬.
         # 그래서 "Layers" 하위에 컬렉션을 직접 생성하고, 여기에 선택된 오브젝트를 link 하는 방식을 사용함.
         # https://devtalk.blender.org/t/where-to-find-collection-index-for-moving-an-object/3289/5
+        tracker.create_layer()
 
         # 새로운 collection을 생성하고 "Layers" 하위로 link
         layers = bpy.data.collections["Layers"]
