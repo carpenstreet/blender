@@ -401,8 +401,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
   extern int datatoc_tutorial_guide_1_en_US_Windows_png_size;
   extern char datatoc_tutorial_guide_1_ja_JP_Windows_png[];
   extern int datatoc_tutorial_guide_1_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
   extern char datatoc_tutorial_guide_1_ko_KR_macOS_png[];
   extern int datatoc_tutorial_guide_1_ko_KR_macOS_png_size;
   extern char datatoc_tutorial_guide_1_en_US_macOS_png[];
@@ -424,8 +423,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
       strcat(str, current_lang);
 #  if defined(WIN32)
       strcat(str, "_Windows");
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       strcat(str, "_macOS");
 #  endif
       strcat(str, ".png");
@@ -441,8 +439,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_1_ko_KR_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_macOS_png;
       splash_data_size = datatoc_tutorial_guide_1_ko_KR_macOS_png_size;
 #  endif
@@ -451,8 +448,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_1_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ja_JP_macOS_png;
       splash_data_size = datatoc_tutorial_guide_1_ja_JP_macOS_png_size;
 #  endif
@@ -461,8 +457,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_Windows_png;
       splash_data_size = datatoc_tutorial_guide_1_en_US_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_en_US_macOS_png;
       splash_data_size = datatoc_tutorial_guide_1_en_US_macOS_png_size;
 #  endif
@@ -589,8 +584,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
   extern int datatoc_tutorial_guide_2_en_US_Windows_png_size;
   extern char datatoc_tutorial_guide_2_ja_JP_Windows_png[];
   extern int datatoc_tutorial_guide_2_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
   extern char datatoc_tutorial_guide_2_ko_KR_macOS_png[];
   extern int datatoc_tutorial_guide_2_ko_KR_macOS_png_size;
   extern char datatoc_tutorial_guide_2_en_US_macOS_png[];
@@ -612,8 +606,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
       strcat(str, current_lang);
 #  if defined(WIN32)
       strcat(str, "_Windows");
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       strcat(str, "_macOS");
 #  endif
       strcat(str, ".png");
@@ -629,8 +622,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_2_ko_KR_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_macOS_png;
       splash_data_size = datatoc_tutorial_guide_2_ko_KR_macOS_png_size;
 #  endif
@@ -639,8 +631,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_2_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ja_JP_macOS_png;
       splash_data_size = datatoc_tutorial_guide_2_ja_JP_macOS_png_size;
 #  endif
@@ -649,8 +640,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_Windows_png;
       splash_data_size = datatoc_tutorial_guide_2_en_US_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_en_US_macOS_png;
       splash_data_size = datatoc_tutorial_guide_2_en_US_macOS_png_size;
 #  endif
@@ -777,8 +767,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
   extern int datatoc_tutorial_guide_3_en_US_Windows_png_size;
   extern char datatoc_tutorial_guide_3_ja_JP_Windows_png[];
   extern int datatoc_tutorial_guide_3_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
   extern char datatoc_tutorial_guide_3_ko_KR_macOS_png[];
   extern int datatoc_tutorial_guide_3_ko_KR_macOS_png_size;
   extern char datatoc_tutorial_guide_3_en_US_macOS_png[];
@@ -800,8 +789,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
       strcat(str, current_lang);
 #  if defined(WIN32)
       strcat(str, "_Windows");
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       strcat(str, "_macOS");
 #  endif
       strcat(str, ".png");
@@ -817,8 +805,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_3_ko_KR_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_macOS_png;
       splash_data_size = datatoc_tutorial_guide_3_ko_KR_macOS_png_size;
 #  endif
@@ -827,8 +814,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_3_ja_JP_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ja_JP_macOS_png;
       splash_data_size = datatoc_tutorial_guide_3_ja_JP_macOS_png_size;
 #  endif
@@ -837,8 +823,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_Windows_png;
       splash_data_size = datatoc_tutorial_guide_3_en_US_Windows_png_size;
-#  endif
-#  if defined(__APPLE__)
+#  elif defined(__APPLE__)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_en_US_macOS_png;
       splash_data_size = datatoc_tutorial_guide_3_en_US_macOS_png_size;
 #  endif
