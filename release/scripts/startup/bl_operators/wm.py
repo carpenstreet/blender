@@ -85,6 +85,43 @@ rna_module_prop = StringProperty(
     maxlen=1024,
 )
 
+class URLs_base:
+    abler_main = "https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c"
+    operating_abler = "https://acon3d.notion.site/Operating-ABLER-9ee94a8169a6400ab9c677dd312e5fdd?pvs=4"
+    abler_features = "https://acon3d.notion.site/ABLER-Feature-Walkthrough-33f7c23e06694137954bb3ea93ca992d"
+    abler_instruction = "https://acon3d.notion.site/ABLER-Instructions-c4f25debe71b4fa0adcc7e87f8ccd7a1"
+    acon_3d = "https://www.acon3d.com/en/toon"
+
+class URLs_En(URLs_base):
+    pass
+
+class URLs_Ko(URLs_base):
+    abler_main = "https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7"
+    operating_abler = "https://acon3d.notion.site/27fd2c38710645e09d8bec304eb83505"
+    abler_features = "https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93"
+    abler_instruction = "https://acon3d.notion.site/79775e5c0334407ab994764dafbddfc5"
+    acon_3d = "https://www.acon3d.com/ko/toon"
+
+class URLs_Ja(URLs_base):
+    abler_main = "https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2"
+    operating_abler = "https://acon3d.notion.site/ABLER-_-e3df150bbb804273a80504d989a012e3"
+    abler_features = "https://acon3d.notion.site/ABLER-_-45d5fab2b2d54d36a2b73dd2eb13146d"
+    alber_instruction = "https://acon3d.notion.site/ABLER-_-f24764a83e39441badff6d1126cf9b30"
+    acon_3d = "https://www.acon3d.com/ja/toon"
+
+class URLs_Zh(URLs_base):
+    abler_main = "https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68"
+    operating_abler = "https://acon3d.notion.site/2-ABLER-ac5b3051aead477aa828dadccd73bfdf"
+    abler_features = "https://acon3d.notion.site/3-ABLER-5f8ef0a19d4c4921b02d6f7e6b1b7482"
+    abler_instruction = "https://acon3d.notion.site/4-ABLER-3af1026041ee4147b120e760bef1f301"
+    acon_3d = "https://www.acon3d.com/zh/toon"
+
+lang_url_dicts = {
+    "ko_KR": URLs_Ko,
+    "en_US": URLs_En,
+    "ja_JP": URLs_Ja,
+    "zh_CN": URLs_Zh,
+}
 
 def context_path_validate(context, data_path):
     try:
@@ -3043,9 +3080,10 @@ def fetch_notices(lang: str = None):
         release_appeared = False
         result = []
         for item in json.loads(req.text)["results"]:
+            # 버전 릴리즈 notice는 가장 최신만 보여준다.
             if item["title"].count('.') >= 2:
                 # 릴리즈 노트 아이템 이미 추가
-                if release_appeared == True:
+                if release_appeared:
                     continue
                 result.append(item)
                 release_appeared = True
@@ -3054,6 +3092,7 @@ def fetch_notices(lang: str = None):
             if len(result) >= 3:
                 break
         lang_notice_dict[lang] = result
+
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
@@ -3154,37 +3193,26 @@ class WM_MT_splash(Menu):
         layout.emboss = 'PULLDOWN_MENU'
 
         split = layout.split()
+        urls = lang_url_dicts.get(lang, URLs_En)
 
         col1 = split.column()
         anchor = col1.operator("acon3d.anchor", text="Operating ABLER", icon='URL')
         anchor.description_text = "Link to Operating ABLER"
-        if lang == "ko_KR":
-            anchor.href = 'https://acon3d.notion.site/27fd2c38710645e09d8bec304eb83505?pvs=4'
-        else:
-            anchor.href = 'https://acon3d.notion.site/Operating-ABLER-9ee94a8169a6400ab9c677dd312e5fdd?pvs=4'
+        anchor.href = urls.operating_abler
 
         anchor = col1.operator("acon3d.anchor", text="ABLER Instruction", icon='URL')
         anchor.description_text = "Link to ABLER Instruction"
-        if lang == "ko_KR":
-            anchor.href = 'https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93?pvs=4'
-        else:
-            anchor.href = 'https://acon3d.notion.site/ABLER-Instructions-c4f25debe71b4fa0adcc7e87f8ccd7a1'
+        anchor.href = urls.abler_instruction
 
         # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
         anchor = col2.operator("acon3d.anchor", text="ABLER feature Walkthrough", icon='URL')
         anchor.description_text = "Link to ABLER feature Walkthrough"
-        if lang == "ko_KR":
-            anchor.href = 'https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93?pvs=4'
-        else:
-            anchor.href = 'https://acon3d.notion.site/ABLER-Feature-Walkthrough-33f7c23e06694137954bb3ea93ca992d?pvs=4'
+        anchor.href = urls.abler_features
 
         anchor = col2.operator("acon3d.anchor", text="See ACON3D models!", icon='URL')
         anchor.description_text = "Link to ACON3D"
-        if lang == "ko_KR":
-            anchor.href = 'https://www.acon3d.com/ko/toon'
-        else:
-            anchor.href = 'https://www.acon3d.com/en/toon'
+        anchor.href = urls.acon_3d
 
         # 공지사항 파트
         global lang_notice_dict
@@ -3280,7 +3308,6 @@ class WM_MT_splash_about(Menu):
         col.emboss = 'PULLDOWN_MENU'
         col.operator("wm.url_open", text="License", icon='URL').url = "https://www.blender.org/about/license/"
 
-
 class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
 
@@ -3304,14 +3331,10 @@ class WM_MT_splash_tutorial(Menu):
         # general.py에 언어 설정 코드가 있긴 하지만 __init__.py가 달라 재활용할 수 없음
         # 따라서 여기서 언어 설정 코드를 따로 지정
         cur_lang = bpy.context.preferences.view.language
-        if cur_lang == "ko_KR":
-            anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
-        elif cur_lang == "ja_JP":
-            anchor.url = 'https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2'
-        elif cur_lang == "zh_CN" or cur_lang == "zh_TW":
-            anchor.url = 'https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68'
-        else: # en_US + 지원되지 않는 언어는 영어로
-            anchor.url = 'https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c'  
+
+        global lang_url_dicts
+        anchor.url = lang_url_dicts.get(cur_lang, URLs_En).abler_main
+
         layout.separator()
 
         row = layout.row()
