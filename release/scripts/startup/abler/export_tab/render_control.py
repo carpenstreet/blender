@@ -158,7 +158,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
     )
     write_still = True
 
-    # (Scene Name, Scene, Render Type)
+    # (Scene, Render Type, Scene Name)
     # Scene Name - 믹스패널 트래킹을 위해 현재 렌더링하는 씬의 이름을 저장
     render_queue = []
     rendering = False
@@ -317,7 +317,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                             message_1="Please rewrite your directory name",
                         )
 
-                _, scene, render_type = self.render_queue[0]
+                scene, render_type, *_ = self.render_queue[0]
 
                 base_filepath = os.path.join(dirname_temp, scene.name)
                 # Quick Render 는 렌더 시 새로 Scene 을 생성하지 않아서 filepath 에 _quick 을 붙여줌
@@ -374,7 +374,7 @@ class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
 
         bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
 
-        self.render_queue.append((None, context.scene, RenderType.quick.value))
+        self.render_queue.append((context.scene, RenderType.quick.value))
 
         return {"RUNNING_MODAL"}
 
@@ -441,7 +441,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
     def prepare_queue(self, context):
         scene = context.scene.copy()
-        self.render_queue.append((None, scene, RenderType.snipped_shade.value))
+        self.render_queue.append((scene, RenderType.snipped_shade.value, None))
         self.temp_scenes.append(scene)
 
         scene.eevee.use_bloom = False
@@ -456,7 +456,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
         scene = context.scene.copy()
         scene.name = f"{context.scene.name}_{RenderType.snipped_object.value}"
-        self.render_queue.append((None, scene, RenderType.snipped_object.value))
+        self.render_queue.append((scene, RenderType.snipped_object.value, None))
         self.temp_scenes.append(scene)
 
         layer = scene.view_layers.new("ACON_layer_snip")
@@ -472,7 +472,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
         scene = context.scene.copy()
         scene.name = f"{context.scene.name}_{RenderType.snipped_full.value}"
-        self.render_queue.append((None, scene, RenderType.snipped_full.value))
+        self.render_queue.append((scene, RenderType.snipped_full.value, None))
         self.temp_scenes.append(scene)
 
         return {"RUNNING_MODAL"}
@@ -526,7 +526,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         self.render_start_time = time()
 
         super().pre_render(dummy, dum)
-        _, scene, render_type = self.render_queue[0]
+        scene, render_type, *_ = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
@@ -566,7 +566,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                     materials_handler.set_material_parameters_by_type(mat)
 
     def post_render(self, dummy, dum):
-        base_scene_name, scene, render_type = self.render_queue[0]
+        scene, render_type, base_scene_name = self.render_queue[0]
         render_time = str(
             datetime.timedelta(seconds=round(time() - self.render_start_time))
         )
@@ -598,7 +598,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().post_render(dummy, dum)
 
     def prepare_render(self):
-        _, _, render_type = self.render_queue[0]
+        _, render_type, *_ = self.render_queue[0]
         compNodes = render.clear_compositor()
         if render_type == RenderType.HQ_full.value:
             render.setup_background_images_compositor(*compNodes)
@@ -610,7 +610,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         # 현재 씬을 복사한 씬으로 적용
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
-        self.render_queue.append((base_scene.name, scene, render_type))
+        self.render_queue.append((scene, render_type, base_scene.name))
         self.temp_scenes.append(scene)
 
         bpy.context.window_manager.progress_prop.total_render_num += 1
