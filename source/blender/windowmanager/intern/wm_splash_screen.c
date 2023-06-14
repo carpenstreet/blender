@@ -383,7 +383,7 @@ static char *Get_Current_Lang()
   int cmpout;
   const char *cur_lang = BLT_lang_get();
   for (int i = 0; i < sizeof(lang_list) / sizeof(lang_list[0]); i++) {
-    cmpout = strcmp(lang_list[i], cur_lang);
+    cmpout = strncmp(lang_list[i], cur_lang, sizeof(lang_list[i]));
     if (cmpout == 0) {
       return cur_lang;
     }
@@ -435,7 +435,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
   if (ibuf == NULL) {
     const uchar *splash_data;
     size_t splash_data_size;
-    if (strcmp(current_lang, "ko_KR") == 0) {
+    if (strncmp(current_lang, "ko_KR", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_1_ko_KR_Windows_png_size;
@@ -444,7 +444,7 @@ static ImBuf *wm_block_splash_tutorial_image_1(int width, int *r_height)
       splash_data_size = datatoc_tutorial_guide_1_ko_KR_macOS_png_size;
 #  endif
     }
-    else if (strcmp(current_lang, "ja_JP") == 0) {
+    else if (strncmp(current_lang, "ja_JP", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_1_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_1_ja_JP_Windows_png_size;
@@ -618,7 +618,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
   if (ibuf == NULL) {
     const uchar *splash_data;
     size_t splash_data_size;
-    if (strcmp(current_lang, "ko_KR") == 0) {
+    if (strncmp(current_lang, "ko_KR", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_2_ko_KR_Windows_png_size;
@@ -627,7 +627,7 @@ static ImBuf *wm_block_splash_tutorial_image_2(int width, int *r_height)
       splash_data_size = datatoc_tutorial_guide_2_ko_KR_macOS_png_size;
 #  endif
     }
-    else if (strcmp(current_lang, "ja_JP") == 0) {
+    else if (strncmp(current_lang, "ja_JP", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_2_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_2_ja_JP_Windows_png_size;
@@ -801,7 +801,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
   if (ibuf == NULL) {
     const uchar *splash_data;
     size_t splash_data_size;
-    if (strcmp(current_lang, "ko_KR") == 0) {
+    if (strncmp(current_lang, "ko_KR", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ko_KR_Windows_png;
       splash_data_size = datatoc_tutorial_guide_3_ko_KR_Windows_png_size;
@@ -810,7 +810,7 @@ static ImBuf *wm_block_splash_tutorial_image_3(int width, int *r_height)
       splash_data_size = datatoc_tutorial_guide_3_ko_KR_macOS_png_size;
 #  endif
     }
-    else if (strcmp(current_lang, "ja_JP") == 0) {
+    else if (strncmp(current_lang, "ja_JP", sizeof(current_lang)) == 0) {
 #  if defined(WIN32)
       splash_data = (const uchar *)datatoc_tutorial_guide_3_ja_JP_Windows_png;
       splash_data_size = datatoc_tutorial_guide_3_ja_JP_Windows_png_size;
