@@ -97,6 +97,10 @@ def delayed_load_handler():
         scenes.refresh_look_at_me()
         scenes.snap_to_face()
         scenes.add_scene_items_to_collection()
+
+        # Render Init
+        bpy.context.window_manager.ACON_prop.render_default_path = ""
+
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()

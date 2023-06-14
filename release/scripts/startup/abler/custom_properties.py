@@ -75,6 +75,9 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         update=scenes.load_scene_by_index, name="Scene"
     )
 
+    render_default_path: bpy.props.StringProperty(
+        name="Render Default Path", description="Default Directory Path for Render"
+    )
     hq_render_full: bpy.props.BoolProperty(
         name="Full Render",
         description="Render according to the set pixel",
