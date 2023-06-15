@@ -75,11 +75,43 @@ def load_handler(dummy):
     bpy.app.timers.register(delayed_load_handler)
 
 
+class IgnorePopupOperator(bpy.types.Operator):
+    bl_idname = "acon3d.ignore_popup"
+    bl_label = "Continue_label"
+    bl_description = "Continue"
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+
+def warn_if_loaded_file_is_vanillar_blender():
+    def draw(self, context):
+        layout = self.layout
+        # close current menu
+        layout.label(
+            text="Node changes may occur when working in abler, and this is at your own risk."
+        )
+        row = layout.row(align=True)
+        # do nothing button
+        row.operator("acon3d.ignore_popup", text="Continue")
+        row.operator("wm.quit_blender", text="Quit")
+
+    def popup():
+        bpy.context.window_manager.popup_menu(draw, title="Warning", icon="INFO")
+
+    # 한번 이라도 에이블러 로딩된 파일이면 패스
+    for obj in bpy.data.objects:
+        if (obj.type == "MESH") and ("ACON_mod_edgeSplit" in obj.modifiers):
+            return
+
+    bpy.app.timers.register(popup, first_interval=1)
+
 def delayed_load_handler():
     tracker.turn_off()
     hide_header(None)
     try:
         init_setting(None)
+        warn_if_loaded_file_is_vanillar_blender()
         cameras.make_sure_camera_exists()
         cameras.switch_to_rendered_view()
         cameras.turn_on_camera_view(False)
@@ -168,6 +200,7 @@ def register():
     bpy.app.handlers.save_post.append(save_post_handler)
     bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
     bpy.app.handlers.depsgraph_update_post.append(camera_length)
+    bpy.utils.register_class(IgnorePopupOperator)
 
 
 def unregister():
@@ -177,3 +210,4 @@ def unregister():
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)
     bpy.app.handlers.load_factory_startup_post.remove(init_setting)
+    bpy.utils.unregister_class(IgnorePopupOperator)
