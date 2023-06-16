@@ -10,6 +10,7 @@ from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
 from .lib.version import update_file_version
 from .lib.addons import manage_preferences_addons
+from .warning_modal import BlockingModalOperator, CloseBlockingModalOperator
 
 
 def init_setting(dummy):
@@ -75,36 +76,41 @@ def load_handler(dummy):
     bpy.app.timers.register(delayed_load_handler)
 
 
-class IgnorePopupOperator(bpy.types.Operator):
-    bl_idname = "acon3d.ignore_popup"
-    bl_label = "Continue_label"
-    bl_description = "Continue"
+class Acon3DVanillarBlenderWarning(BlockingModalOperator):
+    bl_idname = "acon3d.vanilla_blender_warning"
+    bl_label = "Higher File Version Error"
+    bl_translation_context = "*"
 
-    def execute(self, context):
-        return {"FINISHED"}
+    def draw_modal(self, layout):
+        box = layout.box()
+        box.label(text="Information", icon="INFO")
+        row1 = box.row()
+        row1.label(
+            text="Shader node changes may occur when working in abler, and this is at your own risk."
+        )
+        row2 = box.row()
+        col = row2.column()
+        col.operator("acon3d.close_blocking_modal_continue", text="Continue")
+        col = row2.column()
+        col.operator("acon3d.close_abler", text="Quit")
+
+
+class Acon3DWarningContiuue(CloseBlockingModalOperator):
+    bl_idname = "acon3d.close_blocking_modal_continue"
+    bl_description = "Continue ABLER"
 
 
 def warn_if_loaded_file_is_vanillar_blender():
-    def draw(self, context):
-        layout = self.layout
-        # close current menu
-        layout.label(
-            text="Node changes may occur when working in abler, and this is at your own risk."
-        )
-        row = layout.row(align=True)
-        # do nothing button
-        row.operator("acon3d.ignore_popup", text="Continue")
-        row.operator("wm.quit_blender", text="Quit")
-
-    def popup():
-        bpy.context.window_manager.popup_menu(draw, title="Warning", icon="INFO")
-
     # 한번 이라도 에이블러 로딩된 파일이면 패스
     for obj in bpy.data.objects:
         if (obj.type == "MESH") and ("ACON_mod_edgeSplit" in obj.modifiers):
             return
 
+    def popup():
+        bpy.ops.acon3d.vanilla_blender_warning("INVOKE_DEFAULT")
+
     bpy.app.timers.register(popup, first_interval=1)
+
 
 def delayed_load_handler():
     tracker.turn_off()
@@ -200,7 +206,8 @@ def register():
     bpy.app.handlers.save_post.append(save_post_handler)
     bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
     bpy.app.handlers.depsgraph_update_post.append(camera_length)
-    bpy.utils.register_class(IgnorePopupOperator)
+    bpy.utils.register_class(Acon3DVanillarBlenderWarning)
+    bpy.utils.register_class(Acon3DWarningContiuue)
 
 
 def unregister():
@@ -210,4 +217,5 @@ def unregister():
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)
     bpy.app.handlers.load_factory_startup_post.remove(init_setting)
-    bpy.utils.unregister_class(IgnorePopupOperator)
+    bpy.utils.unregister_class(Acon3DVanillarBlenderWarning)
+    bpy.utils.unregister_class(Acon3DWarningContiuue)
