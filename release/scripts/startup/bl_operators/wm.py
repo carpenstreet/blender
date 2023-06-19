@@ -21,6 +21,8 @@ from __future__ import annotations
 import os
 import sys
 import json
+from enum import Enum
+
 import requests
 
 import bpy
@@ -85,6 +87,50 @@ rna_module_prop = StringProperty(
     maxlen=1024,
 )
 
+class URLs_Base(Enum):
+
+    @classmethod
+    def get_url(cls, url_name):
+        if url_name in cls.__members__:
+            return cls[url_name].value
+
+        # 만약 일부 field가 없다면 En으로대체
+        return URLs_En[url_name].value
+
+class URLs_En(URLs_Base):
+    ABLER_MAIN = "https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c"
+    OPERATING_ABLER = "https://acon3d.notion.site/Operating-ABLER-9ee94a8169a6400ab9c677dd312e5fdd?pvs=4"
+    ABLER_FEATURES = "https://acon3d.notion.site/ABLER-Feature-Walkthrough-33f7c23e06694137954bb3ea93ca992d"
+    ABLER_INSTRUCTION = "https://acon3d.notion.site/ABLER-Instructions-c4f25debe71b4fa0adcc7e87f8ccd7a1"
+    ACON_3D = "https://www.acon3d.com/en/toon"
+
+class URLs_Ko(URLs_Base):
+    ABLER_MAIN = "https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7"
+    OPERATING_ABLER = "https://acon3d.notion.site/27fd2c38710645e09d8bec304eb83505"
+    ABLER_FEATURES = "https://acon3d.notion.site/6f62d1a599964e10b1ce366e72d7af93"
+    ABLER_INSTRUCTION = "https://acon3d.notion.site/79775e5c0334407ab994764dafbddfc5"
+    ACON_3D = "https://www.acon3d.com/ko/toon"
+
+class URLs_Ja(URLs_Base):
+    ABLER_MAIN = "https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2"
+    OPERATING_ABLER = "https://acon3d.notion.site/ABLER-_-e3df150bbb804273a80504d989a012e3"
+    ABLER_FEATURES = "https://acon3d.notion.site/ABLER-_-45d5fab2b2d54d36a2b73dd2eb13146d"
+    ABLER_INSTRUCTION = "https://acon3d.notion.site/ABLER-_-f24764a83e39441badff6d1126cf9b30"
+    ACON_3D = "https://www.acon3d.com/ja/toon"
+
+class URLs_Zh(URLs_Base):
+    ABLER_MAIN = "https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68"
+    OPERATING_ABLER = "https://acon3d.notion.site/2-ABLER-ac5b3051aead477aa828dadccd73bfdf"
+    ABLER_FEATURES = "https://acon3d.notion.site/3-ABLER-5f8ef0a19d4c4921b02d6f7e6b1b7482"
+    ABLER_INSTRUCTION = "https://acon3d.notion.site/4-ABLER-3af1026041ee4147b120e760bef1f301"
+    ACON_3D = "https://www.acon3d.com/zh/toon"
+
+lang_url_dicts = {
+    "ko_KR": URLs_Ko,
+    "en_US": URLs_En,
+    "ja_JP": URLs_Ja,
+    "zh_CN": URLs_Zh,
+}
 
 def context_path_validate(context, data_path):
     try:
@@ -3021,25 +3067,41 @@ class WM_MT_splash_quick_setup(Menu):
         layout.separator()
 
 # 성공하면 ('SUCCESS', [...]) 실패하면 ('FAILED', None) 이 채워짐
-notices = ('READY', None)
+lang_notice_dict = {}
 
-def fetch_notices():
-    # 전에 이미 성공/실패했으면 일찍 종료
-    global notices
-    if notices[0] != 'READY':
+def fetch_notices(lang: str = None):
+
+    if not lang or lang not in bpy.app.translations.locales:
         return
-    lang = bpy.context.preferences.view.language.split('_')[0]
+
+    # 전에 이미 성공/실패했으면 일찍 종료
+    global lang_notice_dict
+
+    if lang in lang_notice_dict.keys():
+        return
+
     req = None
     try:
-        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang}", timeout=5)
+        req = requests.get(f"https://cms.abler3d.biz/notices/?language={lang.split('_')[0]}", timeout=5)
     except Exception as ex:
-        notices = ('FAILED', None)
         return
-    if req is not None and req.status_code == 200:
-        ret_list = json.loads(req.text)["results"]
-        notices = ('SUCCESS', ret_list)
-    else:
-        notices = ('FAILED', None)
+    if req and req.status_code == 200:
+        release_appeared = False
+        result = []
+        for item in json.loads(req.text)["results"]:
+            # 버전 릴리즈 notice는 가장 최신만 보여준다.
+            if item["title"].count('.') >= 2:
+                # 릴리즈 노트 아이템 이미 추가
+                if release_appeared:
+                    continue
+                result.append(item)
+                release_appeared = True
+                continue
+            result.append(item)
+            if len(result) >= 3:
+                break
+        lang_notice_dict[lang] = result
+
 
 class WM_MT_splash(Menu):
     bl_label = "Splash"
@@ -3056,6 +3118,7 @@ class WM_MT_splash(Menu):
 
         layout = self.layout
         layout.operator_context = 'EXEC_DEFAULT'
+        lang = bpy.context.preferences.view.language
 
         row = layout.row()
         prop = context.window_manager.ACON_prop
@@ -3090,7 +3153,8 @@ class WM_MT_splash(Menu):
             else:
                 row.prop(prop, "password")
             column.separator()
-            row = column.row()
+            row = layout.row(align=True)
+
             row.prop(
                 prop,
                 "remember_username",
@@ -3100,6 +3164,10 @@ class WM_MT_splash(Menu):
                 invert_checkbox=True,
             )
             row.label(text="Remember Username")
+
+            anchor = row.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
+            anchor.description_text = "Sign up for ACON3D"
+            anchor.href = "https://www.acon3d.com/users/join"
 
             column = row_outside.column()
             column.separator()
@@ -3134,42 +3202,52 @@ class WM_MT_splash(Menu):
         layout.emboss = 'PULLDOWN_MENU'
 
         split = layout.split()
+        urls = lang_url_dicts.get(lang, URLs_En)
 
         col1 = split.column()
-        anchor = col1.operator("acon3d.anchor", text="See ACON3D models!", icon='EVENT_A')
-        anchor.description_text = "Link to ACON3D"
-        anchor.href = 'https://acon3d.com'
-        anchor = col1.operator("acon3d.anchor", text="Don't have an ACON3D account?", icon='USER')
-        anchor.description_text = "Sign up for ACON3D"
-        anchor.href = 'https://www.acon3d.com/member/join'
+        anchor = col1.operator("acon3d.anchor", text="Operating ABLER", icon='URL')
+        anchor.description_text = "Link to Operating ABLER"
+        anchor.href = urls.get_url("OPERATING_ABLER")
+
+        anchor = col1.operator("acon3d.anchor", text="ABLER Instruction", icon='URL')
+        anchor.description_text = "Link to ABLER Instruction"
+        anchor.href = urls.get_url("ABLER_INSTRUCTION")
 
         # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
-        anchor = col2.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
-        anchor.description_text = "Link to Blender Foundation and check release notes"
-        anchor.href = 'https://www.blender.org/download/releases/'
-        anchor = col2.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
-        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
-        anchor.href = 'https://fund.blender.org/'
+        anchor = col2.operator("acon3d.anchor", text="ABLER feature Walkthrough", icon='URL')
+        anchor.description_text = "Link to ABLER feature Walkthrough"
+        anchor.href = urls.get_url("ABLER_FEATURES")
+
+        anchor = col2.operator("acon3d.anchor", text="See ACON3D models!", icon='URL')
+        anchor.description_text = "Link to ACON3D"
+        anchor.href = urls.get_url("ACON_3D")
 
         # 공지사항 파트
-        fetch_notices()
-        global notices
-        if notices[0] == 'SUCCESS':
+        global lang_notice_dict
+        fetch_notices(lang)
+        if lang in lang_notice_dict.keys():
+            notice = lang_notice_dict[lang]
             layout.separator()
             layout.label(text="Notice:", text_ctxt="*")
-            ret_list = notices[1]
-            for notice in ret_list[:3]:
-                but = layout.operator("acon3d.notice", text=notice["title"], icon='URL')
-                but.title = notice["title"]
-                but.content = notice["content"]
-                if notice["link"] is not None:
-                    but.link = notice["link"]["url"]
-                    but.link_name = notice["link"]["title"]
+            for item in notice:
+                btn = layout.operator("acon3d.notice", text=item["title"], icon='URL')
+                btn.title = item["title"]
+                btn.content = item["content"]
+                if item["link"] is not None:
+                    btn.link = item["link"]["url"]
+                    btn.link_name = item["link"]["title"]
                 else:
-                    but.link = ""
-                    but.link_name = ""
-            layout.separator()
+                    btn.link = ""
+                    btn.link_name = ""
+
+        # blender 관련
+        anchor = layout.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
+        anchor.description_text = "Link to Blender Foundation and check release notes"
+        anchor.href = 'https://www.blender.org/download/releases/'
+        anchor = layout.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
+        anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
+        anchor.href = 'https://fund.blender.org/'
 
         from abler.lib.version import get_local_version
         config_ver = get_local_version()
@@ -3239,7 +3317,6 @@ class WM_MT_splash_about(Menu):
         col.emboss = 'PULLDOWN_MENU'
         col.operator("wm.url_open", text="License", icon='URL').url = "https://www.blender.org/about/license/"
 
-
 class WM_MT_splash_tutorial(Menu):
     bl_label = "Tutorial"
 
@@ -3263,14 +3340,10 @@ class WM_MT_splash_tutorial(Menu):
         # general.py에 언어 설정 코드가 있긴 하지만 __init__.py가 달라 재활용할 수 없음
         # 따라서 여기서 언어 설정 코드를 따로 지정
         cur_lang = bpy.context.preferences.view.language
-        if cur_lang == "ko_KR":
-            anchor.url = 'https://acon3d.notion.site/ae6c0a608fd749b4a14b1cf98f058ff7'
-        elif cur_lang == "ja_JP":
-            anchor.url = 'https://acon3d.notion.site/ABLER-bc26a6b09de14dfba8f9f10cebb87df2'
-        elif cur_lang == "zh_CN" or cur_lang == "zh_TW":
-            anchor.url = 'https://acon3d.notion.site/ABLER-1433d7c4cbb1496a883f9dee6b41fb68'
-        else: # en_US + 지원되지 않는 언어는 영어로
-            anchor.url = 'https://acon3d.notion.site/ABLER-User-Guide-316838433d0141ffa4dd11dccc80982c'  
+
+        global lang_url_dicts
+        anchor.url = lang_url_dicts.get(cur_lang, URLs_En).get_url("ABLER_MAIN")
+
         layout.separator()
 
         row = layout.row()

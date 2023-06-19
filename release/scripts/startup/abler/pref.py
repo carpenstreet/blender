@@ -10,6 +10,7 @@ from .lib.materials import materials_setup, materials_handler
 from .lib.tracker import tracker
 from .lib.version import update_file_version
 from .lib.addons import manage_preferences_addons
+from .warning_modal import BlockingModalOperator, CloseBlockingModalOperator
 
 
 def init_setting(dummy):
@@ -75,11 +76,48 @@ def load_handler(dummy):
     bpy.app.timers.register(delayed_load_handler)
 
 
+class Acon3DVanillarBlenderWarning(BlockingModalOperator):
+    bl_idname = "acon3d.vanilla_blender_warning"
+    bl_label = "Higher File Version Error"
+    bl_translation_context = "*"
+
+    def draw_modal(self, layout):
+        box = layout.box()
+        box.label(text="Information", icon="INFO")
+        row1 = box.row()
+        row1.label(
+            text="Shader node changes may occur when working in abler, and this is at your own risk."
+        )
+        row2 = box.row()
+        col = row2.column()
+        col.operator("acon3d.close_blocking_modal_continue", text="Continue")
+        col = row2.column()
+        col.operator("acon3d.close_abler", text="Quit")
+
+
+class Acon3DWarningContiuue(CloseBlockingModalOperator):
+    bl_idname = "acon3d.close_blocking_modal_continue"
+    bl_description = "Continue ABLER"
+
+
+def warn_if_loaded_file_is_vanillar_blender():
+    # 한번 이라도 에이블러 로딩된 파일이면 패스
+    for obj in bpy.data.objects:
+        if (obj.type == "MESH") and ("ACON_mod_edgeSplit" in obj.modifiers):
+            return
+
+    def popup():
+        bpy.ops.acon3d.vanilla_blender_warning("INVOKE_DEFAULT")
+
+    bpy.app.timers.register(popup, first_interval=1)
+
+
 def delayed_load_handler():
     tracker.turn_off()
     hide_header(None)
     try:
         init_setting(None)
+        warn_if_loaded_file_is_vanillar_blender()
         cameras.make_sure_camera_exists()
         cameras.switch_to_rendered_view()
         cameras.turn_on_camera_view(False)
@@ -97,6 +135,10 @@ def delayed_load_handler():
         scenes.refresh_look_at_me()
         scenes.snap_to_face()
         scenes.add_scene_items_to_collection()
+
+        # Render Init
+        bpy.context.window_manager.ACON_prop.render_default_path = ""
+
         post_open.change_and_reset_value()
         post_open.update_scene()
         post_open.update_layers()
@@ -164,6 +206,8 @@ def register():
     bpy.app.handlers.save_post.append(save_post_handler)
     bpy.app.handlers.depsgraph_update_post.append(grid_on_when_selected)
     bpy.app.handlers.depsgraph_update_post.append(camera_length)
+    bpy.utils.register_class(Acon3DVanillarBlenderWarning)
+    bpy.utils.register_class(Acon3DWarningContiuue)
 
 
 def unregister():
@@ -173,3 +217,5 @@ def unregister():
     bpy.app.handlers.save_pre.remove(save_pre_handler)
     bpy.app.handlers.load_post.remove(load_handler)
     bpy.app.handlers.load_factory_startup_post.remove(init_setting)
+    bpy.utils.unregister_class(Acon3DVanillarBlenderWarning)
+    bpy.utils.unregister_class(Acon3DWarningContiuue)

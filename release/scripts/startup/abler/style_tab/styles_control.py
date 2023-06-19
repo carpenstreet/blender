@@ -31,7 +31,7 @@ bl_info = {
 }
 
 import bpy
-
+from ..lib.tracker import tracker
 
 class Acon3dStylesPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Styles"
@@ -128,6 +128,8 @@ class SunlightPanel(bpy.types.Panel):
 
 
 class LIGHT_UL_List(bpy.types.UIList):
+    bl_idname = "LIGHT_UL_List"
+    bl_description = "Click to select a light"
     def __init__(self):
         super().__init__()
         self.use_filter_sort_reverse = True
@@ -140,13 +142,12 @@ class LIGHT_UL_List(bpy.types.UIList):
                 return
             light_type = item.obj.data.type
             row = layout.row(align=True)
-            obj = item.obj
             if light_type == "POINT":
-                row.label(icon="LIGHT_POINT", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_POINT", emboss=False, text="")
             elif light_type == "SPOT":
-                row.label(icon="LIGHT_SPOT", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_SPOT", emboss=False, text="")
             elif light_type == "AREA":
-                row.label(icon="LIGHT_AREA", text=obj.name)
+                row.prop(item.obj, "name", icon="LIGHT_AREA", emboss=False, text="")
             row.prop(
                 item,
                 "is_hidden",
@@ -181,17 +182,15 @@ class LightPanel(bpy.types.Panel):
 
             # PointLight 생성버튼
             col = row.column()
-            col.operator(
-                AddPointLightOperator.bl_idname, text="Point", icon="LIGHT_POINT"
-            )
+            col.operator(AddPointLightOperator.bl_idname, text="Point", text_ctxt="abler", icon="LIGHT_POINT")
 
             # SpotLight 생성버튼
             col = row.column()
-            col.operator(AddSpotLightOperator.bl_idname, text="Spot", icon="LIGHT_SPOT")
+            col.operator(AddSpotLightOperator.bl_idname, text="Spot", text_ctxt="abler", icon="LIGHT_SPOT")
 
             # AreaLight 생성버튼
             col = row.column()
-            col.operator(AddAreaLightOperator.bl_idname, text="Area", icon="LIGHT_AREA")
+            col.operator(AddAreaLightOperator.bl_idname, text="Area", text_ctxt="abler", icon="LIGHT_AREA")
 
             row = layout.row(align=True)
             col = row.column()
@@ -253,32 +252,37 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light
+        tracker.add_light()
         return {"FINISHED"}
 
 
 class AddPointLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_point"
     bl_label = "Add Point Light"
+    bl_description = "Add Point Light"
     light_type = "POINT"
 
 
 class AddSpotLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_spot"
     bl_label = "Add Spot Light"
+    bl_description = "Add Spot Light"
     light_type = "SPOT"
 
 
 class AddAreaLightOperator(AddLightOperatorBase):
     bl_idname = "acon3d.add_light_area"
     bl_label = "Add Area Light"
+    bl_description = "Add Area Light"
     light_type = "AREA"
 
 
 class RemoveLightOperator(bpy.types.Operator):
     bl_idname = "acon3d.remove_light"
-    bl_label = "Remove Light"
-    bl_options = {"REGISTER"}
     bl_translation_context = "abler"
+    bl_label = ""
+    bl_description = "Remove Selected Light"
+    bl_options = {"REGISTER"}
 
     def execute(self, context):
         scene = context.scene
@@ -299,6 +303,7 @@ class RemoveLightOperator(bpy.types.Operator):
         if index > 0:
             index = index - 1
 
+        tracker.remove_light()
         return {"FINISHED"}
 
 

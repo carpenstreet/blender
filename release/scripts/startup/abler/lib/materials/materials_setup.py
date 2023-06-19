@@ -567,26 +567,25 @@ def apply_ACON_toon_style():
             if not is_node_texImage and not is_out_node and not is_node_combinedToon:
                 mat.node_tree.nodes.remove(node)
 
-        if "ACON_mat" in mat.name:
-            if "mirror" in mat.name:
-                mat.ACON_prop.type = "Mirror"
+        if "ACON_mat_mirror" in mat.name:
+            mat.ACON_prop.type = "Mirror"
 
-            if "light" in mat.name:
-                mat.ACON_prop.type = "Glow"
+        if "ACON_mat_light" in mat.name:
+            mat.ACON_prop.type = "Glow"
 
-                strength = 1
+            strength = 1
 
-                try:
-                    components = mat.name.split("_")
-                    strength = 1.6 ** (int(components[3]) - 3.2)
-                except:
-                    print("Fllowing ACON_mat has invalid format")
-                    print(mat.name)
+            try:
+                components = mat.name.split("_")
+                strength = 1.6 ** (int(components[3]) - 3.2)
+            except:
+                print("Following ACON_mat has invalid format")
+                print(mat.name)
 
-                node_combinedToon.inputs[5].default_value = strength
+            node_combinedToon.inputs[5].default_value = strength
 
-            if "clear" in mat.name:
-                mat.ACON_prop.type = "Clear"
+        if "ACON_mat_clear" in mat.name:
+            mat.ACON_prop.type = "Clear"
 
         materials_handler.set_material_parameters_by_type(mat)
         override = SimpleNamespace()

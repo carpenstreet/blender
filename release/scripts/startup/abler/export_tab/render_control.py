@@ -24,7 +24,8 @@ from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
 from ..warning_modal import BlockingModalOperator
-from ..lib.import_file import AconImportHelper, AconExportHelper
+from ..lib.import_file import AconImportHelper
+from enum import Enum
 
 
 bl_info = {
@@ -39,6 +40,17 @@ bl_info = {
     "tracker_url": "",
     "category": "ACON3D",
 }
+
+
+class RenderType(Enum):
+    quick = "quick"
+    snipped_shade = "snipped_shade"
+    snipped_object = "snipped_object"
+    snipped_full = "snipped_full"
+    HQ_full = "HQ_full"
+    HQ_line = "HQ_line"
+    HQ_shadow = "HQ_shadow"
+    HQ_texture = "HQ_texture"
 
 
 def open_directory(path):
@@ -56,20 +68,6 @@ def open_directory(path):
 
     elif platform.system() == "Linux":
         print("Linux")
-
-
-def check_file_numbering(self, context):
-    base_filepath = os.path.join(self.dirname, self.basename)
-    file_format = self.filename_ext
-    numbered_filepath = base_filepath
-    number = 2
-
-    while os.path.isfile(f"{numbered_filepath}{file_format}"):
-        numbered_filepath = f"{base_filepath} ({number})"
-        number += 1
-
-    context.scene.render.filepath = numbered_filepath
-    self.filepath = f"{numbered_filepath}{file_format}"
 
 
 class Acon3dCameraViewOperator(bpy.types.Operator):
@@ -159,6 +157,9 @@ class Acon3dRenderOperator(bpy.types.Operator):
         name="Show in folder on completion", default=True
     )
     write_still = True
+
+    # (Scene, Render Type, Scene Name)
+    # Scene Name - 믹스패널 트래킹을 위해 현재 렌더링하는 씬의 이름을 저장
     render_queue = []
     rendering = False
     render_canceled = False
@@ -166,6 +167,14 @@ class Acon3dRenderOperator(bpy.types.Operator):
     initial_scene = None
     initial_display_type = None
     render_start_time = None
+
+    # 렌더를 위해 임시로 만든 Scene 을 저장하는 리스트 (snip, HQ)
+    temp_scenes = []
+
+    def clear_temp_scenes(self):
+        for scene in self.temp_scenes:
+            bpy.data.scenes.remove(scene)
+        self.temp_scenes.clear()
 
     def pre_render(self, dummy, dum):
         self.rendering = True
@@ -184,10 +193,7 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"FINISHED"}
 
     def prepare_queue(self, context):
-        for scene in bpy.data.scenes:
-            self.render_queue.append((None, scene))
-
-        return {"RUNNING_MODAL"}
+        raise NotImplementedError()
 
     def prepare_render(self):
         render.setup_background_images_compositor()
@@ -220,115 +226,32 @@ class Acon3dRenderOperator(bpy.types.Operator):
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
-    """Take a snapshot of the active viewport"""
-
-    bl_idname = "acon3d.render_quick"
-    bl_label = "Quick Render"
-    bl_description = "Take a snapshot of the active viewport"
-    bl_translation_context = "abler"
-
-    filename_ext = ".png"
-    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
-
-    def __init__(self):
-        AconExportHelper.__init__(self)
-        scene = bpy.context.scene
-        self.filepath = f"{scene.name}{self.filename_ext}"
-
-    def invoke(self, context, event):
-        with file_view_title("RENDER"):
-            return super().invoke(context, event)
-
-    def execute(self, context):
-        self.check_path(
-            save_check=False,
-            default_name=f"{context.scene.name}{self.filename_ext}",
-        )
-
-        # Get basename without file extension
-        self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
-
-        if "." in self.basename:
-            self.basename = ".".join(self.basename.split(".")[:-1])
-
-        context.screen.areas[0].spaces[0].overlay.show_extras = False
-        res = super().execute(context)
-        return res
-
-    def prepare_queue(self, context):
-        # File name duplicate check
-
-        check_file_numbering(self, context)
-
-        for obj in context.selected_objects:
-            obj.select_set(False)
-
-        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
-
-        return {"RUNNING_MODAL"}
-
-    def modal(self, context, event):
-        if event.type == "TIMER":
-            if not self.render_queue or self.render_canceled is True:
-                bpy.app.handlers.render_pre.remove(self.pre_render)
-                bpy.app.handlers.render_post.remove(self.post_render)
-                bpy.app.handlers.render_cancel.remove(self.on_render_cancel)
-
-                context.window_manager.event_timer_remove(self.timer_event)
-                context.window.scene = self.initial_scene
-                context.preferences.view.render_display_type = self.initial_display_type
-
-                self.report({"INFO"}, "RENDER QUEUE FINISHED")
-                context.screen.areas[0].spaces[0].overlay.show_extras = True
-
-                bpy.ops.acon3d.alert(
-                    "INVOKE_DEFAULT",
-                    title="Render Queue Finished",
-                    message_1="Rendered images are saved in:",
-                    message_2=self.filepath,
-                )
-
-                if self.show_on_completion:
-                    open_directory(self.filepath)
-
-                return self.on_render_finish(context)
-
-            elif self.rendering is False:
-                check_file_numbering(self, context)
-
-                self.prepare_render()
-
-                bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
-
-        return {"PASS_THROUGH"}
-
-    def on_render_finish(self, context):
-        tracker.render_quick()
-        return super().on_render_finish(context)
-
-
 class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
-    # Render Type : High Quality, Snip
-
     filter_glob: bpy.props.StringProperty(default="Folders", options={"HIDDEN"})
 
     def __init__(self):
         AconImportHelper.__init__(self)
 
-        # Get basename without file extension
-        self.filepath = bpy.context.blend_data.filepath
-
-        if not self.filepath:
-            self.filepath = "untitled"
-
+        if (
+            render_default_path := bpy.context.window_manager.ACON_prop.render_default_path
+        ):
+            self.filepath = render_default_path
         else:
-            self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
+            if blend_path := bpy.context.blend_data.filepath:
+                self.dirname, self.basename = os.path.split(
+                    os.path.normpath(blend_path)
+                )
 
-            if "." in self.basename:
-                self.basename = ".".join(self.basename.split(".")[:-1])
+                if "." in self.basename:
+                    self.basename = ".".join(self.basename.split(".")[:-1])
 
-            self.filepath = self.basename
+                self.filepath = self.basename
+            else:
+                # 현재 프로젝트를 한 번도 저장하지 않았을 때
+                self.filepath = bpy.context.scene.name
+
+    def prepare_queue(self, context):
+        raise NotImplementedError()
 
     def execute(self, context):
         if not os.path.isdir(self.filepath) and os.path.isfile(self.filepath):
@@ -338,6 +261,9 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 message_1="No selected file.",
             )
             return {"FINISHED"}
+
+        context.window_manager.ACON_prop.render_default_path = self.filepath
+
         return super().execute(context)
 
     def render_handler(self):
@@ -374,37 +300,40 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 return self.on_render_finish(context)
 
             elif self.rendering is False:
-                name_item, qitem, *_ = self.render_queue[0]
-                if name_item:
-                    dirname_temp = os.path.join(self.filepath, name_item)
-                    if not os.path.exists(dirname_temp):
-                        try:
-                            os.makedirs(dirname_temp)
-                        except FileNotFoundError:
-                            bpy.ops.acon3d.alert(
-                                "INVOKE_DEFAULT",
-                                title="This file path does not exist",
-                                message_1="Please select valid file path",
-                            )
-                        except OSError:
-                            bpy.ops.acon3d.alert(
-                                "INVOKE_DEFAULT",
-                                title="Invalid Directory Name",
-                                message_1="Please rewrite your directory name",
-                            )
-                else:
-                    dirname_temp = self.filepath
+                dirname_temp = self.filepath
+                if not os.path.exists(dirname_temp):
+                    try:
+                        os.makedirs(dirname_temp)
+                    except FileNotFoundError:
+                        bpy.ops.acon3d.alert(
+                            "INVOKE_DEFAULT",
+                            title="This file path does not exist",
+                            message_1="Please select valid file path",
+                        )
+                    except OSError:
+                        bpy.ops.acon3d.alert(
+                            "INVOKE_DEFAULT",
+                            title="Invalid Directory Name",
+                            message_1="Please rewrite your directory name",
+                        )
 
-                base_filepath = os.path.join(dirname_temp, qitem.name)
-                file_format = qitem.render.image_settings.file_format
+                scene, render_type, *_ = self.render_queue[0]
+
+                base_filepath = os.path.join(dirname_temp, scene.name)
+                # Quick Render 는 렌더 시 새로 Scene 을 생성하지 않아서 filepath 에 _quick 을 붙여줌
+                if render_type == RenderType.quick:
+                    base_filepath = f"{base_filepath}_{render_type.value}"
+
+                file_format = scene.render.image_settings.file_format
                 numbered_filepath = base_filepath
                 number = 2
+
                 while os.path.isfile(f"{numbered_filepath}.{file_format}"):
                     numbered_filepath = f"{base_filepath} ({number})"
                     number += 1
 
-                qitem.render.filepath = numbered_filepath
-                context.window_manager.ACON_prop.scene = qitem.name
+                scene.render.filepath = numbered_filepath
+                context.window_manager.ACON_prop.scene = scene.name
 
                 self.prepare_render()
 
@@ -424,6 +353,42 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
         return {"PASS_THROUGH"}
 
 
+class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
+    """Take a snapshot of the active viewport"""
+
+    bl_idname = "acon3d.render_quick"
+    bl_label = "Quick Render"
+    bl_translation_context = "abler"
+
+    def invoke(self, context, event):
+        with file_view_title("RENDER"):
+            return super().invoke(context, event)
+
+    def execute(self, context):
+        context.screen.areas[0].spaces[0].overlay.show_extras = False
+        return super().execute(context)
+
+    def prepare_queue(self, context):
+        for obj in context.selected_objects:
+            obj.select_set(False)
+
+        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
+
+        self.render_queue.append((context.scene, RenderType.quick))
+
+        return {"RUNNING_MODAL"}
+
+    def modal(self, context, event):
+        if event.type == "TIMER":
+            if not self.render_queue or self.render_canceled is True:
+                context.screen.areas[0].spaces[0].overlay.show_extras = True
+        return super().modal(context, event)
+
+    def on_render_finish(self, context):
+        tracker.render_quick()
+        return super().on_render_finish(context)
+
+
 class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
     """Render selected objects isolatedly from background"""
 
@@ -431,7 +396,6 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
     bl_label = "Snip Render"
     bl_translation_context = "abler"
 
-    temp_scenes = []
     temp_layer = None
     temp_col = None
     temp_image = None
@@ -477,7 +441,8 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
 
     def prepare_queue(self, context):
         scene = context.scene.copy()
-        self.render_queue.append((None, scene))
+        render_type = RenderType.snipped_shade
+        self.render_queue.append((scene, render_type, None))
         self.temp_scenes.append(scene)
 
         scene.eevee.use_bloom = False
@@ -491,8 +456,9 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
                 toonNode.inputs[3].default_value = 1
 
         scene = context.scene.copy()
-        scene.name = f"{context.scene.name}_snipped"
-        self.render_queue.append((None, scene))
+        render_type = RenderType.snipped_object
+        scene.name = f"{context.scene.name}_{render_type.value}"
+        self.render_queue.append((scene, render_type, None))
         self.temp_scenes.append(scene)
 
         layer = scene.view_layers.new("ACON_layer_snip")
@@ -507,8 +473,9 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
             col_group.objects.link(obj)
 
         scene = context.scene.copy()
-        scene.name = f"{context.scene.name}_full"
-        self.render_queue.append((None, scene))
+        render_type = RenderType.snipped_full
+        scene.name = f"{context.scene.name}_{render_type.value}"
+        self.render_queue.append((scene, render_type, None))
         self.temp_scenes.append(scene)
 
         return {"RUNNING_MODAL"}
@@ -519,10 +486,7 @@ class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
         for mat in bpy.data.materials:
             materials_handler.set_material_parameters_by_type(mat)
 
-        for scene in self.temp_scenes:
-            bpy.data.scenes.remove(scene)
-
-        self.temp_scenes.clear()
+        self.clear_temp_scenes()
 
         return super().on_render_finish(context)
 
@@ -533,9 +497,6 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
     bl_idname = "acon3d.render_high_quality"
     bl_label = "Render Selected Scenes"
     bl_translation_context = "abler"
-
-    # 렌더를 위해 임시로 만들어진 scene list
-    temp_scenes = []
 
     def __init__(self):
         super().__init__()
@@ -568,7 +529,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         self.render_start_time = time()
 
         super().pre_render(dummy, dum)
-        _, scene, render_type = self.render_queue[0]
+        scene, render_type, *_ = self.render_queue[0]
         info = find_target_render_scene_info(
             scene.name, bpy.context.window_manager.progress_prop.render_scene_infos
         )
@@ -577,10 +538,10 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
 
         # bpy.data.materials가 전체 씬에 대해 적용되기 때문에
         # 렌더 씬마다 적용하기 위해 재질의 상태를 렌더하기 전 pre_render에서 적용
-        if render_type == "full":
+        if render_type == RenderType.HQ_full:
             for mat in bpy.data.materials:  # scene
                 materials_handler.set_material_parameters_by_type(mat)
-        elif render_type == "line":
+        elif render_type == RenderType.HQ_line:
             for mat in bpy.data.materials:  # scene
                 mat.blend_method = "OPAQUE"
                 mat.shadow_method = "OPAQUE"
@@ -608,7 +569,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                     materials_handler.set_material_parameters_by_type(mat)
 
     def post_render(self, dummy, dum):
-        base_scene_name, scene, render_type = self.render_queue[0]
+        scene, render_type, base_scene_name = self.render_queue[0]
         render_time = str(
             datetime.timedelta(seconds=round(time() - self.render_start_time))
         )
@@ -618,16 +579,16 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
             "Render time": render_time,
         }
 
-        if render_type == "full":
+        if render_type == RenderType.HQ_full:
             tracker.render_full(render_data)
 
-        elif render_type == "line":
+        elif render_type == RenderType.HQ_line:
             tracker.render_line(render_data)
 
-        elif render_type == "shadow":
+        elif render_type == RenderType.HQ_shadow:
             tracker.render_shadow(render_data)
 
-        elif render_type == "texture":
+        elif render_type == RenderType.HQ_texture:
             tracker.render_texture(render_data)
 
         progress_prop = bpy.context.window_manager.progress_prop
@@ -640,27 +601,25 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         super().post_render(dummy, dum)
 
     def prepare_render(self):
-        _, _, render_type = self.render_queue[0]
+        _, render_type, *_ = self.render_queue[0]
         compNodes = render.clear_compositor()
-        if render_type == "full":
+        if render_type == RenderType.HQ_full:
             render.setup_background_images_compositor(*compNodes)
         render.match_object_visibility()
 
     # render_type - line, shadow, texture
-    def prepare_temp_scene(self, base_scene, render_type: str):
+    def prepare_temp_scene(self, base_scene, render_type: RenderType):
         scene = base_scene.copy()
         # 현재 씬을 복사한 씬으로 적용
         bpy.data.window_managers["WinMan"].ACON_prop.scene = scene.name
 
-        # 렌더를 위한 씬 이름을 폴더명으로 설정하기 위한 queue에 추가
-        self.render_queue.append((base_scene.name, scene, render_type))
-
+        self.render_queue.append((scene, render_type, base_scene.name))
         self.temp_scenes.append(scene)
 
         bpy.context.window_manager.progress_prop.total_render_num += 1
 
-        scene.name = f"{base_scene.name}_{render_type}"
-        if render_type != "full":
+        scene.name = f"{base_scene.name}_{render_type.value}"
+        if render_type != RenderType.HQ_full:
             scene.eevee.use_bloom = False
         scene.render.use_lock_interface = True
 
@@ -671,15 +630,15 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         scene_info.status = "waiting"
 
         prop = scene.ACON_prop
-        if render_type == "line":
+        if render_type == RenderType.HQ_line:
             prop.toggle_texture = False
             prop.toggle_shading = False
             prop.toggle_toon_edge = True
-        elif render_type == "shadow":
+        elif render_type == RenderType.HQ_shadow:
             prop.toggle_texture = False
             prop.toggle_shading = True
             prop.toggle_toon_edge = False
-        elif render_type == "texture":
+        elif render_type == RenderType.HQ_texture:
             prop.toggle_texture = True
             prop.toggle_shading = False
             prop.toggle_toon_edge = False
@@ -701,16 +660,16 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
                 scene = bpy.data.scenes[s_col.name]
 
                 if render_prop.hq_render_full:
-                    self.prepare_temp_scene(scene, render_type="full")
+                    self.prepare_temp_scene(scene, render_type=RenderType.HQ_full)
 
                 if render_prop.hq_render_line:
-                    self.prepare_temp_scene(scene, render_type="line")
+                    self.prepare_temp_scene(scene, render_type=RenderType.HQ_line)
 
                 if render_prop.hq_render_shadow:
-                    self.prepare_temp_scene(scene, render_type="shadow")
+                    self.prepare_temp_scene(scene, render_type=RenderType.HQ_shadow)
 
                 if render_prop.hq_render_texture:
-                    self.prepare_temp_scene(scene, render_type="texture")
+                    self.prepare_temp_scene(scene, render_type=RenderType.HQ_texture)
 
         progress_prop.is_loaded = True
 
@@ -722,10 +681,7 @@ class Acon3dRenderHighQualityOperator(Acon3dRenderDirOperator):
         for mat in bpy.data.materials:
             materials_handler.set_material_parameters_by_type(mat)
 
-        for scene in self.temp_scenes:
-            bpy.data.scenes.remove(scene)
-
-        self.temp_scenes.clear()
+        self.clear_temp_scenes()
 
         return super().on_render_finish(context)
 
