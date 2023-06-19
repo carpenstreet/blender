@@ -2576,7 +2576,7 @@ class VIEW3D_MT_object_context_menu(Menu):
 
         # Shared among all object types
         layout.operator("view3d.copybuffer", text="Copy Objects", icon='COPYDOWN')
-        layout.operator("view3d.pastebuffer", text="Paste Objects", icon='PASTEDOWN')
+        layout.operator("acon3d.pastebuffer", text="Paste Objects", icon='PASTEDOWN')
 
         layout.separator()
 

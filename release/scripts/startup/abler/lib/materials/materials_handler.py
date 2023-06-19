@@ -122,7 +122,6 @@ def toggle_texture(self, context: Context) -> None:
         return
     node.inputs[0].default_value = textureFactorValue
 
-
 def toggle_shading(self, context: Context) -> None:
     if not context:
         context = bpy.context

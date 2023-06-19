@@ -1246,7 +1246,7 @@ def km_view3d(params):
         ("view3d.object_as_camera", {"type": 'NUMPAD_0', "value": 'PRESS', "ctrl": True}, None),
         # Copy/paste.
         ("view3d.copybuffer", {"type": 'C', "value": 'PRESS', "ctrl": True}, None),
-        ("view3d.pastebuffer", {"type": 'V', "value": 'PRESS', "ctrl": True}, None),
+        ("acon3d.pastebuffer", {"type": 'V', "value": 'PRESS', "ctrl": True}, None),
         # Transform.
         ("transform.translate", {"type": 'G', "value": 'PRESS'}, None),
         ("transform.translate", {"type": params.select_tweak, "value": 'ANY'}, None),

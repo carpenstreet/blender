@@ -975,6 +975,23 @@ class ApplyToonStyleOperator(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class Acon3dPastebuffer(bpy.types.Operator):
+    """Paste Buffer with Apply Toon Style"""
+
+    bl_idname = "acon3d.pastebuffer"
+    bl_label = "Paste Objects"
+    bl_description = "Objects from the clipboard are pasted"
+
+    def execute(self, context):
+        # 오젝트를 복사하면 구성하는 모든 요소가 (재질, 텍스처 이미지, 쉐이더 등) 복제됨.
+        # 그럼 ACON_nodeGroup_combinedToon.001 등으로 복제되는데, 에이블러 Style 기능이 정상적으로 동작하지 않음.
+        # 그래서 기존의 복사 기능에 에이블러의 툰 스타일 적용 기능을 추가함.
+        bpy.ops.view3d.pastebuffer()
+        bpy.ops.acon3d.apply_toon_style()
+
+        return {"FINISHED"}
+
+
 classes = (
     OpenAcon3dOperator,
     OpenAcon3dSearchOperator,
@@ -1000,6 +1017,7 @@ classes = (
     ImportSKPOperator,
     ImportSKPModalOperator,
     ImportSKPAcceptOperator,
+    Acon3dPastebuffer,
 )
 
 

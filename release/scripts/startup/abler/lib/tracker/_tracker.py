@@ -57,7 +57,9 @@ class EventKind(enum.Enum):
     tutorial_guide_on = "Quick Start Guide On"
     open_acon3d = "Open Acon3d"
     open_search_acon3d = "Search on Acon3d"
-
+    create_layer = "Create Layer"
+    add_light = "Add Light"
+    remove_light = "Remove Light"
 
 def accumulate(interval=0):
     """
@@ -311,6 +313,14 @@ class Tracker(metaclass=ABCMeta):
     def open_search_acon3d(self, data):
         self._track(EventKind.open_search_acon3d.value, data)
 
+    def create_layer(self):
+        self._track(EventKind.create_layer.value)
+
+    def add_light(self):
+        self._track(EventKind.add_light.value)
+
+    def remove_light(self):
+        self._track(EventKind.remove_light.value)
 
 class DummyTracker(Tracker):
     def __init__(self):

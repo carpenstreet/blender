@@ -33,6 +33,7 @@ bl_info = {
 
 import bpy
 from ..lib import layers
+from ..lib.tracker import tracker
 
 
 class Acon3dCreateGroupOperator(bpy.types.Operator):
@@ -175,8 +176,10 @@ class Acon3dLayersPanel(bpy.types.Panel):
         if "Layers" in view_layer.layer_collection.children:
             layout = self.layout
             layout.use_property_split = False
-            box = layout.box()
+            row = layout.row()
 
+            # Layers list
+            box = row.column().box()
             self._draw_collection(
                 box,
                 view_layer,
@@ -184,16 +187,68 @@ class Acon3dLayersPanel(bpy.types.Panel):
                 view_layer.layer_collection.children["Layers"],
                 1,
             )
+
+            # Layer 생성 버튼
+            col = row.column()
+            col.operator("acon3d.create_layer", text="", icon="ADD")
         else:
             layout = self.layout
             row = layout.row(align=True)
             row.label(text="No 'Layers' collection in Outliner")
 
 
+class Acon3dCreateLayer(bpy.types.Operator):
+    bl_idname = "acon3d.create_layer"
+    bl_label = "Create Layer"
+    bl_description = "Create a new layer and link objects to a layer"
+    bl_translation_context = "abler"
+
+    name: bpy.props.StringProperty(
+        name="Layer Name", default="ACON_Layer", description="Write layer name"
+    )
+
+    @classmethod
+    def poll(cls, context):
+        return len(context.selected_objects) > 0
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        # Blender의 컬렉션 데이터는 이름순으로 정렬되기 때문에 Outliner > View Layer의 index가 달라져서
+        # bpy.ops.object.link_to_collection(collection_index=...)을 사용하기가 힘듬.
+        # 그래서 "Layers" 하위에 컬렉션을 직접 생성하고, 여기에 선택된 오브젝트를 link 하는 방식을 사용함.
+        # https://devtalk.blender.org/t/where-to-find-collection-index-for-moving-an-object/3289/5
+        tracker.create_layer()
+
+        # 새로운 collection을 생성하고 "Layers" 하위로 link
+        layers = bpy.data.collections["Layers"]
+        collection = bpy.data.collections.new(name=self.name)
+        layers.children.link(collection)
+
+        # 선택된 objects를 새로 만든 collection에 link
+        if context.selected_objects:
+            for obj in context.selected_objects:
+                collection.objects.link(obj)
+
+        # Collection 목록을 Outliner > View Layer > Scene Collection > Layers에 업데이트 하기
+        # https://www.notion.so/acon3d/to-127d21725cc641b1a28d6451d3949bb1?pvs=4
+        scene = context.scene
+        for _ in range(len(scene.l_exclude)):
+            scene.l_exclude.remove(0)
+
+        for l in bpy.data.collections["Layers"].children:
+            l_exclude = scene.l_exclude.add()
+            l_exclude.name = l.name
+
+        return {"FINISHED"}
+
+
 classes = (
     Acon3dCreateGroupOperator,
     Acon3dExplodeGroupOperator,
     Acon3dLayersPanel,
+    Acon3dCreateLayer,
 )
 
 

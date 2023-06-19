@@ -24,6 +24,7 @@ from .lib.layers import get_first_layer_name_of_object
 from .lib.materials import materials_handler
 from .lib.read_cookies import *
 from .scene_tab import object_control
+from bpy.app.handlers import persistent
 
 
 class AconSceneColGroupProperty(bpy.types.PropertyGroup):
@@ -74,6 +75,9 @@ class AconWindowManagerProperty(bpy.types.PropertyGroup):
         update=scenes.load_scene_by_index, name="Scene"
     )
 
+    render_default_path: bpy.props.StringProperty(
+        name="Render Default Path", description="Default Directory Path for Render"
+    )
     hq_render_full: bpy.props.BoolProperty(
         name="Full Render",
         description="Render according to the set pixel",
@@ -270,6 +274,113 @@ class AconSceneSelectedGroupProperty(bpy.types.PropertyGroup):
     )
 
 
+@persistent
+def renew_acon_lights(_dummy):
+    scene = bpy.context.scene
+    obj_cnt = len(scene.collection.objects)
+
+    if scene == AconLight.scene_cache and obj_cnt == AconLight.obj_cnt_cache:
+        return
+
+    AconLight.scene_cache = scene
+    AconLight.obj_cnt_cache = obj_cnt
+
+    delete_indices = []
+    lights = scene.ACON_prop.lights
+
+    for index in range(len(lights.values())):
+        if not lights[index].obj.users_collection:
+            delete_indices.append(index)
+
+    counter = 0
+    for index in delete_indices:
+        lights.remove(index - counter)
+        counter = counter + 1
+
+
+class AconLight(bpy.types.PropertyGroup):
+    obj: bpy.props.PointerProperty(type=bpy.types.Object)
+
+    @classmethod
+    def register(cls):
+        bpy.app.handlers.depsgraph_update_post.append(renew_acon_lights)
+
+    @classmethod
+    def unregister(cls):
+        bpy.app.handlers.depsgraph_update_post.remove(renew_acon_lights)
+
+    # used to check if renew is needed
+    scene_cache = None
+    obj_cnt_cache = 0
+
+    def change_light_data(self, context: bpy.types.Context) -> None:
+        prop = context.scene.ACON_prop
+        aconlight = prop.lights[prop.light_index]
+        data = aconlight.obj.data
+
+        data.color = aconlight.color
+        data.energy = aconlight.energy
+        data.diffuse_factor = aconlight.diffuse_factor
+        data.specular_factor = aconlight.specular_factor
+        data.volume_factor = aconlight.volume_factor
+
+    def toggle_light(self, context: bpy.types.Context) -> None:
+        self.obj.hide_set(self.is_hidden)
+
+    color: bpy.props.FloatVectorProperty(
+        name="",
+        description="Adjust light color",
+        subtype="COLOR",
+        default=(1.0, 1.0, 1.0),
+        min=0.0,
+        max=100.0,
+        update=change_light_data,
+    )
+
+    energy: bpy.props.FloatProperty(
+        name="",
+        description="Adjust light energy",
+        default=10.0,
+        min=0,
+        max=1000.0,
+        update=change_light_data,
+    )
+
+    diffuse_factor: bpy.props.FloatProperty(
+        name="",
+        description="Adjust light diffuse",
+        default=1.0,
+        min=0,
+        max=100.0,
+        update=change_light_data,
+    )
+
+    specular_factor: bpy.props.FloatProperty(
+        name="",
+        description="Adjust light specular",
+        default=1.0,
+        min=0,
+        max=100.0,
+        update=change_light_data,
+    )
+
+    volume_factor: bpy.props.FloatProperty(
+        name="",
+        description="Adjust light volume",
+        default=1.0,
+        min=0,
+        max=100.0,
+        update=change_light_data,
+    )
+
+    is_hidden: bpy.props.BoolProperty(
+        name="",
+        description="Toggle selected light",
+        default=False,
+        update=toggle_light,
+    )
+
+
 class AconSceneProperty(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -403,6 +514,12 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         max=10,
         step=1,
         update=shadow.change_sun_strength,
+    )
+
+    toggle_lights: bpy.props.BoolProperty(
+        name="",
+        description="Lights",
+        default=True,
     )
 
     toggle_shadow_shading: bpy.props.BoolProperty(
@@ -639,6 +756,14 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         update=scenes.change_background_color,
     )
 
+    lights: bpy.props.CollectionProperty(type=AconLight)
+    light_index: bpy.props.IntProperty(
+        name="",
+        min=0,
+        default=0,
+        update=scenes.change_ui_to_show_selected_light
+    )
+
 
 class AconMaterialProperty(bpy.types.PropertyGroup):
     @classmethod
@@ -780,6 +905,7 @@ classes = (
     AconWindowManagerProperty,
     CollectionLayerExcludeProperties,
     AconSceneSelectedGroupProperty,
+    AconLight,
     AconSceneProperty,
     AconMaterialProperty,
     AconMeshProperty,

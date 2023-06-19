@@ -98,6 +98,34 @@ def change_background_color(self, context: Context) -> None:
     ui.transparent_checker_secondary = background_color
 
 
+def change_ui_to_show_selected_light(self, context: Context) -> None:
+    """
+    ACON_prop의 light_index가 변경되었을때 아래의 로직을 수행한다
+    1. 실제 조명의 data와 ui로 보여지는 properties를 동기화
+    2. 뷰포트 상에서 해당 조명을 조작할 수 있도록 선택 처리
+    """
+    index = context.scene.ACON_prop.light_index
+
+    if not context.scene.ACON_prop.lights:
+        return
+
+    light = context.scene.ACON_prop.lights[index]
+
+    if light.obj:
+        data = light.obj.data
+    else:
+        return
+    light.color = data.color
+    light.energy = data.energy
+    light.diffuse_factor = data.diffuse_factor
+    light.volume_factor = data.volume_factor
+    light.specular_factor = data.specular_factor
+
+    # select current light item
+    bpy.ops.object.select_all(action="DESELECT")
+    context.scene.ACON_prop.lights[index].obj.select_set(True)
+
+
 # scene_items should be a global variable due to a bug in EnumProperty
 scene_items: List[Tuple[str, str, str]] = []
 
@@ -248,6 +276,12 @@ def create_scene(old_scene: Scene, type: str, name: str) -> Optional[Scene]:
         cameras.turn_on_camera_view(False)
 
     prop = new_scene.ACON_prop
+
+    # Light는 Object이긴 하지만, Scene별로 관리되도록 하기 위해 복사하지 않는다.
+    for acon_light in prop.lights:
+        new_scene.collection.objects.unlink(acon_light.obj)
+
+    prop.lights.clear()
 
     if type == "Default":
         prop.toggle_toon_edge = True
