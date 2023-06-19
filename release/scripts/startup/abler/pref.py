@@ -86,6 +86,8 @@ def delayed_load_handler():
         shadow.setup_clear_shadow()
         render.setup_background_images_compositor()
         materials_setup.apply_ACON_toon_style()
+        # blender undostack에 현재 상태의 스냅샷을 초기원소로 넣어준다.
+        bpy.context.window_manager.init_undostack()
         for scene in bpy.data.scenes:
             scene.view_settings.view_transform = "Standard"
         # 키맵이 ABLER로 세팅되어있는지 확인하고, 아닐 경우 세팅을 바로잡아줌
