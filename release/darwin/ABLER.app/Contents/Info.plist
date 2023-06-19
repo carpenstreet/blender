@@ -86,6 +86,7 @@
     <array>
         <string>en</string>
         <string>ko</string>
+        <string>ja</string>
     </array>
     <key>SUPublicEDKey</key>
     <string>${SPARKLE_PUBLIC_ED_KEY}</string>
