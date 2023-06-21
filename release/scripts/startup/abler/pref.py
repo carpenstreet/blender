@@ -86,13 +86,16 @@ class Acon3DVanillarBlenderWarning(BlockingModalOperator):
         box.label(text="Information", icon="INFO")
         row1 = box.row()
         row1.label(
-            text="Shader node changes may occur when working in abler, and this is at your own risk."
+            text="Shader node changes may occur when working in ABLER, and this is at your own risk.",
+            text_ctxt="abler",
         )
         row2 = box.row()
         col = row2.column()
-        col.operator("acon3d.close_blocking_modal_continue", text="Continue")
+        col.operator(
+            "acon3d.close_blocking_modal_continue", text="Continue", text_ctxt="abler"
+        )
         col = row2.column()
-        col.operator("acon3d.close_abler", text="Quit")
+        col.operator("acon3d.close_abler", text="Quit", text_ctxt="abler")
 
 
 class Acon3DWarningContiuue(CloseBlockingModalOperator):
