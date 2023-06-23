@@ -345,20 +345,19 @@ static bool undosys_stack_push_main(UndoStack *ustack, const char *name, struct 
   BLI_assert(ustack->step_init == NULL);
   CLOG_INFO(&LOG, 1, "'%s'", name);
 
-  /* Toon Shading 작업이 언두되지 않게 하기 위해 original file을 언두스택에 등록하지 않는다.
   bContext *C_temp = CTX_create();
   CTX_data_main_set(C_temp, bmain);
   eUndoPushReturn ret = BKE_undosys_step_push_with_type(
       ustack, C_temp, name, BKE_UNDOSYS_TYPE_MEMFILE);
   CTX_free(C_temp);
-   */
-  return ((1 << 0) & UNDO_PUSH_RET_SUCCESS);
+  return (ret & UNDO_PUSH_RET_SUCCESS);
 }
 
-void BKE_undosys_stack_init_from_main(UndoStack *ustack, struct Main *bmain)
-{
+void BKE_undosys_stack_init_from_main(UndoStack *ustack, struct Main *bmain, bool from_abler) {
   UNDO_NESTED_ASSERT(false);
-  undosys_stack_push_main(ustack, IFACE_("Original"), bmain);
+  if (from_abler) {
+    undosys_stack_push_main(ustack, IFACE_("Original"), bmain);
+  }
 }
 
 /* called after 'BKE_undosys_stack_init_from_main' */

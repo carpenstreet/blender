@@ -92,6 +92,13 @@ static void WM_set_fileselect_title(struct wmWindowManager *wm, int value)
   WM_set_abler_fileViewTitle(value);
 }
 
+void WM_insert_original_into_undostack(struct bContext *C)
+{
+  wmWindowManager *wm = CTX_wm_manager(C);
+  Main *bmain = CTX_data_main(C);
+  BKE_undosys_stack_init_from_main(wm->undo_stack, bmain, true);
+}
+
 float WM_get_progress(struct bContext *C) {
   Main *bmain = CTX_data_main(C);
   wmWindowManager *wm = CTX_wm_manager(C);
@@ -844,6 +851,12 @@ void RNA_api_wm(StructRNA *srna)
   RNA_def_function_ui_description(func, "Set fileselect title");
   parm = RNA_def_enum(func, "title_enum", file_view_title_items, 0, "title enum", "title enum for file selector");
   RNA_def_parameter_flags(parm, 0, PARM_REQUIRED);
+
+  func = RNA_def_function(srna, "init_undostack", "WM_insert_original_into_undostack");
+  RNA_def_function_ui_description(
+      func,
+      "Init ABLER undostack");
+  RNA_def_function_flag(func, FUNC_NO_SELF | FUNC_USE_CONTEXT);
 
   func = RNA_def_function(srna, "get_progress", "WM_get_progress");
   RNA_def_function_ui_description(
