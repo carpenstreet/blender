@@ -33,6 +33,7 @@ bl_info = {
 import bpy
 from ..lib.tracker import tracker
 
+
 class Acon3dStylesPanel(bpy.types.Panel):
     bl_idname = "ACON_PT_Styles"
     bl_label = "Styles"
@@ -130,6 +131,7 @@ class SunlightPanel(bpy.types.Panel):
 class LIGHT_UL_List(bpy.types.UIList):
     bl_idname = "LIGHT_UL_List"
     bl_description = "Click to select a light"
+
     def __init__(self):
         super().__init__()
         self.use_filter_sort_reverse = True
@@ -182,15 +184,30 @@ class LightPanel(bpy.types.Panel):
 
             # PointLight 생성버튼
             col = row.column()
-            col.operator(AddPointLightOperator.bl_idname, text="Point", text_ctxt="abler", icon="LIGHT_POINT")
+            col.operator(
+                AddPointLightOperator.bl_idname,
+                text="Point",
+                text_ctxt="abler",
+                icon="LIGHT_POINT",
+            )
 
             # SpotLight 생성버튼
             col = row.column()
-            col.operator(AddSpotLightOperator.bl_idname, text="Spot", text_ctxt="abler", icon="LIGHT_SPOT")
+            col.operator(
+                AddSpotLightOperator.bl_idname,
+                text="Spot",
+                text_ctxt="abler",
+                icon="LIGHT_SPOT",
+            )
 
             # AreaLight 생성버튼
             col = row.column()
-            col.operator(AddAreaLightOperator.bl_idname, text="Area", text_ctxt="abler", icon="LIGHT_AREA")
+            col.operator(
+                AddAreaLightOperator.bl_idname,
+                text="Area",
+                text_ctxt="abler",
+                icon="LIGHT_AREA",
+            )
 
             row = layout.row(align=True)
             col = row.column()
@@ -216,12 +233,6 @@ class LightPanel(bpy.types.Panel):
                 row.prop(light, "color", text="Color", slider=True)
                 row = layout.row(align=True)
                 row.prop(light, "energy", text="Energy", slider=True)
-                row = layout.row(align=True)
-                row.prop(light, "diffuse_factor", text="Diffuse", slider=True)
-                row = layout.row(align=True)
-                row.prop(light, "specular_factor", text="Specular", slider=True)
-                row = layout.row(align=True)
-                row.prop(light, "volume_factor", text="Volume", slider=True)
 
 
 class AddLightOperatorBase(bpy.types.Operator):
@@ -242,6 +253,7 @@ class AddLightOperatorBase(bpy.types.Operator):
             name="ACON_light", type=self.light_type
         )
         acon_light_data.energy = 10
+        acon_light_data.diffuse_factor = 5
 
         # object 생성
         acon_light: Object = bpy.data.objects.new(acon_light_data.name, acon_light_data)

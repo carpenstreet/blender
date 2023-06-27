@@ -86,13 +86,16 @@ class Acon3DVanillarBlenderWarning(BlockingModalOperator):
         box.label(text="Information", icon="INFO")
         row1 = box.row()
         row1.label(
-            text="Shader node changes may occur when working in abler, and this is at your own risk."
+            text="Shader node changes may occur when working in ABLER, and this is at your own risk.",
+            text_ctxt="abler",
         )
         row2 = box.row()
         col = row2.column()
-        col.operator("acon3d.close_blocking_modal_continue", text="Continue")
+        col.operator(
+            "acon3d.close_blocking_modal_continue", text="Continue", text_ctxt="abler"
+        )
         col = row2.column()
-        col.operator("acon3d.close_abler", text="Quit")
+        col.operator("acon3d.close_abler", text="Quit", text_ctxt="abler")
 
 
 class Acon3DWarningContiuue(CloseBlockingModalOperator):
@@ -124,6 +127,8 @@ def delayed_load_handler():
         shadow.setup_clear_shadow()
         render.setup_background_images_compositor()
         materials_setup.apply_ACON_toon_style()
+        # blender undostack에 현재 상태의 스냅샷을 초기원소로 넣어준다.
+        bpy.context.window_manager.init_undostack()
         for scene in bpy.data.scenes:
             scene.view_settings.view_transform = "Standard"
         # 키맵이 ABLER로 세팅되어있는지 확인하고, 아닐 경우 세팅을 바로잡아줌

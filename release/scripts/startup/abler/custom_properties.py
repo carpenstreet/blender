@@ -340,16 +340,16 @@ class AconLight(bpy.types.PropertyGroup):
     energy: bpy.props.FloatProperty(
         name="",
         description="Adjust light energy",
-        default=10.0,
+        default=5.0,
         min=0,
-        max=1000.0,
+        max=100.0,
         update=change_light_data,
     )
 
     diffuse_factor: bpy.props.FloatProperty(
         name="",
         description="Adjust light diffuse",
-        default=1.0,
+        default=5.0,
         min=0,
         max=100.0,
         update=change_light_data,
@@ -758,10 +758,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     lights: bpy.props.CollectionProperty(type=AconLight)
     light_index: bpy.props.IntProperty(
-        name="",
-        min=0,
-        default=0,
-        update=scenes.change_ui_to_show_selected_light
+        name="", min=0, default=0, update=scenes.change_ui_to_show_selected_light
     )
 
 

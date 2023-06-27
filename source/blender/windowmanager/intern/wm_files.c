@@ -753,7 +753,7 @@ static void wm_file_read_post(bContext *C, const struct wmFileReadPost_Params *p
       else {
         BKE_undosys_stack_clear(wm->undo_stack);
       }
-      BKE_undosys_stack_init_from_main(wm->undo_stack, bmain);
+      BKE_undosys_stack_init_from_main(wm->undo_stack, bmain, false);
       BKE_undosys_stack_init_from_context(wm->undo_stack, C);
     }
   }
