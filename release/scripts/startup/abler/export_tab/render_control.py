@@ -346,9 +346,16 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 if context.window_manager.progress_prop.is_loaded:
                     bpy.app.timers.register(self.render_handler, first_interval=0.01)
                 else:
-                    bpy.ops.render.render(
-                        "INVOKE_DEFAULT", write_still=self.write_still
-                    )
+                    if render_type == RenderType.quick:
+                        # render.opengl 의 경우 pre_render, post_render 가 호출되지 않아서 직접 호출
+                        # TODO 오퍼레이터 분리
+                        self.pre_render(None, None)
+                        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
+                        self.post_render(None, None)
+                    else:
+                        bpy.ops.render.render(
+                            "INVOKE_DEFAULT", write_still=self.write_still
+                        )
 
         return {"PASS_THROUGH"}
 
@@ -371,8 +378,6 @@ class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
     def prepare_queue(self, context):
         for obj in context.selected_objects:
             obj.select_set(False)
-
-        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
 
         self.render_queue.append((context.scene, RenderType.quick))
 
