@@ -3242,9 +3242,6 @@ class WM_MT_splash(Menu):
                     btn.link_name = ""
 
         # blender 관련
-        anchor = layout.operator("acon3d.anchor", text="Blender Release Notes", icon='URL')
-        anchor.description_text = "Link to Blender Foundation and check release notes"
-        anchor.href = 'https://www.blender.org/download/releases/'
         anchor = layout.operator("acon3d.anchor", text="Blender Development Fund", icon='FUND')
         anchor.description_text = "Link to Blender development donation program to support maintenance and improvements"
         anchor.href = 'https://fund.blender.org/'
