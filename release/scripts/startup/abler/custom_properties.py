@@ -184,8 +184,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
                         value = False
                         break
 
-            obj.hide_viewport = not value
-            obj.hide_render = not value
+            obj.hide_set(not value)
 
             for o in obj.children:
                 update_objects(o, value)
