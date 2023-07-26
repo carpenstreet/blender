@@ -177,11 +177,19 @@ class LightPanel(bpy.types.Panel):
             layout.use_property_decorate = False  # No animation.
             layout.use_property_split = True
             row = layout.row(align=True)
+
             # Add Light
-            row.label(text="Add Light")
+            col = row.column(align=True)
+            col.label(text="Add Light")
+            col = row.column(align=True)
+            col.prop(
+                context.scene.ACON_prop,
+                "spawn_light_on_cursor",
+                toggle=1,
+                icon="CURSOR",
+            )
 
             row = layout.row(align=True)
-
             # PointLight 생성버튼
             col = row.column()
             col.operator(
@@ -236,7 +244,7 @@ class LightPanel(bpy.types.Panel):
 
 
 class AddLightOperatorBase(bpy.types.Operator):
-    bl_options = {"REGISTER"}
+    bl_options = {"REGISTER", "UNDO"}
     bl_translation_context = "abler"
     light_type = "LIGHT_BASE"
     scene: bpy.types.Scene
@@ -257,6 +265,10 @@ class AddLightOperatorBase(bpy.types.Operator):
 
         # object 생성
         acon_light: Object = bpy.data.objects.new(acon_light_data.name, acon_light_data)
+
+        if self.scene.ACON_prop.spawn_light_on_cursor:
+            acon_light.location = bpy.context.scene.cursor.location
+
         return acon_light
 
     def execute(self, context):
