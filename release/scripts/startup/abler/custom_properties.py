@@ -521,6 +521,12 @@ class AconSceneProperty(bpy.types.PropertyGroup):
         default=True,
     )
 
+    spawn_light_on_cursor: bpy.props.BoolProperty(
+        name="",
+        description="Lights",
+        default=True,
+    )
+
     toggle_shadow_shading: bpy.props.BoolProperty(
         name="",
         description="Express shadow and shading",
