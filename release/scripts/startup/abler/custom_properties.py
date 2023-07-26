@@ -167,7 +167,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         def get_parent_value(obj):
             cur = obj.parent
             while cur:
-                if cur.hide_viewport:
+                if cur.hide_get():
                     return False
                 cur = cur.parent
             return True
