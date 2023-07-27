@@ -276,6 +276,7 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light
+        self.scene.ACON_prop.light_index = len(self.scene.ACON_prop.lights) - 1
 
         # select just created light
         bpy.ops.object.select_all(action="DESELECT")
