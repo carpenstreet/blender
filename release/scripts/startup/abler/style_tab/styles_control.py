@@ -276,6 +276,11 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light
+
+        # select just created light
+        bpy.ops.object.select_all(action="DESELECT")
+        light.select_set(True)
+
         tracker.add_light()
         return {"FINISHED"}
 
@@ -325,7 +330,7 @@ class RemoveLightOperator(bpy.types.Operator):
         scene.ACON_prop.lights.remove(index)
 
         if index > 0:
-            index = index - 1
+            scene.ACON_prop.light_index = index - 1
 
         tracker.remove_light()
         return {"FINISHED"}
