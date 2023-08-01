@@ -167,5 +167,4 @@ def clear_compositor(scene=None):
 
 def match_object_visibility():
     for obj in bpy.data.objects:
-        if obj.hide_get():
-            obj.hide_render = True
+        obj.hide_render = obj.hide_get()
