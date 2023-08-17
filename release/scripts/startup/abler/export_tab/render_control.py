@@ -1,4 +1,4 @@
-release/scripts/startup/abler/export_tab/render_control.py# ##### BEGIN GPL LICENSE BLOCK #####
+# ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -222,8 +222,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         bpy.app.handlers.render_pre.append(self.pre_render)
         bpy.app.handlers.render_post.append(self.post_render)
         bpy.app.handlers.render_cancel.append(self.on_render_cancel)
-        bpy.app.handlers.render_post.append(self.show_guideline)
-        bpy.app.handlers.render_cancel.append(self.show_guideline)
+        bpy.app.handlers.render_post.append(self.show_guideline())
+        bpy.app.handlers.render_cancel.append(self.show_guideline())
 
         return self.prepare_queue(context)
 
