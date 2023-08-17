@@ -322,10 +322,8 @@ class RemoveLightOperator(bpy.types.Operator):
         if index >= len(lights):
             return {"FINISHED"}
 
-        light_obj = scene.ACON_prop.lights[index].obj
-
         # 실제 오브젝트 제거 (data block 정리는 블렌더가 함)
-        if light_obj:
+        if light_obj := scene.ACON_prop.lights[index].obj:
             bpy.data.objects.remove(light_obj)
 
         # ACON_prop.lights 데이터 제거
