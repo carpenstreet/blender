@@ -1,4 +1,4 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
+release/scripts/startup/abler/export_tab/render_control.py# ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -219,10 +219,9 @@ class Acon3dRenderOperator(bpy.types.Operator):
         context.preferences.view.render_display_type = "NONE"
         context.window_manager.modal_handler_add(self)
 
-
         bpy.app.handlers.render_pre.append(self.pre_render)
-        bpy.app.handlers.render_cancel.append(self.on_render_cancel)
         bpy.app.handlers.render_post.append(self.post_render)
+        bpy.app.handlers.render_cancel.append(self.on_render_cancel)
         bpy.app.handlers.render_post.append(self.show_guideline)
         bpy.app.handlers.render_cancel.append(self.show_guideline)
 
@@ -299,7 +298,6 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                     message_1="Rendered images are saved in:",
                     message_2=self.filepath,
                 )
-
 
                 if self.show_on_completion:
                     open_directory(self.filepath)
