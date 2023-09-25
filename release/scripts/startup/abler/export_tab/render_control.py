@@ -203,8 +203,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
 
-    def show_guideline(self, context):
-        context.screen.areas[0].spaces[0].overlay.show_extras = True
+    def show_guideline(self):
+        bpy.context.screen.areas[0].spaces[0].overlay.show_extras = True
 
     def execute(self, context):
         self.render_canceled = False
@@ -222,8 +222,8 @@ class Acon3dRenderOperator(bpy.types.Operator):
         bpy.app.handlers.render_pre.append(self.pre_render)
         bpy.app.handlers.render_post.append(self.post_render)
         bpy.app.handlers.render_cancel.append(self.on_render_cancel)
-        bpy.app.handlers.render_post.append(self.show_guideline())
-        bpy.app.handlers.render_cancel.append(self.show_guideline())
+        bpy.app.handlers.render_post.append(self.show_guideline)
+        bpy.app.handlers.render_cancel.append(self.show_guideline)
 
         return self.prepare_queue(context)
 
