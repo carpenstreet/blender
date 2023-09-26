@@ -100,9 +100,9 @@ class GroupNavigationManager:
 
     def go_top(self):
         obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
         if not obj:
             return
-        self._check_and_clear_visited_stack(obj)
         while obj.parent:
             self._check_and_put_obj_in_visited_stack(obj)
             obj = obj.parent
@@ -112,9 +112,9 @@ class GroupNavigationManager:
 
     def go_up(self):
         obj = bpy.context.active_object
+        self._check_and_clear_visited_stack(obj)
         if not obj:
             return
-        self._check_and_clear_visited_stack(obj)
         if obj.parent:
             with self._programmatic_selection_scope():
                 self._check_and_put_obj_in_visited_stack(obj)
@@ -123,8 +123,6 @@ class GroupNavigationManager:
 
     def go_down(self):
         obj = bpy.context.active_object
-        if not obj:
-            return
         self._check_and_clear_visited_stack(obj)
         if self._selection_visited_stack:
             with self._programmatic_selection_scope():
@@ -139,8 +137,6 @@ class GroupNavigationManager:
 
     def go_bottom(self):
         obj = bpy.context.active_object
-        if not obj:
-            return
         self._check_and_clear_visited_stack(obj)
         if self._selection_visited_stack:
             with self._programmatic_selection_scope():
