@@ -203,9 +203,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
         context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
 
-    def show_guideline(self):
-        bpy.context.screen.areas[0].spaces[0].overlay.show_extras = True
-
     def execute(self, context):
         self.render_canceled = False
         self.rendering = False
@@ -222,8 +219,6 @@ class Acon3dRenderOperator(bpy.types.Operator):
         bpy.app.handlers.render_pre.append(self.pre_render)
         bpy.app.handlers.render_post.append(self.post_render)
         bpy.app.handlers.render_cancel.append(self.on_render_cancel)
-        bpy.app.handlers.render_post.append(self.show_guideline)
-        bpy.app.handlers.render_cancel.append(self.show_guideline)
 
         return self.prepare_queue(context)
 
@@ -354,15 +349,22 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                     if render_type == RenderType.quick:
                         # render.opengl 의 경우 pre_render, post_render 가 호출되지 않아서 직접 호출
                         # TODO 오퍼레이터 분리
+                        context.screen.areas[0].spaces[0].overlay.show_extras = False
                         self.pre_render(None, None)
                         bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
                         self.post_render(None, None)
+                        bpy.app.timers.register(
+                            lambda: self.show_guideline(context), first_interval=0.01
+                        )
                     else:
                         bpy.ops.render.render(
                             "INVOKE_DEFAULT", write_still=self.write_still
                         )
 
         return {"PASS_THROUGH"}
+
+    def show_guideline(self, context):
+        context.screen.areas[0].spaces[0].overlay.show_extras = True
 
 
 class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
@@ -377,7 +379,6 @@ class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
             return super().invoke(context, event)
 
     def execute(self, context):
-        context.screen.areas[0].spaces[0].overlay.show_extras = False
         return super().execute(context)
 
     def prepare_queue(self, context):
