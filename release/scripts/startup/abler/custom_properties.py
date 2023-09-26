@@ -167,7 +167,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
         def get_parent_value(obj):
             cur = obj.parent
             while cur:
-                if cur.hide_viewport:
+                if cur.hide_get():
                     return False
                 cur = cur.parent
             return True
@@ -184,8 +184,7 @@ class CollectionLayerExcludeProperties(bpy.types.PropertyGroup):
                         value = False
                         break
 
-            obj.hide_viewport = not value
-            obj.hide_render = not value
+            obj.hide_set(not value)
 
             for o in obj.children:
                 update_objects(o, value)
@@ -519,6 +518,12 @@ class AconSceneProperty(bpy.types.PropertyGroup):
     toggle_lights: bpy.props.BoolProperty(
         name="",
         description="Lights",
+        default=True,
+    )
+
+    spawn_light_on_cursor: bpy.props.BoolProperty(
+        name="",
+        description="Spawn light on 3D cursor",
         default=True,
     )
 

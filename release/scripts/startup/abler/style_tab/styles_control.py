@@ -177,11 +177,19 @@ class LightPanel(bpy.types.Panel):
             layout.use_property_decorate = False  # No animation.
             layout.use_property_split = True
             row = layout.row(align=True)
+
             # Add Light
-            row.label(text="Add Light")
+            col = row.column(align=True)
+            col.label(text="Add Light")
+            col = row.column(align=True)
+            col.prop(
+                context.scene.ACON_prop,
+                "spawn_light_on_cursor",
+                toggle=1,
+                icon="CURSOR",
+            )
 
             row = layout.row(align=True)
-
             # PointLight 생성버튼
             col = row.column()
             col.operator(
@@ -236,7 +244,7 @@ class LightPanel(bpy.types.Panel):
 
 
 class AddLightOperatorBase(bpy.types.Operator):
-    bl_options = {"REGISTER"}
+    bl_options = {"REGISTER", "UNDO"}
     bl_translation_context = "abler"
     light_type = "LIGHT_BASE"
     scene: bpy.types.Scene
@@ -257,6 +265,10 @@ class AddLightOperatorBase(bpy.types.Operator):
 
         # object 생성
         acon_light: Object = bpy.data.objects.new(acon_light_data.name, acon_light_data)
+
+        if self.scene.ACON_prop.spawn_light_on_cursor:
+            acon_light.location = bpy.context.scene.cursor.location
+
         return acon_light
 
     def execute(self, context):
@@ -264,6 +276,12 @@ class AddLightOperatorBase(bpy.types.Operator):
         self.scene.collection.objects.link(light)
         item = self.scene.ACON_prop.lights.add()
         item.obj = light
+        self.scene.ACON_prop.light_index = len(self.scene.ACON_prop.lights) - 1
+
+        # select just created light
+        bpy.ops.object.select_all(action="DESELECT")
+        light.select_set(True)
+
         tracker.add_light()
         return {"FINISHED"}
 
@@ -304,16 +322,15 @@ class RemoveLightOperator(bpy.types.Operator):
         if index >= len(lights):
             return {"FINISHED"}
 
-        light_obj = scene.ACON_prop.lights[index].obj
-
         # 실제 오브젝트 제거 (data block 정리는 블렌더가 함)
-        bpy.data.objects.remove(light_obj)
+        if light_obj := scene.ACON_prop.lights[index].obj:
+            bpy.data.objects.remove(light_obj)
 
         # ACON_prop.lights 데이터 제거
         scene.ACON_prop.lights.remove(index)
 
         if index > 0:
-            index = index - 1
+            scene.ACON_prop.light_index = index - 1
 
         tracker.remove_light()
         return {"FINISHED"}
