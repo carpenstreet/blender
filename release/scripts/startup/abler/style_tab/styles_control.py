@@ -325,8 +325,7 @@ class RemoveLightOperator(bpy.types.Operator):
         light_obj = scene.ACON_prop.lights[index].obj
 
         # 실제 오브젝트 제거 (data block 정리는 블렌더가 함)
-        if light_obj:
-            bpy.data.objects.remove(light_obj)
+        bpy.data.objects.remove(light_obj)
 
         # ACON_prop.lights 데이터 제거
         scene.ACON_prop.lights.remove(index)
