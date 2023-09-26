@@ -3209,7 +3209,16 @@ class WM_MT_splash(Menu):
         anchor.description_text = "Link to Operating ABLER"
         anchor.href = urls.get_url("OPERATING_ABLER")
 
+        anchor = col1.operator("acon3d.anchor", text="ABLER Instruction", icon='URL')
+        anchor.description_text = "Link to ABLER Instruction"
+        anchor.href = urls.get_url("ABLER_INSTRUCTION")
+
+        # Blender의 wm.url_open_preset의 툴팁이 고정되어 있어 acon3d.anchor operator로 변경
         col2 = split.column()
+        anchor = col2.operator("acon3d.anchor", text="ABLER feature Walkthrough", icon='URL')
+        anchor.description_text = "Link to ABLER feature Walkthrough"
+        anchor.href = urls.get_url("ABLER_FEATURES")
+
         anchor = col2.operator("acon3d.anchor", text="See ACON3D models!", icon='URL')
         anchor.description_text = "Link to ACON3D"
         anchor.href = urls.get_url("ACON_3D")
