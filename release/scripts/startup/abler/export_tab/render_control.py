@@ -203,6 +203,9 @@ class Acon3dRenderOperator(bpy.types.Operator):
         context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
 
+    def show_guideline(self):
+        bpy.data.screens["ACON3D"].areas[0].spaces[0].overlay.show_extras = True
+
     def execute(self, context):
         self.render_canceled = False
         self.rendering = False
@@ -354,7 +357,7 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                         bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
                         self.post_render(None, None)
                         bpy.app.timers.register(
-                            lambda: self.show_guideline(context), first_interval=0.01
+                            self.show_guideline, first_interval=0.01
                         )
                     else:
                         bpy.ops.render.render(
@@ -362,9 +365,6 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                         )
 
         return {"PASS_THROUGH"}
-
-    def show_guideline(self, context):
-        context.screen.areas[0].spaces[0].overlay.show_extras = True
 
 
 class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
