@@ -523,7 +523,7 @@ class AconSceneProperty(bpy.types.PropertyGroup):
 
     spawn_light_on_cursor: bpy.props.BoolProperty(
         name="",
-        description="Spawn light on 3D cursor",
+        description="Lights",
         default=True,
     )
 
