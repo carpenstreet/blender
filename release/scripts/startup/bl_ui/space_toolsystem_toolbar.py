@@ -2704,7 +2704,6 @@ class NODE_PT_tools_active(ToolSelectPanelHelper, Panel):
     _tools = {
         None: [
             *_tools_select,
-            _defs_view3d_generic.cursor,
             None,
             *_tools_annotate,
             None,
@@ -2789,7 +2788,6 @@ class VIEW3D_PT_tools_active(ToolSelectPanelHelper, Panel):
 
     _tools_default = (
         *_tools_select,
-        _defs_view3d_generic.cursor,
         None,
         *_tools_transform,
         None,

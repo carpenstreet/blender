@@ -79,7 +79,8 @@ def handle_layer_visibility_on_scene_change(oldScene, newScene):
                     new_value = False
                     break
 
-            obj.hide_set(not new_value)
+            obj.hide_viewport = not new_value
+            obj.hide_render = not new_value
 
         if new_lock is not None:
             if not new_lock:
