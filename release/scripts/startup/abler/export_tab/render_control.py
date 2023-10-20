@@ -24,7 +24,7 @@ from ..lib.materials import materials_handler
 from ..lib.tracker import tracker
 from time import time
 from ..warning_modal import BlockingModalOperator
-from ..lib.import_file import AconImportHelper
+from ..lib.import_file import AconImportHelper, AconExportHelper
 from enum import Enum
 
 
@@ -349,52 +349,116 @@ class Acon3dRenderDirOperator(Acon3dRenderOperator, AconImportHelper):
                 if context.window_manager.progress_prop.is_loaded:
                     bpy.app.timers.register(self.render_handler, first_interval=0.01)
                 else:
-                    if render_type == RenderType.quick:
-                        # render.opengl 의 경우 pre_render, post_render 가 호출되지 않아서 직접 호출
-                        # TODO 오퍼레이터 분리
-                        context.screen.areas[0].spaces[0].overlay.show_extras = False
-                        self.pre_render(None, None)
-                        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
-                        self.post_render(None, None)
-                        bpy.app.timers.register(
-                            self.show_guideline, first_interval=0.01
-                        )
-                    else:
-                        bpy.ops.render.render(
-                            "INVOKE_DEFAULT", write_still=self.write_still
-                        )
+                    bpy.ops.render.render(
+                        "INVOKE_DEFAULT", write_still=self.write_still
+                    )
 
         return {"PASS_THROUGH"}
 
 
-class Acon3dRenderQuickOperator(Acon3dRenderDirOperator):
+class Acon3dRenderQuickOperator(Acon3dRenderOperator, AconExportHelper):
     """Take a snapshot of the active viewport"""
 
     bl_idname = "acon3d.render_quick"
     bl_label = "Quick Render"
+    bl_description = "Take a snapshot of the active viewport"
     bl_translation_context = "abler"
+
+    filename_ext = ".png"
+    filter_glob: bpy.props.StringProperty(default="*.png", options={"HIDDEN"})
+
+    def __init__(self):
+        AconExportHelper.__init__(self)
+        scene = bpy.context.scene
+        self.filepath = f"{scene.name}{self.filename_ext}"
 
     def invoke(self, context, event):
         with file_view_title("RENDER"):
             return super().invoke(context, event)
 
     def execute(self, context):
-        return super().execute(context)
+        self.check_path(
+            save_check=False,
+            default_name=f"{context.scene.name}{self.filename_ext}",
+        )
+
+        # Get basename without file extension
+        self.dirname, self.basename = os.path.split(os.path.normpath(self.filepath))
+
+        if "." in self.basename:
+            self.basename = ".".join(self.basename.split(".")[:-1])
+
+        context.screen.areas[0].spaces[0].overlay.show_extras = False
+        res = super().execute(context)
+        return res
 
     def prepare_queue(self, context):
+        # File name duplicate check
+
+        check_file_numbering(self, context)
+
         for obj in context.selected_objects:
             obj.select_set(False)
-
-        self.render_queue.append((context.scene, RenderType.quick))
+        context.screen.areas[0].spaces[0].overlay.show_extras = False
+        bpy.ops.render.opengl("INVOKE_DEFAULT", write_still=True)
+        bpy.app.timers.register(
+            self.show_guideline, first_interval=0.01
+        )
 
         return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
-        return super().modal(context, event)
+        if event.type == "TIMER":
+            if not self.render_queue or self.render_canceled is True:
+                bpy.app.handlers.render_pre.remove(self.pre_render)
+                bpy.app.handlers.render_post.remove(self.post_render)
+                bpy.app.handlers.render_cancel.remove(self.on_render_cancel)
+
+                context.window_manager.event_timer_remove(self.timer_event)
+                context.window.scene = self.initial_scene
+                context.preferences.view.render_display_type = self.initial_display_type
+
+                self.report({"INFO"}, "RENDER QUEUE FINISHED")
+                context.screen.areas[0].spaces[0].overlay.show_extras = True
+
+                bpy.ops.acon3d.alert(
+                    "INVOKE_DEFAULT",
+                    title="Render Queue Finished",
+                    message_1="Rendered images are saved in:",
+                    message_2=self.filepath,
+                )
+
+                if self.show_on_completion:
+                    open_directory(self.filepath)
+
+                return self.on_render_finish(context)
+
+            elif self.rendering is False:
+                check_file_numbering(self, context)
+
+                self.prepare_render()
+
+                bpy.ops.render.render("INVOKE_DEFAULT", write_still=self.write_still)
+
+        return {"PASS_THROUGH"}
 
     def on_render_finish(self, context):
         tracker.render_quick()
         return super().on_render_finish(context)
+
+
+def check_file_numbering(self, context):
+    base_filepath = os.path.join(self.dirname, self.basename)
+    file_format = self.filename_ext
+    numbered_filepath = base_filepath
+    number = 2
+
+    while os.path.isfile(f"{numbered_filepath}{file_format}"):
+        numbered_filepath = f"{base_filepath} ({number})"
+        number += 1
+
+    context.scene.render.filepath = numbered_filepath
+    self.filepath = f"{numbered_filepath}{file_format}"
 
 
 class Acon3dRenderSnipOperator(Acon3dRenderDirOperator):
